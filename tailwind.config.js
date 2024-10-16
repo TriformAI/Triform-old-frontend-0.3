@@ -13,6 +13,7 @@ export default {
             },
             colors: {
                 "website-primary": "#030712",
+                "website-secondary": "#101827",
                 "brand-primary": "#0D1541",
                 "brand-secondary": "#7A43AE",
                 cream: "#A19595",
