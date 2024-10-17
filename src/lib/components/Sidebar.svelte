@@ -17,6 +17,7 @@
 		<a href="/dashboard" class="flex items-center h-16 m-1 shrink-0 w-fit">
 			<!-- Replace with your logo/image -->
 			<img alt="triform logo" src={logo} class="relative w-8 lg:w-10 lg:left-0 left-2" />
+			
 		</a>
 
 		<!-- Main Navigation -->
