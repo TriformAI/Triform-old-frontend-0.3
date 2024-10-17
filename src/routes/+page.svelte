@@ -14,9 +14,9 @@
 		class="flex items-center justify-between w-full px-3 mx-auto py-7 sm:p-10 max-w-7xl lg:justify-around"
 	>
 		<ul class="lg:flex hidden items-center gap-x-10 text-[#D1D5DB] mr-auto">
-			<a href="#foryou" class="cursor-pointer hover:text-white">Features</a>
-			<a href="#pricing" class="cursor-pointer hover:text-white">Pricing</a>
-			<a href="#workflow" class="cursor-pointer hover:text-white">How it works</a>
+			<a href=" " class="cursor-pointer hover:text-white">Features</a>
+			<a href=" " class="cursor-pointer hover:text-white">Pricing</a>
+			<a href=" " class="cursor-pointer hover:text-white">How it works</a>
 		</ul>
 		<img alt="triform logo" src={logo} class="relative w-14 right-7" />
 		<div id="burger" class="z-50 w-10 h-10 ml-auto cursor-pointer lg:hidden">
@@ -67,9 +67,9 @@
 
 			<div class="flex flex-col items-center justify-around w-full h-full mx-auto">
 				<div class="relative flex flex-col items-center justify-center text-xl gap-y-10 top-20">
-					<a href="#foryou" class="text-white">Features</a>
-					<a href="#pricing" class="text-white">Pricing</a>
-					<a href="#workflow" class="text-white">How it works</a>
+					<a href=" " class="text-white">Features</a>
+					<a href=" " class="text-white">Pricing</a>
+					<a href=" " class="text-white">How it works</a>
 				</div>
 				<div class="flex items-center justify-center mx-5 text-xl gap-x-10">
 					<a href="/login" class="text-white">Login</a>
