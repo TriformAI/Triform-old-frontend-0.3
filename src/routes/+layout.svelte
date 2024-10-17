@@ -1,32 +1,26 @@
 <script>
 	import '../app.css';
-	import Sidebar from '$lib/components/Sidebar.svelte'; // Assuming your Sidebar component is here
-	import { page } from '$app/stores'; 
+	import Navbar from '$lib/components/Navbar.svelte'; // Assuming your Sidebar component is here
+	import { page } from '$app/stores';
+	import Toolbar from '$lib/components/Toolbar.svelte';
 
 	// Reactive statement to check if the route is protected
-	$: isProtectedRoute = ['/dashboard', '/modules', '/flows', '/playground', '/environment', '/storage', '/library', '/billings'].some((path) =>
-		$page.url.pathname.startsWith(path)
-	);
+	$: isProtectedRoute = ['/dashboard'].some((path) => $page.url.pathname.startsWith(path));
 </script>
 
-<div class="app bg-website-secondary">
+<div class="bg-[#091136]">
 	{#if isProtectedRoute}
-	<div class="pr-10 font-sans" >
-		<Sidebar />
-	</div>
+		<div class="w-full">
+			<Navbar />
+			<Toolbar/>
+		</div>
 	{/if}
 
-	<main >
+	<main>
 		<slot />
 	</main>
 </div>
 
 <style>
-	.app {
-		display: flex;
-	}
 
-	main {
-		flex-grow: 1;
-	}
 </style>

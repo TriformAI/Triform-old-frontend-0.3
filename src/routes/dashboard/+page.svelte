@@ -1,6 +1,5 @@
 <script>
 </script>
 
-<section class="bg-[#101827] mt-24">
-	<h1  class="text-[2.5rem] antialiased font-medium text-white">🚀 Welcome to Triform! 🌟</h1>
+<section class="h-screen bg-[#091136] text-brand-white">
 </section>
