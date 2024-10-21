@@ -5,7 +5,7 @@
 	import modal_title_icon from '$lib/icons/Modal_Title_Icon.svg';
 	import modal_cross from '$lib/icons/modal_cross.svg';
 
-	let createModuleModal = true;
+	let createModuleModal = false;
 	let environmentVariables = ['Variable 1', 'Variable 2', 'Variable 3'];
 
 	const toggleCreateModuleModal = () => {
