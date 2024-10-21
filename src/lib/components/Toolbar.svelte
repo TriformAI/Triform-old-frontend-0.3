@@ -1,4 +1,17 @@
 <script>
+	import { fade, scale } from 'svelte/transition';
+	// cavas dropdown icons
+	import canvas_dropdown_1 from '../icons/canvas_dropdown_1.svg';
+	import canvas_dropdown_2 from '../icons/canvas_dropdown_2.svg';
+	import canvas_dropdown_3 from '../icons/canvas_dropdown_3.svg';
+	import canvas_dropdown_4 from '../icons/canvas_dropdown_4.svg';
+	import canvas_dropdown_5 from '../icons/canvas_dropdown_5.svg';
+	import canvas_dropdown_6 from '../icons/canvas_dropdown_6.svg';
+	import canvas_dropdown_7 from '../icons/canvas_dropdown_7.svg';
+	import canvas_dropdown_8 from '../icons/canvas_dropdown_8.svg';
+	import canvas_dropdown_9 from '../icons/canvas_dropdown_9.svg';
+	import canvas_dropdown_10 from '../icons/canvas_dropdown_10.svg';
+
 	import undo_logo from '../icons/undo.svg';
 	import redo_logo from '../icons/redo.svg';
 	import toolbar_icon_1 from '../icons/toolbar_icon_1.svg';
@@ -14,6 +27,12 @@
 	import grid_icon from '../icons/grid_4x4.svg';
 	import draw_icon from '../icons/draw.svg';
 	import search_icon from '../icons/search.svg';
+	import {canvasDropdownOpen} from '../../stores/modals';
+
+	// toggle dropdown menu
+	function toggleCanvasDropdown() {
+		canvasDropdownOpen.update((value) => !value);
+	}
 
 	let toolbarIcons = [
 		{ id: 1, icon: toolbar_icon_1, alt: 'toolbar icon 1' },
@@ -51,9 +70,70 @@
 <div
 	class="flex items-center justify-between w-full py-5 px-7 border-b border-b-[#FFFFFF1A] text-brand-white bg-website-primary"
 >
+	<!-- Dropdown menu with fade and scale animation -->
+	{#if $canvasDropdownOpen}
+		<div
+			class="absolute left-8 top-44 mt-2 w-80 bg-website-secondary text-[#D1D5DB] border border-[#FFFFFF1A] rounded-2xl shadow-lg z-50"
+			in:scale={{ start: 0.9, duration: 200 }}
+			out:fade={{ duration: 150 }}
+		>
+			<a
+				href=" "
+				class="flex items-center px-10 py-4 text-lg gap-x-4 hover:bg-website-tertiary rounded-t-2xl"
+			>
+				<img src={canvas_dropdown_1} alt="canvas_dropdown_1" class="inline-block w-6" />
+				<p class="flex-shrink-0">Duplicate Canvas</p>
+			</a>
+			<a href=" " class="flex items-center px-10 py-4 text-lg gap-x-4 hover:bg-website-tertiary">
+				<img src={canvas_dropdown_2} alt="canvas_dropdown_2" class="inline-block w-6" />
+				<p class="flex-shrink-0">Clear Canvas</p>
+			</a>
+			<a href=" " class="flex items-center px-10 py-4 text-lg gap-x-4 hover:bg-website-tertiary">
+				<img src={canvas_dropdown_3} alt="canvas_dropdown_3" class="inline-block w-6" />
+				<p class="flex-shrink-0">Rename Canvas</p>
+			</a>
+			<hr class="border-t-[#FFFFFF1A]" />
+
+			<a href=" " class="flex items-center px-10 py-4 text-lg gap-x-4 hover:bg-website-tertiary">
+				<img src={canvas_dropdown_4} alt="canvas_dropdown_4" class="inline-block w-6" />
+				<p class="flex-shrink-0">New Canvas</p>
+			</a>
+			<a href=" " class="flex items-center px-10 py-4 text-lg gap-x-4 hover:bg-website-tertiary">
+				<img src={canvas_dropdown_5} alt="canvas_dropdown_5" class="inline-block w-6" />
+				<p class="flex-shrink-0">Save Canvas</p>
+			</a>
+			<a href=" " class="flex items-center px-10 py-4 text-lg gap-x-4 hover:bg-website-tertiary">
+				<img src={canvas_dropdown_6} alt="canvas_dropdown_6" class="inline-block w-6" />
+				<p class="flex-shrink-0">Save Canvas As</p>
+			</a>
+			<a href=" " class="flex items-center px-10 py-4 text-lg gap-x-4 hover:bg-website-tertiary">
+				<img src={canvas_dropdown_7} alt="canvas_dropdown_7" class="inline-block w-6" />
+				<p class="flex-shrink-0">Import Canvas</p>
+			</a>
+			<a href=" " class="flex items-center px-10 py-4 text-lg gap-x-4 hover:bg-website-tertiary">
+				<img src={canvas_dropdown_8} alt="canvas_dropdown_8" class="inline-block w-6" />
+				<p class="flex-shrink-0">Export Canvas</p>
+			</a>
+			<a href=" " class="flex items-center px-10 py-4 text-lg gap-x-4 hover:bg-website-tertiary">
+				<img src={canvas_dropdown_9} alt="canvas_dropdown_9" class="inline-block w-6" />
+				<p class="flex-shrink-0">Recent Canvas</p>
+			</a>
+			<hr class="border-t-[#FFFFFF1A]" />
+
+			<a href=" " class="flex items-center px-10 py-4 text-lg gap-x-4 hover:bg-website-tertiary">
+				<img src={canvas_dropdown_10} alt="canvas_dropdown_9" class="inline-block w-6" />
+				<p class="flex-shrink-0">Customize Top Bar</p>
+			</a>
+			<a href=" " class="flex items-center px-10 py-4 text-lg gap-x-4 hover:bg-website-tertiary rounded-b-2xl">
+				<img src={canvas_dropdown_10} alt="canvas_dropdown_10" class="inline-block w-6" />
+				<p class="flex-shrink-0">Customize Status Bar</p>
+			</a>
+		</div>
+	{/if}
 	<!-- Canvas 1 dropdown -->
 	<div class="flex items-center gap-x-7">
-		<div
+		<button
+			on:click={toggleCanvasDropdown}
 			class="flex items-center px-4 py-2 pr-8 border-r-2 cursor-pointer gap-x-3 border-r-[#FFFFFF1A]"
 		>
 			<h1 class="text-xl">Canvas 1</h1>
@@ -67,7 +147,7 @@
 			>
 				<path stroke-linecap="round" stroke-linejoin="round" d="m19.5 8.25-7.5 7.5-7.5-7.5" />
 			</svg>
-		</div>
+		</button>
 
 		<!-- Undo Redo -->
 		<div class="flex items-center gap-x-4">

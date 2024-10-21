@@ -11,29 +11,32 @@
 	import comment from '../icons/comment.svg';
 	import cross from '../icons/cross.svg';
 	import warning from '../icons/warning.svg';
+	import { dropdownOpen, notificationOpen } from '../../stores/modals';
 
-	let dropdownOpen = false;
-	let notificationOpen = false;
 
-	const toggleDropdown = () => {
-		dropdownOpen = !dropdownOpen;
-	};
 
-	const toggleNotification = () => {
-		notificationOpen = !notificationOpen;
-	};
+	// toggle dropdown menu
+	function toggleDropdown() {
+		dropdownOpen.update(value => !value); // Correct toggling
+	}
+
+	// toggle notification menu
+	function toggleNotification() {
+		notificationOpen.update(value => !value); // Correct toggling
+	}
+	
 </script>
 
 <nav
 	class="flex items-center justify-between w-full px-10 py-3 text-brand-white bg-website-secondary"
 >
 	<img alt="triform logo" src={logo} class="relative w-8 lg:w-14" />
-	<h1 class="relative text-3xl left-10">Canvas 1</h1>
+	<h1 class="relative text-2xl left-10">Canvas 1</h1>
 
 	<div class="flex items-center gap-x-5">
 		<!-- Notification Bell Icon -->
 		<button
-			class={`relative p-2 cursor-pointer hover: ${notificationOpen && "bg-website-tertiary"} rounded-xl`}
+			class={`relative p-2 cursor-pointer hover: ${notificationOpen && 'bg-website-tertiary'} rounded-xl`}
 			on:click={toggleNotification}
 		>
 			<svg
@@ -52,18 +55,21 @@
 			</svg>
 
 			<!-- Notification Pop-Up -->
-			{#if notificationOpen}
+			{#if $notificationOpen}
 				<div
 					class="absolute right-0 mt-2 w-96 bg-website-secondary text-brand-white border border-[#FFFFFF1A] rounded-2xl shadow-lg z-50"
 					in:scale={{ start: 0.9, duration: 200 }}
 					out:fade={{ duration: 150 }}
+					
 				>
 					<div class="">
 						<h3 class="p-6 text-xl font-semibold text-left border-b border-[#FFFFFF1A]">
 							Notifications
 						</h3>
 						<ul class="text-lg bg-website-primary rounded-b-2xl">
-							<li class="flex items-baseline justify-between p-7  border-b border-b-[#FFFFFF1A] hover:bg-white/5">
+							<li
+								class="flex items-baseline justify-between p-7 border-b border-b-[#FFFFFF1A] hover:bg-white/5"
+							>
 								<div class="flex items-baseline text-left gap-x-3">
 									<!-- Placeholder for Status Icon -->
 									<img src={comment} alt="comment" class="relative w-7 top-1" />
@@ -76,7 +82,9 @@
 								</div>
 								<span class="text-xs text-[#9CA3AF] flex-shrink-0">2h ago</span>
 							</li>
-							<li class="flex items-start justify-between  p-7 border-b border-b-[#FFFFFF1A] hover:bg-white/5">
+							<li
+								class="flex items-start justify-between p-7 border-b border-b-[#FFFFFF1A] hover:bg-white/5"
+							>
 								<div class="flex items-start text-left gap-x-3">
 									<!-- Placeholder for Error Icon -->
 									<img src={cross} alt="cross" class="relative w-7 top-1" />
@@ -91,7 +99,7 @@
 								<span class="text-xs text-[#9CA3AF] flex-shrink-0">2h ago</span>
 							</li>
 							<li class="flex items-start justify-between p-7 hover:bg-white/5 rounded-b-2xl">
-								<div class="flex items-start text-left gap-x-3 ">
+								<div class="flex items-start text-left gap-x-3">
 									<!-- Placeholder for Performance Issue Icon -->
 									<img src={warning} alt="warning" class="relative w-7 top-1" />
 
@@ -120,14 +128,14 @@
 			<button
 				type="button"
 				class="w-8 cursor-pointer"
-				on:click={toggleDropdown}
 				aria-label="Profile"
+				on:click={toggleDropdown}
 			>
 				<img alt="profile logo" src={profile_logo} class="w-8" />
 			</button>
 
 			<!-- Dropdown menu with fade and scale animation -->
-			{#if dropdownOpen}
+			{#if $dropdownOpen}
 				<div
 					class="absolute right-0 mt-2 w-72 bg-website-secondary text-brand-white border border-[#FFFFFF1A] rounded-2xl shadow-lg z-50"
 					in:scale={{ start: 0.9, duration: 200 }}
