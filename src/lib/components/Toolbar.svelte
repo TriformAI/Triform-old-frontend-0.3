@@ -11,57 +11,53 @@
 	import canvas_dropdown_8 from '../icons/canvas_dropdown_8.svg';
 	import canvas_dropdown_9 from '../icons/canvas_dropdown_9.svg';
 	import canvas_dropdown_10 from '../icons/canvas_dropdown_10.svg';
-
+	// toolbar icons
 	import undo_logo from '../icons/undo.svg';
 	import redo_logo from '../icons/redo.svg';
-	import toolbar_icon_1 from '../icons/toolbar_icon_1.svg';
-	import toolbar_icon_2 from '../icons/toolbar_icon_2.svg';
-	import toolbar_icon_3 from '../icons/toolbar_icon_3.svg';
-	import toolbar_icon_4 from '../icons/toolbar_icon_4.svg';
-	import toolbar_icon_5 from '../icons/toolbar_icon_5.svg';
-	import toolbar_icon_6 from '../icons/toolbar_icon_6.svg';
-	import toolbar_icon_7 from '../icons/toolbar_icon_7.svg';
+
 	import zoom_in from '../icons/zoom_in.svg';
 	import zoom_out from '../icons/zoom_out.svg';
 	import fit_screen from '../icons/fit_screen.svg';
 	import grid_icon from '../icons/grid_4x4.svg';
 	import draw_icon from '../icons/draw.svg';
 	import search_icon from '../icons/search.svg';
-	import {canvasDropdownOpen} from '../../stores/modals';
+	import red_remove from '../icons/red_remove.svg';
+	import {
+		canvasDropdownOpen,
+		canvasToolsModal,
+		freeFormAutoArrangeModal,
+		toggleModal
+	} from '../../stores/modals';
 
-	// toggle dropdown menu
-	function toggleCanvasDropdown() {
-		canvasDropdownOpen.update((value) => !value);
-	}
+	import { iconsStore, toggleIconVisibility } from '../../stores/tools';
 
-	let toolbarIcons = [
-		{ id: 1, icon: toolbar_icon_1, alt: 'toolbar icon 1' },
-		{ id: 2, icon: toolbar_icon_2, alt: 'toolbar icon 2' },
-		{ id: 3, icon: toolbar_icon_3, alt: 'toolbar icon 3' },
-		{ id: 4, icon: toolbar_icon_4, alt: 'toolbar icon 4' },
-		{ id: 5, icon: toolbar_icon_5, alt: 'toolbar icon 5' },
-		{ id: 6, icon: toolbar_icon_6, alt: 'toolbar icon 6' },
-		{ id: 7, icon: toolbar_icon_7, alt: 'toolbar icon 7' }
-	];
+	let icons;
+	iconsStore.subscribe((value) => {
+		icons = value;
+	});
 
-	// @ts-ignore
 	let draggedItemIndex = null;
 
-	// @ts-ignore
 	const handleDragStart = (index) => {
 		draggedItemIndex = index;
 	};
 
-	// @ts-ignore
 	const handleDrop = (index) => {
-		// @ts-ignore
-		if (draggedItemIndex !== null) {
-			// Swap the icons in the array
-			const temp = toolbarIcons[index];
-			// @ts-ignore
-			toolbarIcons[index] = toolbarIcons[draggedItemIndex];
-			// @ts-ignore
-			toolbarIcons[draggedItemIndex] = temp;
+		if (draggedItemIndex !== null && draggedItemIndex !== index) {
+			iconsStore.update((iconList) => {
+				// Filter only toolbar icons and get their actual index in the original store
+				let toolbarIcons = iconList.filter((icon) => icon.visibleOnToolbar);
+				let actualDraggedIndex = iconList.indexOf(toolbarIcons[draggedItemIndex]);
+				let actualDropIndex = iconList.indexOf(toolbarIcons[index]);
+
+				// Swap the icons in the store
+				[iconList[actualDraggedIndex], iconList[actualDropIndex]] = [
+					iconList[actualDropIndex],
+					iconList[actualDraggedIndex]
+				];
+
+				return [...iconList];
+			});
 			draggedItemIndex = null;
 		}
 	};
@@ -71,15 +67,37 @@
 	class="flex items-center justify-between w-full py-5 px-7 border-b border-b-[#FFFFFF1A] text-brand-white bg-website-primary"
 >
 	<!-- Dropdown menu with fade and scale animation -->
-	{#if $canvasDropdownOpen}
+	{#if $freeFormAutoArrangeModal}
 		<div
-			class="absolute left-8 top-44 mt-2 w-80 bg-website-secondary text-[#D1D5DB] border border-[#FFFFFF1A] rounded-2xl shadow-lg z-50"
+			class="absolute top-44 right-20 mt-2 w-72 bg-website-secondary text-brand-white border border-[#FFFFFF1A] rounded-lg shadow-lg z-50"
 			in:scale={{ start: 0.9, duration: 200 }}
 			out:fade={{ duration: 150 }}
 		>
 			<a
 				href=" "
-				class="flex items-center px-10 py-4 text-lg gap-x-4 hover:bg-website-tertiary rounded-t-2xl"
+				class="flex items-center px-10 py-4 text-lg rounded-t-lg gap-x-4 hover:bg-website-tertiary"
+			>
+				<img src={grid_icon} alt="grid_icon" class="inline-block w-6" />
+				<p>Freeform</p>
+			</a>
+			<a
+				href=" "
+				class="flex items-center px-10 py-4 text-lg rounded-b-lg gap-x-4 hover:bg-website-tertiary"
+			>
+				<img src={draw_icon} alt="draw_icon" class="inline-block w-6" />
+				<p>Auto-Arrange</p>
+			</a>
+		</div>
+	{/if}
+	{#if $canvasDropdownOpen}
+		<div
+			class="absolute left-8 top-44 mt-2 w-80 bg-website-secondary text-[#D1D5DB] border border-[#FFFFFF1A] rounded-lg shadow-lg z-50"
+			in:scale={{ start: 0.9, duration: 200 }}
+			out:fade={{ duration: 150 }}
+		>
+			<a
+				href=" "
+				class="flex items-center px-10 py-4 text-lg rounded-t-lg gap-x-4 hover:bg-website-tertiary"
 			>
 				<img src={canvas_dropdown_1} alt="canvas_dropdown_1" class="inline-block w-6" />
 				<p class="flex-shrink-0">Duplicate Canvas</p>
@@ -120,11 +138,19 @@
 			</a>
 			<hr class="border-t-[#FFFFFF1A]" />
 
-			<a href=" " class="flex items-center px-10 py-4 text-lg gap-x-4 hover:bg-website-tertiary">
+			<button
+				on:click={() => {
+					toggleModal(canvasToolsModal);
+				}}
+				class="flex items-center w-full px-10 py-4 text-lg gap-x-4 hover:bg-website-tertiary"
+			>
 				<img src={canvas_dropdown_10} alt="canvas_dropdown_9" class="inline-block w-6" />
 				<p class="flex-shrink-0">Customize Top Bar</p>
-			</a>
-			<a href=" " class="flex items-center px-10 py-4 text-lg gap-x-4 hover:bg-website-tertiary rounded-b-2xl">
+			</button>
+			<a
+				href=" "
+				class="flex items-center px-10 py-4 text-lg rounded-b-lg gap-x-4 hover:bg-website-tertiary"
+			>
 				<img src={canvas_dropdown_10} alt="canvas_dropdown_10" class="inline-block w-6" />
 				<p class="flex-shrink-0">Customize Status Bar</p>
 			</a>
@@ -133,7 +159,7 @@
 	<!-- Canvas 1 dropdown -->
 	<div class="flex items-center gap-x-7">
 		<button
-			on:click={toggleCanvasDropdown}
+			on:click={() => toggleModal(canvasDropdownOpen)}
 			class="flex items-center px-4 py-2 pr-8 border-r-2 cursor-pointer gap-x-3 border-r-[#FFFFFF1A]"
 		>
 			<h1 class="text-xl">Canvas 1</h1>
@@ -162,15 +188,23 @@
 
 	<!-- Central Tools  -->
 	<div class="relative flex items-center gap-x-5 left-20">
-		{#each toolbarIcons as { id, icon, alt }, index}
+		{#each icons.filter((icon) => icon.visibleOnToolbar) as { id, icon, alt }, index}
 			<button
-				class="p-2 cursor-pointer hover:bg-website-tertiary rounded-xl"
-				draggable="true"
-				on:dragstart={() => handleDragStart(index)}
-				on:drop={() => handleDrop(index)}
-				on:dragover={(e) => e.preventDefault()}
+				class={`relative p-2 cursor-pointer hover:bg-website-tertiary ${$canvasToolsModal && 'bg-website-tertiary'} rounded-xl`}
+				draggable={$canvasToolsModal ? 'true' : 'false'}
+				on:dragstart={$canvasToolsModal ? () => handleDragStart(index) : null}
+				on:drop={$canvasToolsModal ? () => handleDrop(index) : null}
+				on:dragover={$canvasToolsModal ? (e) => e.preventDefault() : null}
 			>
 				<img {alt} src={icon} class="w-8" />
+				{#if $canvasToolsModal}
+					<button
+						class="absolute inset-y-0 right-0 top-10"
+						on:click={() => toggleIconVisibility(id)}
+					>
+						<img src={red_remove} alt="minus" class="w-5" />
+					</button>
+				{/if}
 			</button>
 		{/each}
 		<div class="p-3.5 cursor-pointer hover:bg-website-tertiary rounded-xl">
@@ -209,7 +243,10 @@
 		</div>
 
 		<!-- Draw Search -->
-		<div class="flex items-center ml-6 cursor-pointer">
+		<button
+			class="flex items-center ml-6 cursor-pointer"
+			on:click={() => toggleModal(freeFormAutoArrangeModal)}
+		>
 			<img src={draw_icon} alt="draw_icon" class="w-8" />
 			<svg
 				xmlns="http://www.w3.org/2000/svg"
@@ -221,7 +258,7 @@
 			>
 				<path stroke-linecap="round" stroke-linejoin="round" d="m19.5 8.25-7.5 7.5-7.5-7.5" />
 			</svg>
-		</div>
+		</button>
 
 		<!-- Search Icon -->
 		<div class="pl-4 ml-4 border-l-2 border-l-[#FFFFFF1A]">

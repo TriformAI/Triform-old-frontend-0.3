@@ -11,20 +11,19 @@
 	import comment from '../icons/comment.svg';
 	import cross from '../icons/cross.svg';
 	import warning from '../icons/warning.svg';
-	import { dropdownOpen, notificationOpen } from '../../stores/modals';
-
-
+	import { profileDropdown, notificationOpen, toggleModal } from '../../stores/modals';
 
 	// toggle dropdown menu
-	function toggleDropdown() {
-		dropdownOpen.update(value => !value); // Correct toggling
-	}
+	// function toggleDropdown() {
+	// 	notificationOpen.update(value => false); // Close notification menu
+	// 	profileDropdown.update(value => !value); // Correct toggling
+	// }
 
-	// toggle notification menu
-	function toggleNotification() {
-		notificationOpen.update(value => !value); // Correct toggling
-	}
-	
+	// // toggle notification menu
+	// function toggleNotification() {
+	// 	profileDropdown.update(value => false); // Close profile menu
+	// 	notificationOpen.update(value => !value); // Correct toggling
+	// }
 </script>
 
 <nav
@@ -37,7 +36,7 @@
 		<!-- Notification Bell Icon -->
 		<button
 			class={`relative p-2 cursor-pointer hover: ${notificationOpen && 'bg-website-tertiary'} rounded-xl`}
-			on:click={toggleNotification}
+			on:click={() => toggleModal(notificationOpen)}
 		>
 			<svg
 				xmlns="http://www.w3.org/2000/svg"
@@ -60,7 +59,6 @@
 					class="absolute right-0 mt-2 w-96 bg-website-secondary text-brand-white border border-[#FFFFFF1A] rounded-2xl shadow-lg z-50"
 					in:scale={{ start: 0.9, duration: 200 }}
 					out:fade={{ duration: 150 }}
-					
 				>
 					<div class="">
 						<h3 class="p-6 text-xl font-semibold text-left border-b border-[#FFFFFF1A]">
@@ -129,13 +127,13 @@
 				type="button"
 				class="w-8 cursor-pointer"
 				aria-label="Profile"
-				on:click={toggleDropdown}
+				on:click={() => toggleModal(profileDropdown)}
 			>
 				<img alt="profile logo" src={profile_logo} class="w-8" />
 			</button>
 
 			<!-- Dropdown menu with fade and scale animation -->
-			{#if $dropdownOpen}
+			{#if $profileDropdown}
 				<div
 					class="absolute right-0 mt-2 w-72 bg-website-secondary text-brand-white border border-[#FFFFFF1A] rounded-2xl shadow-lg z-50"
 					in:scale={{ start: 0.9, duration: 200 }}

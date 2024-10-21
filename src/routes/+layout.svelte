@@ -4,13 +4,19 @@
 	import { page } from '$app/stores';
 	import Toolbar from '$lib/components/Toolbar.svelte';
 	import Footer from '$lib/components/Footer.svelte';
-	import { dropdownOpen, notificationOpen, canvasDropdownOpen } from '../stores/modals';
+	import {
+		profileDropdown,
+		notificationOpen,
+		canvasDropdownOpen,
+		freeFormAutoArrangeModal
+	} from '../stores/modals';
 
 	//general toggle function for all dropdowns
 	function generalToggle() {
-		dropdownOpen.update((value) => false);
+		profileDropdown.update((value) => false);
 		notificationOpen.update((value) => false);
 		canvasDropdownOpen.update((value) => false);
+		freeFormAutoArrangeModal.update((value) => false);
 	}
 
 	// Reactive statement to check if the route is protected
