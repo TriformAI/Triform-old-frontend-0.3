@@ -1,29 +1,11 @@
 <script>
-	import { fade, scale } from 'svelte/transition';
-	import logo from '../images/Logo.svg';
-	import support_icon from '../icons/support.svg';
-	import profile_logo from '../images/profile_logo.png';
-	import account from '../icons/account.svg';
-	import billing from '../icons/billings.svg';
-	import team_settings from '../icons/team.svg';
-	import settings from '../icons/settings.svg';
-	import logout from '../icons/logout.svg';
-	import comment from '../icons/comment.svg';
-	import cross from '../icons/cross.svg';
-	import warning from '../icons/warning.svg';
-	import { profileDropdown, notificationOpen, toggleModal } from '../../stores/modals';
+	import logo from '$lib/images/Logo.svg';
+	import support_icon from '$lib/icons/support.svg';
+	import profile_logo from '$lib/images/profile_logo.png';
 
-	// toggle dropdown menu
-	// function toggleDropdown() {
-	// 	notificationOpen.update(value => false); // Close notification menu
-	// 	profileDropdown.update(value => !value); // Correct toggling
-	// }
-
-	// // toggle notification menu
-	// function toggleNotification() {
-	// 	profileDropdown.update(value => false); // Close profile menu
-	// 	notificationOpen.update(value => !value); // Correct toggling
-	// }
+	import { profileDropdown, notificationOpen, toggleModal } from '$lib/stores/modals';
+	import NotificationModal from './modals/NotificationModal.svelte';
+	import ProfileDropdown from './modals/ProfileDropdown.svelte';
 </script>
 
 <nav
@@ -55,64 +37,7 @@
 
 			<!-- Notification Pop-Up -->
 			{#if $notificationOpen}
-				<div
-					class="absolute right-0 mt-2 w-96 bg-website-secondary text-brand-white border border-[#FFFFFF1A] rounded-2xl shadow-lg z-50"
-					in:scale={{ start: 0.9, duration: 200 }}
-					out:fade={{ duration: 150 }}
-				>
-					<div class="">
-						<h3 class="p-6 text-xl font-semibold text-left border-b border-[#FFFFFF1A]">
-							Notifications
-						</h3>
-						<ul class="text-lg bg-website-primary rounded-b-2xl">
-							<li
-								class="flex items-baseline justify-between p-7 border-b border-b-[#FFFFFF1A] hover:bg-white/5"
-							>
-								<div class="flex items-baseline text-left gap-x-3">
-									<!-- Placeholder for Status Icon -->
-									<img src={comment} alt="comment" class="relative w-7 top-1" />
-									<div>
-										<h4 class="font-bold">System Status Notification</h4>
-										<p class="text-sm text-[#9CA3AF]">
-											Lorem ipsum dolor sit amet. Lorem ipsum dolor sit amet.
-										</p>
-									</div>
-								</div>
-								<span class="text-xs text-[#9CA3AF] flex-shrink-0">2h ago</span>
-							</li>
-							<li
-								class="flex items-start justify-between p-7 border-b border-b-[#FFFFFF1A] hover:bg-white/5"
-							>
-								<div class="flex items-start text-left gap-x-3">
-									<!-- Placeholder for Error Icon -->
-									<img src={cross} alt="cross" class="relative w-7 top-1" />
-
-									<div>
-										<h4 class="font-bold">Error Notification</h4>
-										<p class="text-sm text-[#9CA3AF]">
-											Lorem ipsum dolor sit amet. Lorem ipsum dolor sit amet.
-										</p>
-									</div>
-								</div>
-								<span class="text-xs text-[#9CA3AF] flex-shrink-0">2h ago</span>
-							</li>
-							<li class="flex items-start justify-between p-7 hover:bg-white/5 rounded-b-2xl">
-								<div class="flex items-start text-left gap-x-3">
-									<!-- Placeholder for Performance Issue Icon -->
-									<img src={warning} alt="warning" class="relative w-7 top-1" />
-
-									<div>
-										<h4 class="font-bold">Performance Issue Notification</h4>
-										<p class="text-sm text-[#9CA3AF]">
-											Lorem ipsum dolor sit amet. Lorem ipsum dolor sit amet.
-										</p>
-									</div>
-								</div>
-								<span class="text-xs text-[#9CA3AF] flex-shrink-0">2h ago</span>
-							</li>
-						</ul>
-					</div>
-				</div>
+				<NotificationModal />
 			{/if}
 		</button>
 
@@ -134,48 +59,7 @@
 
 			<!-- Dropdown menu with fade and scale animation -->
 			{#if $profileDropdown}
-				<div
-					class="absolute right-0 mt-2 w-72 bg-website-secondary text-brand-white border border-[#FFFFFF1A] rounded-2xl shadow-lg z-50"
-					in:scale={{ start: 0.9, duration: 200 }}
-					out:fade={{ duration: 150 }}
-				>
-					<a
-						href="#"
-						class="flex items-center px-10 py-4 text-lg gap-x-4 hover:bg-website-tertiary rounded-t-2xl"
-					>
-						<img src={account} alt="account" class="inline-block w-6" />
-						<p>Account</p>
-					</a>
-					<a
-						href="#"
-						class="flex items-center px-10 py-4 text-lg gap-x-4 hover:bg-website-tertiary"
-					>
-						<img src={billing} alt="billing" class="inline-block w-6" />
-						<p>Billing</p>
-					</a>
-					<a
-						href="#"
-						class="flex items-center px-10 py-4 text-lg gap-x-4 hover:bg-website-tertiary"
-					>
-						<img src={team_settings} alt="team settings" class="inline-block w-6" />
-						<p>Team Settings</p>
-					</a>
-					<a
-						href="#"
-						class="flex items-center px-10 py-4 text-lg gap-x-4 hover:bg-website-tertiary"
-					>
-						<img src={settings} alt="settings" class="inline-block w-6" />
-						<p>Settings</p>
-					</a>
-					<hr class="border-t-[#FFFFFF1A]" />
-					<a
-						href="#"
-						class="flex items-center py-4 text-lg px-11 gap-x-4 hover:bg-website-tertiary rounded-b-2xl"
-					>
-						<img src={logout} alt="logout" class="inline-block w-4" />
-						<p>Logout</p>
-					</a>
-				</div>
+				<ProfileDropdown />
 			{/if}
 		</div>
 	</div>

@@ -8,8 +8,9 @@
 		profileDropdown,
 		notificationOpen,
 		canvasDropdownOpen,
-		freeFormAutoArrangeModal
-	} from '../stores/modals';
+		freeFormAutoArrangeModal,
+		searchModal
+	} from '$lib/stores/modals';
 
 	//general toggle function for all dropdowns
 	function generalToggle() {
@@ -17,6 +18,7 @@
 		notificationOpen.update((value) => false);
 		canvasDropdownOpen.update((value) => false);
 		freeFormAutoArrangeModal.update((value) => false);
+		searchModal.update((value) => false);
 	}
 
 	// Reactive statement to check if the route is protected
@@ -36,7 +38,7 @@
 	</main>
 
 	{#if isProtectedRoute}
-		<footer>
+		<footer class=" group">
 			<Footer />
 		</footer>
 	{/if}
