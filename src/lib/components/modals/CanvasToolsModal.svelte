@@ -54,7 +54,7 @@
 	</div>
 
 	<!-- Modal Footer -->
-	<div class="flex justify-end p-6 py-3 border-t border-[#FFFFFF1A]">
+	<div class="flex justify-end p-6 py-3 border-t border-[#FFFFFF1A] bg-website-primary">
 		<Button content={{ text: 'Done' }} on:click={() => canvasToolsModal.update((value) => false)} />
 	</div>
 </div>

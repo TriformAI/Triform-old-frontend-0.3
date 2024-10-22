@@ -14,7 +14,7 @@
 </script>
 
 <div
-	class="absolute left-8 top-44 mt-2 w-80 bg-website-secondary text-[#D1D5DB] border border-[#FFFFFF1A] rounded-lg shadow-lg z-50"
+	class="absolute left-8 top-44 mt-2 w-80 bg-website-primary text-[#D1D5DB] border border-[#FFFFFF1A] rounded-lg shadow-lg z-50"
 	in:scale={{ start: 0.9, duration: 200 }}
 	out:fade={{ duration: 150 }}
 >

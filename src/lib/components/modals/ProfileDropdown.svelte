@@ -8,7 +8,7 @@
 </script>
 
 <div
-	class="absolute right-0 mt-2 w-72 bg-website-secondary text-brand-white border border-[#FFFFFF1A] rounded-2xl shadow-lg z-50"
+	class="absolute right-0 mt-2 w-72 bg-website-primary text-brand-white border border-[#FFFFFF1A] rounded-2xl shadow-lg z-50"
 	in:scale={{ start: 0.9, duration: 200 }}
 	out:fade={{ duration: 150 }}
 >

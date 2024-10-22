@@ -9,7 +9,10 @@
 		notificationOpen,
 		canvasDropdownOpen,
 		freeFormAutoArrangeModal,
-		searchModal
+		searchModal,
+		componentToolsBoxModal,
+		environmentModal,
+		tokenModal
 	} from '$lib/stores/modals';
 
 	//general toggle function for all dropdowns
@@ -19,6 +22,9 @@
 		canvasDropdownOpen.update((value) => false);
 		freeFormAutoArrangeModal.update((value) => false);
 		searchModal.update((value) => false);
+		componentToolsBoxModal.update((value) => false);
+		environmentModal.update((value) => false);
+		tokenModal.update((value) => false);
 	}
 
 	// Reactive statement to check if the route is protected

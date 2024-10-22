@@ -15,13 +15,19 @@
 		canvasToolsModal,
 		freeFormAutoArrangeModal,
 		toggleModal,
-		searchModal
+		searchModal,
+		componentToolsBoxModal,
+		environmentModal,
+		tokenModal
 	} from '$lib/stores/modals';
 
 	import { iconsStore, toggleIconVisibility } from '../stores/tools';
 	import SearchModals from './modals/SearchModals.svelte';
 	import CanvasDropDownModal from './modals/CanvasDropDownModal.svelte';
 	import FreeFormAutoArrangeModal from './modals/FreeFormAutoArrangeModal.svelte';
+	import ComponentsToolbox from './modals/ComponentsToolbox.svelte';
+	import EnvironmentModal from './modals/EnvironmentModal.svelte';
+	import TokenModal from './modals/TokenModal.svelte';
 
 	let icons;
 	iconsStore.subscribe((value) => {
@@ -59,15 +65,12 @@
 	class="flex items-center justify-between w-full py-5 px-7 border-b border-b-[#FFFFFF1A] text-brand-white bg-website-primary"
 >
 	<!-- Dropdown menu with fade and scale animation -->
-	{#if $freeFormAutoArrangeModal}
-		<FreeFormAutoArrangeModal />
-	{/if}
-	{#if $canvasDropdownOpen}
-		<CanvasDropDownModal />
-	{/if}
-	{#if $searchModal}
-		<SearchModals />
-	{/if}
+
+	{#each [{ condition: $freeFormAutoArrangeModal, component: FreeFormAutoArrangeModal }, { condition: $canvasDropdownOpen, component: CanvasDropDownModal }, { condition: $searchModal, component: SearchModals }, { condition: $componentToolsBoxModal, component: ComponentsToolbox }, { condition: $environmentModal, component: EnvironmentModal }, { condition: $tokenModal, component: TokenModal }] as { condition, component }}
+		{#if condition}
+			<svelte:component this={component} />
+		{/if}
+	{/each}
 	<!-- Canvas 1 dropdown -->
 	<div class="flex items-center gap-x-7">
 		<button
@@ -100,13 +103,14 @@
 
 	<!-- Central Tools  -->
 	<div class="relative flex items-center gap-x-5 left-20">
-		{#each icons.filter((icon) => icon.visibleOnToolbar) as { id, icon, alt }, index}
+		{#each icons.filter((icon) => icon.visibleOnToolbar) as { id, icon, alt, modalComponent }, index}
 			<button
 				class={`relative p-2 cursor-pointer hover:bg-website-tertiary ${$canvasToolsModal && 'bg-website-tertiary'} rounded-xl`}
 				draggable={$canvasToolsModal ? 'true' : 'false'}
 				on:dragstart={$canvasToolsModal ? () => handleDragStart(index) : null}
 				on:drop={$canvasToolsModal ? () => handleDrop(index) : null}
 				on:dragover={$canvasToolsModal ? (e) => e.preventDefault() : null}
+				on:click={() => toggleModal(modalComponent)}
 			>
 				<img {alt} src={icon} class="w-8" />
 				{#if $canvasToolsModal}

@@ -4,24 +4,22 @@
 	import search_icon from '$lib/icons/search.svg';
 	import unpined from '$lib/icons/unpined.svg';
 	import pined from '$lib/icons/pined.svg';
+	import filter from '$lib/icons/filter.svg';
+	import Button from '$lib/components/Button.svelte';
+	import Add from '$lib/icons/add.svg';
 
 	let searchTerm = '';
 	let pined_unpined = false;
 	let categories = [
-		{
-			name: 'Agents',
-			collapsed: false,
-			children: ['Agent Alpha', 'Agent Bravo', 'Agent Charlie']
-		},
 		{
 			name: 'Modules',
 			collapsed: false,
 			children: ['Module X', 'Module Y', 'Module Z']
 		},
 		{
-			name: 'Variables',
+			name: 'Agents',
 			collapsed: false,
-			children: ['Variable A', 'Variable B', 'Variable C']
+			children: ['Agent Alpha', 'Agent Bravo', 'Agent Charlie']
 		}
 	];
 
@@ -50,7 +48,7 @@
 </script>
 
 <div
-	class="absolute right-8 top-44 mt-2 w-96 bg-website-secondary text-[#D1D5DB] border border-[#FFFFFF1A] rounded-lg shadow-lg z-50"
+	class="absolute left-8 top-44 mt-2 w-[30rem] bg-website-secondary text-[#D1D5DB] border border-[#FFFFFF1A] rounded-lg shadow-lg z-50"
 	in:scale={{ start: 0.9, duration: 200 }}
 	out:fade={{ duration: 150 }}
 >
@@ -59,7 +57,7 @@
 		<div class="flex items-center justify-between">
 			<div class="flex items-center gap-x-3">
 				<img src={modal_title_icon} alt="modal_title_icon" class="w-6" />
-				<h3 class="text-2xl font-semibold text-left">Search</h3>
+				<h3 class="text-2xl font-semibold text-left">Components Toolbox</h3>
 			</div>
 			{#if pined_unpined}
 				<button type="button" class="w-6 cursor-pointer" on:click={togglePined} aria-label="Pin">
@@ -71,20 +69,25 @@
 				</button>
 			{/if}
 		</div>
-		<div class="relative">
-			<input
-				id="search"
-				type="text"
-				placeholder="Search Anything..."
-				class="w-full px-4 py-4 text-xl bg-website-secondary border border-[#FFFFFF1A] rounded-md"
-				bind:value={searchTerm}
-			/>
-			<img src={search_icon} alt="search_icon" class="absolute inset-y-0 w-6 right-3 top-5" />
+		<div class="flex items-center w-full">
+			<div class="relative w-full">
+				<input
+					id="search"
+					type="text"
+					placeholder="Search Anything..."
+					class="w-full px-4 py-4 text-xl bg-website-secondary border border-[#FFFFFF1A] rounded-md"
+					bind:value={searchTerm}
+				/>
+				<img src={search_icon} alt="search_icon" class="absolute inset-y-0 w-6 right-3 top-5" />
+			</div>
+			<div class="p-4 ml-3 cursor-pointer hover:bg-website-tertiary rounded-xl">
+				<img src={filter} alt="filter" class="w-8" />
+			</div>
 		</div>
 	</div>
 
 	<!-- Collapsible Category List -->
-	<div class="py-3 overflow-y-auto h-[35rem] bg-website-primary">
+	<div class="py-3 overflow-y-auto h-[32rem] bg-website-primary">
 		{#each filteredCategories as category, i}
 			<div>
 				<!-- Category Header -->
@@ -145,9 +148,12 @@
 						<p class="px-6 py-4 text-sm text-[#9CA3AF]">No results found</p>
 					{/if}
 				{/if}
-
-				<hr class="border-t-[#FFFFFF1A] mt-3" />
 			</div>
 		{/each}
+	</div>
+	<!-- Modal Footer -->
+	<div class="flex items-center justify-center gap-x-5 p-6 bg-website-primary border-t border-[#FFFFFF1A]">
+		<Button content={{ icon: Add,  text: 'New Module' }} />
+		<Button content={{ icon: Add, text: 'New Agent' }} />
 	</div>
 </div>
