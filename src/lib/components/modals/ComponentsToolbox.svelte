@@ -7,6 +7,7 @@
 	import filter from '$lib/icons/filter.svg';
 	import Button from '$lib/components/Button.svelte';
 	import Add from '$lib/icons/add.svg';
+	import { componentToolsBoxModal, createModuleModal } from '$lib/stores/modals';
 
 	let searchTerm = '';
 	let pined_unpined = false;
@@ -152,8 +153,16 @@
 		{/each}
 	</div>
 	<!-- Modal Footer -->
-	<div class="flex items-center justify-center gap-x-5 p-6 bg-website-primary border-t border-[#FFFFFF1A]">
-		<Button content={{ icon: Add,  text: 'New Module' }} />
+	<div
+		class="flex items-center justify-center gap-x-5 p-6 bg-website-primary border-t border-[#FFFFFF1A]"
+	>
+		<Button
+			content={{ icon: Add, text: 'New Module' }}
+			on:click={() => {
+				componentToolsBoxModal.update((value) => false);
+				createModuleModal.update((value) => true);
+			}}
+		/>
 		<Button content={{ icon: Add, text: 'New Agent' }} />
 	</div>
 </div>

@@ -9,7 +9,15 @@ import toolbar_icon_7 from '$lib/icons/toolbar_icon_7.svg';
 import more_tools_1 from '$lib/icons/more_tools_1.svg';
 import more_tools_2 from '$lib/icons/more_tools_2.svg';
 
-import { componentToolsBoxModal, environmentModal, tokenModal } from './modals';
+import {
+	componentToolsBoxModal,
+	environmentModal,
+	tokenModal,
+	storageModal,
+	templateLibraryModal,
+	propertyModal,
+	consoleModal
+} from './modals';
 
 export const iconsStore = writable([
 	{
@@ -24,7 +32,7 @@ export const iconsStore = writable([
 		icon: toolbar_icon_2,
 		alt: 'Toolbar Icon 2',
 		visibleOnToolbar: true,
-		modalComponent: null
+		modalComponent: propertyModal
 	},
 	{
 		id: 3,
@@ -38,21 +46,21 @@ export const iconsStore = writable([
 		icon: toolbar_icon_4,
 		alt: 'Toolbar Icon 4',
 		visibleOnToolbar: true,
-		modalComponent: null
+		modalComponent: consoleModal
 	},
 	{
 		id: 5,
 		icon: toolbar_icon_5,
 		alt: 'Toolbar Icon 5',
 		visibleOnToolbar: true,
-		modalComponent: null
+		modalComponent: templateLibraryModal
 	},
 	{
 		id: 6,
 		icon: toolbar_icon_6,
 		alt: 'Toolbar Icon 6',
 		visibleOnToolbar: false,
-		modalComponent: null
+		modalComponent: storageModal
 	},
 	{
 		id: 7,

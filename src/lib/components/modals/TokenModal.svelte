@@ -48,22 +48,22 @@
 
 	let variables = [
 		{
-			key: 'Variable A',
+			key: 'API Token A',
 			value: '123456',
 			visible: false
 		},
 		{
-			key: 'Variable B',
+			key: 'API Token B',
 			value: 'abcde',
 			visible: false
 		},
 		{
-			key: 'Variable C',
+			key: 'API Token C',
 			value: '123456',
 			visible: false
 		},
 		{
-			key: 'Variable D',
+			key: 'API Token D',
 			value: 'abcde',
 			visible: false
 		}
@@ -123,11 +123,11 @@
 			>
 				<button class="flex flex-col w-full px-6 py-4">
 					<h3 class="my-1 text-lg">{category.key}</h3>
-					{#if category.visible}
+					<!-- {#if category.visible}
 						<p>{category.value}</p>
 					{:else}
 						<p>*******</p>
-					{/if}
+					{/if} -->
 				</button>
 				<div
 					class={`items-center hidden mr-3 duration-200 ease-in-out ${!edit_delete_modal && 'group-hover:flex'} gap-x-4`}

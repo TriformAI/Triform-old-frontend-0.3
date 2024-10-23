@@ -18,7 +18,11 @@
 		searchModal,
 		componentToolsBoxModal,
 		environmentModal,
-		tokenModal
+		tokenModal,
+		storageModal,
+		templateLibraryModal,
+		propertyModal,
+		consoleModal
 	} from '$lib/stores/modals';
 
 	import { iconsStore, toggleIconVisibility } from '../stores/tools';
@@ -28,6 +32,10 @@
 	import ComponentsToolbox from './modals/ComponentsToolbox.svelte';
 	import EnvironmentModal from './modals/EnvironmentModal.svelte';
 	import TokenModal from './modals/TokenModal.svelte';
+	import StorageModal from './modals/StorageModal.svelte';
+	import TemplateLibaryModal from './modals/TemplateLibaryModal.svelte';
+	import PropertyModal from './modals/PropertyModal.svelte';
+	import ConsoleModal from './modals/ConsoleModal.svelte';
 
 	let icons;
 	iconsStore.subscribe((value) => {
@@ -66,7 +74,7 @@
 >
 	<!-- Dropdown menu with fade and scale animation -->
 
-	{#each [{ condition: $freeFormAutoArrangeModal, component: FreeFormAutoArrangeModal }, { condition: $canvasDropdownOpen, component: CanvasDropDownModal }, { condition: $searchModal, component: SearchModals }, { condition: $componentToolsBoxModal, component: ComponentsToolbox }, { condition: $environmentModal, component: EnvironmentModal }, { condition: $tokenModal, component: TokenModal }] as { condition, component }}
+	{#each [{ condition: $freeFormAutoArrangeModal, component: FreeFormAutoArrangeModal }, { condition: $canvasDropdownOpen, component: CanvasDropDownModal }, { condition: $searchModal, component: SearchModals }, { condition: $componentToolsBoxModal, component: ComponentsToolbox }, { condition: $environmentModal, component: EnvironmentModal }, { condition: $tokenModal, component: TokenModal }, { condition: $storageModal, component: StorageModal }, { condition: $templateLibraryModal, component: TemplateLibaryModal }, { condition: $propertyModal, component: PropertyModal }, { condition: $consoleModal, component: ConsoleModal }] as { condition, component }}
 		{#if condition}
 			<svelte:component this={component} />
 		{/if}

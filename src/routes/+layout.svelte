@@ -12,7 +12,11 @@
 		searchModal,
 		componentToolsBoxModal,
 		environmentModal,
-		tokenModal
+		tokenModal,
+		storageModal,
+		templateLibraryModal,
+		propertyModal,
+		consoleModal
 	} from '$lib/stores/modals';
 
 	//general toggle function for all dropdowns
@@ -25,6 +29,10 @@
 		componentToolsBoxModal.update((value) => false);
 		environmentModal.update((value) => false);
 		tokenModal.update((value) => false);
+		storageModal.update((value) => false);
+		templateLibraryModal.update((value) => false);
+		propertyModal.update((value) => false);
+		consoleModal.update((value) => false);
 	}
 
 	// Reactive statement to check if the route is protected

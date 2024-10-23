@@ -6,11 +6,10 @@
 
 	import CanvasToolsModal from '$lib/components/modals/CanvasToolsModal.svelte';
 	import CreateModuleModal from '$lib/components/modals/CreateModuleModal.svelte';
-
-	let createModuleModal = false;
+	import { createModuleModal } from '$lib/stores/modals';
 
 	const toggleCreateModuleModal = () => {
-		createModuleModal = !createModuleModal;
+		createModuleModal.update((value) => !value);
 	};
 </script>
 
@@ -20,7 +19,7 @@
 	{#if $canvasToolsModal}
 		<CanvasToolsModal />
 	{/if}
-	{#if createModuleModal}
+	{#if $createModuleModal}
 		<CreateModuleModal {createModuleModal} {toggleCreateModuleModal} />
 	{/if}
 	<!-- This div centers the h2 element vertically -->
