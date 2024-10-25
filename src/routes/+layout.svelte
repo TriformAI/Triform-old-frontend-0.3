@@ -16,7 +16,8 @@
 		storageModal,
 		templateLibraryModal,
 		propertyModal,
-		consoleModal
+		consoleModal,
+		statusModal,
 	} from '$lib/stores/modals';
 
 	//general toggle function for all dropdowns
@@ -39,7 +40,7 @@
 	$: isProtectedRoute = ['/dashboard'].some((path) => $page.url.pathname.startsWith(path));
 </script>
 
-<main class="bg-[#091136] app">
+<body class={`bg-[#091136]`}>
 	{#if isProtectedRoute}
 		<div class="w-full">
 			<Navbar />
@@ -56,10 +57,5 @@
 			<Footer />
 		</footer>
 	{/if}
-</main>
+</body>
 
-<style>
-	.app {
-		font-family: 'Figtree', sans-serif;
-	}
-</style>

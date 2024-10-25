@@ -1,6 +1,6 @@
 <script>
 	import { fade, scale } from 'svelte/transition';
-	import { canvasToolsModal, toggleModal } from '$lib/stores/modals';
+	import { canvasToolsModal, toggleModal, statusModal } from '$lib/stores/modals';
 	import canvas_dropdown_1 from '$lib/icons/canvas_dropdown_1.svg';
 	import canvas_dropdown_2 from '$lib/icons/canvas_dropdown_2.svg';
 	import canvas_dropdown_3 from '$lib/icons/canvas_dropdown_3.svg';
@@ -70,11 +70,13 @@
 		<img src={canvas_dropdown_10} alt="canvas_dropdown_9" class="inline-block w-6" />
 		<p class="flex-shrink-0">Customize Top Bar</p>
 	</button>
-	<a
-		href=" "
-		class="flex items-center px-10 py-4 text-lg rounded-b-lg gap-x-4 hover:bg-website-tertiary"
+	<button
+		on:click={() => {
+			toggleModal(statusModal);
+		}}
+		class="flex items-center w-full px-10 py-4 text-lg rounded-b-lg gap-x-4 hover:bg-website-tertiary"
 	>
 		<img src={canvas_dropdown_10} alt="canvas_dropdown_10" class="inline-block w-6" />
 		<p class="flex-shrink-0">Customize Status Bar</p>
-	</a>
+	</button>
 </div>

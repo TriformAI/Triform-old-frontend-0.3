@@ -9,8 +9,10 @@
 	export let toggleCreateModuleModal;
 
 	let environmentVariables = ['Variable 1', 'Variable 2', 'Variable 3'];
-    
 </script>
+
+<!-- Background Overlay -->
+<div class="fixed inset-0 z-40 bg-black bg-opacity-20 backdrop-blur-lg"></div>
 
 <div
 	class="absolute w-[60rem] mx-auto bg-website-secondary text-[#D1D5DB] border border-[#FFFFFF1A] rounded-lg shadow-lg z-50"
