@@ -15,7 +15,7 @@
 		{
 			name: 'Modules',
 			collapsed: false,
-			children: ['Module X', 'Module Y', 'Module Z']
+			children: ['Action X', 'Action Y', 'Action Z']
 		},
 		{
 			name: 'Agents',
@@ -157,7 +157,7 @@
 		class="flex items-center justify-center gap-x-5 p-6 bg-website-primary border-t border-brand-primary-gray"
 	>
 		<Button
-			content={{ icon: Add, text: 'New Module' }}
+			content={{ icon: Add, text: 'New Action' }}
 			on:click={() => {
 				componentToolsBoxModal.update((value) => false);
 				createModuleModal.update((value) => true);

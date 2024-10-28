@@ -4,18 +4,17 @@
 	import modal_title_icon from '$lib/icons/Modal_Title_Icon.svg';
 	import modal_cross from '$lib/icons/modal_cross.svg';
 
-	export let createModuleModal;
-
 	export let toggleCreateModuleModal;
+	export let toggleAttachTemplateModal;
 
-	let environmentVariables = ['Variable 1', 'Variable 2', 'Variable 3'];
+	let environmentVariables = ['Variable 1', 'Variable 2', 'Variable 3', 'Variable 4', 'Variable 5'];
 </script>
 
 <!-- Background Overlay -->
 <div class="fixed inset-0 z-40 bg-black bg-opacity-20 backdrop-blur-lg"></div>
 
 <div
-	class="absolute w-[60rem] mx-auto bg-website-secondary text-brand-tertiary-gray border border-brand-primary-gray rounded-lg shadow-lg z-50"
+	class="absolute w-[85rem] mx-auto bg-website-secondary text-brand-tertiary-gray border border-brand-primary-gray rounded-lg shadow-lg z-50"
 	in:scale={{ start: 0.9, duration: 200 }}
 	out:fade={{ duration: 150 }}
 >
@@ -23,7 +22,7 @@
 	<div class="flex items-center justify-between p-6 border-b border-brand-primary-gray">
 		<div class="flex items-center gap-x-3">
 			<img src={modal_title_icon} alt="modal_title_icon" class="w-6" />
-			<h3 class="text-2xl font-semibold text-left">New Module</h3>
+			<h3 class="text-2xl font-semibold text-left">New Action</h3>
 		</div>
 		<button type="button" class="cursor-pointer w-9" on:click={toggleCreateModuleModal}>
 			<img src={modal_cross} alt="Close modal" class="w-9" />
@@ -37,40 +36,40 @@
 			<div class="p-4">
 				<!-- Name Input -->
 				<div class="mb-4">
-					<label for="name" class="block mb-2 font-medium">Name</label>
+					<label for="name" class="block mb-2 text-lg font-medium">Name</label>
 					<input
 						id="name"
 						type="text"
 						placeholder="Type here..."
-						class="w-full px-4 py-2 border rounded-md bg-website-secondary border-brand-primary-gray"
+						class="w-full px-4 py-3 text-lg bg-transparent border rounded-md border-brand-primary-gray"
 					/>
 				</div>
 
 				<!-- Description Input -->
 				<div class="mb-4">
-					<label for="description" class="block mb-2 font-medium">Description</label>
+					<label for="description" class="block mb-2 text-lg font-medium">Description</label>
 					<textarea
 						id="description"
 						placeholder="Type here..."
-						class="w-full h-32 px-4 py-2 border rounded-md bg-website-secondary border-brand-primary-gray"
+						class="w-full h-32 px-4 py-3 text-lg bg-transparent border rounded-md border-brand-primary-gray max-h-52 min-h-14"
 					></textarea>
 				</div>
 
 				<!-- Tags Input -->
 				<div class="mb-4">
-					<label for="tags" class="block mb-2 font-medium">Tags</label>
+					<label for="tags" class="block mb-2 text-lg font-medium">Tags</label>
 					<input
 						id="tags"
 						type="text"
 						placeholder="Type here..."
-						class="w-full px-4 py-2 border rounded-md bg-website-secondary border-brand-primary-gray"
+						class="w-full px-4 py-3 text-lg bg-transparent border rounded-md border-brand-primary-gray"
 					/>
 				</div>
 			</div>
 
 			<!-- Right Column - Environment Variables -->
 			<div class="p-4 pl-10">
-				<label for="env-search" class="block mb-2 font-medium">
+				<label for="env-search" class="block mb-2 text-lg font-medium">
 					Link Environment Variables (optional)
 				</label>
 				<div class="h-full rounded-md bg-website-primary">
@@ -78,7 +77,7 @@
 						id="env-search"
 						type="text"
 						placeholder="Search..."
-						class="w-full px-4 py-2 mb-4 border rounded-md bg-website-secondary border-brand-primary-gray"
+						class="w-full px-4 py-3 mb-4 text-lg bg-transparent border rounded-md border-brand-primary-gray"
 					/>
 					<div class="flex flex-col gap-2">
 						<!-- Checkboxes for environment variables -->
@@ -109,7 +108,7 @@
 										</svg>
 									</span>
 								</label>
-								<span class="text-brand-tertiary-gray">{variable}</span>
+								<span class="text-lg text-brand-light-gray">{variable}</span>
 							</div>
 						{/each}
 					</div>
@@ -119,7 +118,7 @@
 
 		<!-- Modal Footer -->
 		<div class="flex justify-end p-6 border-t border-brand-primary-gray">
-			<Button content={{ text: 'Next' }} />
+			<Button content={{ text: 'Next' }} on:click={toggleAttachTemplateModal} />
 		</div>
 	</div>
 </div>

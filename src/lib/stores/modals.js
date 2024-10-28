@@ -17,6 +17,7 @@ export const consoleModal = writable(false);
 export const statusModal = writable(false);
 
 export const createModuleModal = writable(false);
+export const attachTemplateModal = writable(false);
 export const footerPanel = writable(false);
 export const thresholdModal = writable(false);
 export const renameMode = writable(false);

@@ -16,7 +16,7 @@
 		{
 			name: 'Modules',
 			collapsed: false,
-			children: ['Module X', 'Module Y', 'Module Z']
+			children: ['Action X', 'Action Y', 'Action Z']
 		},
 		{
 			name: 'Variables',

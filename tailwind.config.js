@@ -16,7 +16,7 @@ export default {
 				'website-secondary': '#252526',
 				'website-tertiary': '#2A2B2C',
 				'brand-white': '#FFF',
-				'brand-primary-gray': '#2E3031',
+				'brand-primary-gray': '#3F4041',
 				'brand-secondary-gray': '#ffffff65',
 				'brand-tertiary-gray': '#D1D5DB',
 				'brand-light-gray': '#9CA3AF',

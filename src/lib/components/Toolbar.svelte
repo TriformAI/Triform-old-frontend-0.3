@@ -70,7 +70,7 @@
 </script>
 
 <div
-	class="flex items-center justify-between w-full py-4 px-7 border-b border-b-brand-primary-gray text-brand-white bg-website-primary"
+	class="flex items-center justify-between w-full py-4 border-b px-7 border-b-brand-primary-gray text-brand-white bg-website-primary"
 >
 	<!-- Dropdown menu with fade and scale animation -->
 
@@ -118,7 +118,9 @@
 				on:dragstart={$canvasToolsModal ? () => handleDragStart(index) : null}
 				on:drop={$canvasToolsModal ? () => handleDrop(index) : null}
 				on:dragover={$canvasToolsModal ? (e) => e.preventDefault() : null}
-				on:click={() => toggleModal(modalComponent)}
+				on:click={() => {
+					!$canvasToolsModal ? toggleModal(modalComponent) : null;
+				}}
 			>
 				<img {alt} src={icon} class="w-8" />
 				{#if $canvasToolsModal}
