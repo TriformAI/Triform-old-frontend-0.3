@@ -17,7 +17,7 @@
 	});
 </script>
 
-<div class="fixed inset-0 z-40 bg-black bg-opacity-20 backdrop-blur-lg"></div>
+<div class="fixed inset-0 z-40 bg-black top-40 bg-opacity-20 backdrop-blur-lg"></div>
 
 <div
 	class="absolute w-[60rem] mx-auto bg-website-secondary text-[#D1D5DB] border border-[#FFFFFF1A] rounded-lg shadow-lg z-50"

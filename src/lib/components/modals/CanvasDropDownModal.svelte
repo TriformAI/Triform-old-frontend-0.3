@@ -1,6 +1,6 @@
 <script>
 	import { fade, scale } from 'svelte/transition';
-	import { canvasToolsModal, toggleModal, statusModal } from '$lib/stores/modals';
+	import { canvasToolsModal, toggleModal, statusModal, renameMode } from '$lib/stores/modals';
 	import canvas_dropdown_1 from '$lib/icons/canvas_dropdown_1.svg';
 	import canvas_dropdown_2 from '$lib/icons/canvas_dropdown_2.svg';
 	import canvas_dropdown_3 from '$lib/icons/canvas_dropdown_3.svg';
@@ -29,10 +29,13 @@
 		<img src={canvas_dropdown_2} alt="canvas_dropdown_2" class="inline-block w-6" />
 		<p class="flex-shrink-0">Clear Canvas</p>
 	</a>
-	<a href=" " class="flex items-center px-10 py-4 text-lg gap-x-4 hover:bg-website-tertiary">
+	<button
+		on:click={() => toggleModal(renameMode)}
+		class="flex items-center w-full px-10 py-4 text-lg gap-x-4 hover:bg-website-tertiary"
+	>
 		<img src={canvas_dropdown_3} alt="canvas_dropdown_3" class="inline-block w-6" />
 		<p class="flex-shrink-0">Rename Canvas</p>
-	</a>
+	</button>
 	<hr class="border-t-[#FFFFFF1A]" />
 
 	<a href=" " class="flex items-center px-10 py-4 text-lg gap-x-4 hover:bg-website-tertiary">

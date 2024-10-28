@@ -19,6 +19,7 @@ export const statusModal = writable(false);
 export const createModuleModal = writable(false);
 export const footerPanel = writable(false);
 export const thresholdModal = writable(false);
+export const renameMode = writable(false);
 
 //make a general toggle function for a specific modal as input parameter and make all other modals false
 export function toggleModal(modal) {
@@ -36,6 +37,7 @@ export function toggleModal(modal) {
 	propertyModal.set(false);
 	consoleModal.set(false);
 	statusModal.set(false);
+	renameMode.set(false);
 
 	modal.set(true);
 }

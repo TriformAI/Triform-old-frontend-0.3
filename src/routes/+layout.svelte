@@ -17,7 +17,6 @@
 		templateLibraryModal,
 		propertyModal,
 		consoleModal,
-		statusModal,
 	} from '$lib/stores/modals';
 
 	//general toggle function for all dropdowns
