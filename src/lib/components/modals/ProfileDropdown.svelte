@@ -8,7 +8,7 @@
 </script>
 
 <div
-	class="absolute right-0 mt-2 w-72 bg-website-primary text-brand-white border border-[#FFFFFF1A] rounded-2xl shadow-lg z-50"
+	class="absolute right-0 mt-2 w-72 bg-website-primary text-brand-white border border-brand-primary-gray rounded-2xl shadow-lg z-50"
 	in:scale={{ start: 0.9, duration: 200 }}
 	out:fade={{ duration: 150 }}
 >
@@ -31,7 +31,7 @@
 		<img src={settings} alt="settings" class="inline-block w-6" />
 		<p>Settings</p>
 	</a>
-	<hr class="border-t-[#FFFFFF1A]" />
+	<hr class="border-t-brand-primary-gray" />
 	<a
 		href=" "
 		class="flex items-center py-4 text-lg px-11 gap-x-4 hover:bg-website-tertiary rounded-b-2xl"

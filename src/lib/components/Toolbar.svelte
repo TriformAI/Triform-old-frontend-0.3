@@ -70,7 +70,7 @@
 </script>
 
 <div
-	class="flex items-center justify-between w-full py-4 px-7 border-b border-b-[#FFFFFF1A] text-brand-white bg-website-primary"
+	class="flex items-center justify-between w-full py-4 px-7 border-b border-b-brand-primary-gray text-brand-white bg-website-primary"
 >
 	<!-- Dropdown menu with fade and scale animation -->
 
@@ -83,7 +83,7 @@
 	<div class="flex items-center gap-x-7">
 		<button
 			on:click={() => toggleModal(canvasDropdownOpen)}
-			class="flex items-center px-4 py-2 pr-8 border-r-2 cursor-pointer gap-x-3 border-r-[#FFFFFF1A]"
+			class="flex items-center px-4 py-2 pr-8 border-r-2 cursor-pointer gap-x-3 border-r-brand-primary-gray"
 		>
 			<h1 class="text-xl">Canvas 1</h1>
 			<svg
@@ -160,7 +160,7 @@
 		</div>
 
 		<!-- Grid  -->
-		<div class="px-8 border-x-2 border-x-[#FFFFFF1A]">
+		<div class="px-8 border-x-2 border-x-brand-primary-gray">
 			<div class="p-2 cursor-pointer bg-website-tertiary rounded-xl">
 				<img src={grid_icon} alt="grid_icon" class="w-8" />
 			</div>
@@ -187,7 +187,7 @@
 		<!-- Search Icon -->
 		<button
 			on:click={() => toggleModal(searchModal)}
-			class="pl-4 ml-4 border-l-2 border-l-[#FFFFFF1A]"
+			class="pl-4 ml-4 border-l-2 border-l-brand-primary-gray"
 		>
 			<div class="p-2 cursor-pointer hover:bg-website-tertiary rounded-xl">
 				<img src={search_icon} alt="search_icon" class="w-8" />

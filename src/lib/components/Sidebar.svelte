@@ -25,7 +25,7 @@
 			<nav class="flex flex-col">
 				<ul role="list" class="flex flex-col flex-1 gap-y-7">
 					<li class={menu ? 'mx-2' : 'px-3'}>
-						<ul role="list" class="lg:-mx-4 -mx-1 space-y-2 text-[#9CA3AF] text-sm font-semibold">
+						<ul role="list" class="lg:-mx-4 -mx-1 space-y-2 text-brand-light-gray text-sm font-semibold">
 							<!-- Dashboard Link -->
 							<a
 								href="/dashboard"
@@ -225,7 +225,7 @@
 			<nav class="flex flex-col">
 				<ul role="list" class="flex flex-col flex-1 mb-4 gap-y-7">
 					<li class={menu ? 'mx-2' : 'px-4'}>
-						<ul role="list" class="lg:-mx-4 -mx-1 space-y-2 text-[#9CA3AF] text-sm font-semibold">
+						<ul role="list" class="lg:-mx-4 -mx-1 space-y-2 text-brand-light-gray text-sm font-semibold">
 							<a
 								href="/billings"
 								class={`flex items-center p-4 rounded-2xl duration-100 ease-linear hover:bg-[#171F2D] group ${currentPath === '/billings' && 'bg-[#171F2D]'}`}

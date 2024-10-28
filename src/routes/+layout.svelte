@@ -39,7 +39,7 @@
 	$: isProtectedRoute = ['/dashboard'].some((path) => $page.url.pathname.startsWith(path));
 </script>
 
-<body class={`bg-[#091136]`}>
+<body class={`bg-website-dark-primary`}>
 	{#if isProtectedRoute}
 		<div class="w-full">
 			<Navbar />

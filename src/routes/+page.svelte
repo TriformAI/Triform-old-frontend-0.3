@@ -13,7 +13,7 @@
 	<nav
 		class="flex items-center justify-between w-full px-3 mx-auto py-7 sm:p-10 max-w-7xl lg:justify-around"
 	>
-		<ul class="lg:flex hidden items-center gap-x-10 text-[#D1D5DB] mr-auto">
+		<ul class="items-center hidden mr-auto lg:flex gap-x-10 text-brand-tertiary-gray">
 			<a href=" " class="cursor-pointer hover:text-white">Features</a>
 			<a href=" " class="cursor-pointer hover:text-white">Pricing</a>
 			<a href=" " class="cursor-pointer hover:text-white">How it works</a>
@@ -131,7 +131,7 @@
 					<img src={serverless_logo} alt="serverless" />
 					<h3 class="text-xl font-semibold text-white">Serverless architecture</h3>
 				</div>
-				<p class="text-[#a0a4a9] text-md font-thin">
+				<p class="font-thin text-brand-light-gray text-md">
 					Experience unmatched scalability and reduced overhead with our serverless architecture.
 					And scale to 0 when unused. Enabling you to focus solely on developing your applications.
 				</p>
@@ -143,7 +143,7 @@
 					<img src={python_logo} alt="python_integration" />
 					<h3 class="text-xl font-semibold text-white">Python Integration</h3>
 				</div>
-				<p class="text-[#a0a4a9] text-md font-thin">
+				<p class="font-thin text-brand-light-gray text-md">
 					Utilize your favourite Python frameworks and libraries to enhance your applications,
 					streamlining the development process and accelerating deployment.
 				</p>
@@ -153,7 +153,7 @@
 					<img src={security_logo} alt="security" />
 					<h3 class="text-xl font-semibold text-white">Security</h3>
 				</div>
-				<p class="text-[#a0a4a9] text-md font-thin">
+				<p class="font-thin text-brand-light-gray text-md">
 					Security is paramount. Our platform employs advanced encryption, authentication, and
 					compliance measures to safeguard your applications.
 				</p>

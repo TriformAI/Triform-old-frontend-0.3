@@ -52,7 +52,7 @@
 </script>
 
 <button
-	class="absolute left-8 top-44 mt-2 w-[50rem] bg-website-secondary text-[#D1D5DB] border border-[#FFFFFF1A] rounded-lg shadow-lg z-50"
+	class="absolute left-8 top-44 mt-2 w-[50rem] bg-website-secondary text-brand-tertiary-gray border border-brand-primary-gray rounded-lg shadow-lg z-50"
 	in:scale={{ start: 0.9, duration: 200 }}
 	out:fade={{ duration: 150 }}
 >
@@ -79,7 +79,7 @@
 					id="search"
 					type="text"
 					placeholder="Search..."
-					class="w-full px-4 py-4 text-xl bg-website-secondary border border-[#FFFFFF1A] rounded-md"
+					class="w-full px-4 py-4 text-xl border rounded-md bg-website-secondary border-brand-primary-gray"
 					bind:value={searchTerm}
 				/>
 				<img src={search_icon} alt="search_icon" class="absolute inset-y-0 w-6 right-3 top-5" />
@@ -94,7 +94,7 @@
 	<div class="py-5 overflow-y-auto h-[32rem] bg-website-primary">
 		{#each filteredTemplates as category, i}
 			<div
-				class={`group flex items-center justify-between w-full duration-200 ease-in-out hover:bg-website-tertiary border-y border-y-[#FFFFFF1A]`}
+				class={`group flex items-center justify-between w-full duration-200 ease-in-out hover:bg-website-tertiary border-y border-y-brand-primary-gray`}
 			>
 				<button class="flex flex-col w-full px-6 py-4 overflow-hidden">
 					<div class="flex items-center justify-between w-full">
@@ -103,7 +103,7 @@
 							<div class="flex items-center w-full gap-3">
 								{#each category.tags as tag}
 									<span
-										class="px-3 py-1.5 text-sm text-[#9CA3AF] rounded-md bg-website-secondary border border-white/10 hover:border-white/30"
+										class="px-3 py-1.5 text-sm text-brand-light-gray rounded-md bg-website-secondary border border-white/10 hover:border-white/30"
 										>{tag}</span
 									>
 								{/each}
@@ -125,7 +125,7 @@
 								<button class="hover:text-white">View Details</button>
 							</div>
 							<button
-								class={`flex items-center justify-center flex-shrink-0 gap-x-3 px-4 py-2 text-md font-medium text-[#D1D5DB] hover:text-white transition duration-200 ease-in-out border rounded-lg bg-white/5 border-[#FFFFFF30] hover:border-white`}
+								class={`flex items-center justify-center flex-shrink-0 gap-x-3 px-4 py-2 text-md font-medium text-brand-tertiary-gray hover:text-white transition duration-200 ease-in-out border rounded-lg bg-white/5 border-brand-primary-gray hover:border-white`}
 							>
 								<img src={Add} alt="Add_Icon" class="w-5" />
 								<span>Use Template</span>
@@ -133,7 +133,7 @@
 						</div>
 					</div>
 
-					<p class="mt-2 text-left text-sm text-[#9CA3AF]">{category.description}</p>
+					<p class="mt-2 text-left text-sm text-brand-light-gray">{category.description}</p>
 				</button>
 			</div>
 		{/each}

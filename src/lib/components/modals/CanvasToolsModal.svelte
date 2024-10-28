@@ -20,12 +20,12 @@
 <div class="fixed inset-0 z-40 bg-black top-40 bg-opacity-20 backdrop-blur-lg"></div>
 
 <div
-	class="absolute w-[60rem] mx-auto bg-website-secondary text-[#D1D5DB] border border-[#FFFFFF1A] rounded-lg shadow-lg z-50"
+	class="absolute w-[60rem] mx-auto bg-website-secondary text-brand-tertiary-gray border border-brand-primary-gray rounded-lg shadow-lg z-50"
 	in:scale={{ start: 0.9, duration: 200 }}
 	out:fade={{ duration: 150 }}
 >
 	<!-- Modal Header -->
-	<div class="flex items-center justify-between p-6 border-b border-[#FFFFFF1A]">
+	<div class="flex items-center justify-between p-6 border-b border-brand-primary-gray">
 		<div class="flex items-center gap-x-3">
 			<img src={modal_title_icon} alt="modal_title_icon" class="w-6" />
 			<h3 class="text-2xl font-semibold text-left">Available tools in the More Menu</h3>
@@ -40,7 +40,7 @@
 	</div>
 
 	<!-- Modal Body -->
-	<div class="bg-[#0B1544] rounded-b-lg flex items-center flex-wrap gap-5 p-10">
+	<div class="flex flex-wrap items-center gap-5 p-10 rounded-b-lg bg-website-primary">
 		{#each moreIcons as { id, icon, alt }}
 			<button
 				class="relative p-2 cursor-pointer bg-website-tertiary rounded-xl"
@@ -55,7 +55,7 @@
 	</div>
 
 	<!-- Modal Footer -->
-	<div class="flex justify-end p-6 py-3 border-t border-[#FFFFFF1A] bg-website-primary">
+	<div class="flex justify-end p-6 py-3 border-t border-brand-primary-gray bg-website-primary">
 		<Button content={{ text: 'Done' }} on:click={() => canvasToolsModal.update((value) => false)} />
 	</div>
 </div>

@@ -50,7 +50,7 @@
 </script>
 
 <button
-	class="absolute left-8 top-44 mt-2 w-[30rem] bg-website-secondary text-[#D1D5DB] border border-[#FFFFFF1A] rounded-lg shadow-lg z-50"
+	class="absolute left-8 top-44 mt-2 w-[30rem] bg-website-secondary text-brand-tertiary-gray border border-brand-primary-gray rounded-lg shadow-lg z-50"
 	in:scale={{ start: 0.9, duration: 200 }}
 	out:fade={{ duration: 150 }}
 >
@@ -77,7 +77,7 @@
 					id="search"
 					type="text"
 					placeholder="Search Anything..."
-					class="w-full px-4 py-4 text-xl bg-website-secondary border border-[#FFFFFF1A] rounded-md"
+					class="w-full px-4 py-4 text-xl border rounded-md bg-website-secondary border-brand-primary-gray"
 					bind:value={searchTerm}
 				/>
 				<img src={search_icon} alt="search_icon" class="absolute inset-y-0 w-6 right-3 top-5" />
@@ -92,19 +92,19 @@
 	<div class=" overflow-y-auto h-[32rem] bg-website-primary">
 		{#each filteredContainers as category, i}
 			<div
-				class={`py-3 px-5 group flex items-center justify-between w-full duration-200 ease-in-out hover:bg-website-tertiary border-y border-y-[#FFFFFF1A]`}
+				class={`py-3 px-5 group flex items-center justify-between w-full duration-200 ease-in-out hover:bg-website-tertiary border-y border-y-brand-primary-gray`}
 			>
 				<button class="flex flex-col w-full py-4">
 					<h3 class="my-1 text-xl font-bold text-white">{category.name}</h3>
-					<div class="flex items-center my-1 gap-x-5 text-[#9CA3AF]">
+					<div class="flex items-center my-1 gap-x-5 text-brand-light-gray">
 						<h3 class="text-lg">{category.date}</h3>
 						<p>.</p>
 						<h3 class="text-lg">{category.id}</h3>
 					</div>
 					{#if category.active}
-						<p class="text-[#22C55E]">Active</p>
+						<p class="text-primary-green">Active</p>
 					{:else}
-						<p class="text-[#F44336]">Inactive</p>
+						<p class="text-primary-red">Inactive</p>
 					{/if}
 				</button>
 				<Button content={{ text: 'Attach' }} />

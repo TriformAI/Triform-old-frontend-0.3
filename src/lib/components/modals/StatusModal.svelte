@@ -75,12 +75,12 @@
 <div class="fixed inset-0 bg-black bg-opacity-20 backdrop-blur-lg"></div>
 
 <div
-	class={`${$thresholdModal && 'opacity-30'} absolute w-[105rem]  bg-website-secondary top-10  text-[#D1D5DB] border border-[#FFFFFF1A] rounded-lg shadow-lg z-50`}
+	class={`${$thresholdModal && 'opacity-30'} absolute w-[105rem]  bg-website-secondary top-10  text-brand-tertiary-gray border border-brand-primary-gray rounded-lg shadow-lg z-50`}
 	in:scale={{ start: 0.9, duration: 200 }}
 	out:fade={{ duration: 150 }}
 >
 	<!-- Modal Header -->
-	<div class="flex items-center justify-between p-6 border-b border-[#FFFFFF1A]">
+	<div class="flex items-center justify-between p-6 border-b border-brand-primary-gray">
 		<div class="flex items-center gap-x-3">
 			<h3 class="text-2xl font-semibold text-left">Available Metrics</h3>
 		</div>
@@ -94,19 +94,19 @@
 	</div>
 
 	<!-- Modal Body -->
-	<div class="bg-[#0B1544] rounded-b-lg py-5 px-2">
+	<div class="bg-website-primary rounded-b-lg py-5 px-2">
 		<div class="overflow-y-auto max-h-80">
 			<table class="w-full">
-				<thead class="sticky top-0 bg-[#0B1544] z-10">
+				<thead class="sticky top-0 bg-website-primary z-10">
 					<tr class="text-left bg-website-tertiary">
-						<th class="px-4 py-2 rounded-l-lg text-[#D1D5DB] font-thin">Metric</th>
-						<th class="px-4 py-2 text-[#D1D5DB] font-thin">Collapsed View</th>
-						<th class="px-4 py-2 text-[#D1D5DB] font-thin">Expanded View</th>
-						<th class="px-4 py-2 text-[#D1D5DB] font-thin">Graph Type</th>
-						<th class="px-4 py-2 text-[#D1D5DB] font-thin">Time Interval</th>
-						<th class="px-4 py-2 text-[#D1D5DB] font-thin">Data Aggregation</th>
-						<th class="px-4 py-2 text-[#D1D5DB] font-thin">Group</th>
-						<th class="px-4 py-2 text-[#D1D5DB] font-thin rounded-r-lg"></th>
+						<th class="px-4 py-2 rounded-l-lg text-brand-tertiary-gray font-thin">Metric</th>
+						<th class="px-4 py-2 text-brand-tertiary-gray font-thin">Collapsed View</th>
+						<th class="px-4 py-2 text-brand-tertiary-gray font-thin">Expanded View</th>
+						<th class="px-4 py-2 text-brand-tertiary-gray font-thin">Graph Type</th>
+						<th class="px-4 py-2 text-brand-tertiary-gray font-thin">Time Interval</th>
+						<th class="px-4 py-2 text-brand-tertiary-gray font-thin">Data Aggregation</th>
+						<th class="px-4 py-2 text-brand-tertiary-gray font-thin">Group</th>
+						<th class="px-4 py-2 text-brand-tertiary-gray font-thin rounded-r-lg"></th>
 					</tr>
 				</thead>
 				<tbody>
@@ -180,7 +180,7 @@
 	</div>
 
 	<!-- Modal Footer -->
-	<div class="flex justify-end p-6 py-3 border-t border-[#FFFFFF1A] bg-website-primary">
+	<div class="flex justify-end p-6 py-3 border-t border-brand-primary-gray bg-website-primary">
 		<Button content={{ text: 'Done' }} on:click={() => statusModal.update((value) => false)} />
 	</div>
 </div>

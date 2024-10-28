@@ -73,7 +73,7 @@
 		<div class="flex overflow-x-auto">
 			{#each tabs as tab}
 				<button
-					class="flex flex-grow items-center px-4 py-3 duration-200 ease-in-out rounded-lg cursor-pointer group gap-x-2 hover:bg-website-tertiary border-r border-r-[#FFFFFF1A] truncate"
+					class="flex flex-grow items-center px-4 py-3 duration-200 ease-in-out rounded-lg cursor-pointer group gap-x-2 hover:bg-website-tertiary border-r border-r-brand-primary-gray truncate"
 					on:click={() => setActiveTab(tab.id)}
 					draggable="true"
 					on:dragstart={(event) => handleDragStart(event, tab)}
@@ -81,12 +81,12 @@
 					on:drop={(event) => handleDrop(event, tab)}
 				>
 					{#if tab.id === activeTabId}
-						<div class="p-1.5 animate-pulse rounded-full bg-[#F44336]"></div>
+						<div class="p-1.5 animate-pulse rounded-full bg-primary-red"></div>
 					{/if}
 					{#if $renameMode && tab.id === activeTabId}
 						<input
 							type="text"
-							class="text-md border border-[#ffffff77] py-2 px-3 rounded-lg bg-transparent"
+							class="px-3 py-2 bg-transparent border rounded-lg text-md border-brand-secondary-gray"
 							value={tab.label}
 							on:input={(e) => (tab.label = e.target.value)}
 						/>
@@ -144,7 +144,7 @@
 			<img alt="support icon" src={support_icon} class="w-8" />
 		</div>
 
-		<div class="relative pl-5 border-l-2 border-l-[#FFFFFF1A]">
+		<div class="relative pl-5 border-l-2 border-l-brand-primary-gray">
 			<button
 				type="button"
 				class="w-8 cursor-pointer"

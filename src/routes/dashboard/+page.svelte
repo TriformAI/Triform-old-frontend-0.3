@@ -18,7 +18,7 @@
 
 
 <section
-	class={`flex flex-col justify-center items-center bg-[#091136] text-brand-white min-h-[calc(100vh-16.4rem)]`}
+	class={`flex flex-col justify-center items-center bg-website-dark-primary text-brand-white min-h-[calc(100vh-16.4rem)]`}
 >
 	{#if $canvasToolsModal}
 		<CanvasToolsModal />
@@ -35,7 +35,7 @@
 
 	<!-- This div centers the h2 element vertically -->
 	<div class="relative flex flex-col items-center max-w-xl my-auto top-32">
-		<h2 class="text-2xl text-[#9CA3AF] leading-normal text-center">
+		<h2 class="text-2xl text-brand-light-gray leading-normal text-center">
 			Right-click to Create Module/Agent/API or Drag from Toolbox
 		</h2>
 	</div>

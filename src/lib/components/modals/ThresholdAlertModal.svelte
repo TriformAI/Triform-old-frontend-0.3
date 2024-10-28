@@ -13,12 +13,12 @@
 
 <!-- Modal -->
 <div
-	class="absolute w-[60rem] top-10 bg-[#0B1544] text-[#D1D5DB] rounded-lg shadow-lg z-50"
+	class="absolute w-[60rem] top-10 bg-website-primary text-brand-tertiary-gray rounded-lg shadow-lg z-50"
 	in:scale={{ start: 0.9, duration: 200 }}
 	out:fade={{ duration: 150 }}
 >
 	<!-- Modal Header -->
-	<div class="flex items-center justify-between p-6 border-b border-[#FFFFFF1A]">
+	<div class="flex items-center justify-between p-6 border-b border-brand-primary-gray">
 		<h3 class="text-2xl font-semibold text-left">Threshold Alerts for Metric Name</h3>
 		<button
 			type="button"
@@ -30,27 +30,27 @@
 	</div>
 
 	<!-- Modal Body -->
-	<div class="p-6 bg-[#0B1544]">
+	<div class="p-6 bg-website-primary">
 		<table class="w-full table-auto">
-			<thead class="bg-[#0B1544]">
+			<thead class="bg-website-primary">
 				<tr class="text-left bg-website-tertiary">
-					<th class="px-4 py-2 rounded-l-lg text-[#D1D5DB] font-thin">Threshold</th>
-					<th class="px-4 py-2 text-[#D1D5DB] font-thin">Color change</th>
-					<th class="px-4 py-2 text-[#D1D5DB] font-thin">Additional alert icon</th>
-					<th class="px-4 py-2 text-[#D1D5DB] font-thin">Receive notification</th>
-					<th class="px-4 py-2 text-[#D1D5DB] font-thin rounded-r-lg">Sound alert</th>
+					<th class="px-4 py-2 rounded-l-lg text-brand-tertiary-gray font-thin">Threshold</th>
+					<th class="px-4 py-2 text-brand-tertiary-gray font-thin">Color change</th>
+					<th class="px-4 py-2 text-brand-tertiary-gray font-thin">Additional alert icon</th>
+					<th class="px-4 py-2 text-brand-tertiary-gray font-thin">Receive notification</th>
+					<th class="px-4 py-2 text-brand-tertiary-gray font-thin rounded-r-lg">Sound alert</th>
 				</tr>
 			</thead>
 			<tbody>
 				<!-- Upper Value Row -->
-				<tr class="border-b border-[#FFFFFF1A]">
+				<tr class="border-b border-brand-primary-gray">
 					<td class="px-4 py-8 pr-8">
 						<label for="UpperVal">Upper Value</label>
 						<input
 							type="text"
 							placeholder="Type here..."
 							bind:value={upperThreshold}
-							class="w-full p-2 mt-2 bg-[#0D1A4D] text-white border border-[#FFFFFF1A] rounded-lg"
+							class="w-full p-2 mt-2 bg-website-secondary text-white border border-brand-primary-gray rounded-lg"
 						/>
 					</td>
 					<td class="px-6 py-8 pt-14">
@@ -107,7 +107,7 @@
 							type="text"
 							placeholder="Type here..."
 							bind:value={lowerThreshold}
-							class="w-full p-2 mt-2 bg-[#0D1A4D] text-white border border-[#FFFFFF1A] rounded-lg"
+							class="w-full p-2 mt-2 bg-website-secondary text-white border border-brand-primary-gray rounded-lg"
 						/>
 					</td>
 					<td class="px-6 py-8 pt-14">
@@ -160,7 +160,7 @@
 	</div>
 
 	<!-- Modal Footer -->
-	<div class="flex justify-end p-6 py-3 border-t border-[#FFFFFF1A] bg-website-primary">
+	<div class="flex justify-end p-6 py-3 border-t border-brand-primary-gray bg-website-primary">
 		<Button content={{ text: 'Save' }} on:click={() => thresholdModal.update((value) => false)} />
 	</div>
 </div>

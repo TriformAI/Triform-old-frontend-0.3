@@ -34,11 +34,11 @@
 
 <button
 	on:click={() => (collapsed = true)}
-	class={`z-50 w-full px-7 border-t border-t-[#FFFFFF1A] text-brand-white bg-website-primary shadow-2xl duration-200 ease-linear transition-transform ${!collapsed ? 'group-hover:-translate-y-2 py-5 cursor-pointer' : 'pb-5 -translate-y-96 cursor-default'}`}
+	class={`z-50 w-full px-7 border-t border-t-brand-primary-gray text-brand-white bg-website-primary shadow-2xl duration-200 ease-linear transition-transform ${!collapsed ? 'group-hover:-translate-y-2 py-5 cursor-pointer' : 'pb-5 -translate-y-96 cursor-default'}`}
 >
 	{#if collapsed || $statusModal}
 		<button
-			class="bg-[#091136] w-fit mx-auto p-3 px-10 rounded-b-lg border-x border-b border-b-[#FFFFFF1A] border-x-[#FFFFFF1A] border-t border-t-[#091136]"
+			class="p-3 px-10 mx-auto border-t border-b rounded-b-lg bg-website-dark-primary w-fit border-x border-b-brand-primary-gray border-x-brand-primary-gray border-t-brand-primary-gray"
 			on:click={(e) => {
 				e.stopPropagation();
 				collapsed = false;
@@ -59,18 +59,18 @@
 	<div class="flex items-center justify-between w-full">
 		<div class="flex items-center gap-x-3">
 			<img src={green_check} alt="green_check" class="w-5" />
-			<h2 class="text-xl text-[#22C55E]">All system are operational</h2>
+			<h2 class="text-xl text-primary-green">All system are operational</h2>
 		</div>
 
 		<div class="flex items-center gap-x-16">
-			<h2 class="text-[#9CA3AF] flex items-center gap-x-5 text-xl">
-				<span class="text-3xl text-[#D1D5DB] relative bottom-0.5">0</span> Runs per Hour
+			<h2 class="flex items-center text-xl text-brand-light-gray gap-x-5">
+				<span class="text-3xl text-brand-tertiary-gray relative bottom-0.5">0</span> Runs per Hour
 			</h2>
-			<h2 class="text-[#9CA3AF] flex items-center gap-x-5 text-xl">
-				<span class="text-3xl text-[#D1D5DB] relative bottom-0.5">0</span> Errors per Hour
+			<h2 class="flex items-center text-xl text-brand-light-gray gap-x-5">
+				<span class="text-3xl text-brand-tertiary-gray relative bottom-0.5">0</span> Errors per Hour
 			</h2>
-			<h2 class="text-[#9CA3AF] flex items-center gap-x-5 text-xl">
-				<span class="text-3xl text-[#D1D5DB] relative bottom-0.5">0</span> Alerts
+			<h2 class="flex items-center text-xl text-brand-light-gray gap-x-5">
+				<span class="text-3xl text-brand-tertiary-gray relative bottom-0.5">0</span> Alerts
 			</h2>
 		</div>
 	</div>
@@ -80,7 +80,7 @@
 				<div class="flex items-start justify-between w-full mb-5">
 					<h2 class="relative flex items-center text-xl text-white left-5">Runs per Hour</h2>
 					<p class="text-2xl text-white">
-						0 <span class="ml-3 text-[#9CA3AF] text-lg">+0.0%</span>
+						0 <span class="ml-3 text-lg text-brand-light-gray">+0.0%</span>
 					</p>
 				</div>
 				<img src={graph_1} alt="graph_1" class="w-[40rem]" />
@@ -89,7 +89,7 @@
 				<div class="flex items-start justify-between w-full mb-5">
 					<h2 class="relative flex items-center text-xl text-white left-5">Errors per Hour</h2>
 					<p class="text-2xl text-white">
-						0 <span class="ml-3 text-[#9CA3AF] text-lg">+0.0%</span>
+						0 <span class="ml-3 text-lg text-brand-light-gray">+0.0%</span>
 					</p>
 				</div>
 				<img src={graph_2} alt="graph_2" class="w-[40rem]" />
@@ -98,7 +98,7 @@
 				<div class="flex items-start justify-between w-full mb-5">
 					<h2 class="relative flex items-center text-xl text-white left-5">Alerts</h2>
 					<p class="text-2xl text-white">
-						0 <span class="ml-3 text-[#9CA3AF] text-lg">+0.0%</span>
+						0 <span class="ml-3 text-lg text-brand-light-gray">+0.0%</span>
 					</p>
 				</div>
 				<img src={graph_3} alt="graph_3" class="w-[40rem]" />

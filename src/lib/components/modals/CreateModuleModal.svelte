@@ -15,12 +15,12 @@
 <div class="fixed inset-0 z-40 bg-black bg-opacity-20 backdrop-blur-lg"></div>
 
 <div
-	class="absolute w-[60rem] mx-auto bg-website-secondary text-[#D1D5DB] border border-[#FFFFFF1A] rounded-lg shadow-lg z-50"
+	class="absolute w-[60rem] mx-auto bg-website-secondary text-brand-tertiary-gray border border-brand-primary-gray rounded-lg shadow-lg z-50"
 	in:scale={{ start: 0.9, duration: 200 }}
 	out:fade={{ duration: 150 }}
 >
 	<!-- Modal Header -->
-	<div class="flex items-center justify-between p-6 border-b border-[#FFFFFF1A]">
+	<div class="flex items-center justify-between p-6 border-b border-brand-primary-gray">
 		<div class="flex items-center gap-x-3">
 			<img src={modal_title_icon} alt="modal_title_icon" class="w-6" />
 			<h3 class="text-2xl font-semibold text-left">New Module</h3>
@@ -31,8 +31,8 @@
 	</div>
 
 	<!-- Modal Body -->
-	<div class="bg-[#0B1544] rounded-b-lg">
-		<form class="grid grid-cols-2 gap-6 px-6 py-12 text-left divide-x-2 divide-[#FFFFFF1A]">
+	<div class="rounded-b-lg bg-website-primary">
+		<form class="grid grid-cols-2 gap-6 px-6 py-12 text-left divide-x-2 divide-brand-primary-gray">
 			<!-- Left Column -->
 			<div class="p-4">
 				<!-- Name Input -->
@@ -42,7 +42,7 @@
 						id="name"
 						type="text"
 						placeholder="Type here..."
-						class="w-full px-4 py-2 bg-website-secondary border border-[#FFFFFF1A] rounded-md"
+						class="w-full px-4 py-2 border rounded-md bg-website-secondary border-brand-primary-gray"
 					/>
 				</div>
 
@@ -52,7 +52,7 @@
 					<textarea
 						id="description"
 						placeholder="Type here..."
-						class="w-full px-4 py-2 bg-website-secondary border border-[#FFFFFF1A] rounded-md h-32"
+						class="w-full h-32 px-4 py-2 border rounded-md bg-website-secondary border-brand-primary-gray"
 					></textarea>
 				</div>
 
@@ -63,7 +63,7 @@
 						id="tags"
 						type="text"
 						placeholder="Type here..."
-						class="w-full px-4 py-2 bg-website-secondary border border-[#FFFFFF1A] rounded-md"
+						class="w-full px-4 py-2 border rounded-md bg-website-secondary border-brand-primary-gray"
 					/>
 				</div>
 			</div>
@@ -73,12 +73,12 @@
 				<label for="env-search" class="block mb-2 font-medium">
 					Link Environment Variables (optional)
 				</label>
-				<div class="rounded-md bg-[#0B1544] h-full">
+				<div class="h-full rounded-md bg-website-primary">
 					<input
 						id="env-search"
 						type="text"
 						placeholder="Search..."
-						class="w-full px-4 py-2 mb-4 bg-website-secondary border border-[#FFFFFF1A] rounded-md"
+						class="w-full px-4 py-2 mb-4 border rounded-md bg-website-secondary border-brand-primary-gray"
 					/>
 					<div class="flex flex-col gap-2">
 						<!-- Checkboxes for environment variables -->
@@ -87,7 +87,7 @@
 								<label class="relative flex items-center cursor-pointer">
 									<input
 										type="checkbox"
-										class="w-5 h-5 transition-all border rounded shadow appearance-none cursor-pointer peer hover:shadow-md border-[#ffffff65] checked:bg-slate-50 checked:border-slate-800"
+										class="w-5 h-5 transition-all border rounded shadow appearance-none cursor-pointer peer hover:shadow-md border-brand-secondary-gray checked:bg-slate-50 checked:border-slate-800"
 										id="check"
 									/>
 									<span
@@ -109,7 +109,7 @@
 										</svg>
 									</span>
 								</label>
-								<span class="text-[#D1D5DB]">{variable}</span>
+								<span class="text-brand-tertiary-gray">{variable}</span>
 							</div>
 						{/each}
 					</div>
@@ -118,7 +118,7 @@
 		</form>
 
 		<!-- Modal Footer -->
-		<div class="flex justify-end p-6 border-t border-[#FFFFFF1A]">
+		<div class="flex justify-end p-6 border-t border-brand-primary-gray">
 			<Button content={{ text: 'Next' }} />
 		</div>
 	</div>

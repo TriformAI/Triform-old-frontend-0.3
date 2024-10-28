@@ -75,13 +75,13 @@
 </script>
 
 <button
-	class="absolute left-8 top-44 mt-2 w-96 bg-website-secondary text-[#D1D5DB] border border-[#FFFFFF1A] rounded-lg shadow-lg z-50"
+	class="absolute left-8 top-44 mt-2 w-96 bg-website-secondary text-brand-tertiary-gray border border-brand-primary-gray rounded-lg shadow-lg z-50"
 	in:scale={{ start: 0.9, duration: 200 }}
 	out:fade={{ duration: 150 }}
 	on:click={handleClickOutside}
 >
 	<!-- Modal Header -->
-	<div class="flex flex-col gap-y-5 py-6 px-4 border-b border-[#FFFFFF1A]">
+	<div class="flex flex-col gap-y-5 py-6 px-4 border-b border-brand-primary-gray">
 		<div class="flex items-center justify-between">
 			<div class="flex items-center gap-x-3">
 				<img src={modal_title_icon} alt="modal_title_icon" class="w-6" />
@@ -103,7 +103,7 @@
 					id="search"
 					type="text"
 					placeholder="Search Anything..."
-					class="w-full px-4 py-4 text-xl bg-website-secondary border border-[#FFFFFF1A] rounded-md"
+					class="w-full px-4 py-4 text-xl bg-website-secondary border border-brand-primary-gray rounded-md"
 					bind:value={searchTerm}
 				/>
 				<img src={search_icon} alt="search_icon" class="absolute inset-y-0 w-6 right-3 top-5" />
@@ -170,7 +170,7 @@
 	</div>
 
 	<!-- Modal Footer -->
-	<div class="flex items-center justify-center p-6 bg-website-primary border-t border-[#FFFFFF1A]">
+	<div class="flex items-center justify-center p-6 bg-website-primary border-t border-brand-primary-gray">
 		<Button content={{ width: 'full', icon: Add, text: 'New API' }} />
 	</div>
 </button>

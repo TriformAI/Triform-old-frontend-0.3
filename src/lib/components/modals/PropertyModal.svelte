@@ -35,12 +35,12 @@
 </script>
 
 <button
-	class="absolute right-8 top-44 mt-2 w-96 bg-website-secondary text-[#D1D5DB] border border-[#FFFFFF1A] rounded-lg shadow-lg z-50"
+	class="absolute right-8 top-44 mt-2 w-96 bg-website-secondary text-brand-tertiary-gray border border-brand-primary-gray rounded-lg shadow-lg z-50"
 	in:scale={{ start: 0.9, duration: 200 }}
 	out:fade={{ duration: 150 }}
 >
 	<!-- Modal Header -->
-	<div class="flex flex-col gap-y-5 py-6 px-4 border-b border-[#FFFFFF1A]">
+	<div class="flex flex-col gap-y-5 py-6 px-4 border-b border-brand-primary-gray">
 		<div class="flex items-center justify-between">
 			<div class="flex items-center gap-x-3">
 				<img src={modal_title_icon} alt="modal_title_icon" class="w-6" />
@@ -103,7 +103,7 @@
 									id="Label"
 									type="text"
 									placeholder="Type here..."
-									class="w-full px-4 py-2 bg-website-secondary border border-[#FFFFFF1A] rounded-md"
+									class="w-full px-4 py-2 bg-website-secondary border border-brand-primary-gray rounded-md"
 								/>
 							</div>
 							<div class="w-full mb-4">
@@ -111,7 +111,7 @@
 								<select
 									id="Label"
 									placeholder="Type here..."
-									class="w-full px-4 py-2 bg-website-secondary border border-[#FFFFFF1A] rounded-md"
+									class="w-full px-4 py-2 bg-website-secondary border border-brand-primary-gray rounded-md"
 								>
 									<option>Option 1</option>
 									<option>Option 2</option>
@@ -121,7 +121,7 @@
 							<div class="text-left">
 								<input
 									type="checkbox"
-									class="w-5 h-5 transition-all border rounded shadow appearance-none cursor-pointer  hover:shadow-md border-[#ffffff65] checked:bg-slate-50 checked:border-slate-800"
+									class="w-5 h-5 transition-all border rounded shadow appearance-none cursor-pointer  hover:shadow-md border-brand-secondary-gray checked:bg-slate-50 checked:border-slate-800"
 									id="check"
 								/>
 								<label for="check" class="relative ml-3 text-white bottom-1">Label</label>
