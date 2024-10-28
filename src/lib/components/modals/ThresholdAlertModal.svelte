@@ -34,11 +34,11 @@
 		<table class="w-full table-auto">
 			<thead class="bg-website-primary">
 				<tr class="text-left bg-website-tertiary">
-					<th class="px-4 py-2 rounded-l-lg text-brand-tertiary-gray font-thin">Threshold</th>
-					<th class="px-4 py-2 text-brand-tertiary-gray font-thin">Color change</th>
-					<th class="px-4 py-2 text-brand-tertiary-gray font-thin">Additional alert icon</th>
-					<th class="px-4 py-2 text-brand-tertiary-gray font-thin">Receive notification</th>
-					<th class="px-4 py-2 text-brand-tertiary-gray font-thin rounded-r-lg">Sound alert</th>
+					<th class="px-4 py-2 font-thin rounded-l-lg text-brand-tertiary-gray">Threshold</th>
+					<th class="px-4 py-2 font-thin text-brand-tertiary-gray">Color change</th>
+					<th class="px-4 py-2 font-thin text-brand-tertiary-gray">Additional alert icon</th>
+					<th class="px-4 py-2 font-thin text-brand-tertiary-gray">Receive notification</th>
+					<th class="px-4 py-2 font-thin rounded-r-lg text-brand-tertiary-gray">Sound alert</th>
 				</tr>
 			</thead>
 			<tbody>
@@ -50,7 +50,7 @@
 							type="text"
 							placeholder="Type here..."
 							bind:value={upperThreshold}
-							class="w-full p-2 mt-2 bg-website-secondary text-white border border-brand-primary-gray rounded-lg"
+							class="w-full p-2 mt-2 text-white border rounded-lg bg-website-secondary border-brand-primary-gray"
 						/>
 					</td>
 					<td class="px-6 py-8 pt-14">
@@ -107,7 +107,7 @@
 							type="text"
 							placeholder="Type here..."
 							bind:value={lowerThreshold}
-							class="w-full p-2 mt-2 bg-website-secondary text-white border border-brand-primary-gray rounded-lg"
+							class="w-full p-2 mt-2 text-white border rounded-lg bg-website-secondary border-brand-primary-gray"
 						/>
 					</td>
 					<td class="px-6 py-8 pt-14">
@@ -176,7 +176,7 @@
 		display: block;
 		width: 2.5rem;
 		height: 1.5rem;
-		background-color: #394167;
+		background-color: #484849;
 		border: 1.5px solid white;
 		border-radius: 9999px;
 		position: relative;
@@ -198,7 +198,7 @@
 	}
 
 	.toggle-checkbox:checked + .toggle-label {
-		background-color: #0b1544;
+		background-color: #1D1E20;
 		border: 1.5px solid #9ca3ae;
 	}
 

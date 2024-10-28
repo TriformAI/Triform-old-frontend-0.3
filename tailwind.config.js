@@ -11,12 +11,12 @@ export default {
 				mono: ['Space Mono', ...defaultTheme.fontFamily.mono]
 			},
 			colors: {
-				'website-primary': '#0B1544',
-				'website-dark-primary': '#091136',
-				'website-secondary': '#121C4A',
-				'website-tertiary': '#1A2350',
+				'website-primary': '#1D1E20',
+				'website-dark-primary': '#181819',
+				'website-secondary': '#252526',
+				'website-tertiary': '#2A2B2C',
 				'brand-white': '#FFF',
-				'brand-primary-gray': '#FFFFFF1A',
+				'brand-primary-gray': '#2E3031',
 				'brand-secondary-gray': '#ffffff65',
 				'brand-tertiary-gray': '#D1D5DB',
 				'brand-light-gray': '#9CA3AF',

@@ -75,7 +75,7 @@
 <div class="fixed inset-0 bg-black bg-opacity-20 backdrop-blur-lg"></div>
 
 <div
-	class={`${$thresholdModal && 'opacity-30'} absolute w-[105rem]  bg-website-secondary top-10  text-brand-tertiary-gray border border-brand-primary-gray rounded-lg shadow-lg z-50`}
+	class={`${$thresholdModal && 'opacity-30'} absolute w-[105rem]  bg-website-secondary top-16  text-brand-tertiary-gray border border-brand-primary-gray rounded-lg shadow-lg z-50`}
 	in:scale={{ start: 0.9, duration: 200 }}
 	out:fade={{ duration: 150 }}
 >
@@ -94,19 +94,19 @@
 	</div>
 
 	<!-- Modal Body -->
-	<div class="bg-website-primary rounded-b-lg py-5 px-2">
+	<div class="px-2 py-5 rounded-b-lg bg-website-primary">
 		<div class="overflow-y-auto max-h-80">
 			<table class="w-full">
-				<thead class="sticky top-0 bg-website-primary z-10">
+				<thead class="sticky top-0 z-10 bg-website-primary">
 					<tr class="text-left bg-website-tertiary">
-						<th class="px-4 py-2 rounded-l-lg text-brand-tertiary-gray font-thin">Metric</th>
-						<th class="px-4 py-2 text-brand-tertiary-gray font-thin">Collapsed View</th>
-						<th class="px-4 py-2 text-brand-tertiary-gray font-thin">Expanded View</th>
-						<th class="px-4 py-2 text-brand-tertiary-gray font-thin">Graph Type</th>
-						<th class="px-4 py-2 text-brand-tertiary-gray font-thin">Time Interval</th>
-						<th class="px-4 py-2 text-brand-tertiary-gray font-thin">Data Aggregation</th>
-						<th class="px-4 py-2 text-brand-tertiary-gray font-thin">Group</th>
-						<th class="px-4 py-2 text-brand-tertiary-gray font-thin rounded-r-lg"></th>
+						<th class="px-4 py-2 font-thin rounded-l-lg text-brand-tertiary-gray">Metric</th>
+						<th class="px-4 py-2 font-thin text-brand-tertiary-gray">Collapsed View</th>
+						<th class="px-4 py-2 font-thin text-brand-tertiary-gray">Expanded View</th>
+						<th class="px-4 py-2 font-thin text-brand-tertiary-gray">Graph Type</th>
+						<th class="px-4 py-2 font-thin text-brand-tertiary-gray">Time Interval</th>
+						<th class="px-4 py-2 font-thin text-brand-tertiary-gray">Data Aggregation</th>
+						<th class="px-4 py-2 font-thin text-brand-tertiary-gray">Group</th>
+						<th class="px-4 py-2 font-thin rounded-r-lg text-brand-tertiary-gray"></th>
 					</tr>
 				</thead>
 				<tbody>
@@ -180,7 +180,7 @@
 	</div>
 
 	<!-- Modal Footer -->
-	<div class="flex justify-end p-6 py-3 border-t border-brand-primary-gray bg-website-primary">
+	<div class="flex justify-end p-6 py-3 border-t rounded-b-lg border-brand-primary-gray bg-website-primary">
 		<Button content={{ text: 'Done' }} on:click={() => statusModal.update((value) => false)} />
 	</div>
 </div>
@@ -196,7 +196,7 @@
 		display: block;
 		width: 2.5rem;
 		height: 1.5rem;
-		background-color: #394167;
+		background-color: #484849;
 		border: 1.5px solid white;
 		border-radius: 9999px;
 		position: relative;
@@ -218,7 +218,7 @@
 	}
 
 	.toggle-checkbox:checked + .toggle-label {
-		background-color: #0b1544;
+		background-color: #1D1E20;
 		border: 1.5px solid #9ca3ae;
 	}
 

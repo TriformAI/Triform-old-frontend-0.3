@@ -7,7 +7,7 @@
 	import { footerPanel, statusModal } from '$lib/stores/modals';
 
 	$: collapsed = $footerPanel || $statusModal;
-	
+
 	$: if (browser) {
 		if (collapsed) {
 			document.body.style.overflow = 'hidden';
@@ -34,11 +34,11 @@
 
 <button
 	on:click={() => (collapsed = true)}
-	class={`z-50 w-full px-7 border-t border-t-brand-primary-gray text-brand-white bg-website-primary shadow-2xl duration-200 ease-linear transition-transform ${!collapsed ? 'group-hover:-translate-y-2 py-5 cursor-pointer' : 'pb-5 -translate-y-96 cursor-default'}`}
+	class={`${$statusModal ? "pt-7" : ""} z-50 w-full  px-7 border-t border-t-brand-primary-gray text-brand-white bg-website-primary shadow-2xl duration-200 ease-linear transition-transform ${!collapsed ? 'group-hover:-translate-y-2 py-5 cursor-pointer' : 'pb-5 -translate-y-96 cursor-default'}`}
 >
-	{#if collapsed || $statusModal}
+	{#if collapsed}
 		<button
-			class="p-3 px-10 mx-auto border-t border-b rounded-b-lg bg-website-dark-primary w-fit border-x border-b-brand-primary-gray border-x-brand-primary-gray border-t-brand-primary-gray"
+			class={`${$statusModal ? 'hidden' : 'block'} p-3 px-10 mx-auto border-t border-b rounded-b-lg bg-website-dark-primary w-fit border-x border-b-brand-primary-gray border-x-brand-primary-gray border-t-brand-primary-gray`}
 			on:click={(e) => {
 				e.stopPropagation();
 				collapsed = false;
