@@ -27,7 +27,7 @@
 		<div class="flex items-center justify-between">
 			<div class="flex items-center gap-x-3">
 				<img src={modal_title_icon} alt="modal_title_icon" class="w-6" />
-				<h3 class="text-xl font-semibold text-left">Logs and Console</h3>
+				<h3 class="text-xl font-semibold text-left text-white">Logs and Console</h3>
 			</div>
 			<div class="flex items-center gap-x-10">
 				<img src={search_icon} alt="search" class="w-6" />

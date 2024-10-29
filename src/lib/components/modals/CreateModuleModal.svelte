@@ -13,7 +13,7 @@
 <div class="fixed inset-0 z-40 bg-black bg-opacity-20 backdrop-blur-lg"></div>
 
 <div
-	class="absolute w-[85rem] mx-auto bg-website-secondary text-brand-tertiary-gray border border-brand-primary-gray rounded-lg shadow-lg z-50"
+	class="absolute w-[75rem] mx-auto bg-website-secondary text-brand-tertiary-gray border border-brand-primary-gray rounded-lg shadow-lg z-50"
 	in:scale={{ start: 0.9, duration: 200 }}
 	out:fade={{ duration: 150 }}
 >
@@ -21,7 +21,7 @@
 	<div class="flex items-center justify-between p-6 border-b border-brand-primary-gray">
 		<div class="flex items-center gap-x-3">
 			<img src={modal_title_icon} alt="modal_title_icon" class="w-6" />
-			<h3 class="text-xl font-semibold text-left">New Action</h3>
+			<h3 class="text-xl font-semibold text-left text-white">New Action</h3>
 		</div>
 		<button type="button" class="cursor-pointer w-9" onclick={toggleCreateModuleModal}>
 			<img src={modal_cross} alt="Close modal" class="w-9" />

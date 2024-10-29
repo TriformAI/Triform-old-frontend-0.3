@@ -79,7 +79,7 @@
 			{#each tabs as tab}
 				<a
 					href=" "
-					class={`flex items-center flex-grow px-4 py-3 truncate duration-200 ease-in-out rounded-lg cursor-pointer group gap-x-2 ${tab.id === activeTabId && !$renameMode && 'bg-website-tertiary'} hover:bg-website-tertiary `}
+					class={`flex items-center flex-grow px-4 py-2 truncate duration-200 ease-in-out rounded-lg cursor-pointer group gap-x-2 ${tab.id === activeTabId && !$renameMode && 'bg-website-tertiary'} hover:bg-website-tertiary `}
 					on:click={() => setActiveTab(tab.id)}
 					draggable="true"
 					on:dragstart={(event) => handleDragStart(event, tab)}
@@ -87,7 +87,7 @@
 					on:drop={(event) => handleDrop(event, tab)}
 				>
 					{#if tab.id === activeTabId}
-						<div class="p-1.5 animate-pulse rounded-full bg-primary-red"></div>
+						<div class="p-1 mr-2 rounded-full animate-pulse bg-primary-red"></div>
 					{/if}
 					{#if $renameMode && tab.id === activeTabId}
 						<input
@@ -116,8 +116,8 @@
 			{/each}
 		</div>
 
-		<button type="button" class="cursor-pointer" on:click={addTab}>
-			<img src={add} alt="add" class="w-6 mr-5" />
+		<button type="button" class="pl-5 border-l cursor-pointer border-l-brand-primary-gray" on:click={addTab}>
+			<img src={add} alt="add" class="w-5 mr-5" />
 		</button>
 	</div>
 

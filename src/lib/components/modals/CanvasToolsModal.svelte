@@ -28,7 +28,7 @@
 	<div class="flex items-center justify-between p-6 border-b border-brand-primary-gray">
 		<div class="flex items-center gap-x-3">
 			<img src={modal_title_icon} alt="modal_title_icon" class="w-6" />
-			<h3 class="text-xl font-semibold text-left">Available tools in the More Menu</h3>
+			<h3 class="text-xl font-semibold text-left text-white">Available tools in the More Menu</h3>
 		</div>
 		<button
 			type="button"

@@ -54,7 +54,7 @@
 		<div class="flex items-center justify-between">
 			<div class="flex items-center gap-x-3">
 				<img src={modal_title_icon} alt="modal_title_icon" class="w-6" />
-				<h3 class="text-xl font-semibold text-left">Templates Library</h3>
+				<h3 class="text-xl font-semibold text-left text-white">Templates Library</h3>
 			</div>
 			{#if pined_unpined}
 				<button type="button" class="w-6 cursor-pointer" on:click={togglePined} aria-label="Pin">
@@ -84,7 +84,7 @@
 	</div>
 
 	<!-- Collapsible Category List -->
-	<div class="py-4 overflow-y-auto h-[25rem] bg-website-primary">
+	<div class="py-4 overflow-y-auto h-[20rem] bg-website-primary">
 		{#each filteredTemplates as category, i}
 			<div
 				class={`group flex items-center justify-between w-full duration-200 ease-in-out hover:bg-website-tertiary border-y border-y-brand-primary-gray`}

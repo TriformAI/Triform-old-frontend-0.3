@@ -6,22 +6,22 @@
 </script>
 
 <div
-	class="absolute top-44 right-20 mt-2 w-72 bg-website-primary text-brand-white border border-brand-primary-gray rounded-lg shadow-lg z-50"
+	class="absolute z-50 mt-2 border rounded-lg shadow-lg top-40 right-20 w-60 bg-website-primary text-brand-white border-brand-primary-gray"
 	in:scale={{ start: 0.9, duration: 200 }}
 	out:fade={{ duration: 150 }}
 >
 	<a
 		href=" "
-		class="flex items-center px-10 py-4 text-lg rounded-t-lg gap-x-4 hover:bg-website-tertiary"
+		class="flex items-center py-3 rounded-t-lg px-7 text-md gap-x-4 hover:bg-website-tertiary"
 	>
-		<img src={grid_icon} alt="grid_icon" class="inline-block w-6" />
+		<img src={grid_icon} alt="grid_icon" class="inline-block w-5" />
 		<p>Freeform</p>
 	</a>
 	<a
 		href=" "
-		class="flex items-center px-10 py-4 text-lg rounded-b-lg gap-x-4 hover:bg-website-tertiary"
+		class="flex items-center py-3 rounded-b-lg px-7 text-md gap-x-4 hover:bg-website-tertiary"
 	>
-		<img src={draw_icon} alt="draw_icon" class="inline-block w-6" />
+		<img src={draw_icon} alt="draw_icon" class="inline-block w-5" />
 		<p>Auto-Arrange</p>
 	</a>
 </div>

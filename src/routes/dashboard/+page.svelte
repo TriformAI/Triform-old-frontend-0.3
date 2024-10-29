@@ -2,7 +2,12 @@
 	import Button from '$lib/components/Button.svelte';
 	import Add from '$lib/icons/add.svg';
 
-	import { canvasToolsModal, statusModal, thresholdModal } from '$lib/stores/modals';
+	import {
+		canvasToolsModal,
+		moduleInfoModal,
+		statusModal,
+		thresholdModal
+	} from '$lib/stores/modals';
 
 	import CanvasToolsModal from '$lib/components/modals/CanvasToolsModal.svelte';
 	import CreateModuleModal from '$lib/components/modals/CreateModuleModal.svelte';
@@ -10,6 +15,7 @@
 	import StatusModal from '$lib/components/modals/StatusModal.svelte';
 	import ThresholdAlertModal from '$lib/components/modals/ThresholdAlertModal.svelte';
 	import AttachTemplate from '$lib/components/modals/AttachTemplate.svelte';
+	import ModuleInfoModal from '$lib/components/modals/ModuleInfoModal.svelte';
 
 	const toggleCreateModuleModal = () => {
 		attachTemplateModal.update((value) => false);
@@ -19,6 +25,11 @@
 	const toggleAttachTemplateModal = () => {
 		createModuleModal.update((value) => false);
 		attachTemplateModal.update((value) => !value);
+	};
+
+	const toggleModuleInfoModal = () => {
+		attachTemplateModal.update((value) => false);
+		moduleInfoModal.update((value) => !value);
 	};
 </script>
 
@@ -38,7 +49,10 @@
 		<CreateModuleModal {toggleCreateModuleModal} {toggleAttachTemplateModal} />
 	{/if}
 	{#if $attachTemplateModal}
-		<AttachTemplate {toggleAttachTemplateModal} {toggleCreateModuleModal} />
+		<AttachTemplate {toggleAttachTemplateModal} {toggleCreateModuleModal} {toggleModuleInfoModal}/>
+	{/if}
+	{#if $moduleInfoModal}
+		<ModuleInfoModal {toggleAttachTemplateModal} {toggleModuleInfoModal} />
 	{/if}
 
 	<div class="relative flex flex-col items-center max-w-xl my-auto top-32">

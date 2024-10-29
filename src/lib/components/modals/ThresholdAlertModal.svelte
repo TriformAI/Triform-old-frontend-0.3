@@ -19,7 +19,7 @@
 >
 	<!-- Modal Header -->
 	<div class="flex items-center justify-between p-6 border-b border-brand-primary-gray">
-		<h3 class="text-xl font-semibold text-left">Threshold Alerts for Metric Name</h3>
+		<h3 class="text-xl font-semibold text-left text-white">Threshold Alerts for Metric Name</h3>
 		<button
 			type="button"
 			class="cursor-pointer w-9"

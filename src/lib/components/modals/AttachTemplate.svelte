@@ -8,7 +8,7 @@
 
 	let searchTerm = $state('');
 
-	let { toggleAttachTemplateModal, toggleCreateModuleModal } = $props();
+	let { toggleAttachTemplateModal, toggleCreateModuleModal, toggleModuleInfoModal } = $props();
 
 	let templates = $state([
 		{
@@ -63,9 +63,9 @@
 	}
 
 	// Computed property to filter variables based on searchTerm
-	let filteredTemplates = $derived(templates.filter((template) =>
-		template.name.toLowerCase().includes(searchTerm.toLowerCase())
-	));
+	let filteredTemplates = $derived(
+		templates.filter((template) => template.name.toLowerCase().includes(searchTerm.toLowerCase()))
+	);
 </script>
 
 <!-- Background Overlay -->
@@ -80,7 +80,7 @@
 	<div class="flex items-center justify-between p-4 border-b border-brand-primary-gray">
 		<div class="flex items-center gap-x-3">
 			<img src={modal_title_icon} alt="modal_title_icon" class="w-6" />
-			<h3 class="text-xl font-semibold text-left">New Action</h3>
+			<h3 class="text-xl font-semibold text-left text-white text-white">New Action</h3>
 		</div>
 		<button type="button" class="cursor-pointer w-9" onclick={toggleAttachTemplateModal}>
 			<img src={modal_cross} alt="Close modal" class="w-9" />
@@ -131,7 +131,7 @@
 					<path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7" />
 				</svg>
 			</div>
-			<div class="grid grid-cols-3 gap-5 place-items-center">
+			<div class="grid grid-cols-3 gap-5 place-items-center h-[15rem] overflow-y-auto">
 				{#if filteredTemplates.length === 0}
 					<div class="col-span-3 text-center text-brand-light-gray">
 						No Templates found with provided search query
@@ -169,7 +169,7 @@
 		<!-- Modal Footer -->
 		<div class="flex justify-between w-full px-6 py-3 border-t border-brand-primary-gray">
 			<Button content={{ text: 'Back' }} on:click={toggleCreateModuleModal} />
-			<Button content={{ text: 'Create' }} />
+			<Button content={{ text: 'Create' }} on:click={toggleModuleInfoModal} />
 		</div>
 	</div>
 </div>

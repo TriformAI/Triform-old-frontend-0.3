@@ -82,7 +82,7 @@
 	<!-- Modal Header -->
 	<div class="flex items-center justify-between p-6 border-b border-brand-primary-gray">
 		<div class="flex items-center gap-x-3">
-			<h3 class="text-xl font-semibold text-left">Available Metrics</h3>
+			<h3 class="text-xl font-semibold text-left text-white">Available Metrics</h3>
 		</div>
 		<button
 			type="button"

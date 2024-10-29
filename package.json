@@ -38,5 +38,10 @@
     "vite": "^5.4.4",
     "vitest": "^2.0.0"
   },
-  "type": "module"
+  "type": "module",
+  "dependencies": {
+    "@monaco-editor/loader": "^1.4.0",
+    "fs": "^0.0.1-security",
+    "path": "^0.12.7"
+  }
 }
