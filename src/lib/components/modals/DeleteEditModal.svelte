@@ -5,19 +5,19 @@
 </script>
 
 <div
-	class="absolute right-4 mt-44  bg-website-primary text-brand-white border border-brand-primary-gray rounded-2xl shadow-lg z-50"
+	class="absolute z-50 border shadow-lg right-4 mt-44 bg-website-primary text-brand-white border-brand-primary-gray rounded-2xl"
 	in:scale={{ start: 0.9, duration: 200 }}
 	out:fade={{ duration: 150 }}
 >
 	<a
 		href=" "
-		class="flex items-center px-10 py-4 text-lg gap-x-4 hover:bg-website-tertiary rounded-t-2xl"
+		class="flex items-center px-8 py-3 text-md gap-x-4 hover:bg-website-tertiary rounded-t-2xl"
 	>
-		<img src={edit} alt="edit" class="inline-block w-6" />
+		<img src={edit} alt="edit" class="inline-block w-5" />
 		<p>Edit</p>
 	</a>
-	<a href=" " class="flex items-center px-10 py-4 text-lg gap-x-4 hover:bg-website-tertiary rounded-b-2xl">
-		<img src={delete_icon} alt="delte_icon" class="inline-block w-6" />
+	<a href=" " class="flex items-center px-8 py-3 text-md gap-x-4 hover:bg-website-tertiary rounded-b-2xl">
+		<img src={delete_icon} alt="delte_icon" class="inline-block w-5" />
 		<p class="text-primary-red">Delete</p>
 	</a>
 </div>

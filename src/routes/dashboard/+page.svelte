@@ -38,12 +38,13 @@
 		<CreateModuleModal {toggleCreateModuleModal} {toggleAttachTemplateModal} />
 	{/if}
 	{#if $attachTemplateModal}
-		<AttachTemplate {toggleAttachTemplateModal} {toggleCreateModuleModal}/>
+		<AttachTemplate {toggleAttachTemplateModal} {toggleCreateModuleModal} />
 	{/if}
 
-	<!-- This div centers the h2 element vertically -->
 	<div class="relative flex flex-col items-center max-w-xl my-auto top-32">
-		<h2 class="text-2xl leading-normal text-center text-brand-light-gray">
+		<h2
+			class={`text-2xl leading-normal text-center text-brand-light-gray ${($statusModal || $thresholdModal) && 'hidden'}`}
+		>
 			Right-click to Create Action/Agent/API or Drag from Toolbox
 		</h2>
 	</div>

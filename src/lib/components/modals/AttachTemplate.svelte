@@ -6,12 +6,11 @@
 	import search_icon from '$lib/icons/search.svg';
 	import filter from '$lib/icons/filter.svg';
 
-	let searchTerm = '';
+	let searchTerm = $state('');
 
-	export let toggleAttachTemplateModal;
-	export let toggleCreateModuleModal;
+	let { toggleAttachTemplateModal, toggleCreateModuleModal } = $props();
 
-	let templates = [
+	let templates = $state([
 		{
 			name: 'Template A',
 			description:
@@ -40,10 +39,10 @@
 			tags: ['tag1', 'tag2', 'tag3'],
 			selected: false
 		}
-	];
+	]);
 
 	// Track selection for "Start with a Blank Action"
-	let isBlankActionSelected = false;
+	let isBlankActionSelected = $state(false);
 
 	function selectTemplate(selectedTemplate) {
 		// Deselect all templates and the "Blank Action" option
@@ -64,37 +63,37 @@
 	}
 
 	// Computed property to filter variables based on searchTerm
-	$: filteredTemplates = templates.filter((template) =>
+	let filteredTemplates = $derived(templates.filter((template) =>
 		template.name.toLowerCase().includes(searchTerm.toLowerCase())
-	);
+	));
 </script>
 
 <!-- Background Overlay -->
 <div class="fixed inset-0 z-40 bg-black bg-opacity-20 backdrop-blur-lg"></div>
 
 <div
-	class="absolute w-[85rem] mx-auto bg-website-secondary text-brand-tertiary-gray border border-brand-primary-gray rounded-lg shadow-lg z-50"
+	class="absolute w-[75rem] mx-auto bg-website-secondary text-brand-tertiary-gray border border-brand-primary-gray rounded-lg shadow-lg z-50"
 	in:scale={{ start: 0.9, duration: 200 }}
 	out:fade={{ duration: 150 }}
 >
 	<!-- Modal Header -->
-	<div class="flex items-center justify-between p-6 border-b border-brand-primary-gray">
+	<div class="flex items-center justify-between p-4 border-b border-brand-primary-gray">
 		<div class="flex items-center gap-x-3">
 			<img src={modal_title_icon} alt="modal_title_icon" class="w-6" />
-			<h3 class="text-2xl font-semibold text-left">New Action</h3>
+			<h3 class="text-xl font-semibold text-left">New Action</h3>
 		</div>
-		<button type="button" class="cursor-pointer w-9" on:click={toggleAttachTemplateModal}>
+		<button type="button" class="cursor-pointer w-9" onclick={toggleAttachTemplateModal}>
 			<img src={modal_cross} alt="Close modal" class="w-9" />
 		</button>
 	</div>
 
 	<!-- Modal Body -->
 	<div class="rounded-b-lg bg-website-primary">
-		<div class="px-6 py-8 space-y-8">
+		<div class="px-6 py-8 space-y-5">
 			<!-- Blank Action Button -->
 			<button
-				class={`${isBlankActionSelected && 'bg-website-tertiary border-white'} w-full px-4 py-3 text-xl text-center duration-100 ease-linear border rounded-lg cursor-pointer border-brand-primary-gray hover:bg-website-tertiary`}
-				on:click={selectBlankAction}
+				class={`${isBlankActionSelected && 'bg-website-tertiary border-white'} w-full p-4 text-xl text-center duration-100 ease-linear border rounded-lg cursor-pointer border-brand-primary-gray hover:bg-website-tertiary`}
+				onclick={selectBlankAction}
 			>
 				<h3 class="mb-3 font-bold">Start with a Blank Action</h3>
 				<p class="font-thin">No pre-filled code, providing a clean slate.</p>
@@ -141,9 +140,9 @@
 					{#each filteredTemplates as template}
 						<button
 							class={`${template.selected ? 'bg-website-tertiary border-white' : 'hover:bg-website-tertiary border-brand-primary-gray'} flex items-center justify-between w-full duration-200 ease-in-out border rounded-lg cursor-pointer group`}
-							on:click={() => selectTemplate(template)}
+							onclick={() => selectTemplate(template)}
 						>
-							<div class="flex flex-col w-full px-6 py-3 overflow-hidden">
+							<div class="flex flex-col w-full px-6 py-2 overflow-hidden">
 								<div class="flex items-center justify-between w-full">
 									<div>
 										<h3 class="my-1 text-xl font-bold text-left text-white">{template.name}</h3>
@@ -168,7 +167,7 @@
 		</div>
 
 		<!-- Modal Footer -->
-		<div class="flex justify-between w-full p-6 border-t border-brand-primary-gray">
+		<div class="flex justify-between w-full px-6 py-3 border-t border-brand-primary-gray">
 			<Button content={{ text: 'Back' }} on:click={toggleCreateModuleModal} />
 			<Button content={{ text: 'Create' }} />
 		</div>

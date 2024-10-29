@@ -1,8 +1,8 @@
 <script>
 	import logo from '$lib/images/Logo.svg';
 	import github_mark_logo from '$lib/images/github-mark-white.svg';
-	let showPassword = false;
-	let showConfirmPassword = false;
+	let showPassword = $state(false);
+	let showConfirmPassword = $state(false);
 </script>
 
 <section>
@@ -49,8 +49,9 @@
 							/>
 							{#if !showPassword}
 								<button
+									aria-label="Show Password"
 									class="absolute inset-y-0 w-5 right-3"
-									on:click={() => (showPassword = !showPassword)}
+									onclick={() => (showPassword = !showPassword)}
 								>
 									<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 576 512">
 										<path
@@ -61,8 +62,9 @@
 								</button>
 							{:else}
 								<button
+									aria-label="Hide Password"
 									class="absolute inset-y-0 w-5 right-3"
-									on:click={() => (showPassword = !showPassword)}
+									onclick={() => (showPassword = !showPassword)}
 								>
 									<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 512">
 										<path
@@ -90,7 +92,8 @@
 							{#if !showConfirmPassword}
 								<button
 									class="absolute inset-y-0 w-5 right-3"
-									on:click={() => (showConfirmPassword = !showConfirmPassword)}
+									aria-label="Show Password"
+									onclick={() => (showConfirmPassword = !showConfirmPassword)}
 								>
 									<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 576 512">
 										<path
@@ -102,7 +105,8 @@
 							{:else}
 								<button
 									class="absolute inset-y-0 w-5 right-3"
-									on:click={() => (showConfirmPassword = !showConfirmPassword)}
+									aria-label="Hide Password"
+									onclick={() => (showConfirmPassword = !showConfirmPassword)}
 								>
 									<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 512">
 										<path
@@ -187,7 +191,7 @@
 					<p class="mx-3 font-mono text-xs font-bold tracking-tighter text-white sm:text-sm">
 						Register with Github
 					</p>
-					<p><x-heroicon-o-arrow-right class="w-5 h-5 text-white" /></p>
+					<p><x-heroicon-o-arrow-right class="w-5 h-5 text-white"></x-heroicon-o-arrow-right></p>
 				</a>
 				<h3 class="text-xs text-center text-gray-400 truncate">
 					Already have an account <a

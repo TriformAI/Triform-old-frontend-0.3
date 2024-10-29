@@ -10,7 +10,7 @@
 	import dots from '$lib/icons/dots.svg';
 	import DeleteEditModal from './DeleteEditModal.svelte';
 
-	let pined_unpined = false;
+	let pined_unpined = $state(false);
 
 	function togglePined() {
 		pined_unpined = !pined_unpined;
@@ -18,7 +18,7 @@
 </script>
 
 <button
-	class="absolute w-[95%] mx-auto bottom-28 right-14 bg-website-secondary text-brand-tertiary-gray border border-brand-primary-gray rounded-lg shadow-lg z-50"
+	class="absolute z-50 w-[90%] right-20 border rounded-lg shadow-lg bottom-28 bg-website-secondary text-brand-tertiary-gray border-brand-primary-gray"
 	in:scale={{ start: 0.9, duration: 200 }}
 	out:fade={{ duration: 150 }}
 >
@@ -27,21 +27,21 @@
 		<div class="flex items-center justify-between">
 			<div class="flex items-center gap-x-3">
 				<img src={modal_title_icon} alt="modal_title_icon" class="w-6" />
-				<h3 class="text-2xl font-semibold text-left">Logs and Console</h3>
+				<h3 class="text-xl font-semibold text-left">Logs and Console</h3>
 			</div>
 			<div class="flex items-center gap-x-10">
 				<img src={search_icon} alt="search" class="w-6" />
 				<img src={filter} alt="filter" class="w-6" />
 				<div class="pl-8 border-l border-l-brand-primary-gray">
 					{#if pined_unpined}
-						<button type="button" class="w-6 cursor-pointer" on:click={togglePined} aria-label="Pin">
+						<button aria-label="pinned" type="button" class="w-6 cursor-pointer" onclick={togglePined} aria-label="Pin">
 							<img src={pined} alt="pined" class="w-6" />
 						</button>
 					{:else}
 						<button
 							type="button"
 							class="w-6 cursor-pointer"
-							on:click={togglePined}
+							onclick={togglePined}
 							aria-label="Unpin"
 						>
 							<img src={unpined} alt="unpined" class="w-6" />
@@ -53,7 +53,7 @@
 	</div>
 
 	<!-- Collapsible Category List -->
-	<div class="space-y-4 overflow-y-auto text-xl text-left p-7 bg-website-primary">
+	<div class="px-4 py-6 space-y-4 text-xl text-left truncate bg-website-primary">
 		<h3>Lorem ipsum dolor sit amet consectetur adipisicing elit. Mollitia, officia!</h3>
 		<h3 class="text-primary-red">
 			Lorem ipsum dolor sit amet consectetur adipisicing elit. Mollitia, officia!

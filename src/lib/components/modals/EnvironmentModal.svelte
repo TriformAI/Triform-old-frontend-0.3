@@ -8,9 +8,9 @@
 	import dots from '$lib/icons/dots.svg';
 	import DeleteEditModal from './DeleteEditModal.svelte';
 
-	let pined_unpined = false;
-	let edit_delete_modal = false;
-	let activeIndex = null; // Store the active index for the modal
+	let pined_unpined = $state(false);
+	let edit_delete_modal = $state(false);
+	let activeIndex = $state(null); // Store the active index for the modal
 
 	function togglePined() {
 		pined_unpined = !pined_unpined;
@@ -42,7 +42,7 @@
 		}
 	}
 
-	let variables = [
+	let variables = $state([
 		{
 			key: 'Variable A',
 			value: '123456',
@@ -62,29 +62,30 @@
 			key: 'Variable D',
 			value: 'abcde',
 			visible: false
-		},
-	];
+		}
+	]);
 </script>
 
-<button
-	class="absolute left-8 top-44 mt-2 w-96 bg-website-secondary text-brand-tertiary-gray border border-brand-primary-gray rounded-lg shadow-lg z-50"
+<a
+	href="#environment-modal"
+	class="absolute z-50 mt-2 border rounded-lg shadow-lg left-8 top-40 w-96 bg-website-secondary text-brand-tertiary-gray border-brand-primary-gray"
 	in:scale={{ start: 0.9, duration: 200 }}
 	out:fade={{ duration: 150 }}
-	on:click={handleClickOutside}
+	onclick={handleClickOutside}
 >
 	<!-- Modal Header -->
-	<div class="flex flex-col gap-y-5 py-6 px-4 border-b border-brand-primary-gray">
+	<div class="flex flex-col px-4 py-4 border-b gap-y-5 border-brand-primary-gray">
 		<div class="flex items-center justify-between">
 			<div class="flex items-center gap-x-3">
 				<img src={modal_title_icon} alt="modal_title_icon" class="w-6" />
-				<h3 class="text-2xl font-semibold text-left">Environment Variables</h3>
+				<h3 class="text-xl font-semibold text-left">Environment Variables</h3>
 			</div>
 			{#if pined_unpined}
-				<button type="button" class="w-6 cursor-pointer" on:click={togglePined} aria-label="Pin">
+				<button type="button" class="w-6 cursor-pointer" onclick={togglePined} aria-label="Pin">
 					<img src={pined} alt="pined" class="w-6" />
 				</button>
 			{:else}
-				<button type="button" class="w-6 cursor-pointer" on:click={togglePined} aria-label="Unpin">
+				<button type="button" class="w-6 cursor-pointer" onclick={togglePined} aria-label="Unpin">
 					<img src={unpined} alt="unpined" class="w-6" />
 				</button>
 			{/if}
@@ -92,22 +93,24 @@
 	</div>
 
 	<!-- Collapsible Category List -->
-	<div class="py-3 overflow-y-auto h-[32rem] bg-website-primary">
+	<div class="py-3 overflow-y-auto h-[25rem] bg-website-primary">
 		{#each variables as category, i}
 			<div
 				class={`flex items-center justify-between w-full duration-200 ease-in-out group
 				${activeIndex === i ? 'bg-website-tertiary' : `${!edit_delete_modal && 'hover:bg-website-tertiary'}`}`}
 			>
-				<button class="flex flex-col w-full px-6 py-4">
-					<h3 class="my-1 text-lg">{category.key}</h3>
+				<button class="flex flex-col w-full px-6 py-3">
+					<h3 class="my-1 text-md">{category.key}</h3>
 					{#if category.visible}
 						<p>{category.value}</p>
 					{:else}
 						<p>*******</p>
 					{/if}
 				</button>
-				<div class={`items-center hidden mr-3 duration-200 ease-in-out ${!edit_delete_modal && "group-hover:flex"} gap-x-4`}>
-					<button class="w-6" on:click={() => toggleVisibility(i)} aria-label="Toggle Value">
+				<div
+					class={`items-center hidden mr-3 duration-200 ease-in-out ${!edit_delete_modal && 'group-hover:flex'} gap-x-4`}
+				>
+					<button class="w-5" onclick={() => toggleVisibility(i)} aria-label="Toggle Value">
 						{#if category.visible}
 							<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 576 512">
 								<path
@@ -126,8 +129,8 @@
 					</button>
 					<button
 						type="button"
-						class="w-6 cursor-pointer"
-						on:click={(e) => {
+						class="w-5 cursor-pointer"
+						onclick={(e) => {
 							e.stopPropagation();
 							toggleEditDeleteModal(i);
 						}}
@@ -145,7 +148,9 @@
 	</div>
 
 	<!-- Modal Footer -->
-	<div class="flex items-center justify-center p-6 bg-website-primary border-t border-brand-primary-gray">
+	<div
+		class="flex items-center justify-center p-6 border-t bg-website-primary border-brand-primary-gray"
+	>
 		<Button content={{ width: 'full', icon: Add, text: 'New Variable' }} />
 	</div>
-</button>
+</a>

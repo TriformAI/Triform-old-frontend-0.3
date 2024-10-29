@@ -4,8 +4,7 @@
 	import modal_title_icon from '$lib/icons/Modal_Title_Icon.svg';
 	import modal_cross from '$lib/icons/modal_cross.svg';
 
-	export let toggleCreateModuleModal;
-	export let toggleAttachTemplateModal;
+	let { toggleCreateModuleModal, toggleAttachTemplateModal } = $props();
 
 	let environmentVariables = ['Variable 1', 'Variable 2', 'Variable 3', 'Variable 4', 'Variable 5'];
 </script>
@@ -22,9 +21,9 @@
 	<div class="flex items-center justify-between p-6 border-b border-brand-primary-gray">
 		<div class="flex items-center gap-x-3">
 			<img src={modal_title_icon} alt="modal_title_icon" class="w-6" />
-			<h3 class="text-2xl font-semibold text-left">New Action</h3>
+			<h3 class="text-xl font-semibold text-left">New Action</h3>
 		</div>
-		<button type="button" class="cursor-pointer w-9" on:click={toggleCreateModuleModal}>
+		<button type="button" class="cursor-pointer w-9" onclick={toggleCreateModuleModal}>
 			<img src={modal_cross} alt="Close modal" class="w-9" />
 		</button>
 	</div>

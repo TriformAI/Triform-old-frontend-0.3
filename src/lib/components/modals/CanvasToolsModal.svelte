@@ -11,7 +11,7 @@
 	/**
 	 * @type {{ id: number; icon: string; alt: string; visibleOnToolbar: boolean; }[]}
 	 */
-	let moreIcons;
+	let moreIcons = $state();
 	iconsStore.subscribe((value) => {
 		moreIcons = value.filter((icon) => !icon.visibleOnToolbar);
 	});
@@ -28,12 +28,12 @@
 	<div class="flex items-center justify-between p-6 border-b border-brand-primary-gray">
 		<div class="flex items-center gap-x-3">
 			<img src={modal_title_icon} alt="modal_title_icon" class="w-6" />
-			<h3 class="text-2xl font-semibold text-left">Available tools in the More Menu</h3>
+			<h3 class="text-xl font-semibold text-left">Available tools in the More Menu</h3>
 		</div>
 		<button
 			type="button"
 			class="cursor-pointer w-9"
-			on:click={() => canvasToolsModal.update((value) => false)}
+			onclick={() => canvasToolsModal.update((value) => false)}
 		>
 			<img src={modal_cross} alt="Close modal" class="w-9" />
 		</button>
@@ -44,7 +44,7 @@
 		{#each moreIcons as { id, icon, alt }}
 			<button
 				class="relative p-2 cursor-pointer bg-website-tertiary rounded-xl"
-				on:click={() => toggleIconVisibility(id)}
+				onclick={() => toggleIconVisibility(id)}
 			>
 				<img {alt} src={icon} class="w-8" />
 				<div class="absolute inset-y-0 right-0 top-10">

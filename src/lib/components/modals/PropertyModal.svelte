@@ -1,23 +1,17 @@
 <script>
 	import { fade, scale } from 'svelte/transition';
 	import modal_title_icon from '$lib/icons/Modal_Title_Icon.svg';
-	import search_icon from '$lib/icons/search.svg';
-	import filter from '$lib/icons/filter.svg';
 	import unpined from '$lib/icons/unpined.svg';
 	import pined from '$lib/icons/pined.svg';
-	import Button from '$lib/components/Button.svelte';
-	import Add from '$lib/icons/add.svg';
-	import dots from '$lib/icons/dots.svg';
-	import DeleteEditModal from './DeleteEditModal.svelte';
 
-	let pined_unpined = false;
+	let pined_unpined = $state(false);
 	let activeIndex = null; // Store the active index for the modal
 
 	function togglePined() {
 		pined_unpined = !pined_unpined;
 	}
 
-	let properties = [
+	let properties = $state([
 		{
 			name: 'Property Category A',
 			collapsed: false
@@ -26,7 +20,7 @@
 			name: 'Property Category B',
 			collapsed: false
 		}
-	];
+	]);
 
 	// Function to toggle the collapsed state
 	function toggleCategory(index) {
@@ -34,24 +28,24 @@
 	}
 </script>
 
-<button
-	class="absolute right-8 top-44 mt-2 w-96 bg-website-secondary text-brand-tertiary-gray border border-brand-primary-gray rounded-lg shadow-lg z-50"
+<div
+	class="absolute z-50 mt-2 border rounded-lg shadow-lg right-8 top-40 w-96 bg-website-secondary text-brand-tertiary-gray border-brand-primary-gray"
 	in:scale={{ start: 0.9, duration: 200 }}
 	out:fade={{ duration: 150 }}
 >
 	<!-- Modal Header -->
-	<div class="flex flex-col gap-y-5 py-6 px-4 border-b border-brand-primary-gray">
+	<div class="flex flex-col px-4 py-6 border-b gap-y-5 border-brand-primary-gray">
 		<div class="flex items-center justify-between">
 			<div class="flex items-center gap-x-3">
 				<img src={modal_title_icon} alt="modal_title_icon" class="w-6" />
-				<h3 class="text-2xl font-semibold text-left">Properties</h3>
+				<h3 class="text-xl font-semibold text-left">Properties</h3>
 			</div>
 			{#if pined_unpined}
-				<button type="button" class="w-6 cursor-pointer" on:click={togglePined} aria-label="Pin">
+				<button type="button" class="w-6 cursor-pointer" onclick={togglePined} aria-label="Pin">
 					<img src={pined} alt="pined" class="w-6" />
 				</button>
 			{:else}
-				<button type="button" class="w-6 cursor-pointer" on:click={togglePined} aria-label="Unpin">
+				<button type="button" class="w-6 cursor-pointer" onclick={togglePined} aria-label="Unpin">
 					<img src={unpined} alt="unpined" class="w-6" />
 				</button>
 			{/if}
@@ -65,7 +59,7 @@
 				<!-- Category Header -->
 				<button
 					class="flex items-center justify-between w-full px-6 py-4 cursor-pointer"
-					on:click={() => toggleCategory(i)}
+					onclick={() => toggleCategory(i)}
 				>
 					<h3 class="my-1 text-lg font-bold text-white">{category.name}</h3>
 					{#if category.collapsed}
@@ -103,7 +97,7 @@
 									id="Label"
 									type="text"
 									placeholder="Type here..."
-									class="w-full px-4 py-2 bg-website-secondary border border-brand-primary-gray rounded-md"
+									class="w-full px-4 py-2 border rounded-md bg-website-secondary border-brand-primary-gray"
 								/>
 							</div>
 							<div class="w-full mb-4">
@@ -111,7 +105,7 @@
 								<select
 									id="Label"
 									placeholder="Type here..."
-									class="w-full px-4 py-2 bg-website-secondary border border-brand-primary-gray rounded-md"
+									class="w-full px-4 py-2 border rounded-md bg-website-secondary border-brand-primary-gray"
 								>
 									<option>Option 1</option>
 									<option>Option 2</option>
@@ -121,7 +115,7 @@
 							<div class="text-left">
 								<input
 									type="checkbox"
-									class="w-5 h-5 transition-all border rounded shadow appearance-none cursor-pointer  hover:shadow-md border-brand-secondary-gray checked:bg-slate-50 checked:border-slate-800"
+									class="w-5 h-5 transition-all border rounded shadow appearance-none cursor-pointer hover:shadow-md border-brand-secondary-gray checked:bg-slate-50 checked:border-slate-800"
 									id="check"
 								/>
 								<label for="check" class="relative ml-3 text-white bottom-1">Label</label>
@@ -132,4 +126,4 @@
 			</div>
 		{/each}
 	</div>
-</button>
+</div>

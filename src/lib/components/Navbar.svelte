@@ -1,4 +1,6 @@
 <script>
+// @ts-nocheck
+
 	import logo from '$lib/images/Logo.svg';
 	import support_icon from '$lib/icons/support.svg';
 	import profile_logo from '$lib/images/profile_logo.png';
@@ -12,6 +14,7 @@
 	let tabs = [{ id: 1, label: 'Canvas 1' }];
 	let nextTabId = 2;
 	let activeTabId = 1;
+	// @ts-ignore
 	let draggedTab = null; // Track the dragged tab
 
 	function addTab() {
@@ -25,6 +28,7 @@
 		if (id === activeTabId && tabs.length > 0) {
 			activeTabId = tabs[0].id;
 		} else if (tabs.length === 0) {
+			// @ts-ignore
 			activeTabId = null;
 		}
 	}
@@ -59,6 +63,7 @@
 
 {#if $renameMode}
 	<button
+		aria-label="Blur Div"
 		on:click={() => renameMode.update((value) => false)}
 		class="fixed inset-0 z-40 bg-black top-20 bg-opacity-30 backdrop-blur-lg"
 	></button>
@@ -70,10 +75,11 @@
 	<div class="flex items-center overflow-auto gap-x-10">
 		<img alt="triform logo" src={logo} class="relative w-8 lg:w-14" />
 
-		<div class="flex overflow-x-auto">
+		<div class="flex gap-2 overflow-x-auto">
 			{#each tabs as tab}
-				<button
-					class="flex flex-grow items-center px-4 py-3 duration-200 ease-in-out rounded-lg cursor-pointer group gap-x-2 hover:bg-website-tertiary border-r border-r-brand-primary-gray truncate"
+				<a
+					href=" "
+					class={`flex items-center flex-grow px-4 py-3 truncate duration-200 ease-in-out rounded-lg cursor-pointer group gap-x-2 ${tab.id === activeTabId && !$renameMode && 'bg-website-tertiary'} hover:bg-website-tertiary `}
 					on:click={() => setActiveTab(tab.id)}
 					draggable="true"
 					on:dragstart={(event) => handleDragStart(event, tab)}
@@ -91,26 +97,27 @@
 							on:input={(e) => (tab.label = e.target.value)}
 						/>
 					{:else}
-						<h1 class={`text-xl truncate ${tab.id === activeTabId ? 'min-w-40 w-full' : 'w-fit'}`}>
+						<h1 class={`text-lg truncate ${tab.id === activeTabId ? 'min-w-28 w-full' : 'w-fit'}`}>
 							{tab.label}
 						</h1>
 					{/if}
 					<button
 						type="button"
+						aria-label="Close Tab"
 						class="duration-200 ease-in-out opacity-0 cursor-pointer w-7 group-hover:opacity-100"
 						on:click={(e) => {
 							e.stopPropagation();
 							if (tabs.length > 1) removeTab(tab.id);
 						}}
 					>
-						<img src={modal_cross} alt="Close" class="w-7" />
+						<img src={modal_cross} alt="Close" class="w-6" />
 					</button>
-				</button>
+				</a>
 			{/each}
 		</div>
 
 		<button type="button" class="cursor-pointer" on:click={addTab}>
-			<img src={add} alt="add" class="mr-5 w-7" />
+			<img src={add} alt="add" class="w-6 mr-5" />
 		</button>
 	</div>
 
@@ -126,7 +133,7 @@
 				viewBox="0 0 24 24"
 				stroke-width="1.5"
 				stroke="currentColor"
-				class="size-8"
+				class="size-6"
 			>
 				<path
 					stroke-linecap="round"
@@ -141,7 +148,7 @@
 		</button>
 
 		<div class="p-2 cursor-pointer hover:bg-website-tertiary rounded-xl">
-			<img alt="support icon" src={support_icon} class="w-8" />
+			<img alt="support icon" src={support_icon} class="w-6" />
 		</div>
 
 		<div class="relative pl-5 border-l-2 border-l-brand-primary-gray">

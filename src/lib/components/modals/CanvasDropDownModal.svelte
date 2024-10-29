@@ -14,72 +14,72 @@
 </script>
 
 <div
-	class="absolute left-8 top-44 mt-2 w-80 bg-website-primary text-brand-tertiary-gray border border-brand-primary-gray rounded-lg shadow-lg z-50"
+	class="absolute z-50 mt-2 border rounded-lg shadow-lg left-8 top-40 w-80 bg-website-primary text-brand-tertiary-gray border-brand-primary-gray"
 	in:scale={{ start: 0.9, duration: 200 }}
 	out:fade={{ duration: 150 }}
 >
 	<a
 		href=" "
-		class="flex items-center px-10 py-4 text-lg rounded-t-lg gap-x-4 hover:bg-website-tertiary"
+		class="flex items-center px-10 py-3.5 rounded-t-lg text-md gap-x-4 hover:bg-website-tertiary"
 	>
-		<img src={canvas_dropdown_1} alt="canvas_dropdown_1" class="inline-block w-6" />
+		<img src={canvas_dropdown_1} alt="canvas_dropdown_1" class="inline-block w-5" />
 		<p class="flex-shrink-0">Duplicate Canvas</p>
 	</a>
-	<a href=" " class="flex items-center px-10 py-4 text-lg gap-x-4 hover:bg-website-tertiary">
-		<img src={canvas_dropdown_2} alt="canvas_dropdown_2" class="inline-block w-6" />
+	<a href=" " class="flex items-center px-10 py-3.5 text-md gap-x-4 hover:bg-website-tertiary">
+		<img src={canvas_dropdown_2} alt="canvas_dropdown_2" class="inline-block w-5" />
 		<p class="flex-shrink-0">Clear Canvas</p>
 	</a>
 	<button
-		on:click={() => toggleModal(renameMode)}
-		class="flex items-center w-full px-10 py-4 text-lg gap-x-4 hover:bg-website-tertiary"
+		onclick={() => toggleModal(renameMode)}
+		class="flex items-center w-full px-10 py-3.5 text-md gap-x-4 hover:bg-website-tertiary"
 	>
-		<img src={canvas_dropdown_3} alt="canvas_dropdown_3" class="inline-block w-6" />
+		<img src={canvas_dropdown_3} alt="canvas_dropdown_3" class="inline-block w-5" />
 		<p class="flex-shrink-0">Rename Canvas</p>
 	</button>
 	<hr class="border-t-brand-primary-gray" />
 
-	<a href=" " class="flex items-center px-10 py-4 text-lg gap-x-4 hover:bg-website-tertiary">
-		<img src={canvas_dropdown_4} alt="canvas_dropdown_4" class="inline-block w-6" />
+	<a href=" " class="flex items-center px-10 py-3.5 text-md gap-x-4 hover:bg-website-tertiary">
+		<img src={canvas_dropdown_4} alt="canvas_dropdown_4" class="inline-block w-5" />
 		<p class="flex-shrink-0">New Canvas</p>
 	</a>
-	<a href=" " class="flex items-center px-10 py-4 text-lg gap-x-4 hover:bg-website-tertiary">
-		<img src={canvas_dropdown_5} alt="canvas_dropdown_5" class="inline-block w-6" />
+	<a href=" " class="flex items-center px-10 py-3.5 text-md gap-x-4 hover:bg-website-tertiary">
+		<img src={canvas_dropdown_5} alt="canvas_dropdown_5" class="inline-block w-5" />
 		<p class="flex-shrink-0">Save Canvas</p>
 	</a>
-	<a href=" " class="flex items-center px-10 py-4 text-lg gap-x-4 hover:bg-website-tertiary">
-		<img src={canvas_dropdown_6} alt="canvas_dropdown_6" class="inline-block w-6" />
+	<a href=" " class="flex items-center px-10 py-3.5 text-md gap-x-4 hover:bg-website-tertiary">
+		<img src={canvas_dropdown_6} alt="canvas_dropdown_6" class="inline-block w-5" />
 		<p class="flex-shrink-0">Save Canvas As</p>
 	</a>
-	<a href=" " class="flex items-center px-10 py-4 text-lg gap-x-4 hover:bg-website-tertiary">
-		<img src={canvas_dropdown_7} alt="canvas_dropdown_7" class="inline-block w-6" />
+	<a href=" " class="flex items-center px-10 py-3.5 text-md gap-x-4 hover:bg-website-tertiary">
+		<img src={canvas_dropdown_7} alt="canvas_dropdown_7" class="inline-block w-5" />
 		<p class="flex-shrink-0">Import Canvas</p>
 	</a>
-	<a href=" " class="flex items-center px-10 py-4 text-lg gap-x-4 hover:bg-website-tertiary">
-		<img src={canvas_dropdown_8} alt="canvas_dropdown_8" class="inline-block w-6" />
+	<a href=" " class="flex items-center px-10 py-3.5 text-md gap-x-4 hover:bg-website-tertiary">
+		<img src={canvas_dropdown_8} alt="canvas_dropdown_8" class="inline-block w-5" />
 		<p class="flex-shrink-0">Export Canvas</p>
 	</a>
-	<a href=" " class="flex items-center px-10 py-4 text-lg gap-x-4 hover:bg-website-tertiary">
-		<img src={canvas_dropdown_9} alt="canvas_dropdown_9" class="inline-block w-6" />
+	<a href=" " class="flex items-center px-10 py-3.5 text-md gap-x-4 hover:bg-website-tertiary">
+		<img src={canvas_dropdown_9} alt="canvas_dropdown_9" class="inline-block w-5" />
 		<p class="flex-shrink-0">Recent Canvas</p>
 	</a>
 	<hr class="border-t-brand-primary-gray" />
 
 	<button
-		on:click={() => {
+		onclick={() => {
 			toggleModal(canvasToolsModal);
 		}}
-		class="flex items-center w-full px-10 py-4 text-lg gap-x-4 hover:bg-website-tertiary"
+		class="flex items-center w-full px-10 py-3.5 text-md gap-x-4 hover:bg-website-tertiary"
 	>
-		<img src={canvas_dropdown_10} alt="canvas_dropdown_9" class="inline-block w-6" />
+		<img src={canvas_dropdown_10} alt="canvas_dropdown_9" class="inline-block w-5" />
 		<p class="flex-shrink-0">Customize Top Bar</p>
 	</button>
 	<button
-		on:click={() => {
+		onclick={() => {
 			toggleModal(statusModal);
 		}}
-		class="flex items-center w-full px-10 py-4 text-lg rounded-b-lg gap-x-4 hover:bg-website-tertiary"
+		class="flex items-center w-full px-10 py-3.5 rounded-b-lg text-md gap-x-4 hover:bg-website-tertiary"
 	>
-		<img src={canvas_dropdown_10} alt="canvas_dropdown_10" class="inline-block w-6" />
+		<img src={canvas_dropdown_10} alt="canvas_dropdown_10" class="inline-block w-5" />
 		<p class="flex-shrink-0">Customize Status Bar</p>
 	</button>
 </div>

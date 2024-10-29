@@ -8,10 +8,9 @@
 	import Button from '$lib/components/Button.svelte';
 	import Add from '$lib/icons/add.svg';
 
-	let searchTerm = '';
+	let searchTerm = $state('');
 
-	let pined_unpined = false;
-	let activeIndex = null; // Store the active index for the modal
+	let pined_unpined = $state(false);
 
 	function togglePined() {
 		pined_unpined = !pined_unpined;
@@ -44,13 +43,13 @@
 		}
 	];
 	// Computed property to filter variables based on searchTerm
-	$: filteredContainers = containers.filter((variable) =>
+	let filteredContainers = $derived(containers.filter((variable) =>
 		variable.name.toLowerCase().includes(searchTerm.toLowerCase())
-	);
+	));
 </script>
 
-<button
-	class="absolute left-8 top-44 mt-2 w-[30rem] bg-website-secondary text-brand-tertiary-gray border border-brand-primary-gray rounded-lg shadow-lg z-50"
+<div
+	class="absolute left-8 top-40 mt-2 w-[30rem] bg-website-secondary text-brand-tertiary-gray border border-brand-primary-gray rounded-lg shadow-lg z-50"
 	in:scale={{ start: 0.9, duration: 200 }}
 	out:fade={{ duration: 150 }}
 >
@@ -59,14 +58,14 @@
 		<div class="flex items-center justify-between">
 			<div class="flex items-center gap-x-3">
 				<img src={modal_title_icon} alt="modal_title_icon" class="w-6" />
-				<h3 class="text-2xl font-semibold text-left">Storage Management</h3>
+				<h3 class="text-xl font-semibold text-left">Storage Management</h3>
 			</div>
 			{#if pined_unpined}
-				<button type="button" class="w-6 cursor-pointer" on:click={togglePined} aria-label="Pin">
+				<button type="button" class="w-6 cursor-pointer" onclick={togglePined} aria-label="Pin">
 					<img src={pined} alt="pined" class="w-6" />
 				</button>
 			{:else}
-				<button type="button" class="w-6 cursor-pointer" on:click={togglePined} aria-label="Unpin">
+				<button type="button" class="w-6 cursor-pointer" onclick={togglePined} aria-label="Unpin">
 					<img src={unpined} alt="unpined" class="w-6" />
 				</button>
 			{/if}
@@ -116,4 +115,4 @@
 	<div class="flex items-center justify-center p-6 bg-website-primary ">
 		<Button content={{ width: 'full', icon: Add, text: 'New Storage' }} />
 	</div>
-</button>
+</div>

@@ -9,9 +9,9 @@
 	import Add from '$lib/icons/add.svg';
 	import { componentToolsBoxModal, createModuleModal } from '$lib/stores/modals';
 
-	let searchTerm = '';
-	let pined_unpined = false;
-	let categories = [
+	let searchTerm = $state('');
+	let pined_unpined = $state(false);
+	let categories = $state([
 		{
 			name: 'Modules',
 			collapsed: false,
@@ -22,7 +22,7 @@
 			collapsed: false,
 			children: ['Agent Alpha', 'Agent Bravo', 'Agent Charlie']
 		}
-	];
+	]);
 
 	function togglePined() {
 		pined_unpined = !pined_unpined;
@@ -34,7 +34,7 @@
 	}
 
 	// Filtered categories based on search term
-	$: filteredCategories = categories
+	let filteredCategories = $derived(categories
 		.map((category) => {
 			const filteredChildren = category.children.filter((child) =>
 				child.toLowerCase().includes(searchTerm.toLowerCase())
@@ -45,27 +45,27 @@
 				hasMatch: filteredChildren.length > 0
 			};
 		})
-		.filter((category) => category.hasMatch || searchTerm === '');
+		.filter((category) => category.hasMatch || searchTerm === ''));
 </script>
 
 <div
-	class="absolute left-8 top-44 mt-2 w-[30rem] bg-website-secondary text-brand-tertiary-gray border border-brand-primary-gray rounded-lg shadow-lg z-50"
+	class="absolute left-8 top-40 mt-2 w-[27rem] bg-website-secondary text-brand-tertiary-gray border border-brand-primary-gray rounded-lg shadow-lg z-50"
 	in:scale={{ start: 0.9, duration: 200 }}
 	out:fade={{ duration: 150 }}
 >
 	<!-- Search Modal Header -->
-	<div class="flex flex-col gap-y-5 py-6 px-4 border-b border-brand-primary-gray">
+	<div class="flex flex-col px-4 py-4 border-b gap-y-5 border-brand-primary-gray">
 		<div class="flex items-center justify-between">
 			<div class="flex items-center gap-x-3">
 				<img src={modal_title_icon} alt="modal_title_icon" class="w-6" />
-				<h3 class="text-2xl font-semibold text-left">Components Toolbox</h3>
+				<h3 class="text-xl font-semibold text-left">Components Toolbox</h3>
 			</div>
 			{#if pined_unpined}
-				<button type="button" class="w-6 cursor-pointer" on:click={togglePined} aria-label="Pin">
+				<button type="button" class="w-6 cursor-pointer" onclick={togglePined} aria-label="Pin">
 					<img src={pined} alt="pined" class="w-6" />
 				</button>
 			{:else}
-				<button type="button" class="w-6 cursor-pointer" on:click={togglePined} aria-label="Unpin">
+				<button type="button" class="w-6 cursor-pointer" onclick={togglePined} aria-label="Unpin">
 					<img src={unpined} alt="unpined" class="w-6" />
 				</button>
 			{/if}
@@ -76,10 +76,10 @@
 					id="search"
 					type="text"
 					placeholder="Search Anything..."
-					class="w-full px-4 py-4 text-xl bg-website-secondary border border-brand-primary-gray rounded-md"
+					class="w-full px-4 py-2 text-lg border rounded-md bg-website-secondary border-brand-primary-gray"
 					bind:value={searchTerm}
 				/>
-				<img src={search_icon} alt="search_icon" class="absolute inset-y-0 w-6 right-3 top-5" />
+				<img src={search_icon} alt="search_icon" class="absolute inset-y-0 w-6 right-3 top-3" />
 			</div>
 			<div class="p-4 ml-3 cursor-pointer hover:bg-website-tertiary rounded-xl">
 				<img src={filter} alt="filter" class="w-8" />
@@ -88,13 +88,13 @@
 	</div>
 
 	<!-- Collapsible Category List -->
-	<div class="py-3 overflow-y-auto h-[32rem] bg-website-primary">
+	<div class="py-2 overflow-y-auto h-[25rem] bg-website-primary">
 		{#each filteredCategories as category, i}
 			<div>
 				<!-- Category Header -->
 				<button
 					class="flex items-center justify-between w-full px-6 py-4 cursor-pointer"
-					on:click={() => toggleCategory(i)}
+					onclick={() => toggleCategory(i)}
 				>
 					<h3 class="my-1 text-lg font-bold text-white">{category.name}</h3>
 					{#if category.collapsed}
@@ -154,7 +154,7 @@
 	</div>
 	<!-- Modal Footer -->
 	<div
-		class="flex items-center justify-center gap-x-5 p-6 bg-website-primary border-t border-brand-primary-gray"
+		class="flex items-center justify-center px-6 py-3 border-t gap-x-5 bg-website-primary border-brand-primary-gray"
 	>
 		<Button
 			content={{ icon: Add, text: 'New Action' }}

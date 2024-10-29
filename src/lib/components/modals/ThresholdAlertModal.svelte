@@ -4,8 +4,8 @@
 	import Button from '$lib/components/Button.svelte';
 	import { thresholdModal } from '$lib/stores/modals';
 
-	let upperThreshold = '';
-	let lowerThreshold = '';
+	let upperThreshold = $state('');
+	let lowerThreshold = $state('');
 </script>
 
 <!-- Overlay -->
@@ -19,11 +19,11 @@
 >
 	<!-- Modal Header -->
 	<div class="flex items-center justify-between p-6 border-b border-brand-primary-gray">
-		<h3 class="text-2xl font-semibold text-left">Threshold Alerts for Metric Name</h3>
+		<h3 class="text-xl font-semibold text-left">Threshold Alerts for Metric Name</h3>
 		<button
 			type="button"
 			class="cursor-pointer w-9"
-			on:click={() => thresholdModal.update((value) => false)}
+			onclick={() => thresholdModal.update((value) => false)}
 		>
 			<img src={modal_cross} alt="Close modal" class="w-9" />
 		</button>
@@ -160,7 +160,7 @@
 	</div>
 
 	<!-- Modal Footer -->
-	<div class="flex justify-end p-6 py-3 border-t border-brand-primary-gray bg-website-primary">
+	<div class="flex justify-end p-6 py-3 border-t rounded-b-lg border-brand-primary-gray bg-website-primary">
 		<Button content={{ text: 'Save' }} on:click={() => thresholdModal.update((value) => false)} />
 	</div>
 </div>

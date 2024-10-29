@@ -8,33 +8,33 @@
 </script>
 
 <div
-	class="absolute right-0 mt-2 w-72 bg-website-primary text-brand-white border border-brand-primary-gray rounded-2xl shadow-lg z-50"
+	class="absolute right-0 z-50 mt-2 border shadow-lg w-72 bg-website-primary text-brand-white border-brand-primary-gray rounded-2xl"
 	in:scale={{ start: 0.9, duration: 200 }}
 	out:fade={{ duration: 150 }}
 >
 	<a
 		href=" "
-		class="flex items-center px-10 py-4 text-lg gap-x-4 hover:bg-website-tertiary rounded-t-2xl"
+		class="flex items-center px-10 py-4 text-md gap-x-4 hover:bg-website-tertiary rounded-t-2xl"
 	>
-		<img src={account} alt="account" class="inline-block w-6" />
+		<img src={account} alt="account" class="inline-block w-5" />
 		<p>Account</p>
 	</a>
-	<a href=" " class="flex items-center px-10 py-4 text-lg gap-x-4 hover:bg-website-tertiary">
-		<img src={billing} alt="billing" class="inline-block w-6" />
+	<a href=" " class="flex items-center px-10 py-4 text-md gap-x-4 hover:bg-website-tertiary">
+		<img src={billing} alt="billing" class="inline-block w-5" />
 		<p>Billing</p>
 	</a>
-	<a href=" " class="flex items-center px-10 py-4 text-lg gap-x-4 hover:bg-website-tertiary">
-		<img src={team_settings} alt="team settings" class="inline-block w-6" />
+	<a href=" " class="flex items-center px-10 py-4 text-md gap-x-4 hover:bg-website-tertiary">
+		<img src={team_settings} alt="team settings" class="inline-block w-5" />
 		<p>Team Settings</p>
 	</a>
-	<a href=" " class="flex items-center px-10 py-4 text-lg gap-x-4 hover:bg-website-tertiary">
-		<img src={settings} alt="settings" class="inline-block w-6" />
+	<a href=" " class="flex items-center px-10 py-4 text-md gap-x-4 hover:bg-website-tertiary">
+		<img src={settings} alt="settings" class="inline-block w-5" />
 		<p>Settings</p>
 	</a>
 	<hr class="border-t-brand-primary-gray" />
 	<a
 		href=" "
-		class="flex items-center py-4 text-lg px-11 gap-x-4 hover:bg-website-tertiary rounded-b-2xl"
+		class="flex items-center py-4 text-md px-11 gap-x-4 hover:bg-website-tertiary rounded-b-2xl"
 	>
 		<img src={logout} alt="logout" class="inline-block w-4" />
 		<p>Logout</p>

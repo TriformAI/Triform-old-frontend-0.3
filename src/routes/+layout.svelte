@@ -18,6 +18,14 @@
 		propertyModal,
 		consoleModal,
 	} from '$lib/stores/modals';
+	
+	/**
+	 * @typedef {Object} Props
+	 * @property {import('svelte').Snippet} [children]
+	 */
+
+	/** @type {Props} */
+	let { children } = $props();
 
 	//general toggle function for all dropdowns
 	function generalToggle() {
@@ -36,10 +44,10 @@
 	}
 
 	// Reactive statement to check if the route is protected
-	$: isProtectedRoute = ['/dashboard'].some((path) => $page.url.pathname.startsWith(path));
+	let isProtectedRoute = $derived(['/dashboard'].some((path) => $page.url.pathname.startsWith(path)));
 </script>
 
-<body class={`bg-website-dark-primary`}>
+<section class={`bg-website-dark-primary`}>
 	{#if isProtectedRoute}
 		<div class="w-full">
 			<Navbar />
@@ -47,8 +55,8 @@
 		</div>
 	{/if}
 
-	<main on:click={generalToggle}>
-		<slot />
+	<main onclick={generalToggle}>
+		{@render children?.()}
 	</main>
 
 	{#if isProtectedRoute}
@@ -56,5 +64,5 @@
 			<Footer />
 		</footer>
 	{/if}
-</body>
+</section>
 

@@ -5,7 +5,7 @@
 	import { statusModal, thresholdModal } from '$lib/stores/modals';
 	import bell_icon from '$lib/icons/bell_icon.svg';
 
-	let metrics = [
+	let metrics = $state([
 		{
 			name: 'Triform Status',
 			collapsedView: true,
@@ -69,33 +69,33 @@
 			dataAggregation: 'Average',
 			group: 'None'
 		}
-	];
+	]);
 </script>
 
 <div class="fixed inset-0 bg-black bg-opacity-20 backdrop-blur-lg"></div>
 
 <div
-	class={`${$thresholdModal && 'opacity-30'} absolute w-[105rem]  bg-website-secondary top-16  text-brand-tertiary-gray border border-brand-primary-gray rounded-lg shadow-lg z-50`}
+	class={`${$thresholdModal && 'opacity-30'} absolute w-[90%]  bg-website-secondary top-10 text-brand-tertiary-gray border border-brand-primary-gray rounded-lg shadow-lg z-50`}
 	in:scale={{ start: 0.9, duration: 200 }}
 	out:fade={{ duration: 150 }}
 >
 	<!-- Modal Header -->
 	<div class="flex items-center justify-between p-6 border-b border-brand-primary-gray">
 		<div class="flex items-center gap-x-3">
-			<h3 class="text-2xl font-semibold text-left">Available Metrics</h3>
+			<h3 class="text-xl font-semibold text-left">Available Metrics</h3>
 		</div>
 		<button
 			type="button"
 			class="cursor-pointer w-9"
-			on:click={() => statusModal.update((value) => false)}
+			onclick={() => statusModal.update((value) => false)}
 		>
 			<img src={modal_cross} alt="Close modal" class="w-9" />
 		</button>
 	</div>
 
 	<!-- Modal Body -->
-	<div class="px-2 py-5 rounded-b-lg bg-website-primary">
-		<div class="overflow-y-auto max-h-80">
+	<div class="px-2 py-3 rounded-b-lg bg-website-primary">
+		<div class="overflow-y-auto max-h-60">
 			<table class="w-full">
 				<thead class="sticky top-0 z-10 bg-website-primary">
 					<tr class="text-left bg-website-tertiary">
@@ -167,7 +167,7 @@
 								<button
 									type="button"
 									class="flex items-center justify-center w-full"
-									on:click={() => thresholdModal.update((value) => true)}
+									onclick={() => thresholdModal.update((value) => true)}
 								>
 									<img src={bell_icon} alt="bell_icon" class="mx-auto w-7" />
 								</button>

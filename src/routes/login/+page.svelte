@@ -1,7 +1,7 @@
 <script>
 	import logo from '$lib/images/Logo.svg';
 	import github_mark_logo from '$lib/images/github-mark-white.svg';
-	let showPassword = false;
+	let showPassword = $state(false);
 </script>
 
 <section>
@@ -37,8 +37,9 @@
 							/>
 							{#if !showPassword}
 								<button
+									aria-label="Show Password"
 									class="absolute inset-y-0 w-5 right-3"
-									on:click={() => (showPassword = !showPassword)}
+									onclick={() => (showPassword = !showPassword)}
 								>
 									<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 576 512">
 										<path
@@ -49,8 +50,9 @@
 								</button>
 							{:else}
 								<button
+									aria-label="Hide Password"
 									class="absolute inset-y-0 w-5 right-3 "
-									on:click={() => (showPassword = !showPassword)}
+									onclick={() => (showPassword = !showPassword)}
 								>
 									<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 512">
 										<path

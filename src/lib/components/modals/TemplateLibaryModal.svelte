@@ -1,3 +1,4 @@
+<!-- @migration-task Error while migrating Svelte code: `<button>` is invalid inside `<button>` -->
 <script>
 	import { fade, scale } from 'svelte/transition';
 	import modal_title_icon from '$lib/icons/Modal_Title_Icon.svg';
@@ -5,10 +6,7 @@
 	import filter from '$lib/icons/filter.svg';
 	import unpined from '$lib/icons/unpined.svg';
 	import pined from '$lib/icons/pined.svg';
-	import Button from '$lib/components/Button.svelte';
 	import Add from '$lib/icons/add.svg';
-	import dots from '$lib/icons/dots.svg';
-	import DeleteEditModal from './DeleteEditModal.svelte';
 
 	let searchTerm = '';
 
@@ -38,12 +36,7 @@
 				'Lorem ipsum dolor sit amet consectur. Lorem ipsum dolor sit amet consectur. Lorem ipsum dolor sit amet consectur. Lorem ipsum dolor sit amet consectur. Lorem ipsum dolor sit amet consectur. Lorem ipsum dolor sit amet consectur. ',
 			tags: ['tag1', 'tag2', 'tag3']
 		},
-		{
-			name: 'Template D',
-			description:
-				'Lorem ipsum dolor sit amet consectur. Lorem ipsum dolor sit amet consectur. Lorem ipsum dolor sit amet consectur. Lorem ipsum dolor sit amet consectur. Lorem ipsum dolor sit amet consectur. Lorem ipsum dolor sit amet consectur. ',
-			tags: ['tag1', 'tag2', 'tag3']
-		}
+
 	];
 	// Computed property to filter variables based on searchTerm
 	$: filteredTemplates = templates.filter((template) =>
@@ -51,7 +44,7 @@
 	);
 </script>
 
-<button
+<div
 	class="absolute left-8 top-44 mt-2 w-[50rem] bg-website-secondary text-brand-tertiary-gray border border-brand-primary-gray rounded-lg shadow-lg z-50"
 	in:scale={{ start: 0.9, duration: 200 }}
 	out:fade={{ duration: 150 }}
@@ -61,7 +54,7 @@
 		<div class="flex items-center justify-between">
 			<div class="flex items-center gap-x-3">
 				<img src={modal_title_icon} alt="modal_title_icon" class="w-6" />
-				<h3 class="text-2xl font-semibold text-left">Templates Library</h3>
+				<h3 class="text-xl font-semibold text-left">Templates Library</h3>
 			</div>
 			{#if pined_unpined}
 				<button type="button" class="w-6 cursor-pointer" on:click={togglePined} aria-label="Pin">
@@ -79,7 +72,7 @@
 					id="search"
 					type="text"
 					placeholder="Search..."
-					class="w-full px-4 py-4 text-xl border rounded-md bg-website-secondary border-brand-primary-gray"
+					class="w-full px-4 py-3 text-lg border rounded-md bg-website-secondary border-brand-primary-gray"
 					bind:value={searchTerm}
 				/>
 				<img src={search_icon} alt="search_icon" class="absolute inset-y-0 w-6 right-3 top-5" />
@@ -91,15 +84,15 @@
 	</div>
 
 	<!-- Collapsible Category List -->
-	<div class="py-5 overflow-y-auto h-[32rem] bg-website-primary">
+	<div class="py-4 overflow-y-auto h-[25rem] bg-website-primary">
 		{#each filteredTemplates as category, i}
 			<div
 				class={`group flex items-center justify-between w-full duration-200 ease-in-out hover:bg-website-tertiary border-y border-y-brand-primary-gray`}
 			>
-				<button class="flex flex-col w-full px-6 py-4 overflow-hidden">
+				<div class="flex flex-col w-full px-6 py-3 overflow-hidden">
 					<div class="flex items-center justify-between w-full">
 						<div>
-							<h3 class="my-1 text-xl font-bold text-left text-white">{category.name}</h3>
+							<h3 class="my-1 text-lg font-bold text-left text-white">{category.name}</h3>
 							<div class="flex items-center w-full gap-3">
 								{#each category.tags as tag}
 									<span
@@ -133,9 +126,9 @@
 						</div>
 					</div>
 
-					<p class="mt-2 text-left text-sm text-brand-light-gray">{category.description}</p>
-				</button>
+					<p class="mt-2 text-sm text-left text-brand-light-gray">{category.description}</p>
+				</div>
 			</div>
 		{/each}
 	</div>
-</button>
+</div>
