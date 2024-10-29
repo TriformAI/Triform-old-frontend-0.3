@@ -34,18 +34,27 @@
 				<img src={filter} alt="filter" class="w-6" />
 				<div class="pl-8 border-l border-l-brand-primary-gray">
 					{#if pined_unpined}
-						<button aria-label="pinned" type="button" class="w-6 cursor-pointer" onclick={togglePined} aria-label="Pin">
+						<a
+							href=" "
+							aria-label="pinned"
+							class="w-6 cursor-pointer"
+							role="button"
+							tabindex="0"
+							onclick={togglePined}
+						>
 							<img src={pined} alt="pined" class="w-6" />
-						</button>
+						</a>
 					{:else}
-						<button
-							type="button"
+						<a
+							href=" "
 							class="w-6 cursor-pointer"
 							onclick={togglePined}
 							aria-label="Unpin"
+							role="button"
+							tabindex="0"
 						>
 							<img src={unpined} alt="unpined" class="w-6" />
-						</button>
+						</a>
 					{/if}
 				</div>
 			</div>
