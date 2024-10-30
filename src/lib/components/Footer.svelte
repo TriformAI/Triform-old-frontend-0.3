@@ -43,7 +43,7 @@
 
 <div
 	onclick={() => (collapsed = true)}
-	class={`${$statusModal ? 'pt-7' : ''} z-50 w-full px-7 border-t border-t-brand-primary-gray text-brand-white bg-website-primary shadow-2xl duration-200 ease-linear transition-transform ${!collapsed ? 'group-hover:-translate-y-2 py-5 pb-10 cursor-pointer' : ' -translate-y-[70%] cursor-default'}`}
+	class={`${$statusModal ? 'pt-7' : ''} z-50 w-full px-7 border-t border-t-brand-primary-gray text-brand-white bg-website-primary shadow-2xl duration-200 ease-linear transition-transform ${!collapsed ? 'group-hover:-translate-y-2 py-5 pb-9 cursor-pointer' : ' -translate-y-[70%] cursor-default'}`}
 >
 	{#if collapsed}
 		<button
