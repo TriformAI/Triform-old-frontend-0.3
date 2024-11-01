@@ -1,10 +1,50 @@
 <script>
 	import { fade, scale } from 'svelte/transition';
+	import { PUBLIC_API_URL } from '$env/static/public';
+
 	import account from '$lib/icons/account.svg';
 	import billing from '$lib/icons/billings.svg';
 	import team_settings from '$lib/icons/team.svg';
 	import settings from '$lib/icons/settings.svg';
 	import logout from '$lib/icons/logout.svg';
+	import { getAuthToken, removeCookie } from '$lib/stores/cookie';
+	import { goto } from '$app/navigation';
+
+	// Function to handle logout
+	async function handleLogout() {
+		const authToken = getAuthToken();
+
+		if (!authToken) {
+			console.log('No auth token found.');
+			window.location.href = '/login';
+			return;
+		}
+
+		try {
+			const apiUrl = PUBLIC_API_URL;
+			// Call the logout API
+			const response = await fetch(`${apiUrl}/api/v1/logout`, {
+				method: 'POST',
+				headers: {
+					Authorization: `Bearer ${authToken}`,
+					'Content-Type': 'application/json'
+				}
+			});
+
+			if (!response.ok) {
+				console.error('Logout failed:', response.statusText);
+				return;
+			}
+
+			removeCookie('authToken');
+
+			// Redirect to the login page
+			window.location.href = '/login';
+
+		} catch (error) {
+			console.error('An error occurred during logout:', error);
+		}
+	}
 </script>
 
 <div
@@ -35,6 +75,7 @@
 	<a
 		href=" "
 		class="flex items-center py-4 text-md px-11 gap-x-4 hover:bg-website-tertiary rounded-b-2xl"
+		on:click|preventDefault={handleLogout}
 	>
 		<img src={logout} alt="logout" class="inline-block w-4" />
 		<p>Logout</p>

@@ -1,4 +1,5 @@
 <script>
+	import { PUBLIC_API_URL } from '$env/static/public';
 	import logo from '$lib/images/Logo.svg';
 	import github_mark_logo from '$lib/images/github-mark-white.svg';
 
@@ -17,21 +18,22 @@
 		errorMessage = ''; // Reset error message
 		loading = true; // Show loading state
 
-		if(password !== passwordConfirmation) {
+		if (password !== passwordConfirmation) {
 			errorMessage = 'Passwords do not match.';
 			loading = false; // Hide loading state
 			return;
 		}
 
 		//password validation
-		if(password.length < 8) {
+		if (password.length < 8) {
 			errorMessage = 'Password must be at least 8 characters long.';
 			loading = false; // Hide loading state
 			return;
 		}
 
 		try {
-			const response = await fetch('/api/v1/register', {
+			const apiUrl = PUBLIC_API_URL;
+			const response = await fetch(`${apiUrl}/api/v1/register`, {
 				method: 'POST',
 				headers: {
 					'Content-Type': 'application/json'
@@ -46,11 +48,20 @@
 
 			if (!response.ok) {
 				const errorData = await response.json();
-				errorMessage = errorData.message || 'Registration failed.';
+				console.log(errorData);
+				errorMessage = errorData.errors.email || 'Registration failed.';
 			} else {
 				const data = await response.json();
-				console.log('Registration successful:', data);
-				// Redirect or show success message here if needed
+				console.log(data);
+				// Set the token in a cookie
+				document.cookie = `authToken=${data.token}; Path=/; Max-Age=86400; SameSite=Strict`;
+
+				//redirect to the dashboard
+				window.location.href = '/dashboard';
+
+				// You can adjust 'Max-Age' to control the cookie expiration time.
+				// Max-Age=86400 (seconds) sets it to expire after 1 day.
+				// 'SameSite=Strict' prevents it from being sent with cross-site requests.
 			}
 		} catch (error) {
 			errorMessage = 'An error occurred. Please try again.';
@@ -213,7 +224,7 @@
 					</button>
 
 					{#if errorMessage}
-						<p class="mt-2 text-sm text-red-500">{errorMessage}</p>
+						<p class="mt-2 text-sm text-center text-red-500">{errorMessage}</p>
 					{/if}
 				</form>
 				<div class="flex items-center justify-center my-4">

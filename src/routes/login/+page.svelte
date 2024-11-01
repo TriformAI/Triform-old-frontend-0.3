@@ -1,4 +1,5 @@
 <script>
+	import { PUBLIC_API_URL } from '$env/static/public';
 	import logo from '$lib/images/Logo.svg';
 	import github_mark_logo from '$lib/images/github-mark-white.svg';
 
@@ -8,14 +9,14 @@
 	let errorMessage = '';
 	let loading = false;
 
-	// Function to handle form submission
 	async function handleLogin(event) {
 		event.preventDefault();
 		errorMessage = ''; // Reset error message
 		loading = true; // Show loading state
 
 		try {
-			const response = await fetch('/api/v1/login', {
+			const apiUrl = PUBLIC_API_URL;
+			const response = await fetch(`${apiUrl}/api/v1/login`, {
 				method: 'POST',
 				headers: {
 					'Content-Type': 'application/json'
@@ -25,11 +26,20 @@
 
 			if (!response.ok) {
 				const errorData = await response.json();
-				errorMessage = errorData.message || 'Login failed.';
+				console.log(errorData);
+				errorMessage = errorData.errors || 'Login failed.';
 			} else {
 				const data = await response.json();
-				// Process login success, e.g., store token, navigate, etc.
-				console.log('Login successful:', data);
+
+				// Set the token in a cookie
+				document.cookie = `authToken=${data.token}; Path=/; Max-Age=86400; SameSite=Strict`;
+
+				//redirect to the dashboard
+				window.location.href = '/dashboard';
+
+				// You can adjust 'Max-Age' to control the cookie expiration time.
+				// Max-Age=86400 (seconds) sets it to expire after 1 day.
+				// 'SameSite=Strict' prevents it from being sent with cross-site requests.
 			}
 		} catch (error) {
 			errorMessage = 'An error occurred. Please try again.';
@@ -52,6 +62,7 @@
 					<div class="my-4 space-y-2">
 						<label for="email" class="block text-sm text-white">Email Address</label>
 						<input
+							autocomplete="email"
 							id="email"
 							type="email"
 							bind:value={email}
@@ -101,7 +112,9 @@
 								{/if}
 							</button>
 						</div>
-						<a href="/forgot-password" class="flex justify-end text-sm text-white hover:underline">Forgot Password</a>
+						<a href="/forgot-password" class="flex justify-end text-sm text-white hover:underline"
+							>Forgot Password</a
+						>
 						<span id="password-error" class="text-sm text-red-500"></span>
 					</div>
 
@@ -137,7 +150,7 @@
 					</button>
 
 					{#if errorMessage}
-						<p class="mt-2 text-sm text-red-500">{errorMessage}</p>
+						<p class="mt-2 text-sm text-center text-red-500">{errorMessage}</p>
 					{/if}
 				</form>
 				<div class="flex items-center justify-center my-4">
