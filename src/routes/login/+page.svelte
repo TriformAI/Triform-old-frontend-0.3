@@ -8,45 +8,46 @@
 	let password = '';
 	let errorMessage = '';
 	let loading = false;
+	const apiUrl = PUBLIC_API_URL;
+
 
 	async function handleLogin(event) {
 		event.preventDefault();
 		errorMessage = ''; // Reset error message
 		loading = true; // Show loading state
+		console.log(apiUrl);
 
-		try {
-			const apiUrl = PUBLIC_API_URL;
-			console.log(apiUrl);
-			const response = await fetch(`${apiUrl}/api/v1/login`, {
-				method: 'POST',
-				headers: {
-					'Content-Type': 'application/json'
-				},
-				body: JSON.stringify({ email, password })
-			});
+		// try {
+		// 	const response = await fetch(`${apiUrl}/api/v1/login`, {
+		// 		method: 'POST',
+		// 		headers: {
+		// 			'Content-Type': 'application/json'
+		// 		},
+		// 		body: JSON.stringify({ email, password })
+		// 	});
 
-			if (!response.ok) {
-				const errorData = await response.json();
-				console.log(errorData);
-				errorMessage = errorData.errors || 'Login failed.';
-			} else {
-				const data = await response.json();
+		// 	if (!response.ok) {
+		// 		const errorData = await response.json();
+		// 		console.log(errorData);
+		// 		errorMessage = errorData.errors || 'Login failed.';
+		// 	} else {
+		// 		const data = await response.json();
 
-				// Set the token in a cookie
-				document.cookie = `authToken=${data.token}; Path=/; Max-Age=86400; SameSite=Strict`;
+		// 		// Set the token in a cookie
+		// 		document.cookie = `authToken=${data.token}; Path=/; Max-Age=86400; SameSite=Strict`;
 
-				//redirect to the dashboard
-				window.location.href = '/dashboard';
+		// 		//redirect to the dashboard
+		// 		window.location.href = '/dashboard';
 
-				// You can adjust 'Max-Age' to control the cookie expiration time.
-				// Max-Age=86400 (seconds) sets it to expire after 1 day.
-				// 'SameSite=Strict' prevents it from being sent with cross-site requests.
-			}
-		} catch (error) {
-			errorMessage = 'An error occurred. Please try again.';
-		} finally {
-			loading = false; // Hide loading state
-		}
+		// 		// You can adjust 'Max-Age' to control the cookie expiration time.
+		// 		// Max-Age=86400 (seconds) sets it to expire after 1 day.
+		// 		// 'SameSite=Strict' prevents it from being sent with cross-site requests.
+		// 	}
+		// } catch (error) {
+		// 	errorMessage = 'An error occurred. Please try again.';
+		// } finally {
+		// 	loading = false; // Hide loading state
+		// }
 	}
 </script>
 
