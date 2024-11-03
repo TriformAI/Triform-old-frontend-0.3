@@ -21,6 +21,7 @@
     "@sveltejs/kit": "^2.5.27",
     "@sveltejs/vite-plugin-svelte": "^4.0.0",
     "@types/eslint": "^9.6.0",
+    "@types/node": "^22.8.7",
     "amplify-adapter": "^0.1.2",
     "autoprefixer": "^10.4.20",
     "eslint": "^9.0.0",

@@ -66,16 +66,14 @@
 	<!-- Tab Content -->
 	<div class="container px-7">
 		{#if activeTab === 'Edit Action'}
-			<CodeEditor />
+			<!-- <CodeEditor /> -->
+			<h2>Code Editor</h2>
 		{:else if activeTab === 'README.md'}
 			<h2>README Content</h2>
-			
 		{:else if activeTab === 'Requirements'}
 			<h2>Requirements</h2>
-			
 		{:else if activeTab === 'Folder Structure'}
 			<h2>Folder Structure</h2>
-			
 		{/if}
 	</div>
 </div>
