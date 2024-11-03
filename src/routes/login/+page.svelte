@@ -16,6 +16,7 @@
 
 		try {
 			const apiUrl = PUBLIC_API_URL;
+			console.log(apiUrl);
 			const response = await fetch(`${apiUrl}/api/v1/login`, {
 				method: 'POST',
 				headers: {
