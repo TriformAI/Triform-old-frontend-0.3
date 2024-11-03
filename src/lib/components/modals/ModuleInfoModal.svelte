@@ -66,8 +66,7 @@
 	<!-- Tab Content -->
 	<div class="container px-7">
 		{#if activeTab === 'Edit Action'}
-			<!-- <CodeEditor /> -->
-			<h2>Code Editor</h2>
+			<CodeEditor />
 		{:else if activeTab === 'README.md'}
 			<h2>README Content</h2>
 		{:else if activeTab === 'Requirements'}

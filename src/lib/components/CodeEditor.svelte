@@ -7,27 +7,21 @@
 	let monaco: typeof Monaco;
 	let editorContainer: HTMLElement;
 
-	async function loadPythonCode() {
-		const response = await fetch('/api/load-python-code');
-		const data = await response.json();
-
-		console.log(data);
-
-		if (data.code) {
-			return data.code;
-		} else {
-			console.error('Failed to load Python code:', data.error);
-			return '# Error loading Python code';
-		}
-	}
-
 	onMount(async () => {
 		const monacoEditor = await import('monaco-editor');
 		loader.config({ monaco: monacoEditor.default });
 
 		monaco = await loader.init();
 
-		const pythonCode = await loadPythonCode();
+		// Set the initial value to the provided Python code
+		const pythonCode = `
+import json
+
+## start here
+def handler(event, context): ## your code here
+    input = event.get("input_0", "default value")
+    return json.dumps({"input_0": input})
+`;
 
 		editor = monaco.editor.create(editorContainer, {
 			value: pythonCode,
