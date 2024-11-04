@@ -16,13 +16,16 @@
 
 	let pined_unpined = $state(false);
 	let edit_delete_modal = $state(false);
-	let activeIndex = $state(null); // Store the active index for the modal
+	let activeIndex = $state(null);
 	let variables = $state([]);
-	let showAddVariableForm = $state(false); // Control form visibility
-	let newVariable = { name: '', value: '' }; // Form state
+	let showVariableForm = $state(false);
+	let isEditing = false;
+	let editVariableId = null;
+	let variableForm = { name: '', value: '' };
+	let nameInput; // Reference for auto-focus
+	let error = $state(''); // Error message
 
 	onMount(() => {
-		// Fetch environment variables on mount
 		fetchEnvironmentVariables();
 	});
 
@@ -51,32 +54,37 @@
 		}
 	}
 
-	// Add a new environment variable
-	async function addEnvironmentVariable() {
+	// Add or edit an environment variable
+	async function saveVariable() {
+		const { name, value } = variableForm;
+
 		try {
-			const { name, value } = newVariable;
-			const response = await fetch(`${apiUrl}/api/v1/environment/variables`, {
-				method: 'POST',
+			const url = isEditing
+				? `${apiUrl}/api/v1/environment/variables/${editVariableId}`
+				: `${apiUrl}/api/v1/environment/variables`;
+			const method = isEditing ? 'PATCH' : 'POST';
+
+			const response = await fetch(url, {
+				method,
 				headers: {
 					'Content-Type': 'application/json',
 					Authorization: `Bearer ${authToken}`
 				},
-				body: JSON.stringify({
-					name,
-					value,
-					description: ''
-				})
+				body: JSON.stringify({ name, value })
 			});
 
+			const data = await response.json();
 			if (response.ok) {
-				await fetchEnvironmentVariables(); // Refresh variables after adding
-				showAddVariableForm = false; // Hide form after adding
-				newVariable = { name: '', value: '' }; // Reset form
+				await fetchEnvironmentVariables(); // Refresh variables after saving
+				closeForm(); // Close form after saving
+				error = ''; // Clear any previous error
 			} else {
-				console.error('Failed to add variable');
+				error = data.errors.value || data.errors || '';
+				console.error('Error:', error);
 			}
-		} catch (error) {
-			console.error('Error adding variable:', error);
+		} catch (err) {
+			error = 'An unexpected error occurred. Please try again.';
+			console.error('Error saving variable:', err);
 		}
 	}
 
@@ -92,21 +100,52 @@
 
 			if (response.ok) {
 				variables = variables.filter((variable) => variable.id !== id); // Remove from local state
+				error = ''; // Clear any previous error
 			} else {
-				console.error('Failed to delete variable');
+				console.error('Error:', error);
 			}
-		} catch (error) {
-			console.error('Error deleting variable:', error);
+		} catch (err) {
+			error = 'An unexpected error occurred. Please try again.';
+			console.error('Error deleting variable:', err);
 		}
 	}
 
-	// Placeholder function for editing a variable
+	// Function to handle editing a variable
 	function handleEdit(id) {
-		console.log(`Editing variable with ID: ${id}`);
-		// Add your edit logic here
+		const variable = variables.find((v) => v.id === id);
+		if (variable) {
+			isEditing = true;
+			editVariableId = id;
+			variableForm = { name: variable.key, value: variable.value };
+			showVariableForm = true;
+
+			// Auto-focus the name input
+			setTimeout(() => nameInput.focus(), 0);
+		}
 	}
 
-	// Function to toggle visibility of a specific variable
+	// Function to open the add variable form
+	function openAddVariableForm() {
+		isEditing = false;
+		editVariableId = null;
+		variableForm = { name: '', value: '' };
+		showVariableForm = true;
+		error = ''; // Clear any previous error
+
+		// Auto-focus the name input
+		setTimeout(() => nameInput.focus(), 0);
+	}
+
+	// Close the form and reset state
+	function closeForm() {
+		showVariableForm = false;
+		isEditing = false;
+		editVariableId = null;
+		variableForm = { name: '', value: '' };
+		error = ''; // Clear any error message
+	}
+
+	// Toggle visibility of a specific variable
 	function toggleVisibility(index) {
 		variables = variables.map((variable, i) =>
 			i === index ? { ...variable, visible: !variable.visible } : variable
@@ -121,7 +160,7 @@
 		}
 	}
 
-	// Function to toggle the Edit/Delete modal at the specific index
+	// Toggle the Edit/Delete modal at the specific index
 	function toggleEditDeleteModal(index) {
 		if (activeIndex === index) {
 			activeIndex = null;
@@ -130,11 +169,6 @@
 			activeIndex = index;
 			edit_delete_modal = true;
 		}
-	}
-
-	// Function to open the add variable form
-	function openAddVariableForm() {
-		showAddVariableForm = true;
 	}
 </script>
 
@@ -164,26 +198,34 @@
 		</div>
 	</div>
 
-	<!-- Add Variable Form -->
-	{#if showAddVariableForm}
+	<!-- Add/Edit Variable Form -->
+	{#if showVariableForm}
 		<div class="flex flex-col h-[25rem] p-4 overflow-y-auto gap-y-4 bg-website-primary">
 			<input
 				type="text"
-				bind:value={newVariable.name}
-				placeholder="Name"
+				bind:this={nameInput}
+				bind:value={variableForm.name}
+				placeholder="Variable Name"
 				class="w-full p-2 text-white bg-transparent border rounded-md border-brand-primary-gray"
 			/>
 			<input
 				type="text"
-				bind:value={newVariable.value}
-				placeholder="Value"
+				bind:value={variableForm.value}
+				placeholder="Variable Value"
 				class="w-full p-2 text-white bg-transparent border rounded-md border-brand-primary-gray"
 			/>
-			<!-- <textarea
-				bind:value={newVariable.description}
-				placeholder="Description"
-				class="w-full p-2 text-white bg-transparent border rounded-md border-brand-primary-gray"
-			></textarea> -->
+			{#if error}
+				<p class="mt-auto text-sm text-center text-red-500">{error}</p>
+			{/if}
+		</div>
+		<div
+			class="flex items-center justify-end px-6 py-3 border-t gap-x-5 bg-website-primary border-brand-primary-gray"
+		>
+			<Button content={{ width: 'fit', text: 'Cancel' }} on:click={closeForm} />
+			<Button
+				content={{ width: 'fit', text: isEditing ? 'Save Changes' : 'Create' }}
+				on:click={saveVariable}
+			/>
 		</div>
 	{:else}
 		<!-- Collapsible Category List -->
@@ -245,20 +287,8 @@
 				</div>
 			{/each}
 		</div>
-	{/if}
 
-	<!-- Modal Footer -->
-	{#if showAddVariableForm}
-		<div
-			class="flex items-center justify-end px-6 py-3 border-t gap-x-5 bg-website-primary border-brand-primary-gray"
-		>
-			<Button
-				content={{ width: 'fit', text: 'Cancel' }}
-				on:click={() => (showAddVariableForm = false)}
-			/>
-			<Button content={{ width: 'fit', text: 'Create' }} on:click={addEnvironmentVariable} />
-		</div>
-	{:else}
+		<!-- Modal Footer -->
 		<div
 			class="flex items-center justify-center p-6 border-t bg-website-primary border-brand-primary-gray"
 		>
