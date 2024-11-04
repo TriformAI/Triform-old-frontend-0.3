@@ -70,13 +70,6 @@ export const iconsStore = writable([
 		modalComponent: tokenModal
 	},
 	{
-		id: 8,
-		icon: more_tools_1,
-		alt: 'More Tools Icon 1',
-		visibleOnToolbar: false,
-		modalComponent: null
-	},
-	{
 		id: 9,
 		icon: more_tools_2,
 		alt: 'More Tools Icon 2',

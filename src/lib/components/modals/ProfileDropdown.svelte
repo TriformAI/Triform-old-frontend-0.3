@@ -8,11 +8,13 @@
 	import settings from '$lib/icons/settings.svg';
 	import logout from '$lib/icons/logout.svg';
 	import { getAuthToken, removeCookie } from '$lib/stores/cookie';
-	import { goto } from '$app/navigation';
+
+	const apiUrl = PUBLIC_API_URL;
+	const authToken = getAuthToken();
 
 	// Function to handle logout
 	async function handleLogout() {
-		const authToken = getAuthToken();
+		console.log(apiUrl, authToken);
 
 		if (!authToken) {
 			console.log('No auth token found.');
@@ -21,7 +23,6 @@
 		}
 
 		try {
-			const apiUrl = PUBLIC_API_URL;
 			// Call the logout API
 			const response = await fetch(`${apiUrl}/api/v1/logout`, {
 				method: 'POST',
@@ -40,7 +41,6 @@
 
 			// Redirect to the login page
 			window.location.href = '/login';
-
 		} catch (error) {
 			console.error('An error occurred during logout:', error);
 		}

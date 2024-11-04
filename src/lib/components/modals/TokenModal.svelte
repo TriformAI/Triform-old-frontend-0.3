@@ -69,9 +69,9 @@
 		}
 	]);
 	// Computed property to filter variables based on searchTerm
-	let filteredVariables = $derived(variables.filter((variable) =>
-		variable.key.toLowerCase().includes(searchTerm.toLowerCase())
-	));
+	let filteredVariables = $derived(
+		variables.filter((variable) => variable.key.toLowerCase().includes(searchTerm.toLowerCase()))
+	);
 </script>
 
 <a
@@ -164,14 +164,21 @@
 
 				<!-- Render the DeleteEditModal under the current item -->
 				{#if edit_delete_modal && activeIndex === i}
-					<DeleteEditModal style="position: absolute; right: 0; top: 100%;" />
+					<DeleteEditModal
+						style="position: absolute; right: 0; top: 100%;"
+						on:click={(e) => e.stopPropagation()}
+						on:edit={() => console.log('Edit for Token')}
+						on:delete={() => console.log('Delete for Token')}
+					/>
 				{/if}
 			</div>
 		{/each}
 	</div>
 
 	<!-- Modal Footer -->
-	<div class="flex items-center justify-center p-6 border-t bg-website-primary border-brand-primary-gray">
+	<div
+		class="flex items-center justify-center p-6 border-t bg-website-primary border-brand-primary-gray"
+	>
 		<Button content={{ width: 'full', icon: Add, text: 'New API' }} />
 	</div>
 </a>

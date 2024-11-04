@@ -7,45 +7,95 @@
 	import filter from '$lib/icons/filter.svg';
 	import Button from '$lib/components/Button.svelte';
 	import Add from '$lib/icons/add.svg';
+	import Agents from '$lib/icons/Actions.svg';
+	import Actions from '$lib/icons/Agent.svg';
+	import new_folder from '$lib/icons/new_folder.svg';
+	import folder from '$lib/icons/folder.svg';
 	import { componentToolsBoxModal, createModuleModal } from '$lib/stores/modals';
 
 	let searchTerm = $state('');
 	let pined_unpined = $state(false);
-	let categories = $state([
+	let actions = $state([
 		{
-			name: 'Modules',
-			collapsed: false,
-			children: ['Action X', 'Action Y', 'Action Z']
+			name: 'Action A',
+			tags: ['Tag A', 'Tag B', 'Tag C']
 		},
 		{
-			name: 'Agents',
-			collapsed: false,
-			children: ['Agent Alpha', 'Agent Bravo', 'Agent Charlie']
+			name: 'Action B',
+			tags: ['Tag A', 'Tag B', 'Tag C']
+		},
+		{
+			name: 'Action A',
+			tags: ['Tag A', 'Tag B', 'Tag C']
+		},
+		{
+			name: 'Action B',
+			tags: ['Tag A', 'Tag B', 'Tag C']
+		},
+		{
+			name: 'Action A',
+			tags: ['Tag A', 'Tag B', 'Tag C']
+		},
+		{
+			name: 'Action B',
+			tags: ['Tag A', 'Tag B', 'Tag C']
+		},
+		{
+			name: 'Action A',
+			tags: ['Tag A', 'Tag B', 'Tag C']
+		},
+		{
+			name: 'Action B',
+			tags: ['Tag A', 'Tag B', 'Tag C']
 		}
 	]);
+
+	let agents = $state([
+		{
+			name: 'Agent A',
+			tags: ['Tag A', 'Tag B', 'Tag C']
+		},
+		{
+			name: 'Agent B',
+			tags: ['Tag A', 'Tag B', 'Tag C']
+		},
+		{
+			name: 'Agent A',
+			tags: ['Tag A', 'Tag B', 'Tag C']
+		},
+		{
+			name: 'Agent B',
+			tags: ['Tag A', 'Tag B', 'Tag C']
+		},
+		{
+			name: 'Agent A',
+			tags: ['Tag A', 'Tag B', 'Tag C']
+		},
+		{
+			name: 'Agent B',
+			tags: ['Tag A', 'Tag B', 'Tag C']
+		},
+		{
+			name: 'Agent A',
+			tags: ['Tag A', 'Tag B', 'Tag C']
+		},
+		{
+			name: 'Agent B',
+			tags: ['Tag A', 'Tag B', 'Tag C']
+		}
+	]);
+
+	// Variable to keep track of the active tab
+	let activeTab = $state('Action');
+
+	// Function to set the active tab
+	function setActiveTab(tab) {
+		activeTab = tab;
+	}
 
 	function togglePined() {
 		pined_unpined = !pined_unpined;
 	}
-
-	// Function to toggle the collapsed state
-	function toggleCategory(index) {
-		categories[index].collapsed = !categories[index].collapsed;
-	}
-
-	// Filtered categories based on search term
-	let filteredCategories = $derived(categories
-		.map((category) => {
-			const filteredChildren = category.children.filter((child) =>
-				child.toLowerCase().includes(searchTerm.toLowerCase())
-			);
-			return {
-				...category,
-				children: filteredChildren,
-				hasMatch: filteredChildren.length > 0
-			};
-		})
-		.filter((category) => category.hasMatch || searchTerm === ''));
 </script>
 
 <div
@@ -70,6 +120,22 @@
 				</button>
 			{/if}
 		</div>
+		<div class="flex items-center w-full my-3 text-sm gap-x-5">
+			<button
+				class="p-1.5 cursor-pointer border-b-white"
+				class:border-b-2={activeTab === 'Action'}
+				onclick={() => setActiveTab('Action')}
+			>
+				Actions
+			</button>
+			<button
+				class="p-1.5 cursor-pointer border-b-white"
+				class:border-b-2={activeTab === 'Agents'}
+				onclick={() => setActiveTab('Agents')}
+			>
+				Agents
+			</button>
+		</div>
 		<div class="flex items-center w-full">
 			<div class="relative w-full">
 				<input
@@ -81,88 +147,79 @@
 				/>
 				<img src={search_icon} alt="search_icon" class="absolute inset-y-0 w-6 right-3 top-3" />
 			</div>
-			<div class="p-4 ml-3 cursor-pointer hover:bg-website-tertiary rounded-xl">
+			<div class="p-4 ml-5 cursor-pointer hover:bg-website-tertiary rounded-xl">
 				<img src={filter} alt="filter" class="w-8" />
+			</div>
+			<div class="p-4 cursor-pointer hover:bg-website-tertiary rounded-xl">
+				<img src={new_folder} alt="new_folder" class="w-8" />
 			</div>
 		</div>
 	</div>
 
-	<!-- Collapsible Category List -->
-	<div class="py-2 overflow-y-auto h-[25rem] bg-website-primary">
-		{#each filteredCategories as category, i}
-			<div>
-				<!-- Category Header -->
-				<button
-					class="flex items-center justify-between w-full px-6 py-4 cursor-pointer"
-					onclick={() => toggleCategory(i)}
-				>
-					<h3 class="my-1 text-lg font-bold text-white">{category.name}</h3>
-					{#if category.collapsed}
-						<svg
-							xmlns="http://www.w3.org/2000/svg"
-							fill="none"
-							viewBox="0 0 24 24"
-							stroke-width="2"
-							stroke="currentColor"
-							class="w-5 h-5"
-						>
-							<path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7" />
-						</svg>
-					{:else}
-						<svg
-							xmlns="http://www.w3.org/2000/svg"
-							fill="none"
-							viewBox="0 0 24 24"
-							stroke-width="2"
-							stroke="currentColor"
-							class="w-5 h-5 transform rotate-180"
-						>
-							<path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7" />
-						</svg>
-					{/if}
-				</button>
-
-				<!-- Child Items (Visible only if the category is not collapsed) -->
-				{#if !category.collapsed}
-					{#if category.children.length > 0}
-						<div class="w-full">
-							{#each category.children as child}
-								<div
-									class="flex items-center w-full px-6 py-4 duration-200 ease-in-out cursor-pointer group gap-x-3 hover:bg-website-tertiary"
+	<div class="overflow-y-auto h-[25rem] bg-website-primary">
+		{#if activeTab == 'Action'}
+			<div class="py-3">
+				<div class="flex items-center w-full py-3 my-2 px-7 hover:bg-website-tertiary">
+					<img src={folder} alt="folder" class="w-6 mr-4" />
+					<div>
+						<h1>Folder Name</h1>
+						<p class="text-xs text-brand-light-gray">3 tools</p>
+					</div>
+				</div>
+				{#each actions as action}
+					<div class="flex items-center w-full px-4 py-3 my-2 hover:bg-website-tertiary">
+						<img src={Actions} alt="actions" class="mr-1" />
+						<div>
+							<h1>{action.name}</h1>
+							<p class="text-xs text-brand-light-gray">Category</p>
+						</div>
+						<div class="flex items-center gap-2 ml-auto">
+							{#each action.tags as tag}
+								<span
+									class="px-2 py-1 text-xs border rounded-md cursor-pointer text-brand-light-gray bg-website-secondary border-white/10 hover:border-white/30"
+									>{tag}</span
 								>
-									<!-- Icon that will be hidden initially and shown on hover -->
-									<img
-										src={modal_title_icon}
-										alt="modal_title_icon"
-										class="w-6 opacity-0 translate-x-[-20px] transition-all duration-200 ease-in-out group-hover:opacity-100 group-hover:translate-x-0"
-									/>
-									<!-- Text that remains visible -->
-									<p
-										class="transition-all translate-x-[-33px] duration-200 ease-in-out group-hover:translate-x-0"
-									>
-										{child}
-									</p>
-								</div>
 							{/each}
 						</div>
-					{:else}
-						<p class="px-6 py-4 text-sm text-brand-light-gray">No results found</p>
-					{/if}
-				{/if}
+					</div>
+				{/each}
 			</div>
-		{/each}
+		{:else}
+			<div class="py-3">
+				{#each agents as agent}
+					<div class="flex items-center w-full px-4 py-3 my-2 hover:bg-website-tertiary">
+						<img src={Agents} alt="agents" class="w-10 mr-2" />
+						<div>
+							<h1>{agent.name}</h1>
+							<p class="text-xs text-brand-light-gray">Category</p>
+						</div>
+						<div class="flex items-center gap-2 ml-auto">
+							{#each agent.tags as tag}
+								<span
+									class="px-2 py-1 text-xs border rounded-md cursor-pointer text-brand-light-gray bg-website-secondary border-white/10 hover:border-white/30"
+									>{tag}</span
+								>
+							{/each}
+						</div>
+					</div>
+				{/each}
+			</div>
+		{/if}
 	</div>
 	<!-- Modal Footer -->
 	<div
 		class="flex items-center justify-center px-6 py-3 border-t gap-x-5 bg-website-primary border-brand-primary-gray"
 	>
-		<Button
-			content={{ icon: Add, text: 'New Action' }}
-			on:click={() => {
-				componentToolsBoxModal.update((value) => false);
-				createModuleModal.update((value) => true);
-			}}
-		/>
-		<Button content={{ icon: Add, text: 'New Agent' }} />
+		{#if activeTab == 'Action'}
+			<Button
+				content={{ width: 'full', icon: Add, text: 'New Action' }}
+				onclick={() => {
+					componentToolsBoxModal.update((value) => false);
+					createModuleModal.update((value) => true);
+				}}
+			/>
+		{:else}
+			<Button content={{ width: 'full', icon: Add, text: 'New Agent' }} />
+		{/if}
 	</div>
 </div>
