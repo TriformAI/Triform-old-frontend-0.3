@@ -213,7 +213,7 @@
 		{#if activeTab == 'Action'}
 			<Button
 				content={{ width: 'full', icon: Add, text: 'New Action' }}
-				onclick={() => {
+				on:click={() => {
 					componentToolsBoxModal.update((value) => false);
 					createModuleModal.update((value) => true);
 				}}

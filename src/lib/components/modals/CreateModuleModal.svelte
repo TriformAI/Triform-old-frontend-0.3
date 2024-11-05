@@ -3,10 +3,40 @@
 	import Button from '$lib/components/Button.svelte';
 	import modal_title_icon from '$lib/icons/Modal_Title_Icon.svg';
 	import modal_cross from '$lib/icons/modal_cross.svg';
+	import { PUBLIC_API_URL } from '$env/static/public';
+	import { getAuthToken } from '$lib/stores/cookie';
+	import { onMount } from 'svelte';
 
 	let { toggleCreateModuleModal, toggleAttachTemplateModal } = $props();
 
-	let environmentVariables = ['Variable 1', 'Variable 2', 'Variable 3', 'Variable 4', 'Variable 5'];
+	let environmentVariables = $state([]);
+
+	let apiUrl = PUBLIC_API_URL;
+	let authToken = getAuthToken();
+
+	async function fetchEnvironmentVariables() {
+		try {
+			const response = await fetch(`${apiUrl}/api/v1/environment/variables`, {
+				method: 'GET',
+				headers: {
+					Authorization: `Bearer ${authToken}`
+				}
+			});
+			const data = await response.json();
+			environmentVariables = data.data.map((item) => ({
+				id: item.id,
+				key: item.name,
+				value: item.value,
+				visible: false
+			}));
+		} catch (error) {
+			console.error('Error fetching variables:', error);
+		}
+	}
+
+	onMount(() => {
+		fetchEnvironmentVariables();
+	});
 </script>
 
 <!-- Background Overlay -->
@@ -107,7 +137,7 @@
 										</svg>
 									</span>
 								</label>
-								<span class="text-lg text-brand-light-gray">{variable}</span>
+								<span class="text-lg text-brand-light-gray">{variable.key}</span>
 							</div>
 						{/each}
 					</div>
