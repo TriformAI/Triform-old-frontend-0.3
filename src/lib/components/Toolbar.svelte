@@ -1,7 +1,7 @@
 <script>
 	// @ts-nocheck
+	import { useSvelteFlow } from '@xyflow/svelte'; // Import based on your library's setup
 
-	// toolbar icons
 	import undo_logo from '$lib/icons/undo.svg';
 	import redo_logo from '$lib/icons/redo.svg';
 
@@ -38,6 +38,8 @@
 	import TemplateLibaryModal from './modals/TemplateLibaryModal.svelte';
 	import PropertyModal from './modals/PropertyModal.svelte';
 	import ConsoleModal from './modals/ConsoleModal.svelte';
+
+	const { zoomOut, zoomIn, fitView } = useSvelteFlow();
 
 	let icons = $state();
 	iconsStore.subscribe((value) => {
@@ -154,15 +156,15 @@
 	<!-- Zoom in Zoom out Fit screen -->
 	<div class="flex items-center gap-x-3">
 		<div class="flex items-center gap-x-3">
-			<div class="p-2 cursor-pointer hover:bg-website-tertiary rounded-xl">
+			<button onclick={zoomIn} class="p-2 cursor-pointer hover:bg-website-tertiary rounded-xl">
 				<img alt="zoom_in" src={zoom_in} class="w-6" />
-			</div>
-			<div class="p-2 cursor-pointer hover:bg-website-tertiary rounded-xl">
+			</button>
+			<button onclick={zoomOut} class="p-2 cursor-pointer hover:bg-website-tertiary rounded-xl">
 				<img alt="zoom_out" src={zoom_out} class="w-6" />
-			</div>
-			<div class="p-2 cursor-pointer hover:bg-website-tertiary rounded-xl">
+			</button>
+			<button onclick={fitView} class="p-2 cursor-pointer hover:bg-website-tertiary rounded-xl">
 				<img alt="fit_screen" src={fit_screen} class="w-6" />
-			</div>
+			</button>
 		</div>
 
 		<!-- Grid  -->

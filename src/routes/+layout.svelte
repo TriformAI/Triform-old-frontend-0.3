@@ -1,6 +1,7 @@
 <script>
 	import '../app.css';
 	import Navbar from '$lib/components/Navbar.svelte';
+	import { SvelteFlowProvider } from '@xyflow/svelte';
 	import Toolbar from '$lib/components/Toolbar.svelte';
 	import Footer from '$lib/components/Footer.svelte';
 	import { page } from '$app/stores';
@@ -68,22 +69,24 @@
 </script>
 
 <section class={`bg-website-dark-primary`}>
-	{#if isProtectedRoute}
-		<div class="w-full">
-			<Navbar />
-			<Toolbar />
-		</div>
+	<SvelteFlowProvider>
+		{#if isProtectedRoute}
+			<div class="w-full">
+				<Navbar />
+				<Toolbar />
+			</div>
 
-		<main onclick={generalToggle}>
-			{@render children?.()}
-		</main>
+			<main onclick={generalToggle}>
+				{@render children?.()}
+			</main>
 
-		<footer class=" group">
-			<Footer />
-		</footer>
-	{:else}
-		<main onclick={generalToggle}>
-			{@render children?.()}
-		</main>
-	{/if}
+			<footer class=" group">
+				<Footer />
+			</footer>
+		{:else}
+			<main onclick={generalToggle}>
+				{@render children?.()}
+			</main>
+		{/if}
+	</SvelteFlowProvider>
 </section>
