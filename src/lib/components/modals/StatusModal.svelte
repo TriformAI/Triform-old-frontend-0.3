@@ -75,7 +75,7 @@
 <div class="fixed inset-0 bg-black bg-opacity-20 backdrop-blur-lg"></div>
 
 <div
-	class={`${$thresholdModal && 'opacity-30'} absolute w-[90%]  bg-website-secondary top-10 text-brand-tertiary-gray border border-brand-primary-gray rounded-lg shadow-lg z-50`}
+	class={`${$thresholdModal && 'opacity-30'} absolute w-[90%] right-24 bg-website-secondary top-20 text-brand-tertiary-gray border border-brand-primary-gray rounded-lg shadow-lg z-50`}
 	in:scale={{ start: 0.9, duration: 200 }}
 	out:fade={{ duration: 150 }}
 >

@@ -7,7 +7,7 @@
 	import filter from '$lib/icons/filter.svg';
 	import Button from '$lib/components/Button.svelte';
 	import Add from '$lib/icons/add.svg';
-	import folder from '$lib/icons/folder.svg';
+	import folder_icon from '$lib/icons/folder.svg';
 	import new_folder from '$lib/icons/new_folder.svg';
 	import dots from '$lib/icons/dots.svg';
 	import DeleteEditModal from './DeleteEditModal.svelte';
@@ -17,16 +17,19 @@
 	import Spinner from '../Spinner.svelte';
 	import Agents from '$lib/icons/Actions.svg';
 	import Actions from '$lib/icons/Agent.svg';
-	
+	import { componentToolsBoxModal, createModuleModal } from '$lib/stores/modals';
+
 	let apiUrl = PUBLIC_API_URL;
 	let authToken = getAuthToken();
 
 	let searchTerm = $state('');
 	let pined_unpined = $state(false);
 	let folders = $state([]);
+
 	let filteredFolders = $derived(
 		folders.filter((folder) => folder.name.toLowerCase().includes(searchTerm.toLowerCase()))
 	);
+
 	let showFolderForm = $state(false);
 	let isEditing = false;
 	let editFolderId = null;
@@ -69,7 +72,7 @@
 	]);
 
 	// Variable to keep track of the active tab
-	let activeTab = $state('Action');
+	let activeTab = $state('action');
 
 	// Function to set the active tab
 	function setActiveTab(tab) {
@@ -99,6 +102,7 @@
 			folders = data.data.map((item) => ({
 				id: item.id,
 				name: item.name,
+				type: item.type,
 				created_at: item.created_at
 			}));
 		} catch (error) {
@@ -123,7 +127,7 @@
 					'Content-Type': 'application/json',
 					Authorization: `Bearer ${authToken}`
 				},
-				body: JSON.stringify({ name })
+				body: JSON.stringify({ name, type: activeTab })
 			});
 
 			const data = await response.json();
@@ -239,15 +243,15 @@
 		<div class="flex items-center w-full my-3 text-sm gap-x-5">
 			<button
 				class="p-1.5 cursor-pointer border-b-white"
-				class:border-b-2={activeTab === 'Action'}
-				onclick={() => setActiveTab('Action')}
+				class:border-b-2={activeTab === 'action'}
+				onclick={() => setActiveTab('action')}
 			>
 				Actions
 			</button>
 			<button
 				class="p-1.5 cursor-pointer border-b-white"
-				class:border-b-2={activeTab === 'Agents'}
-				onclick={() => setActiveTab('Agents')}
+				class:border-b-2={activeTab === 'agent'}
+				onclick={() => setActiveTab('agent')}
 			>
 				Agents
 			</button>
@@ -302,38 +306,39 @@
 		</div>
 	{:else}
 		<div class="overflow-y-auto h-[25rem] py-3 bg-website-primary">
-			{#each filteredFolders as Folder, i}
-				<div
-					class="flex items-center justify-between w-full duration-200 ease-in-out group hover:bg-website-tertiary"
-				>
-					<button class="flex items-center w-full px-6 py-3">
-						<img src={folder} alt="folder" class="w-6 mr-4" />
-						<h1 class="truncate w-[13rem] text-left">{Folder.name}</h1>
-					</button>
-					{#if edit_delete_modal && activeIndex === i}
-						<DeleteEditModal
-							on:click={(e) => e.stopPropagation()}
-							on:edit={() => handleEdit(Folder.id)}
-							on:delete={() => handleDelete(Folder.id)}
-						/>
-					{/if}
-					<div class="items-center hidden mr-3 group-hover:flex gap-x-4">
-						<button
-							type="button"
-							class="w-5 cursor-pointer"
-							onclick={(e) => {
-								e.stopPropagation();
-								toggleEditDeleteModal(i);
-							}}
-						>
-							<img src={dots} alt="dots" class="w-6" />
+			{#each filteredFolders as folder, i}
+				{#if folder.type === activeTab}
+					<div
+						class="flex items-center justify-between w-full duration-200 ease-in-out group hover:bg-website-tertiary"
+					>
+						<button class="flex items-center w-full px-6 py-3">
+							<img src={folder_icon} alt="folder" class="w-6 mr-4" />
+							<h1 class="truncate w-[13rem] text-left">{folder.name}</h1>
 						</button>
+						{#if edit_delete_modal && activeIndex === i}
+							<DeleteEditModal
+								on:click={(e) => e.stopPropagation()}
+								on:edit={() => handleEdit(folder.id)}
+								on:delete={() => handleDelete(folder.id)}
+							/>
+						{/if}
+						<div class="items-center hidden mr-3 group-hover:flex gap-x-4">
+							<button
+								type="button"
+								class="w-5 cursor-pointer"
+								onclick={(e) => {
+									e.stopPropagation();
+									toggleEditDeleteModal(i);
+								}}
+							>
+								<img src={dots} alt="dots" class="w-6" />
+							</button>
+						</div>
 					</div>
-				</div>
+				{/if}
 			{/each}
-			{#if activeTab == 'Action'}
-				<div class="py-3">
-
+			{#if activeTab == 'action'}
+				<div>
 					{#each actions as action}
 						<div class="flex items-center w-full px-4 py-3 my-2 hover:bg-website-tertiary">
 							<img src={Actions} alt="actions" class="mr-1" />
@@ -352,8 +357,8 @@
 						</div>
 					{/each}
 				</div>
-			{:else}
-				<div class="py-3">
+			{:else if activeTab == 'agent'}
+				<div>
 					{#each agents as agent}
 						<div class="flex items-center w-full px-4 py-3 my-2 hover:bg-website-tertiary">
 							<img src={Agents} alt="agents" class="w-10 mr-2" />
@@ -375,4 +380,21 @@
 			{/if}
 		</div>
 	{/if}
+
+	<!-- Modal Footer -->
+	<div
+		class="flex items-center justify-center px-6 py-3 border-t gap-x-5 bg-website-primary border-brand-primary-gray"
+	>
+		{#if activeTab === 'action'}
+			<Button
+				content={{ width: 'full', icon: Add, text: 'New Action' }}
+				on:click={() => {
+					componentToolsBoxModal.update((value) => false);
+					createModuleModal.update((value) => true);
+				}}
+			/>
+		{:else if activeTab === 'agent'}
+			<Button content={{ width: 'full', icon: Add, text: 'New Agent' }} />
+		{/if}
+	</div>
 </a>

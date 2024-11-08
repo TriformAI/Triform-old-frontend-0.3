@@ -66,7 +66,16 @@
 	<!-- Tab Content -->
 	<div class="container px-7">
 		{#if activeTab === 'Edit Action'}
-			<CodeEditor />
+			<CodeEditor
+				code={`
+import json
+
+## start here
+def handler(event, context): ## your code here
+    input = event.get("input_0", "default value")
+    return json.dumps({"input_0": input})
+`}
+			/>
 		{:else if activeTab === 'README.md'}
 			<h2>README Content</h2>
 		{:else if activeTab === 'Requirements'}

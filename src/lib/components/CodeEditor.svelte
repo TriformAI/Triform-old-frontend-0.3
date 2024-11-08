@@ -7,6 +7,8 @@
 	let monaco: typeof Monaco;
 	let editorContainer: HTMLElement;
 
+	export let code;
+
 	onMount(async () => {
 		const monacoEditor = await import('monaco-editor');
 		loader.config({ monaco: monacoEditor.default });
@@ -14,14 +16,7 @@
 		monaco = await loader.init();
 
 		// Set the initial value to the provided Python code
-		const pythonCode = `
-import json
-
-## start here
-def handler(event, context): ## your code here
-    input = event.get("input_0", "default value")
-    return json.dumps({"input_0": input})
-`;
+		const pythonCode = code || '';
 
 		editor = monaco.editor.create(editorContainer, {
 			value: pythonCode,

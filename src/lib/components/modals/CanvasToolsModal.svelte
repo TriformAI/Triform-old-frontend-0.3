@@ -20,7 +20,7 @@
 <div class="fixed inset-0 z-40 bg-black top-40 bg-opacity-20 backdrop-blur-lg"></div>
 
 <div
-	class="absolute w-[60rem] mx-auto bg-website-secondary text-brand-tertiary-gray border border-brand-primary-gray rounded-lg shadow-lg z-50"
+	class="absolute w-[60rem] top-96 right-96 mx-auto bg-website-secondary text-brand-tertiary-gray border border-brand-primary-gray rounded-lg shadow-lg z-50"
 	in:scale={{ start: 0.9, duration: 200 }}
 	out:fade={{ duration: 150 }}
 >
