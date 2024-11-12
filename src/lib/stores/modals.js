@@ -22,6 +22,8 @@ export const moduleInfoModal = writable(false);
 export const footerPanel = writable(false);
 export const thresholdModal = writable(false);
 export const renameMode = writable(false);
+export const templateModal = writable(false);
+export const shareCanvaModal = writable(false);
 
 //make a general toggle function for a specific modal as input parameter and make all other modals false
 export function toggleModal(modal) {
@@ -40,6 +42,8 @@ export function toggleModal(modal) {
 	consoleModal.set(false);
 	statusModal.set(false);
 	renameMode.set(false);
+	templateModal.set(false);
+	shareCanvaModal.set(false);
 
 	modal.set(true);
 }

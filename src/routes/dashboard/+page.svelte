@@ -7,17 +7,19 @@
 
 	import Button from '$lib/components/Button.svelte';
 	import Add from '$lib/icons/add.svg';
-
+	import CanvasToolsModal from '$lib/components/modals/CanvasToolsModal.svelte';
+	import CreateModuleModal from '$lib/components/modals/CreateModuleModal.svelte';
 	import {
 		canvasToolsModal,
 		moduleInfoModal,
+		shareCanvaModal,
 		statusModal,
-		thresholdModal
+		thresholdModal,
+		createModuleModal,
+		attachTemplateModal,
+		templateModal,
+		templateLibraryModal,
 	} from '$lib/stores/modals';
-
-	import CanvasToolsModal from '$lib/components/modals/CanvasToolsModal.svelte';
-	import CreateModuleModal from '$lib/components/modals/CreateModuleModal.svelte';
-	import { createModuleModal, attachTemplateModal } from '$lib/stores/modals';
 	import StatusModal from '$lib/components/modals/StatusModal.svelte';
 	import ThresholdAlertModal from '$lib/components/modals/ThresholdAlertModal.svelte';
 	import AttachTemplate from '$lib/components/modals/AttachTemplate.svelte';
@@ -25,6 +27,9 @@
 	import ActionNode from '$lib/components/custom-nodes/ActionNode.svelte';
 	import AgentNode from '$lib/components/custom-nodes/AgentNode.svelte';
 	import ApiNode from '$lib/components/custom-nodes/ApiNode.svelte';
+	import TemplateDetailsModal from '$lib/components/modals/TemplateDetailsModal.svelte';
+	import ShareCanvaModal from '$lib/components/modals/ShareCanvaModal.svelte';
+
 
 	const toggleCreateModuleModal = () => {
 		attachTemplateModal.update((value) => false);
@@ -39,6 +44,15 @@
 	const toggleModuleInfoModal = () => {
 		attachTemplateModal.update((value) => false);
 		moduleInfoModal.update((value) => !value);
+	};
+
+	const toggleTemplateModal = () => {
+		templateLibraryModal.update((value) => false);
+		templateModal.update((value) => !value);
+	};
+
+	const toggleShareCanvaModal = () => {
+		shareCanvaModal.update((value) => !value);
 	};
 
 	const nodeTypes = {
@@ -147,24 +161,6 @@
 <!-- <section
 	class={`flex flex-col justify-center items-center bg-website-dark-primary text-brand-white min-h-[calc(100vh-16.4rem)]`}
 >
-	{#if $canvasToolsModal}
-		<CanvasToolsModal />
-	{/if}
-	{#if $statusModal}
-		<StatusModal />
-	{/if}
-	{#if $thresholdModal}
-		<ThresholdAlertModal />
-	{/if}
-	{#if $createModuleModal}
-		<CreateModuleModal {toggleCreateModuleModal} {toggleAttachTemplateModal} />
-	{/if}
-	{#if $attachTemplateModal}
-		<AttachTemplate {toggleAttachTemplateModal} {toggleCreateModuleModal} {toggleModuleInfoModal} />
-	{/if}
-	{#if $moduleInfoModal}
-		<ModuleInfoModal {toggleAttachTemplateModal} {toggleModuleInfoModal} />
-	{/if} -->
 
 <!-- <div class="relative flex flex-col items-center max-w-xl my-auto top-32">
 		<h2
@@ -199,6 +195,12 @@
 	{/if}
 	{#if $moduleInfoModal}
 		<ModuleInfoModal {toggleAttachTemplateModal} {toggleModuleInfoModal} />
+	{/if}
+	{#if $templateModal}
+		<TemplateDetailsModal {toggleTemplateModal} />
+	{/if}
+	{#if $shareCanvaModal}
+		<ShareCanvaModal {toggleShareCanvaModal}/>
 	{/if}
 	<SvelteFlow {nodes} {edges} {nodeTypes} fitView {snapGrid} {proOptions}>
 		<Background bgColor="#181819" patternColor="#1D1E20" variant="lines" gap={20} size={1} />
