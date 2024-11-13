@@ -76,10 +76,10 @@
 				id="search"
 				type="text"
 				placeholder="Search Anything..."
-				class="w-full px-4 py-3 text-lg border rounded-md bg-website-secondary border-brand-primary-gray"
+				class="w-full px-4 py-3 border rounded-md text-md bg-website-secondary border-brand-primary-gray"
 				bind:value={searchTerm}
 			/>
-			<img src={search_icon} alt="search_icon" class="absolute inset-y-0 w-6 right-3 top-5" />
+			<img src={search_icon} alt="search_icon" class="absolute inset-y-0 w-6 right-3 top-3" />
 		</div>
 	</div>
 

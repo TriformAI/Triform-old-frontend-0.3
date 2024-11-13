@@ -53,15 +53,15 @@
 	</div>
 
 	<!-- Collapsible Category List -->
-	<div class="py-3 overflow-y-auto h-[32rem] bg-website-primary">
+	<div class="py-3 overflow-y-auto h-[29rem] bg-website-primary">
 		{#each properties as category, i}
 			<div>
 				<!-- Category Header -->
 				<button
-					class="flex items-center justify-between w-full px-6 py-4 cursor-pointer"
+					class="flex items-center justify-between w-full px-6 pt-2 cursor-pointer"
 					onclick={() => toggleCategory(i)}
 				>
-					<h3 class="my-1 text-lg font-bold text-white">{category.name}</h3>
+					<h3 class="my-1 font-bold text-white text-md">{category.name}</h3>
 					{#if category.collapsed}
 						<svg
 							xmlns="http://www.w3.org/2000/svg"
@@ -92,20 +92,20 @@
 					<div class="w-full">
 						<div class="w-full px-6 py-4 duration-200 ease-in-out cursor-pointer group gap-x-3">
 							<div class="w-full mb-4">
-								<label for="Label" class="block mb-2 font-medium text-left">Label</label>
+								<label for="Label" class="block mb-2 text-sm font-medium text-left">Label</label>
 								<input
 									id="Label"
 									type="text"
 									placeholder="Type here..."
-									class="w-full px-4 py-2 border rounded-md bg-website-secondary border-brand-primary-gray"
+									class="w-full px-4 py-2 text-sm border rounded-md bg-website-secondary border-brand-primary-gray"
 								/>
 							</div>
 							<div class="w-full mb-4">
-								<label for="Label" class="block mb-2 font-medium text-left">Label</label>
+								<label for="Label" class="block mb-2 text-sm font-medium text-left">Label</label>
 								<select
 									id="Label"
 									placeholder="Type here..."
-									class="w-full px-4 py-2 border rounded-md bg-website-secondary border-brand-primary-gray"
+									class="w-full px-4 py-2 text-sm border rounded-md bg-website-secondary border-brand-primary-gray"
 								>
 									<option>Option 1</option>
 									<option>Option 2</option>
@@ -115,10 +115,10 @@
 							<div class="text-left">
 								<input
 									type="checkbox"
-									class="w-5 h-5 transition-all border rounded shadow appearance-none cursor-pointer hover:shadow-md border-brand-secondary-gray checked:bg-slate-50 checked:border-slate-800"
+									class="w-4 h-4 transition-all border rounded shadow appearance-none cursor-pointer hover:shadow-md border-brand-secondary-gray checked:bg-slate-50 checked:border-slate-800"
 									id="check"
 								/>
-								<label for="check" class="relative ml-3 text-white bottom-1">Label</label>
+								<label for="check" class="relative ml-3 text-sm text-white bottom-1">Label</label>
 							</div>
 						</div>
 					</div>

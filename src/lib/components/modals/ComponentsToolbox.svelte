@@ -218,13 +218,13 @@
 
 <a
 	href="#component-toolbox-modal"
-	class="absolute left-8 top-40 mt-2 w-[27rem] bg-website-secondary text-brand-tertiary-gray border border-brand-primary-gray rounded-lg shadow-lg z-50"
+	class="absolute left-8 top-40 mt-2 w-[25rem] bg-website-secondary text-brand-tertiary-gray border border-brand-primary-gray rounded-lg shadow-lg z-50"
 	in:scale={{ start: 0.9, duration: 200 }}
 	out:fade={{ duration: 150 }}
 	onclick={() => (edit_delete_modal = false)}
 >
 	<!-- Search Modal Header -->
-	<div class="flex flex-col px-4 py-4 border-b gap-y-5 border-brand-primary-gray">
+	<div class="flex flex-col px-4 py-4 border-b gap-y-3 border-brand-primary-gray">
 		<div class="flex items-center justify-between">
 			<div class="flex items-center gap-x-3">
 				<img src={modal_title_icon} alt="modal_title_icon" class="w-6" />
@@ -240,7 +240,7 @@
 				</button>
 			{/if}
 		</div>
-		<div class="flex items-center w-full my-3 text-sm gap-x-5">
+		<div class="flex items-center w-full text-sm gap-x-5">
 			<button
 				class="p-1.5 cursor-pointer border-b-white"
 				class:border-b-2={activeTab === 'action'}
@@ -262,10 +262,10 @@
 					id="search"
 					type="text"
 					placeholder="Search Anything..."
-					class="w-full px-4 py-2 text-lg border rounded-md bg-website-secondary border-brand-primary-gray"
+					class="w-full px-4 py-2 border rounded-md text-md bg-website-secondary border-brand-primary-gray"
 					bind:value={searchTerm}
 				/>
-				<img src={search_icon} alt="search_icon" class="absolute inset-y-0 w-6 right-3 top-3" />
+				<img src={search_icon} alt="search_icon" class="absolute inset-y-0 w-6 right-3 top-2.5" />
 			</div>
 
 			<button
@@ -301,11 +301,11 @@
 			/>
 		</div>
 	{:else if loading}
-		<div class="h-[20rem] p-4 flex items-center justify-center">
+		<div class="h-[35vh] p-4 flex items-center justify-center">
 			<Spinner />
 		</div>
 	{:else}
-		<div class="overflow-y-auto h-[25rem] py-3 bg-website-primary">
+		<div class="overflow-y-auto h-[35vh] py-3 bg-website-primary">
 			{#each filteredFolders as folder, i}
 				{#if folder.type === activeTab}
 					<div
@@ -341,7 +341,7 @@
 				<div>
 					{#each actions as action}
 						<div class="flex items-center w-full px-4 py-3 my-2 hover:bg-website-tertiary">
-							<img src={Actions} alt="actions" class="mr-1" />
+							<img src={Actions} alt="actions" class="w-10 mr-1" />
 							<div>
 								<h1>{action.name}</h1>
 								<p class="text-xs text-brand-light-gray">Category</p>

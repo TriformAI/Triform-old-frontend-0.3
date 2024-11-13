@@ -7,61 +7,46 @@
 	import unpined from '$lib/icons/unpined.svg';
 	import pined from '$lib/icons/pined.svg';
 	import Add from '$lib/icons/add.svg';
-	import {templateLibraryModal, templateModal} from '$lib/stores/modals';
+	import { templateLibraryModal, templateModal } from '$lib/stores/modals';
+	import { PUBLIC_API_URL } from '$env/static/public';
+	import { getAuthToken } from '$lib/stores/cookie';
+	import { onMount } from 'svelte';
+
+	let apiUrl = PUBLIC_API_URL;
+	let authToken = getAuthToken();
+	let loading = false;
 
 	let searchTerm = '';
 
 	let pined_unpined = false;
-	let activeIndex = null; // Store the active index for the modal
 
 	function togglePined() {
 		pined_unpined = !pined_unpined;
 	}
 
-	let actualTemplates = [
-		{
-			code: 'import os\r\nimport json\r\n\r\nfrom langchain_openai import ChatOpenAI  # Interface to OpenAI\'s Chat models.\r\nfrom langchain_core.prompts.chat import (\r\n    ChatPromptTemplate,  # For crafting chat-based prompts.\r\n    SystemMessagePromptTemplate,  # For creating system messages in chat prompts.\r\n)\r\n\r\nOPENAI_API_KEY = os.environ[\r\n    "OPENAI_API_KEY"\r\n]  # Securely fetch OpenAI API key from environment variables.\r\n\r\n\r\ndef handler(event, context):\r\n    # Extract the question and context from the event object.\r\n    question = event.get("question")\r\n    retrieved_context = event.get("retrieved_context")\r\n\r\n    # Validate presence of question and context.\r\n    if not question:\r\n        return {"error": "No question provided"}\r\n    if not retrieved_context:\r\n        return {"error": "No retrieved context provided"}\r\n\r\n    # Template for the chat where the model plays the role of an assistant using provided context.\r\n    template = """You are an assistant for question-answering tasks. Use the following pieces of retrieved context to answer the question. If you don\'t know the answer, just say that you don\'t know. Use three sentences maximum and keep the answer concise.\r\n    Question: {question}\r\n    Context: {context}\r\n    Answer:\r\n    """\r\n    # Create a system message prompt from the predefined template.\r\n    system_message_prompt = SystemMessagePromptTemplate.from_template(template)\r\n\r\n    # Prepare the chat prompt with the system message.\r\n    chat_prompt = ChatPromptTemplate.from_messages([system_message_prompt])\r\n\r\n    # Initialize the ChatOpenAI object with model specifications and API key.\r\n    llm = ChatOpenAI(\r\n        model_name="gpt-4-turbo-preview", temperature=0, openai_api_key=OPENAI_API_KEY\r\n    )\r\n\r\n    # Generate a chat completion using the prepared prompt, formatted with actual context and question.\r\n    response = llm.invoke(\r\n        chat_prompt.format_prompt(\r\n            context=retrieved_context, question=question\r\n        ).to_messages()\r\n    )\r\n\r\n    # Return the model\'s response as a JSON-formatted string.\r\n    return json.dumps({"output_0": response.content})',
-			created_at: '2024-04-22T16:31:07.000000Z',
-			deleted_at: null,
-			description:
-				"This Python module integrates with OpenAI's Chat models to provide context-driven responses based on a given question and retrieved context. It utilizes templates to format prompts for the AI, enabling precise and relevant answers.",
-			id: 0,
-			name: 'Ask GPT',
-			readme:
-				'# Triform.ai Template: Contextual Chat Handler\r\n\r\n## Overview\r\n\r\nThis Python module integrates with OpenAI\'s Chat models to provide context-driven responses based on a given question and retrieved context. It utilizes templates to format prompts for the AI, enabling precise and relevant answers.\r\n\r\n## How it Works\r\n\r\nThe module extracts a question and its related context from event data, validates their presence, and formats them into a chat prompt using predefined templates. It then uses the `ChatOpenAI` interface to generate responses based on this context.\r\n\r\n## Use Cases\r\n\r\n- Automating customer support by providing responses that consider previous interactions or specific queries.\r\n- Enhancing virtual assistant functionalities to offer more context-aware responses in chatbots.\r\n- Implementing AI-driven tutoring systems where context from textbooks or lessons is used to answer student inquiries.\r\n\r\n## Customization\r\n\r\n- Modify the prompt templates to change the structure of the conversation or the type of responses.\r\n- Switch the OpenAI model (e.g., from "gpt-4-turbo-preview" to another model) to vary response styles or capabilities.\r\n- Adapt the module for different languages or domains by adjusting the chat templates and model settings.\r\n\r\n## Environment Setup\r\n\r\nSet the following environment variables in your Triform.ai environment:\r\n- `OPENAI_API_KEY`: API key for OpenAI authentication.',
-			requirements: 'langchain\r\nlangchain-openai',
-			tagsAssigned: 'Cohere, Anthropic, PGVector, LlamaIndex, Vectorize, RAG',
-			updated_at: '2024-04-22T17:13:35.000000Z'
-		},
-		{
-			code: 'import os\r\nimport json\r\n\r\nfrom langchain_openai import ChatOpenAI  # Interface to OpenAI\'s Chat models.\r\nfrom langchain_core.prompts.chat import (\r\n    ChatPromptTemplate,  # For crafting chat-based prompts.\r\n    SystemMessagePromptTemplate,  # For creating system messages in chat prompts.\r\n)\r\n\r\nOPENAI_API_KEY = os.environ[\r\n    "OPENAI_API_KEY"\r\n]  # Securely fetch OpenAI API key from environment variables.\r\n\r\n\r\ndef handler(event, context):\r\n    # Extract the question and context from the event object.\r\n    question = event.get("question")\r\n    retrieved_context = event.get("retrieved_context")\r\n\r\n    # Validate presence of question and context.\r\n    if not question:\r\n        return {"error": "No question provided"}\r\n    if not retrieved_context:\r\n        return {"error": "No retrieved context provided"}\r\n\r\n    # Template for the chat where the model plays the role of an assistant using provided context.\r\n    template = """You are an assistant for question-answering tasks. Use the following pieces of retrieved context to answer the question. If you don\'t know the answer, just say that you don\'t know. Use three sentences maximum and keep the answer concise.\r\n    Question: {question}\r\n    Context: {context}\r\n    Answer:\r\n    """\r\n    # Create a system message prompt from the predefined template.\r\n    system_message_prompt = SystemMessagePromptTemplate.from_template(template)\r\n\r\n    # Prepare the chat prompt with the system message.\r\n    chat_prompt = ChatPromptTemplate.from_messages([system_message_prompt])\r\n\r\n    # Initialize the ChatOpenAI object with model specifications and API key.\r\n    llm = ChatOpenAI(\r\n        model_name="gpt-4-turbo-preview", temperature=0, openai_api_key=OPENAI_API_KEY\r\n    )\r\n\r\n    # Generate a chat completion using the prepared prompt, formatted with actual context and question.\r\n    response = llm.invoke(\r\n        chat_prompt.format_prompt(\r\n            context=retrieved_context, question=question\r\n        ).to_messages()\r\n    )\r\n\r\n    # Return the model\'s response as a JSON-formatted string.\r\n    return json.dumps({"output_0": response.content})',
-			created_at: '2024-04-22T16:31:07.000000Z',
-			deleted_at: null,
-			description:
-				"This Python module integrates with OpenAI's Chat models to provide context-driven responses based on a given question and retrieved context. It utilizes templates to format prompts for the AI, enabling precise and relevant answers.",
-			id: 1,
-			name: 'Ask GPT',
-			readme:
-				'# Triform.ai Template: Contextual Chat Handler\r\n\r\n## Overview\r\n\r\nThis Python module integrates with OpenAI\'s Chat models to provide context-driven responses based on a given question and retrieved context. It utilizes templates to format prompts for the AI, enabling precise and relevant answers.\r\n\r\n## How it Works\r\n\r\nThe module extracts a question and its related context from event data, validates their presence, and formats them into a chat prompt using predefined templates. It then uses the `ChatOpenAI` interface to generate responses based on this context.\r\n\r\n## Use Cases\r\n\r\n- Automating customer support by providing responses that consider previous interactions or specific queries.\r\n- Enhancing virtual assistant functionalities to offer more context-aware responses in chatbots.\r\n- Implementing AI-driven tutoring systems where context from textbooks or lessons is used to answer student inquiries.\r\n\r\n## Customization\r\n\r\n- Modify the prompt templates to change the structure of the conversation or the type of responses.\r\n- Switch the OpenAI model (e.g., from "gpt-4-turbo-preview" to another model) to vary response styles or capabilities.\r\n- Adapt the module for different languages or domains by adjusting the chat templates and model settings.\r\n\r\n## Environment Setup\r\n\r\nSet the following environment variables in your Triform.ai environment:\r\n- `OPENAI_API_KEY`: API key for OpenAI authentication.',
-			requirements: 'langchain\r\nlangchain-openai',
-			tagsAssigned: 'Cohere, Anthropic, PGVector, LlamaIndex, Vectorize, RAG',
-			updated_at: '2024-04-22T17:13:35.000000Z'
-		},
-		{
-			code: 'import os\r\nimport json\r\n\r\nfrom langchain_openai import ChatOpenAI  # Interface to OpenAI\'s Chat models.\r\nfrom langchain_core.prompts.chat import (\r\n    ChatPromptTemplate,  # For crafting chat-based prompts.\r\n    SystemMessagePromptTemplate,  # For creating system messages in chat prompts.\r\n)\r\n\r\nOPENAI_API_KEY = os.environ[\r\n    "OPENAI_API_KEY"\r\n]  # Securely fetch OpenAI API key from environment variables.\r\n\r\n\r\ndef handler(event, context):\r\n    # Extract the question and context from the event object.\r\n    question = event.get("question")\r\n    retrieved_context = event.get("retrieved_context")\r\n\r\n    # Validate presence of question and context.\r\n    if not question:\r\n        return {"error": "No question provided"}\r\n    if not retrieved_context:\r\n        return {"error": "No retrieved context provided"}\r\n\r\n    # Template for the chat where the model plays the role of an assistant using provided context.\r\n    template = """You are an assistant for question-answering tasks. Use the following pieces of retrieved context to answer the question. If you don\'t know the answer, just say that you don\'t know. Use three sentences maximum and keep the answer concise.\r\n    Question: {question}\r\n    Context: {context}\r\n    Answer:\r\n    """\r\n    # Create a system message prompt from the predefined template.\r\n    system_message_prompt = SystemMessagePromptTemplate.from_template(template)\r\n\r\n    # Prepare the chat prompt with the system message.\r\n    chat_prompt = ChatPromptTemplate.from_messages([system_message_prompt])\r\n\r\n    # Initialize the ChatOpenAI object with model specifications and API key.\r\n    llm = ChatOpenAI(\r\n        model_name="gpt-4-turbo-preview", temperature=0, openai_api_key=OPENAI_API_KEY\r\n    )\r\n\r\n    # Generate a chat completion using the prepared prompt, formatted with actual context and question.\r\n    response = llm.invoke(\r\n        chat_prompt.format_prompt(\r\n            context=retrieved_context, question=question\r\n        ).to_messages()\r\n    )\r\n\r\n    # Return the model\'s response as a JSON-formatted string.\r\n    return json.dumps({"output_0": response.content})',
-			created_at: '2024-04-22T16:31:07.000000Z',
-			deleted_at: null,
-			description:
-				"This Python module integrates with OpenAI's Chat models to provide context-driven responses based on a given question and retrieved context. It utilizes templates to format prompts for the AI, enabling precise and relevant answers.",
-			id: 2,
-			name: 'Ask GPT',
-			readme:
-				'# Triform.ai Template: Contextual Chat Handler\r\n\r\n## Overview\r\n\r\nThis Python module integrates with OpenAI\'s Chat models to provide context-driven responses based on a given question and retrieved context. It utilizes templates to format prompts for the AI, enabling precise and relevant answers.\r\n\r\n## How it Works\r\n\r\nThe module extracts a question and its related context from event data, validates their presence, and formats them into a chat prompt using predefined templates. It then uses the `ChatOpenAI` interface to generate responses based on this context.\r\n\r\n## Use Cases\r\n\r\n- Automating customer support by providing responses that consider previous interactions or specific queries.\r\n- Enhancing virtual assistant functionalities to offer more context-aware responses in chatbots.\r\n- Implementing AI-driven tutoring systems where context from textbooks or lessons is used to answer student inquiries.\r\n\r\n## Customization\r\n\r\n- Modify the prompt templates to change the structure of the conversation or the type of responses.\r\n- Switch the OpenAI model (e.g., from "gpt-4-turbo-preview" to another model) to vary response styles or capabilities.\r\n- Adapt the module for different languages or domains by adjusting the chat templates and model settings.\r\n\r\n## Environment Setup\r\n\r\nSet the following environment variables in your Triform.ai environment:\r\n- `OPENAI_API_KEY`: API key for OpenAI authentication.',
-			requirements: 'langchain\r\nlangchain-openai',
-			tagsAssigned: 'Cohere, Anthropic, PGVector, LlamaIndex, Vectorize, RAG',
-			updated_at: '2024-04-22T17:13:35.000000Z'
+	let actualTemplates = [];
+
+	onMount(() => {
+		fetchTemplates();
+	});
+
+	async function fetchTemplates() {
+		try {
+			loading = true;
+			const response = await fetch(`${apiUrl}/api/v1/templates`, {
+				method: 'GET',
+				headers: {
+					Authorization: `Bearer ${authToken}`
+				}
+			});
+			const data = await response.json();
+			loading = false;
+			actualTemplates = data.data;
+		} catch (error) {
+			loading = false;
+			console.error('Error fetching variables:', error);
 		}
-	];
+	}
 
 	// Computed property to filter variables based on searchTerm
 	$: filteredTemplates = actualTemplates.filter((template) =>
@@ -75,12 +60,12 @@
 </script>
 
 <div
-	class="absolute left-8 top-44 mt-2 w-[50rem] bg-website-secondary text-brand-tertiary-gray border border-brand-primary-gray rounded-lg shadow-lg z-50"
+	class="absolute left-8 top-44 mt-2 w-[45rem] bg-website-secondary text-brand-tertiary-gray border border-brand-primary-gray rounded-lg shadow-lg z-50"
 	in:scale={{ start: 0.9, duration: 200 }}
 	out:fade={{ duration: 150 }}
 >
 	<!-- Modal Header -->
-	<div class="flex flex-col px-4 py-6 gap-y-5">
+	<div class="flex flex-col px-4 py-5 gap-y-5">
 		<div class="flex items-center justify-between">
 			<div class="flex items-center gap-x-3">
 				<img src={modal_title_icon} alt="modal_title_icon" class="w-6" />
@@ -102,16 +87,16 @@
 					id="search"
 					type="text"
 					placeholder="Search..."
-					class="w-full px-4 py-3 text-lg border rounded-md bg-website-secondary border-brand-primary-gray"
+					class="w-full px-4 py-2.5 text-md border rounded-md bg-website-secondary border-brand-primary-gray"
 					bind:value={searchTerm}
 				/>
-				<img src={search_icon} alt="search_icon" class="absolute inset-y-0 w-6 right-3 top-3.5" />
+				<img src={search_icon} alt="search_icon" class="absolute inset-y-0 w-6 right-3 top-2.5" />
 			</div>
 		</div>
 	</div>
 
 	<!-- Collapsible Category List -->
-	<div class="py-4 overflow-y-auto h-[20rem] bg-website-primary">
+	<div class="py-4 overflow-y-auto h-[25rem] bg-website-primary">
 		{#each filteredTemplates as category, i}
 			<div
 				class={`group flex items-center justify-between w-full duration-200 ease-in-out hover:bg-website-tertiary border-y border-y-brand-primary-gray`}
@@ -145,7 +130,7 @@
 									/>
 								</svg>
 								<a
-									href={`?TID=${i-1}`}
+									href={`?TID=${category.id}`}
 									onclick={toggleTemplateModal}
 									class="text-xs hover:text-white">View Details</a
 								>

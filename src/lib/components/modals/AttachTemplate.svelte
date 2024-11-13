@@ -5,6 +5,7 @@
 	import modal_cross from '$lib/icons/modal_cross.svg';
 	import search_icon from '$lib/icons/search.svg';
 	import filter from '$lib/icons/filter.svg';
+	import { onMount } from 'svelte';
 
 	let searchTerm = $state('');
 
@@ -66,110 +67,117 @@
 	let filteredTemplates = $derived(
 		templates.filter((template) => template.name.toLowerCase().includes(searchTerm.toLowerCase()))
 	);
+
+	onMount(() => {
+		document.body.style.overflow = 'hidden'; // Disable scrolling
+	});
+
 </script>
 
 <!-- Background Overlay -->
 <div class="fixed inset-0 z-40 bg-black bg-opacity-20 backdrop-blur-lg"></div>
 
-<div
-	class="absolute w-[75rem] right-64 mx-auto bg-website-secondary text-brand-tertiary-gray border border-brand-primary-gray rounded-lg shadow-lg z-50"
-	in:scale={{ start: 0.9, duration: 200 }}
-	out:fade={{ duration: 150 }}
->
-	<!-- Modal Header -->
-	<div class="flex items-center justify-between p-4 border-b border-brand-primary-gray">
-		<div class="flex items-center gap-x-3">
-			<img src={modal_title_icon} alt="modal_title_icon" class="w-6" />
-			<h3 class="text-xl font-semibold text-left text-white">New Action</h3>
-		</div>
-		<button type="button" class="cursor-pointer w-9" onclick={toggleAttachTemplateModal}>
-			<img src={modal_cross} alt="Close modal" class="w-9" />
-		</button>
-	</div>
-
-	<!-- Modal Body -->
-	<div class="rounded-b-lg bg-website-primary">
-		<div class="px-6 py-8 space-y-5">
-			<!-- Blank Action Button -->
-			<button
-				class={`${isBlankActionSelected && 'bg-website-tertiary border-white'} w-full p-4 text-xl text-center duration-100 ease-linear border rounded-lg cursor-pointer border-brand-primary-gray hover:bg-website-tertiary`}
-				onclick={selectBlankAction}
-			>
-				<h3 class="mb-3 font-bold">Start with a Blank Action</h3>
-				<p class="font-thin">No pre-filled code, providing a clean slate.</p>
+<div class="flex items-center justify-center">
+	<div
+		class=" w-[75rem] right-64 mx-auto bg-website-secondary text-brand-tertiary-gray border border-brand-primary-gray rounded-lg shadow-lg z-50"
+		in:scale={{ start: 0.9, duration: 200 }}
+		out:fade={{ duration: 150 }}
+	>
+		<!-- Modal Header -->
+		<div class="flex items-center justify-between p-4 border-b border-brand-primary-gray">
+			<div class="flex items-center gap-x-3">
+				<img src={modal_title_icon} alt="modal_title_icon" class="w-6" />
+				<h3 class="text-xl font-semibold text-left text-white">New Action</h3>
+			</div>
+			<button type="button" class="cursor-pointer w-9" onclick={toggleAttachTemplateModal}>
+				<img src={modal_cross} alt="Close modal" class="w-9" />
 			</button>
+		</div>
 
-			<!-- Search and Filter -->
-			<div class="flex items-center justify-end w-1/2 ml-auto">
-				<div class="relative w-full">
-					<input
-						id="search"
-						type="text"
-						placeholder="Search Anything..."
-						class="w-full px-4 py-3 text-xl bg-transparent border rounded-md border-brand-primary-gray"
-						bind:value={searchTerm}
-					/>
-					<img src={search_icon} alt="search_icon" class="absolute inset-y-0 w-6 right-3 top-4" />
-				</div>
-				<div class="p-4 ml-3 cursor-pointer hover:bg-website-tertiary rounded-xl">
-					<img src={filter} alt="filter" class="w-8" />
-				</div>
-			</div>
-
-			<!-- Template Selection -->
-			<div class="flex items-center w-full gap-x-3">
-				<h3 class="flex-shrink-0 text-xl font-bold">Your previously created actions</h3>
-				<div class="w-full border-t border-brand-primary-gray"></div>
-				<svg
-					xmlns="http://www.w3.org/2000/svg"
-					fill="none"
-					viewBox="0 0 24 24"
-					stroke-width="3"
-					stroke="white"
-					class="w-5 h-5 transform rotate-180"
+		<!-- Modal Body -->
+		<div class="rounded-b-lg bg-website-primary">
+			<div class="px-6 py-8 space-y-5">
+				<!-- Blank Action Button -->
+				<button
+					class={`${isBlankActionSelected && 'bg-website-tertiary border-white'} w-full p-4 text-xl text-center duration-100 ease-linear border rounded-lg cursor-pointer border-brand-primary-gray hover:bg-website-tertiary`}
+					onclick={selectBlankAction}
 				>
-					<path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7" />
-				</svg>
-			</div>
-			<div class="grid grid-cols-3 gap-5 place-items-center h-[15rem] overflow-y-auto">
-				{#if filteredTemplates.length === 0}
-					<div class="col-span-3 text-center text-brand-light-gray">
-						No Templates found with provided search query
+					<h3 class="mb-3 font-bold">Start with a Blank Action</h3>
+					<p class="font-thin">No pre-filled code, providing a clean slate.</p>
+				</button>
+
+				<!-- Search and Filter -->
+				<div class="flex items-center justify-end w-1/2 ml-auto">
+					<div class="relative w-full">
+						<input
+							id="search"
+							type="text"
+							placeholder="Search Anything..."
+							class="w-full px-4 py-3 text-xl bg-transparent border rounded-md border-brand-primary-gray"
+							bind:value={searchTerm}
+						/>
+						<img src={search_icon} alt="search_icon" class="absolute inset-y-0 w-6 right-3 top-4" />
 					</div>
-				{:else}
-					{#each filteredTemplates as template}
-						<button
-							class={`${template.selected ? 'bg-website-tertiary border-white' : 'hover:bg-website-tertiary border-brand-primary-gray'} flex items-center justify-between w-full duration-200 ease-in-out border rounded-lg cursor-pointer group`}
-							onclick={() => selectTemplate(template)}
-						>
-							<div class="flex flex-col w-full px-6 py-2 overflow-hidden">
-								<div class="flex items-center justify-between w-full">
-									<div>
-										<h3 class="my-1 text-xl font-bold text-left text-white">{template.name}</h3>
-										<div class="flex items-center w-full gap-3 mb-3">
-											{#each template.tags as tag}
-												<span
-													class="px-3 py-1.5 text-sm text-brand-light-gray rounded-md bg-website-secondary border border-white/10 hover:border-white/30"
-													>{tag}</span
-												>
-											{/each}
+					<div class="p-4 ml-3 cursor-pointer hover:bg-website-tertiary rounded-xl">
+						<img src={filter} alt="filter" class="w-8" />
+					</div>
+				</div>
+
+				<!-- Template Selection -->
+				<div class="flex items-center w-full gap-x-3">
+					<h3 class="flex-shrink-0 text-xl font-bold">Your previously created actions</h3>
+					<div class="w-full border-t border-brand-primary-gray"></div>
+					<svg
+						xmlns="http://www.w3.org/2000/svg"
+						fill="none"
+						viewBox="0 0 24 24"
+						stroke-width="3"
+						stroke="white"
+						class="w-5 h-5 transform rotate-180"
+					>
+						<path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7" />
+					</svg>
+				</div>
+				<div class="grid grid-cols-3 gap-5 place-items-center h-[15rem] overflow-y-auto">
+					{#if filteredTemplates.length === 0}
+						<div class="col-span-3 text-center text-brand-light-gray">
+							No Templates found with provided search query
+						</div>
+					{:else}
+						{#each filteredTemplates as template}
+							<button
+								class={`${template.selected ? 'bg-website-tertiary border-white' : 'hover:bg-website-tertiary border-brand-primary-gray'} flex items-center justify-between w-full duration-200 ease-in-out border rounded-lg cursor-pointer group`}
+								onclick={() => selectTemplate(template)}
+							>
+								<div class="flex flex-col w-full px-6 py-2 overflow-hidden">
+									<div class="flex items-center justify-between w-full">
+										<div>
+											<h3 class="my-1 text-xl font-bold text-left text-white">{template.name}</h3>
+											<div class="flex items-center w-full gap-3 mb-3">
+												{#each template.tags as tag}
+													<span
+														class="px-3 py-1.5 text-sm text-brand-light-gray rounded-md bg-website-secondary border border-white/10 hover:border-white/30"
+														>{tag}</span
+													>
+												{/each}
+											</div>
 										</div>
 									</div>
+									<p class="mt-2 text-sm text-left text-brand-light-gray truncate-description">
+										{template.description}
+									</p>
 								</div>
-								<p class="mt-2 text-sm text-left text-brand-light-gray truncate-description">
-									{template.description}
-								</p>
-							</div>
-						</button>
-					{/each}
-				{/if}
+							</button>
+						{/each}
+					{/if}
+				</div>
 			</div>
-		</div>
 
-		<!-- Modal Footer -->
-		<div class="flex justify-between w-full px-6 py-3 border-t border-brand-primary-gray">
-			<Button content={{ text: 'Back' }} on:click={toggleCreateModuleModal} />
-			<Button content={{ text: 'Create' }} on:click={toggleModuleInfoModal} />
+			<!-- Modal Footer -->
+			<div class="flex justify-between w-full px-6 py-3 border-t border-brand-primary-gray">
+				<Button content={{ text: 'Back' }} on:click={toggleCreateModuleModal} />
+				<Button content={{ text: 'Create' }} on:click={toggleModuleInfoModal} />
+			</div>
 		</div>
 	</div>
 </div>

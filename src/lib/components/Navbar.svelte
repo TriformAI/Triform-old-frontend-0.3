@@ -67,9 +67,6 @@
 		draggedTab = null; // Reset the dragged tab
 	}
 
-	function toggleShareCanvaModal() {
-		shareCanvaModal.update((value) => !value);
-	}
 </script>
 
 {#if $renameMode}
@@ -138,7 +135,7 @@
 
 	<div class="flex items-center gap-x-5">
 		<button
-			on:click={toggleShareCanvaModal}
+			on:click={() => toggleModal(shareCanvaModal)}
 			class={`w-fit flex items-center justify-center flex-shrink-0 gap-x-3 px-6 py-2 text-sm font-medium text-brand-tertiary-gray hover:text-white transition duration-200 ease-in-out border rounded-lg bg-white/5 border-brand-light-gray hover:border-brand-tertiary-gray`}
 		>
 			Share Canva
