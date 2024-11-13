@@ -16,6 +16,7 @@ export const propertyModal = writable(false);
 export const consoleModal = writable(false);
 export const statusModal = writable(false);
 
+export const attachComponentModal = writable(false);
 export const createModuleModal = writable(false);
 export const attachTemplateModal = writable(false);
 export const moduleInfoModal = writable(false);

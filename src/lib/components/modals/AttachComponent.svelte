@@ -9,35 +9,63 @@
 
 	let searchTerm = $state('');
 
-	let { toggleAttachTemplateModal, toggleCreateModuleModal, toggleModuleInfoModal } = $props();
+	let { toggleAttachTemplateModal, toggleCreateModuleModal } = $props();
 
-	let templates = $state([
+	let components = $state([
 		{
-			name: 'Template A',
+			name: 'Component A',
 			description:
 				'Lorem ipsum dolor sit amet consectur. Lorem ipsum dolor sit amet consectur. Lorem ipsum dolor sit amet consectur. Lorem ipsum dolor sit amet consectur.',
-			tags: ['tag1', 'tag2', 'tag3'],
+
 			selected: false
 		},
 		{
-			name: 'Template B',
+			name: 'Component B',
 			description:
 				'Lorem ipsum dolor sit amet consectur. Lorem ipsum dolor sit amet consectur. Lorem ipsum dolor sit amet consectur. Lorem ipsum dolor sit amet consectur.',
-			tags: ['tag1', 'tag2', 'tag3'],
+
 			selected: false
 		},
 		{
-			name: 'Template C',
+			name: 'Component C',
 			description:
 				'Lorem ipsum dolor sit amet consectur. Lorem ipsum dolor sit amet consectur. Lorem ipsum dolor sit amet consectur. Lorem ipsum dolor sit amet consectur.',
-			tags: ['tag1', 'tag2', 'tag3'],
+
 			selected: false
 		},
 		{
-			name: 'Template D',
+			name: 'Component D',
 			description:
 				'Lorem ipsum dolor sit amet consectur. Lorem ipsum dolor sit amet consectur. Lorem ipsum dolor sit amet consectur. Lorem ipsum dolor sit amet consectur.',
-			tags: ['tag1', 'tag2', 'tag3'],
+
+			selected: false
+		},
+		{
+			name: 'Component E',
+			description:
+				'Lorem ipsum dolor sit amet consectur. Lorem ipsum dolor sit amet consectur. Lorem ipsum dolor sit amet consectur. Lorem ipsum dolor sit amet consectur.',
+
+			selected: false
+		},
+		{
+			name: 'Component F',
+			description:
+				'Lorem ipsum dolor sit amet consectur. Lorem ipsum dolor sit amet consectur. Lorem ipsum dolor sit amet consectur. Lorem ipsum dolor sit amet consectur.',
+
+			selected: false
+		},
+		{
+			name: 'Component G',
+			description:
+				'Lorem ipsum dolor sit amet consectur. Lorem ipsum dolor sit amet consectur. Lorem ipsum dolor sit amet consectur. Lorem ipsum dolor sit amet consectur.',
+
+			selected: false
+		},
+		{
+			name: 'Component H',
+			description:
+				'Lorem ipsum dolor sit amet consectur. Lorem ipsum dolor sit amet consectur. Lorem ipsum dolor sit amet consectur. Lorem ipsum dolor sit amet consectur.',
+
 			selected: false
 		}
 	]);
@@ -45,41 +73,22 @@
 	// Track selection for "Start with a Blank Action"
 	let isBlankActionSelected = $state(false);
 
-	function selectTemplate(selectedTemplate) {
-		// Deselect all templates and the "Blank Action" option
-		templates = templates.map((template) => {
-			return { ...template, selected: template === selectedTemplate };
-		});
-		isBlankActionSelected = false;
-	}
-
-	function selectBlankAction() {
-		// Deselect all templates
-		templates.forEach((template) => (template.selected = false));
-		templates = templates.map((template) => {
-			return { ...template, selected: false };
-		});
-		// Select the "Blank Action" option
-		isBlankActionSelected = true;
-	}
-
 	// Computed property to filter variables based on searchTerm
-	let filteredTemplates = $derived(
-		templates.filter((template) => template.name.toLowerCase().includes(searchTerm.toLowerCase()))
+	let filteredComponent = $derived(
+		components.filter((template) => template.name.toLowerCase().includes(searchTerm.toLowerCase()))
 	);
 
 	onMount(() => {
 		document.body.style.overflow = 'hidden'; // Disable scrolling
 	});
-
 </script>
 
 <!-- Background Overlay -->
 <div class="fixed inset-0 z-40 bg-black bg-opacity-20 backdrop-blur-lg"></div>
 
-<div class="flex items-center justify-center">
+<div class="relative flex items-center justify-center top-20">
 	<div
-		class=" w-[75rem] right-64 mx-auto bg-website-secondary text-brand-tertiary-gray border border-brand-primary-gray rounded-lg shadow-lg z-50"
+		class=" w-[75rem] mx-auto bg-website-secondary text-brand-tertiary-gray border border-brand-primary-gray rounded-lg shadow-lg z-50"
 		in:scale={{ start: 0.9, duration: 200 }}
 	>
 		<!-- Modal Header -->
@@ -99,56 +108,38 @@
 				<!-- Blank Action Button -->
 				<button
 					class={`${isBlankActionSelected && 'bg-website-tertiary border-white'} w-full p-4 text-xl text-center duration-100 ease-linear border rounded-lg cursor-pointer border-brand-primary-gray hover:bg-website-tertiary`}
-					onclick={selectBlankAction}
+					onclick={toggleCreateModuleModal}
 				>
-					<h3 class="mb-3 font-bold">Start with a Blank Action</h3>
-					<p class="font-thin">No pre-filled code, providing a clean slate.</p>
+					<h3 class="mb-3 font-bold">Start From Scratch</h3>
+					<p class="font-thin">No pre-filled settings, providing a clean slate.</p>
 				</button>
 
 				<!-- Search and Filter -->
-				<div class="flex items-center justify-end w-1/2 ml-auto">
+				<div class="flex items-center w-1/2 mr-auto">
 					<div class="relative w-full">
 						<input
 							id="search"
 							type="text"
-							placeholder="Search Anything..."
+							placeholder="Search..."
 							class="w-full px-4 py-3 text-xl bg-transparent border rounded-md border-brand-primary-gray"
 							bind:value={searchTerm}
 						/>
 						<img src={search_icon} alt="search_icon" class="absolute inset-y-0 w-6 right-3 top-4" />
 					</div>
-					<div class="p-4 ml-3 cursor-pointer hover:bg-website-tertiary rounded-xl">
-						<img src={filter} alt="filter" class="w-8" />
-					</div>
 				</div>
 
-				<!-- Template Selection -->
-				<div class="flex items-center w-full gap-x-3">
-					<h3 class="flex-shrink-0 text-xl font-bold">Your previously created actions</h3>
-					<div class="w-full border-t border-brand-primary-gray"></div>
-					<svg
-						xmlns="http://www.w3.org/2000/svg"
-						fill="none"
-						viewBox="0 0 24 24"
-						stroke-width="3"
-						stroke="white"
-						class="w-5 h-5 transform rotate-180"
-					>
-						<path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7" />
-					</svg>
-				</div>
-				<div class="grid grid-cols-3 gap-5 place-items-center h-[15rem] overflow-y-auto">
-					{#if filteredTemplates.length === 0}
+				<div class="py-5 grid grid-cols-2 gap-5 place-items-center h-[20rem] overflow-y-auto">
+					{#if filteredComponent.length === 0}
 						<div class="col-span-3 text-center text-brand-light-gray">
 							No Templates found with provided search query
 						</div>
 					{:else}
-						{#each filteredTemplates as template}
+						{#each filteredComponent as template}
 							<button
-								class={`${template.selected ? 'bg-website-tertiary border-white' : 'hover:bg-website-tertiary border-brand-primary-gray'} flex items-center justify-between w-full duration-200 ease-in-out border rounded-lg cursor-pointer group`}
-								onclick={() => selectTemplate(template)}
+								class={`${template.selected ? 'bg-website-tertiary border-white' : 'bg-website-tertiary border-brand-primary-gray hover:border-brand-tertiary-gray'} flex items-center justify-between w-full duration-200 ease-in-out border rounded-lg cursor-pointer group`}
+								onclick={toggleAttachTemplateModal}
 							>
-								<div class="flex flex-col w-full px-6 py-2 overflow-hidden">
+								<div class="flex flex-col w-full px-6 py-3 overflow-hidden">
 									<div class="flex items-center justify-between w-full">
 										<div>
 											<h3 class="my-1 text-xl font-bold text-left text-white">{template.name}</h3>
@@ -162,7 +153,7 @@
 											</div>
 										</div>
 									</div>
-									<p class="mt-2 text-sm text-left text-brand-light-gray truncate-description">
+									<p class="text-sm text-left text-brand-light-gray truncate-description">
 										{template.description}
 									</p>
 								</div>
@@ -170,12 +161,6 @@
 						{/each}
 					{/if}
 				</div>
-			</div>
-
-			<!-- Modal Footer -->
-			<div class="flex justify-between w-full px-6 py-3 border-t border-brand-primary-gray">
-				<Button content={{ text: 'Back' }} on:click={toggleCreateModuleModal} />
-				<Button content={{ text: 'Create' }} on:click={toggleModuleInfoModal} />
 			</div>
 		</div>
 	</div>

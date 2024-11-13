@@ -1,6 +1,6 @@
 <script>
 	// @ts-nocheck
-	import { useSvelteFlow } from '@xyflow/svelte'; // Import based on your library's setup
+	import { useSvelteFlow } from '@xyflow/svelte';
 
 	import undo_logo from '$lib/icons/undo.svg';
 	import redo_logo from '$lib/icons/redo.svg';

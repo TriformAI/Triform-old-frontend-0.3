@@ -7,7 +7,7 @@
 	import { getAuthToken } from '$lib/stores/cookie';
 	import { onMount } from 'svelte';
 
-	let { toggleCreateModuleModal, toggleAttachTemplateModal } = $props();
+	let { toggleCreateModuleModal, toggleAttachTemplateModal, toggleAttachComponentModal } = $props();
 
 	let environmentVariables = $state([]);
 
@@ -48,7 +48,6 @@
 	<div
 		class="w-[75rem] bg-website-secondary text-brand-tertiary-gray border border-brand-primary-gray rounded-lg shadow-lg z-50"
 		in:scale={{ start: 0.9, duration: 200 }}
-		out:fade={{ duration: 150 }}
 	>
 		<!-- Modal Header -->
 		<div class="flex items-center justify-between p-6 border-b border-brand-primary-gray">
@@ -151,7 +150,8 @@
 			</form>
 
 			<!-- Modal Footer -->
-			<div class="flex justify-end p-6 border-t border-brand-primary-gray">
+			<div class="flex justify-between p-6 border-t border-brand-primary-gray">
+				<Button content={{ text: 'Back' }} on:click={toggleAttachComponentModal} />
 				<Button content={{ text: 'Next' }} on:click={toggleAttachTemplateModal} />
 			</div>
 		</div>

@@ -1,6 +1,6 @@
 <script>
 	import { writable } from 'svelte/store';
-	import { SvelteFlow, Controls, Background, BackgroundVariant, MiniMap } from '@xyflow/svelte';
+	import { SvelteFlow, Background } from '@xyflow/svelte';
 
 	// 👇 this is important! You need to import the styles for Svelte Flow to work
 	import '@xyflow/svelte/dist/style.css';
@@ -19,6 +19,7 @@
 		attachTemplateModal,
 		templateModal,
 		templateLibraryModal,
+		attachComponentModal
 	} from '$lib/stores/modals';
 	import StatusModal from '$lib/components/modals/StatusModal.svelte';
 	import ThresholdAlertModal from '$lib/components/modals/ThresholdAlertModal.svelte';
@@ -29,19 +30,28 @@
 	import ApiNode from '$lib/components/custom-nodes/ApiNode.svelte';
 	import TemplateDetailsModal from '$lib/components/modals/TemplateDetailsModal.svelte';
 	import ShareCanvaModal from '$lib/components/modals/ShareCanvaModal.svelte';
+	import AttachComponent from '$lib/components/modals/AttachComponent.svelte';
 
+	const toggleAttachComponentModal = () => {
+		createModuleModal.update((value) => false);
+		attachTemplateModal.update((value) => false);
+		attachComponentModal.update((value) => !value);
+	};
 
 	const toggleCreateModuleModal = () => {
+		attachComponentModal.update((value) => false);
 		attachTemplateModal.update((value) => false);
 		createModuleModal.update((value) => !value);
 	};
 
 	const toggleAttachTemplateModal = () => {
+		attachComponentModal.update((value) => false);
 		createModuleModal.update((value) => false);
 		attachTemplateModal.update((value) => !value);
 	};
 
 	const toggleModuleInfoModal = () => {
+		attachComponentModal.update((value) => false);
 		attachTemplateModal.update((value) => false);
 		moduleInfoModal.update((value) => !value);
 	};
@@ -187,8 +197,11 @@
 	{#if $thresholdModal}
 		<ThresholdAlertModal />
 	{/if}
+	{#if $attachComponentModal}
+		<AttachComponent {toggleAttachTemplateModal} {toggleCreateModuleModal} />
+	{/if}
 	{#if $createModuleModal}
-		<CreateModuleModal {toggleCreateModuleModal} {toggleAttachTemplateModal} />
+		<CreateModuleModal {toggleCreateModuleModal} {toggleAttachTemplateModal} {toggleAttachComponentModal}/>
 	{/if}
 	{#if $attachTemplateModal}
 		<AttachTemplate {toggleAttachTemplateModal} {toggleCreateModuleModal} {toggleModuleInfoModal} />
@@ -200,7 +213,7 @@
 		<TemplateDetailsModal {toggleTemplateModal} />
 	{/if}
 	{#if $shareCanvaModal}
-		<ShareCanvaModal {toggleShareCanvaModal}/>
+		<ShareCanvaModal {toggleShareCanvaModal} />
 	{/if}
 	<SvelteFlow {nodes} {edges} {nodeTypes} fitView {snapGrid} {proOptions}>
 		<Background bgColor="#181819" patternColor="#1D1E20" variant="lines" gap={20} size={1} />

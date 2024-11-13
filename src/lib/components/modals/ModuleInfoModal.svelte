@@ -15,74 +15,75 @@
 	}
 </script>
 
-<div
-	class="absolute w-[60rem] right-40 bg-website-secondary text-brand-tertiary-gray border border-brand-primary-gray rounded-lg shadow-lg z-50"
-	in:scale={{ start: 0.9, duration: 200 }}
-	out:fade={{ duration: 150 }}
->
-	<!-- Modal Header -->
-	<div class="flex items-center justify-between px-6 py-4 border-b border-brand-primary-gray">
-		<div class="flex items-center gap-x-3">
-			<img src={modal_title_icon} alt="modal_title_icon" class="w-6" />
-			<h3 class="text-xl font-semibold text-left text-white">Action Name</h3>
+<div class="relative flex items-center justify-center top-20">
+	<div
+		class="w-[72rem] bg-website-secondary text-brand-tertiary-gray border border-brand-primary-gray rounded-lg shadow-lg z-50"
+		in:scale={{ start: 0.9, duration: 200 }}
+	>
+		<!-- Modal Header -->
+		<div class="flex items-center justify-between px-6 py-4 border-b border-brand-primary-gray">
+			<div class="flex items-center gap-x-3">
+				<img src={modal_title_icon} alt="modal_title_icon" class="w-6" />
+				<h3 class="text-xl font-semibold text-left text-white">Action Name</h3>
+			</div>
+			<button type="button" class="cursor-pointer w-9" on:click={toggleModuleInfoModal}>
+				<img src={modal_cross} alt="Close modal" class="w-7" />
+			</button>
 		</div>
-		<button type="button" class="cursor-pointer w-9" on:click={toggleModuleInfoModal}>
-			<img src={modal_cross} alt="Close modal" class="w-7" />
-		</button>
-	</div>
 
-	<!-- Tab Headers -->
-	<div class="flex items-center w-full my-3 text-sm px-7 gap-x-5">
-		<button
-			class="p-1.5 cursor-pointer border-b-white"
-			class:border-b-2={activeTab === 'Edit Action'}
-			on:click={() => setActiveTab('Edit Action')}
-		>
-			Edit Action
-		</button>
-		<button
-			class="p-1.5 cursor-pointer border-b-white"
-			class:border-b-2={activeTab === 'README.md'}
-			on:click={() => setActiveTab('README.md')}
-		>
-			README.md
-		</button>
-		<button
-			class="p-1.5 cursor-pointer border-b-white"
-			class:border-b-2={activeTab === 'Requirements'}
-			on:click={() => setActiveTab('Requirements')}
-		>
-			Requirements
-		</button>
-		<button
-			class="p-1.5 cursor-pointer border-b-white"
-			class:border-b-2={activeTab === 'Folder Structure'}
-			on:click={() => setActiveTab('Folder Structure')}
-		>
-			Folder Structure
-		</button>
-	</div>
+		<!-- Tab Headers -->
+		<div class="flex items-center w-full my-3 text-sm px-7 gap-x-5">
+			<button
+				class="p-1.5 cursor-pointer border-b-white"
+				class:border-b-2={activeTab === 'Edit Action'}
+				on:click={() => setActiveTab('Edit Action')}
+			>
+				Edit Action
+			</button>
+			<button
+				class="p-1.5 cursor-pointer border-b-white"
+				class:border-b-2={activeTab === 'README.md'}
+				on:click={() => setActiveTab('README.md')}
+			>
+				README.md
+			</button>
+			<button
+				class="p-1.5 cursor-pointer border-b-white"
+				class:border-b-2={activeTab === 'Requirements'}
+				on:click={() => setActiveTab('Requirements')}
+			>
+				Requirements
+			</button>
+			<button
+				class="p-1.5 cursor-pointer border-b-white"
+				class:border-b-2={activeTab === 'Folder Structure'}
+				on:click={() => setActiveTab('Folder Structure')}
+			>
+				Folder Structure
+			</button>
+		</div>
 
-	<!-- Tab Content -->
-	<div class="container px-7">
-		{#if activeTab === 'Edit Action'}
-			<CodeEditor
-				code={`
-import json
-
-## start here
-def handler(event, context): ## your code here
-    input = event.get("input_0", "default value")
-    return json.dumps({"input_0": input})
-`}
-			/>
-		{:else if activeTab === 'README.md'}
-			<h2>README Content</h2>
-		{:else if activeTab === 'Requirements'}
-			<h2>Requirements</h2>
-		{:else if activeTab === 'Folder Structure'}
-			<h2>Folder Structure</h2>
-		{/if}
+		<!-- Tab Content -->
+		<div class="container px-7">
+			{#if activeTab === 'Edit Action'}
+				<CodeEditor
+					code={`
+	import json
+	
+	## start here
+	def handler(event, context): ## your code here
+		input = event.get("input_0", "default value")
+		return json.dumps({"input_0": input})
+	`}
+				/>
+			{:else if activeTab === 'README.md'}
+				<h2>README Content</h2>
+			{:else if activeTab === 'Requirements'}
+				<h2>Requirements</h2>
+			{:else if activeTab === 'Folder Structure'}
+				<h2>Folder Structure</h2>
+			{/if}
+		</div>
 	</div>
 </div>
 

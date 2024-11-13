@@ -17,7 +17,7 @@
 	import Spinner from '../Spinner.svelte';
 	import Agents from '$lib/icons/Actions.svg';
 	import Actions from '$lib/icons/Agent.svg';
-	import { componentToolsBoxModal, createModuleModal } from '$lib/stores/modals';
+	import { attachComponentModal, componentToolsBoxModal } from '$lib/stores/modals';
 
 	let apiUrl = PUBLIC_API_URL;
 	let authToken = getAuthToken();
@@ -390,7 +390,7 @@
 				content={{ width: 'full', icon: Add, text: 'New Action' }}
 				on:click={() => {
 					componentToolsBoxModal.update((value) => false);
-					createModuleModal.update((value) => true);
+					attachComponentModal.update((value) => true);
 				}}
 			/>
 		{:else if activeTab === 'agent'}
