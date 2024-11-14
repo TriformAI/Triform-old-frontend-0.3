@@ -1,8 +1,11 @@
 <script>
+	import { onMount } from 'svelte';
+	import { signIn } from '@auth/sveltekit/client';
 	import { PUBLIC_API_URL } from '$env/static/public';
 	import Spinner from '$lib/components/Spinner.svelte';
 	import logo from '$lib/images/Logo.svg';
 	import github_mark_logo from '$lib/images/github-mark-white.svg';
+	import { page } from '$app/stores';
 
 	let showPassword = false;
 	let email = '';
@@ -10,13 +13,12 @@
 	let errorMessage = '';
 	let loading = false;
 	const apiUrl = PUBLIC_API_URL;
+	const session = $page.data.session;
 
 	async function handleLogin(event) {
 		event.preventDefault();
 		errorMessage = ''; // Reset error message
 		loading = true; // Show loading state
-		console.log(apiUrl);
-
 		try {
 			const response = await fetch(`${apiUrl}/api/v1/login`, {
 				method: 'POST',
@@ -48,6 +50,10 @@
 		} finally {
 			loading = false; // Hide loading state
 		}
+	}
+
+	function handleLoginWithGithub() {
+		signIn('github', { callbackUrl: '/dashboard' });
 	}
 </script>
 
@@ -142,9 +148,9 @@
 					<div class="flex-1 border-t border-gray-500"></div>
 				</div>
 				<div>
-					<a
-						href=" "
-						class="flex items-center justify-center px-2 py-3 bg-gray-800 border-4 border-gray-700 rounded-full hover:bg-gray-700"
+					<button
+						on:click={handleLoginWithGithub}
+						class="flex items-center justify-center w-full px-2 py-3 bg-gray-800 border-4 border-gray-700 rounded-full hover:bg-gray-700"
 					>
 						<div class="w-6 h-6">
 							<img src={github_mark_logo} alt="Github" class="object-contain w-full h-full" />
@@ -152,16 +158,8 @@
 						<p class="mx-5 font-mono text-xs font-bold tracking-tighter text-white sm:text-sm">
 							Login with Github
 						</p>
-						<svg
-							class="w-5 h-5 text-white"
-							xmlns="http://www.w3.org/2000/svg"
-							fill="none"
-							viewBox="0 0 24 24"
-							stroke="currentColor"
-						>
-							<path d="M12 12m7 0c0 4-6 4-7 0 1-4 7-4 7 0z" />
-						</svg>
-					</a>
+					</button>
+
 					<h3 class="mt-3 text-xs text-center text-gray-400 truncate">
 						Don't have an account yet? <a
 							href="/register"

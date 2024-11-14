@@ -198,7 +198,7 @@
 		<ThresholdAlertModal />
 	{/if}
 	{#if $attachComponentModal}
-		<AttachComponent {toggleAttachTemplateModal} {toggleCreateModuleModal} />
+		<AttachComponent {toggleAttachTemplateModal} {toggleCreateModuleModal} {toggleAttachComponentModal}/>
 	{/if}
 	{#if $createModuleModal}
 		<CreateModuleModal {toggleCreateModuleModal} {toggleAttachTemplateModal} {toggleAttachComponentModal}/>

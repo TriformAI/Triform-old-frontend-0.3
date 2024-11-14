@@ -41,6 +41,7 @@
   },
   "type": "module",
   "dependencies": {
+    "@auth/sveltekit": "^1.7.3",
     "@monaco-editor/loader": "^1.4.0",
     "@xyflow/svelte": "^0.1.23",
     "fs": "^0.0.1-security",

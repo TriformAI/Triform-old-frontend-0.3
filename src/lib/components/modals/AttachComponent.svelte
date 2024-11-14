@@ -6,10 +6,11 @@
 	import search_icon from '$lib/icons/search.svg';
 	import filter from '$lib/icons/filter.svg';
 	import { onMount } from 'svelte';
+	import { attachComponentModal, toggleModal } from '$lib/stores/modals';
 
 	let searchTerm = $state('');
 
-	let { toggleAttachTemplateModal, toggleCreateModuleModal } = $props();
+	let { toggleAttachTemplateModal, toggleCreateModuleModal, toggleAttachComponentModal } = $props();
 
 	let components = $state([
 		{
@@ -97,7 +98,7 @@
 				<img src={modal_title_icon} alt="modal_title_icon" class="w-6" />
 				<h3 class="text-xl font-semibold text-left text-white">New Action</h3>
 			</div>
-			<button type="button" class="cursor-pointer w-9" onclick={toggleAttachTemplateModal}>
+			<button type="button" class="cursor-pointer w-9" onclick={toggleAttachComponentModal}>
 				<img src={modal_cross} alt="Close modal" class="w-9" />
 			</button>
 		</div>

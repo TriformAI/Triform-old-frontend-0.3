@@ -8,13 +8,19 @@
 	import settings from '$lib/icons/settings.svg';
 	import logout from '$lib/icons/logout.svg';
 	import { getAuthToken, removeCookie } from '$lib/stores/cookie';
+	import { page } from '$app/stores';
+	import { signOut } from '@auth/sveltekit/client';
 
 	const apiUrl = PUBLIC_API_URL;
 	const authToken = getAuthToken();
 
 	// Function to handle logout
 	async function handleLogout() {
-		console.log(apiUrl, authToken);
+		if ($page.data.session) {
+			//user signed in with github
+			signOut();
+			window.location.href = '/login';
+		}
 
 		if (!authToken) {
 			console.log('No auth token found.');
