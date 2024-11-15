@@ -32,6 +32,7 @@
 	import ShareCanvaModal from '$lib/components/modals/ShareCanvaModal.svelte';
 	import AttachComponent from '$lib/components/modals/AttachComponent.svelte';
 
+
 	const toggleAttachComponentModal = () => {
 		createModuleModal.update((value) => false);
 		attachTemplateModal.update((value) => false);
@@ -166,6 +167,7 @@
 	const snapGrid = [1, 1];
 
 	const proOptions = { hideAttribution: true };
+
 </script>
 
 <!-- <section
@@ -198,10 +200,18 @@
 		<ThresholdAlertModal />
 	{/if}
 	{#if $attachComponentModal}
-		<AttachComponent {toggleAttachTemplateModal} {toggleCreateModuleModal} {toggleAttachComponentModal}/>
+		<AttachComponent
+			{toggleAttachTemplateModal}
+			{toggleCreateModuleModal}
+			{toggleAttachComponentModal}
+		/>
 	{/if}
 	{#if $createModuleModal}
-		<CreateModuleModal {toggleCreateModuleModal} {toggleAttachTemplateModal} {toggleAttachComponentModal}/>
+		<CreateModuleModal
+			{toggleCreateModuleModal}
+			{toggleAttachTemplateModal}
+			{toggleAttachComponentModal}
+		/>
 	{/if}
 	{#if $attachTemplateModal}
 		<AttachTemplate {toggleAttachTemplateModal} {toggleCreateModuleModal} {toggleModuleInfoModal} />
