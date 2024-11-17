@@ -73,7 +73,8 @@
 
 
 	function handleRegisterWithGithub() {
-		signIn('github', { callbackUrl: '/dashboard?authType=register' });
+		document.cookie = "authType=register; path=/";
+		signIn('github', { callbackUrl: '/dashboard' });
 	}
 </script>
 
