@@ -16,18 +16,6 @@
 
 	// Function to handle logout
 	async function handleLogout() {
-		if ($page.data.session) {
-			//user signed in with github
-			signOut();
-			window.location.href = '/login';
-		}
-
-		if (!authToken) {
-			console.log('No auth token found.');
-			window.location.href = '/login';
-			return;
-		}
-
 		try {
 			// Call the logout API
 			const response = await fetch(`${apiUrl}/api/v1/logout`, {
@@ -38,15 +26,25 @@
 				}
 			});
 
+			const data = await response.json();
+			console.log(data)
 			if (!response.ok) {
-				console.error('Logout failed:', response.statusText);
+				console.error('Logout failed:', data);
 				return;
 			}
-
 			removeCookie('authToken');
 
-			// Redirect to the login page
-			window.location.href = '/login';
+			if ($page.data.session) {
+				//user signed in with github
+				signOut();
+				window.location.href = '/login';
+			}
+
+			if (!authToken) {
+				console.log('No auth token found.');
+				window.location.href = '/login';
+				return;
+			}
 		} catch (error) {
 			console.error('An error occurred during logout:', error);
 		}

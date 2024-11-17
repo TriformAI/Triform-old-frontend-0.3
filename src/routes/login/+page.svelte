@@ -53,7 +53,7 @@
 	}
 
 	function handleLoginWithGithub() {
-		signIn('github', { callbackUrl: '/dashboard' });
+		signIn('github', { callbackUrl: '/dashboard?authType=login' });
 	}
 </script>
 

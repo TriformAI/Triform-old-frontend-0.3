@@ -5,6 +5,8 @@
 <script>
 	import '../app.css';
 	import Navbar from '$lib/components/Navbar.svelte';
+	import { toasts, ToastContainer, FlatToast, BootstrapToast } from 'svelte-toasts';
+	import Pusher from 'pusher-js';
 	import { SvelteFlowProvider } from '@xyflow/svelte';
 	import Toolbar from '$lib/components/Toolbar.svelte';
 	import Footer from '$lib/components/Footer.svelte';
@@ -34,26 +36,57 @@
 			acc[name] = value;
 			return acc;
 		}, {});
-		return cookies['authToken'];
+		let authToken = cookies['authToken'];
+		if (authToken) {
+			return authToken;
+		} else if ($page.data.GithubAuthToken) {
+			authToken = $page.data.GithubAuthToken;
+			if (authToken && browser) {
+				document.cookie = `authToken=${authToken}; Path=/; Max-Age=86400; SameSite=Strict`;
+				return authToken;
+			}
+		}
 	}
 
 	// Function to check if the user is authenticated either by authToken or GitHub session
-	function isAuthenticated(session) {
-		const authToken = checkAuthToken();
-		return authToken || (session && session.user);
+	function isAuthenticated() {
+		let authToken = checkAuthToken();
+		if (authToken) return true;
+		else return false;
 	}
 
-	// Redirect if neither authToken nor GitHub session is found
 	onMount(() => {
 		if (browser) {
 			const session = $page.data.session;
+			// console.log('session', session);
 			if (
 				!isAuthenticated(session) &&
-				$page.url.pathname === '/dashboard' // Strict match for /dashboard
+				$page.url.pathname === '/dashboard'
 			) {
 				window.location.href = '/login';
 			}
 		}
+	});
+
+	onMount(() => {
+		// Pusher.logToConsole = true;
+
+		let pusher = new Pusher('8845603c589a39579e79', {
+			cluster: 'ap2'
+		});
+
+		let channel = pusher.subscribe('my-channel');
+		channel.bind('my-event', function (data) {
+			console.log('Pusher Event:', data);
+			toasts.add({
+				title: 'Pusher Event',
+				description: JSON.stringify(data),
+				duration: 10000,
+				placement: 'top-right',
+				type: 'success',
+				theme: 'dark'
+			});
+		});
 	});
 
 	/**
@@ -93,6 +126,10 @@
 				<Navbar />
 				<Toolbar />
 			</div>
+
+			<ToastContainer placement="bottom-right" let:data>
+				<FlatToast {data} />
+			</ToastContainer>
 
 			<main onclick={generalToggle}>
 				{@render children?.()}

@@ -1,40 +1,50 @@
-// src/routes/+layout.server.js or a relevant layout/page file
 import { PUBLIC_API_URL } from '$env/static/public';
 
-export const load = async ({ locals, fetch }) => {
+export const load = async ({ locals, fetch, url }) => {
 	const session = await locals.auth(); // Assuming you use the auth object to get the session
+	const authType = url.searchParams.get('authType');
 	const apiUrl = PUBLIC_API_URL;
+	let GithubAuthToken = null;
 
 	if (session) {
-		const github = {
-			accessToken: session.accessToken,
-			userId: session.userId,
-			email: session.user.email,
-			name: session.user.name,
-			image: session.user.image
-		};
+		const endpoint = authType === 'register' ? '/api/v1/register' : '/api/v1/login';
+		const body = authType === 'register' 
+			? {
+				accessToken: session.accessToken,
+				userId: session.userId,
+				email: session.user.email,
+				name: session.user.name,
+				image: session.user.image
+			}
+			: {
+				email: session.user.email,
+				password: '',
+				accessToken: session.accessToken
+			};
 
-		// console.log(github);
-		// Make an API call to store GitHub data
-		// try {
-		// 	await fetch(`${apiUrl}/api/v1/register?provider=github`, {
-		// 		method: 'POST',
-		// 		headers: {
-		// 			'Content-Type': 'application/json'
-		// 		},
-		// 		body: JSON.stringify({
-		// 			name: session.user.name,
-		// 			email: session.user.email,
-		// 			image: session.user.image
-		// 			// Add any other relevant GitHub data you have access to
-		// 		})
-		// 	});
-		// } catch (error) {
-		// 	console.error('Failed to store GitHub data:', error);
-		// }
+		try {
+			const response = await fetch(`${apiUrl}${endpoint}`, {
+				method: 'POST',
+				headers: {
+					'Content-Type': 'application/json'
+				},
+				body: JSON.stringify(body)
+			});
+
+			if (response.ok) {
+				const data = await response.json();
+				GithubAuthToken = data.token;
+			} else {
+				const errorText = await response.text();
+				console.error(`Failed to authenticate with external API (${response.status}):`, errorText);
+			}
+		} catch (error) {
+			console.error('Error during API request:', error);
+		}
 	}
 
 	return {
-		session
+		session,
+		GithubAuthToken
 	};
 };

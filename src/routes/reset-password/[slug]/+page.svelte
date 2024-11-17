@@ -9,10 +9,6 @@
 	let errorMessage = '';
 	let successMessage = '';
 
-	// Extract the slug parameter from the URL
-	$: slug = $page.url.searchParams.get('slug');
-
-	console.log(slug);
 </script>
 
 <section>

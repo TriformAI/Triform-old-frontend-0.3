@@ -14,7 +14,7 @@
 
 		try {
 			const apiUrl = PUBLIC_API_URL;
-			const response = await fetch(`${apiUrl}/api/v1/password-reset`, {
+			const response = await fetch(`${apiUrl}/api/v1/forgot-password`, {
 				method: 'POST',
 				headers: {
 					'Content-Type': 'application/json'
@@ -22,14 +22,13 @@
 				body: JSON.stringify({ email })
 			});
 			const data = await response.json();
+			console.log('Response data', data);
 			if (response.ok) {
-				console.log(data);
 				successMessage = 'Password reset link has been sent to your email.';
-				email = ''; // Clear the email field
+				email = '';
 			} else {
 				const errorData = await response.json();
-				console.log(errorData);
-				errorMessage = errorData.message || 'Failed to send password reset link.';
+				errorMessage = errorData.errors.email || 'Failed to send password reset link.';
 			}
 		} catch (error) {
 			errorMessage = 'An error occurred. Please try again later.';

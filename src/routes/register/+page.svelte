@@ -2,6 +2,7 @@
 	import { PUBLIC_API_URL } from '$env/static/public';
 	import logo from '$lib/images/Logo.svg';
 	import github_mark_logo from '$lib/images/github-mark-white.svg';
+	import { signIn } from '@auth/sveltekit/client';
 
 	let showPassword = false;
 	let showConfirmPassword = false;
@@ -68,6 +69,11 @@
 		} finally {
 			loading = false; // Hide loading state
 		}
+	}
+
+
+	function handleRegisterWithGithub() {
+		signIn('github', { callbackUrl: '/dashboard?authType=register' });
 	}
 </script>
 
@@ -232,9 +238,9 @@
 					<span class="mx-4 text-gray-500">OR</span>
 					<div class="flex-1 border-t border-gray-500"></div>
 				</div>
-				<a
-					href=" "
-					class="flex items-center justify-center px-2 py-3 bg-gray-800 border-4 border-gray-700 rounded-full hover:bg-gray-700"
+				<button
+					on:click={handleRegisterWithGithub}
+					class="flex items-center justify-center w-full px-2 py-3 bg-gray-800 border-4 border-gray-700 rounded-full hover:bg-gray-700"
 				>
 					<div class="w-6 h-6">
 						<img src={github_mark_logo} alt="Github" class="object-contain w-full h-full" />
@@ -243,7 +249,7 @@
 						Register with Github
 					</p>
 					<p><x-heroicon-o-arrow-right class="w-5 h-5 text-white"></x-heroicon-o-arrow-right></p>
-				</a>
+				</button>
 				<h3 class="text-xs text-center text-gray-400 truncate">
 					Already have an account <a
 						href="/login"

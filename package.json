@@ -47,6 +47,7 @@
     "fs": "^0.0.1-security",
     "path": "^0.12.7",
     "pusher-js": "^8.4.0-rc2",
-    "sonner": "^1.7.0"
+    "sonner": "^1.7.0",
+    "svelte-toasts": "^1.1.2"
   }
 }

@@ -1,3 +1,7 @@
+<script context="module">
+	import { browser } from '$app/environment'; // Import to check if the code is running on the client
+</script>
+
 <script>
 	// @ts-nocheck
 
@@ -6,7 +10,7 @@
 	import profile_logo from '$lib/images/profile_logo.png';
 	import modal_cross from '$lib/icons/modal_cross.svg';
 	import add from '$lib/icons/add.svg';
-
+	import { page } from '$app/stores';
 	import {
 		profileDropdown,
 		notificationOpen,
@@ -17,12 +21,24 @@
 	import NotificationModal from './modals/NotificationModal.svelte';
 	import ProfileDropdown from './modals/ProfileDropdown.svelte';
 	import Button from './Button.svelte';
+	import { onMount } from 'svelte';
 
 	let tabs = [{ id: 1, label: 'Canvas 1' }];
 	let nextTabId = 2;
 	let activeTabId = 1;
+	let profilePic = null;
+
 	// @ts-ignore
 	let draggedTab = null; // Track the dragged tab
+
+	onMount(() => {
+		if (browser) {
+			const session = $page.data.session;
+			if (session) {
+				profilePic = session.user.image;
+			}
+		}
+	});
 
 	function addTab() {
 		tabs = [...tabs, { id: nextTabId, label: `Canvas ${nextTabId}` }];
@@ -66,7 +82,6 @@
 		}
 		draggedTab = null; // Reset the dragged tab
 	}
-
 </script>
 
 {#if $renameMode}
@@ -177,7 +192,7 @@
 				aria-label="Profile"
 				on:click={() => toggleModal(profileDropdown)}
 			>
-				<img alt="profile logo" src={profile_logo} class="w-8" />
+				<img alt="profile logo" src={profilePic || profile_logo} class="w-8 rounded-full" />
 			</button>
 
 			{#if $profileDropdown}
