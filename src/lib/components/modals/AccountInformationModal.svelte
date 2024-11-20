@@ -9,6 +9,7 @@
 	import { page } from '$app/stores';
 	import ConfirmationModal from '$lib/components/modals/ConfirmationModal.svelte';
 	import PasswordResetModal from './PasswordResetModal.svelte';
+	import Spinner from '$lib/components/Spinner.svelte';
 
 	const apiUrl = PUBLIC_API_URL;
 	const authToken = getAuthToken();
@@ -20,6 +21,7 @@
 	let updateStatus = $state('Save');
 	let confirmationModal = $state(false);
 	let passwordResetModal = $state(false);
+	let profilePicLoading = $state(false);
 
 	console.log(authToken);
 
@@ -87,10 +89,39 @@
 		}
 	}
 
+	async function updateProfilePic(file) {
+		try {
+			profilePicLoading = true;
+			const formData = new FormData();
+			if (file instanceof File) {
+				formData.append('name', name);
+				formData.append('email', email);
+				formData.append('photo', file);
+			}
+			const response = await fetch(`${apiUrl}/api/v1/user/profile`, {
+				method: 'POST',
+				headers: {
+					Authorization: `Bearer ${authToken}`
+				},
+				body: formData
+			});
+
+			const data = await response.json();
+			console.log(data.data.profile_photo_url);
+			profilePicLoading = false;
+			if (response.ok && data.data && data.data.profile_photo_url) {
+				profilePic = data.data.profile_photo_url;
+			}
+			if (!response.ok) {
+				console.error('Profile picture update failed:', data);
+				return;
+			}
+		} catch (error) {
+			console.error('An error occurred during profile picture update:', error);
+		}
+	}
+
 	async function updateAccount() {
-		// console.log(name);
-		// console.log(email);
-		// console.log(profilePic);
 		try {
 			updateStatus = 'Saving...';
 
@@ -98,9 +129,6 @@
 			const formData = new FormData();
 			formData.append('name', name);
 			formData.append('email', email);
-			if (profilePic instanceof File) {
-				formData.append('photo', profilePic);
-			}
 
 			const response = await fetch(`${apiUrl}/api/v1/user/profile`, {
 				method: 'POST',
@@ -112,7 +140,6 @@
 
 			const data = await response.json();
 			if (response.ok) {
-				console.log(data);
 				updateStatus = 'Saved!';
 				setTimeout(() => {
 					updateStatus = 'Save';
@@ -139,7 +166,7 @@
 
 <div class="flex items-center justify-center">
 	<div
-		class="w-[75rem] bg-website-dark-primary text-brand-tertiary-gray border border-brand-primary-gray rounded-lg shadow-lg z-50"
+		class="w-[75rem] max-h-[65vh] overflow-y-auto bg-website-dark-primary text-brand-tertiary-gray border border-brand-primary-gray rounded-lg shadow-lg z-50"
 		in:scale={{ start: 0.9, duration: 200 }}
 	>
 		<!-- Modal Header -->
@@ -153,7 +180,7 @@
 			</button>
 		</div>
 
-		<section class="overflow-y-auto font-sans antialiased text-white max-h-[800px]">
+		<section class="font-sans antialiased text-white">
 			<!-- Confirmation Modal -->
 			{#if confirmationModal}
 				<div class="fixed inset-0 flex items-center justify-center">
@@ -194,7 +221,13 @@
 
 				<div class="w-full p-6 mb-12 rounded-lg bg-website-secondary">
 					<div class="flex items-center mb-4">
-						<img src={profilePic} alt="profilePic" class="mr-10 rounded-full w-14" />
+						{#if profilePicLoading}
+							<div class="mx-5 mr-14">
+								<Spinner />
+							</div>
+						{:else}
+							<img src={profilePic} alt="profilePic" class="mr-10 rounded-full w-14" />
+						{/if}
 						<label
 							class="px-4 py-2 text-white rounded-md cursor-pointer bg-brand-primary-gray hover:brightness-90"
 						>
@@ -202,7 +235,9 @@
 							<input
 								type="file"
 								class="hidden"
-								onchange={(e) => (profilePic = e.target.files[0])}
+								onchange={(e) => {
+									updateProfilePic(e.target.files[0]);
+								}}
 							/>
 						</label>
 					</div>
