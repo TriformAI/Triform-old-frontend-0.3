@@ -87,49 +87,50 @@
 <!-- Background Overlay -->
 <div class="fixed inset-0 z-40 bg-black bg-opacity-20 backdrop-blur-lg"></div>
 
-<div class="relative flex items-center justify-center top-20">
+<div class="relative flex items-center justify-center">
 	<div
-		class=" w-[75rem] mx-auto bg-website-secondary text-brand-tertiary-gray border border-brand-primary-gray rounded-lg shadow-lg z-50"
+		class="w-[60rem] mx-auto bg-website-secondary text-brand-tertiary-gray border border-brand-primary-gray rounded-lg shadow-lg z-50"
 		in:scale={{ start: 0.9, duration: 200 }}
 	>
 		<!-- Modal Header -->
 		<div class="flex items-center justify-between p-4 border-b border-brand-primary-gray">
 			<div class="flex items-center gap-x-3">
 				<img src={modal_title_icon} alt="modal_title_icon" class="w-6" />
-				<h3 class="text-xl font-semibold text-left text-white">New Action</h3>
+				<h3 class="font-semibold text-left text-white text-md">New Action</h3>
 			</div>
 			<button type="button" class="cursor-pointer w-9" onclick={toggleAttachComponentModal}>
-				<img src={modal_cross} alt="Close modal" class="w-9" />
+				<img src={modal_cross} alt="Close modal" class="w-6" />
 			</button>
 		</div>
 
 		<!-- Modal Body -->
 		<div class="rounded-b-lg bg-website-primary">
-			<div class="px-6 py-8 space-y-5">
-				<!-- Blank Action Button -->
-				<button
-					class={`${isBlankActionSelected && 'bg-website-tertiary border-white'} w-full p-4 text-xl text-center duration-100 ease-linear border rounded-lg cursor-pointer border-brand-primary-gray hover:bg-website-tertiary`}
-					onclick={toggleCreateModuleModal}
-				>
-					<h3 class="mb-3 font-bold">Start From Scratch</h3>
-					<p class="font-thin">No pre-filled settings, providing a clean slate.</p>
-				</button>
+			<div class="p-4 space-y-5">
+				<div class="px-3">
+					<button
+						class={`${isBlankActionSelected && 'bg-website-tertiary border-white'} w-full p-4 text-md text-center duration-100 ease-linear border rounded-lg cursor-pointer border-brand-primary-gray hover:bg-website-tertiary`}
+						onclick={toggleCreateModuleModal}
+					>
+						<h3 class="mb-1 font-bold">Start From Scratch</h3>
+						<p class="font-thin">No pre-filled settings, providing a clean slate.</p>
+					</button>
+				</div>
 
 				<!-- Search and Filter -->
-				<div class="flex items-center w-1/2 mr-auto">
+				<div class="flex items-center w-1/2 px-3 mr-auto">
 					<div class="relative w-full">
 						<input
 							id="search"
 							type="text"
 							placeholder="Search..."
-							class="w-full px-4 py-3 text-xl bg-transparent border rounded-md border-brand-primary-gray"
+							class="w-full px-4 py-3 bg-transparent border rounded-md text-md border-brand-primary-gray"
 							bind:value={searchTerm}
 						/>
-						<img src={search_icon} alt="search_icon" class="absolute inset-y-0 w-6 right-3 top-4" />
+						<img src={search_icon} alt="search_icon" class="absolute inset-y-0 w-5 right-3 top-4" />
 					</div>
 				</div>
 
-				<div class="py-5 grid grid-cols-2 gap-5 place-items-center h-[20rem] overflow-y-auto">
+				<div class="py-5 px-3 grid grid-cols-2 gap-5 place-items-center h-[20rem] overflow-y-auto">
 					{#if filteredComponent.length === 0}
 						<div class="col-span-3 text-center text-brand-light-gray">
 							No Templates found with provided search query
@@ -143,18 +144,10 @@
 								<div class="flex flex-col w-full px-6 py-3 overflow-hidden">
 									<div class="flex items-center justify-between w-full">
 										<div>
-											<h3 class="my-1 text-xl font-bold text-left text-white">{template.name}</h3>
-											<div class="flex items-center w-full gap-3 mb-3">
-												{#each template.tags as tag}
-													<span
-														class="px-3 py-1.5 text-sm text-brand-light-gray rounded-md bg-website-secondary border border-white/10 hover:border-white/30"
-														>{tag}</span
-													>
-												{/each}
-											</div>
+											<h3 class="my-1 font-bold text-left text-white text-md">{template.name}</h3>
 										</div>
 									</div>
-									<p class="text-sm text-left text-brand-light-gray truncate-description">
+									<p class="text-xs text-left text-brand-light-gray truncate-description">
 										{template.description}
 									</p>
 								</div>

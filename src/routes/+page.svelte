@@ -40,7 +40,7 @@
 			<a href="/register">
 				<div class="btn btn1">
 					<div class="inner"></div>
-					<button class="text-lg">Get Started</button>
+					<button class="text-sm">Get Started</button>
 				</div>
 			</a>
 		</div>
@@ -66,12 +66,12 @@
 			</div>
 
 			<div class="flex flex-col items-center justify-around w-full h-full mx-auto">
-				<div class="relative flex flex-col items-center justify-center text-xl gap-y-10 top-20">
+				<div class="relative flex flex-col items-center justify-center text-md gap-y-10 top-20">
 					<a href=" " class="text-white">Features</a>
 					<a href=" " class="text-white">Pricing</a>
 					<a href=" " class="text-white">How it works</a>
 				</div>
-				<div class="flex items-center justify-center mx-5 text-xl gap-x-10">
+				<div class="flex items-center justify-center mx-5 text-md gap-x-10">
 					<a href="/login" class="text-white">Login</a>
 					<a href="/register" class=" Navbtn Navbtn1">
 						<div class="inner"></div>
@@ -106,7 +106,7 @@
 			<a href="/register">
 				<div class="btn btn1">
 					<div class="inner"></div>
-					<button class="text-lg">Get Started</button>
+					<button class="text-sm">Get Started</button>
 				</div>
 			</a>
 			<video
@@ -127,9 +127,9 @@
 			<div
 				class="space-y-4 lg:p-10 p-7 lg:max-w-[350px] w-full lg:border-r-[0.20px] lg:border-r-gray-900"
 			>
-				<div class="flex items-center gap-2 text-lg">
+				<div class="flex items-center gap-2 text-sm">
 					<img src={serverless_logo} alt="serverless" />
-					<h3 class="text-xl font-semibold text-white">Serverless architecture</h3>
+					<h3 class="text-md font-semibold text-white">Serverless architecture</h3>
 				</div>
 				<p class="font-thin text-brand-light-gray text-md">
 					Experience unmatched scalability and reduced overhead with our serverless architecture.
@@ -141,7 +141,7 @@
 			>
 				<div class="flex items-center gap-x-2">
 					<img src={python_logo} alt="python_integration" />
-					<h3 class="text-xl font-semibold text-white">Python Integration</h3>
+					<h3 class="text-md font-semibold text-white">Python Integration</h3>
 				</div>
 				<p class="font-thin text-brand-light-gray text-md">
 					Utilize your favourite Python frameworks and libraries to enhance your applications,
@@ -151,7 +151,7 @@
 			<div class="w-full lg:p-10 p-7 py-10 space-y-4 lg:max-w-[350px]">
 				<div class="flex items-center gap-2">
 					<img src={security_logo} alt="security" />
-					<h3 class="text-xl font-semibold text-white">Security</h3>
+					<h3 class="text-md font-semibold text-white">Security</h3>
 				</div>
 				<p class="font-thin text-brand-light-gray text-md">
 					Security is paramount. Our platform employs advanced encryption, authentication, and

@@ -43,7 +43,7 @@
 
 <div
 	onclick={() => (collapsed = true)}
-	class={`${$statusModal ? 'pt-7' : ''} z-50 w-full px-7 border-t border-t-brand-primary-gray text-brand-white bg-website-primary shadow-2xl duration-200 ease-linear transition-transform ${!collapsed ? 'group-hover:-translate-y-2 py-5 cursor-pointer' : ' -translate-y-[70%] cursor-default'}`}
+	class={`${$statusModal ? 'pt-7 mt-8' : ''} z-50 w-full px-7 border-t border-t-brand-primary-gray text-brand-white bg-website-primary shadow-2xl duration-200 ease-linear transition-transform ${!collapsed ? 'group-hover:-translate-y-2 py-3 cursor-pointer mt-[3.2rem]' : ' -translate-y-[70%] cursor-default'}`}
 >
 	{#if collapsed}
 		<button
@@ -72,15 +72,15 @@
 			<h2 class="text-md text-primary-green">All system are operational</h2>
 		</div>
 
-		<div class="flex items-center gap-x-16">
-			<h2 class="flex items-center text-md text-brand-light-gray gap-x-5">
-				<span class="text-xl text-brand-tertiary-gray relative bottom-0.5">0</span> Runs per Hour
+		<div class="flex items-center gap-x-14">
+			<h2 class="flex items-center text-md text-brand-light-gray gap-x-4">
+				<span class="text-md text-brand-tertiary-gray relative bottom-0.5">0</span> Runs per Hour
 			</h2>
-			<h2 class="flex items-center text-md text-brand-light-gray gap-x-5">
-				<span class="text-xl text-brand-tertiary-gray relative bottom-0.5">0</span> Errors per Hour
+			<h2 class="flex items-center text-md text-brand-light-gray gap-x-4">
+				<span class="text-md text-brand-tertiary-gray relative bottom-0.5">0</span> Errors per Hour
 			</h2>
-			<h2 class="flex items-center text-md text-brand-light-gray gap-x-5">
-				<span class="text-xl text-brand-tertiary-gray relative bottom-0.5">0</span> Alerts
+			<h2 class="flex items-center text-md text-brand-light-gray gap-x-4">
+				<span class="text-md text-brand-tertiary-gray relative bottom-0.5">0</span> Alerts
 			</h2>
 		</div>
 	</div>
@@ -89,7 +89,7 @@
 			<div>
 				<div class="flex items-start justify-between w-full mb-5">
 					<h2 class="relative flex items-center text-white text-md left-5">Runs per Hour</h2>
-					<p class="text-xl text-white">
+					<p class="text-white text-md">
 						0 <span class="ml-3 text-md text-brand-light-gray">+0.0%</span>
 					</p>
 				</div>
@@ -98,7 +98,7 @@
 			<div>
 				<div class="flex items-start justify-between w-full mb-5">
 					<h2 class="relative flex items-center text-white text-md left-5">Errors per Hour</h2>
-					<p class="text-xl text-white">
+					<p class="text-white text-md">
 						0 <span class="ml-3 text-md text-brand-light-gray">+0.0%</span>
 					</p>
 				</div>
@@ -107,7 +107,7 @@
 			<div>
 				<div class="flex items-start justify-between w-full mb-5">
 					<h2 class="relative flex items-center text-white text-md left-5">Alerts</h2>
-					<p class="text-xl text-white">
+					<p class="text-white text-md">
 						0 <span class="ml-3 text-md text-brand-light-gray">+0.0%</span>
 					</p>
 				</div>

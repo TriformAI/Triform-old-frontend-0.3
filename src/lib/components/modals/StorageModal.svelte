@@ -58,7 +58,7 @@
 		<div class="flex items-center justify-between">
 			<div class="flex items-center gap-x-3">
 				<img src={modal_title_icon} alt="modal_title_icon" class="w-6" />
-				<h3 class="text-xl font-semibold text-left text-white">Storage Management</h3>
+				<h3 class="text-md font-semibold text-left text-white">Storage Management</h3>
 			</div>
 			{#if pined_unpined}
 				<button type="button" class="w-6 cursor-pointer" onclick={togglePined} aria-label="Pin">
@@ -76,7 +76,7 @@
 					id="search"
 					type="text"
 					placeholder="Search Anything..."
-					class="w-full px-4 py-4 text-xl border rounded-md bg-website-secondary border-brand-primary-gray"
+					class="w-full px-4 py-4 text-md border rounded-md bg-website-secondary border-brand-primary-gray"
 					bind:value={searchTerm}
 				/>
 				<img src={search_icon} alt="search_icon" class="absolute inset-y-0 w-6 right-3 top-5" />
@@ -94,11 +94,11 @@
 				class={`py-3 px-5 group flex items-center justify-between w-full duration-200 ease-in-out hover:bg-website-tertiary border-y border-y-brand-primary-gray`}
 			>
 				<button class="flex flex-col w-full py-4">
-					<h3 class="my-1 text-xl font-bold text-white">{category.name}</h3>
+					<h3 class="my-1 text-md font-bold text-white">{category.name}</h3>
 					<div class="flex items-center my-1 gap-x-5 text-brand-light-gray">
-						<h3 class="text-lg">{category.date}</h3>
+						<h3 class="text-sm">{category.date}</h3>
 						<p>.</p>
-						<h3 class="text-lg">{category.id}</h3>
+						<h3 class="text-sm">{category.id}</h3>
 					</div>
 					{#if category.active}
 						<p class="text-primary-green">Active</p>

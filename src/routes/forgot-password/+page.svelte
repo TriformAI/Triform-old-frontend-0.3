@@ -43,14 +43,14 @@
 			<img alt="triform logo" src={logo} class="w-16 h-16 mx-auto mb-4" />
 		</a>
 		<div class="p-7 rounded-lg max-w-3xl md:w-[45em] w-[93%] bg-gray-950">
-			<div class="mb-6 text-lg text-gray-600">
+			<div class="mb-6 text-sm text-gray-600">
 				Forgot your password? No problem. Just let us know your email address, and we will email you
 				a password reset link that will allow you to choose a new one.
 			</div>
 
 			<form on:submit={handlePasswordReset}>
 				<div class="mt-4">
-					<label for="email" class="block mb-1 text-lg text-white">Email</label>
+					<label for="email" class="block mb-1 text-sm text-white">Email</label>
 					<input
 						id="email"
 						type="email"

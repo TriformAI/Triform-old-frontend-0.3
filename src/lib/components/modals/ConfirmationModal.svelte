@@ -35,10 +35,10 @@
 		<div class="flex items-center justify-between p-4 border-b border-brand-primary-gray">
 			<div class="flex items-center gap-x-3">
 				<img src={modal_title_icon} alt="modal title icon" class="w-6" />
-				<h3 class="text-xl font-semibold text-left text-white">{title}</h3>
+				<h3 class="font-semibold text-left text-white text-md">{title}</h3>
 			</div>
 			<button type="button" class="cursor-pointer w-9" on:click={onModalClose}>
-				<img src={modal_cross} alt="Close modal" class="w-7" />
+				<img src={modal_cross} alt="Close modal" class="w-6" />
 			</button>
 		</div>
 
@@ -46,7 +46,7 @@
 		<div class="p-6 text-white">{body}</div>
 
 		<!-- Modal Footer -->
-		<div class="flex justify-end gap-4 p-4 border-t border-brand-primary-gray">
+		<div class="flex justify-end gap-4 p-3 border-t border-brand-primary-gray">
 			{#each footer as button (button.text)}
 				<Button content={{ text: button.text }} on:click={button.onClick} type={button.type}/>
 			{/each}

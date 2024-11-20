@@ -63,7 +63,7 @@
 </script>
 
 <div
-	class="absolute left-8 top-44 mt-2 w-[45rem] bg-website-secondary text-brand-tertiary-gray border border-brand-primary-gray rounded-lg shadow-lg z-50"
+	class="absolute left-8 top-44 mt-2 w-[38rem] bg-website-secondary text-brand-tertiary-gray border border-brand-primary-gray rounded-lg shadow-lg z-50"
 	in:scale={{ start: 0.9, duration: 200 }}
 	out:fade={{ duration: 150 }}
 >
@@ -72,7 +72,7 @@
 		<div class="flex items-center justify-between">
 			<div class="flex items-center gap-x-3">
 				<img src={modal_title_icon} alt="modal_title_icon" class="w-6" />
-				<h3 class="text-xl font-semibold text-left text-white">Templates Library</h3>
+				<h3 class="font-semibold text-left text-white text-md">Templates Library</h3>
 			</div>
 			{#if pined_unpined}
 				<button type="button" class="w-6 cursor-pointer" onclick={togglePined} aria-label="Pin">
@@ -93,7 +93,7 @@
 					class="w-full px-4 py-2.5 text-md border rounded-md bg-website-secondary border-brand-primary-gray"
 					bind:value={searchTerm}
 				/>
-				<img src={search_icon} alt="search_icon" class="absolute inset-y-0 w-6 right-3 top-2.5" />
+				<img src={search_icon} alt="search_icon" class="absolute inset-y-0 w-5 right-3 top-3" />
 			</div>
 		</div>
 	</div>
@@ -107,11 +107,11 @@
 				<div class="flex flex-col w-full px-6 py-3 overflow-hidden">
 					<div class="flex items-center justify-between w-full">
 						<div>
-							<h3 class="my-1 text-lg font-bold text-left text-white">{category.name}</h3>
+							<h3 class="my-1 text-sm font-bold text-left text-white">{category.name}</h3>
 							<div class="flex items-center w-full gap-2">
 								{#each category.tagsAssigned && category.tagsAssigned.split(', ') as tag}
 									<span
-										class="px-3 py-1.5 text-xs text-brand-light-gray rounded-md bg-website-secondary border border-white/10 hover:border-white/30"
+										class="px-2 py-1 text-xs border rounded-md text-brand-light-gray bg-website-secondary border-white/10 hover:border-white/30"
 										>{tag}</span
 									>
 								{/each}
@@ -150,7 +150,7 @@
 						</div>
 					</div>
 
-					<p class="mt-2 text-sm text-left text-brand-light-gray max-w-[40em] truncate-description">
+					<p class="mt-2 text-xs text-left text-brand-light-gray max-w-[40em] truncate-description">
 						{category.description}
 					</p>
 				</div>

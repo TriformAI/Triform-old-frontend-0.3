@@ -79,29 +79,29 @@
 
 <div class="flex items-center justify-center">
 	<div
-		class=" w-[75rem] right-64 mx-auto bg-website-secondary text-brand-tertiary-gray border border-brand-primary-gray rounded-lg shadow-lg z-50"
+		class=" w-[60rem] right-64 mx-auto bg-website-secondary text-brand-tertiary-gray border border-brand-primary-gray rounded-lg shadow-lg z-50"
 		in:scale={{ start: 0.9, duration: 200 }}
 	>
 		<!-- Modal Header -->
 		<div class="flex items-center justify-between p-4 border-b border-brand-primary-gray">
 			<div class="flex items-center gap-x-3">
 				<img src={modal_title_icon} alt="modal_title_icon" class="w-6" />
-				<h3 class="text-xl font-semibold text-left text-white">New Action</h3>
+				<h3 class="font-semibold text-left text-white text-md">New Action</h3>
 			</div>
 			<button type="button" class="cursor-pointer w-9" onclick={toggleAttachTemplateModal}>
-				<img src={modal_cross} alt="Close modal" class="w-9" />
+				<img src={modal_cross} alt="Close modal" class="w-6" />
 			</button>
 		</div>
 
 		<!-- Modal Body -->
 		<div class="rounded-b-lg bg-website-primary">
-			<div class="px-6 py-8 space-y-5">
+			<div class="p-4 space-y-5">
 				<!-- Blank Action Button -->
 				<button
-					class={`${isBlankActionSelected && 'bg-website-tertiary border-white'} w-full p-4 text-xl text-center duration-100 ease-linear border rounded-lg cursor-pointer border-brand-primary-gray hover:bg-website-tertiary`}
+					class={`${isBlankActionSelected && 'bg-website-tertiary border-white'} w-full p-4 text-md text-center duration-100 ease-linear border rounded-lg cursor-pointer border-brand-primary-gray hover:bg-website-tertiary`}
 					onclick={selectBlankAction}
 				>
-					<h3 class="mb-3 font-bold">Start with a Blank Action</h3>
+					<h3 class="mb-1 font-bold">Start with a Blank Action</h3>
 					<p class="font-thin">No pre-filled code, providing a clean slate.</p>
 				</button>
 
@@ -112,19 +112,17 @@
 							id="search"
 							type="text"
 							placeholder="Search Anything..."
-							class="w-full px-4 py-3 text-xl bg-transparent border rounded-md border-brand-primary-gray"
+							class="w-full px-4 py-3 bg-transparent border rounded-md text-md border-brand-primary-gray"
 							bind:value={searchTerm}
 						/>
-						<img src={search_icon} alt="search_icon" class="absolute inset-y-0 w-6 right-3 top-4" />
+						<img src={search_icon} alt="search_icon" class="absolute inset-y-0 w-5 right-3 top-4" />
 					</div>
-					<div class="p-4 ml-3 cursor-pointer hover:bg-website-tertiary rounded-xl">
-						<img src={filter} alt="filter" class="w-8" />
-					</div>
+					
 				</div>
 
 				<!-- Template Selection -->
-				<div class="flex items-center w-full gap-x-3">
-					<h3 class="flex-shrink-0 text-xl font-bold">Your previously created actions</h3>
+				<div class="flex items-center w-full px-3 gap-x-3">
+					<h3 class="flex-shrink-0 font-bold text-md">Your previously created actions</h3>
 					<div class="w-full border-t border-brand-primary-gray"></div>
 					<svg
 						xmlns="http://www.w3.org/2000/svg"
@@ -137,7 +135,7 @@
 						<path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7" />
 					</svg>
 				</div>
-				<div class="grid grid-cols-3 gap-5 place-items-center h-[15rem] overflow-y-auto">
+				<div class="grid grid-cols-3 gap-5 place-items-center h-[15rem] overflow-y-auto px-3">
 					{#if filteredTemplates.length === 0}
 						<div class="col-span-3 text-center text-brand-light-gray">
 							No Templates found with provided search query
@@ -151,18 +149,18 @@
 								<div class="flex flex-col w-full px-6 py-2 overflow-hidden">
 									<div class="flex items-center justify-between w-full">
 										<div>
-											<h3 class="my-1 text-xl font-bold text-left text-white">{template.name}</h3>
-											<div class="flex items-center w-full gap-3 mb-3">
+											<h3 class="my-1 font-bold text-left text-white text-md">{template.name}</h3>
+											<div class="flex items-center w-full gap-2 mb-1">
 												{#each template.tags as tag}
 													<span
-														class="px-3 py-1.5 text-sm text-brand-light-gray rounded-md bg-website-secondary border border-white/10 hover:border-white/30"
+														class="px-2 py-1 text-xs border rounded-md text-brand-light-gray bg-website-secondary border-white/10 hover:border-white/30"
 														>{tag}</span
 													>
 												{/each}
 											</div>
 										</div>
 									</div>
-									<p class="mt-2 text-sm text-left text-brand-light-gray truncate-description">
+									<p class="mt-2 text-xs text-left text-brand-light-gray truncate-description">
 										{template.description}
 									</p>
 								</div>
@@ -173,7 +171,7 @@
 			</div>
 
 			<!-- Modal Footer -->
-			<div class="flex justify-between w-full px-6 py-3 border-t border-brand-primary-gray">
+			<div class="flex justify-between w-full p-3 border-t border-brand-primary-gray">
 				<Button content={{ text: 'Back' }} on:click={toggleCreateModuleModal} />
 				<Button content={{ text: 'Create' }} on:click={toggleModuleInfoModal} />
 			</div>

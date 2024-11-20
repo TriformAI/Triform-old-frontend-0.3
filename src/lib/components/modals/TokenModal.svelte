@@ -200,7 +200,7 @@
 		<div class="flex items-center justify-between">
 			<div class="flex items-center gap-x-3">
 				<img src={modal_title_icon} alt="modal_title_icon" class="w-6" />
-				<h3 class="text-xl font-semibold text-left text-white">API Token</h3>
+				<h3 class="text-md font-semibold text-left text-white">API Token</h3>
 			</div>
 			{#if pined_unpined}
 				<button type="button" class="w-6 cursor-pointer" onclick={togglePined} aria-label="Pin">
@@ -218,7 +218,7 @@
 					id="search"
 					type="text"
 					placeholder="Search Anything..."
-					class="w-full px-4 py-3 text-lg border rounded-md bg-website-secondary border-brand-primary-gray"
+					class="w-full px-4 py-3 text-sm border rounded-md bg-website-secondary border-brand-primary-gray"
 					bind:value={searchTerm}
 				/>
 				<img src={search_icon} alt="search_icon" class="absolute inset-y-0 w-6 right-3 top-3.5" />

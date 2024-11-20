@@ -19,7 +19,7 @@
 		<div class="p-7 rounded-lg max-w-3xl md:w-[45em] w-[93%] bg-gray-950">
 			<form>
 				<div class="mt-4">
-					<label for="email" class="block mb-1 text-lg text-white">Email</label>
+					<label for="email" class="block mb-1 text-sm text-white">Email</label>
 					<input
 						id="email"
 						type="email"
@@ -29,7 +29,7 @@
 					/>
 				</div>
 				<div class="mt-4">
-					<label for="password" class="block mb-1 text-lg text-white">Password</label>
+					<label for="password" class="block mb-1 text-sm text-white">Password</label>
 					<input
 						id="password"
 						type="password"
@@ -39,7 +39,7 @@
 					/>
 				</div>
 				<div class="mt-4">
-					<label for="confirmpassword" class="block mb-1 text-lg text-white">Confirm Password</label
+					<label for="confirmpassword" class="block mb-1 text-sm text-white">Confirm Password</label
 					>
 					<input
 						id="confirmpassword"

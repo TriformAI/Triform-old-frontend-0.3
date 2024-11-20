@@ -1,6 +1,7 @@
 <script>
 	import { fade, scale } from 'svelte/transition';
-	import Button from '$lib/components/Button.svelte';
+	import { signOut } from '@auth/sveltekit/client';
+	import { removeCookie } from '$lib/stores/cookie';
 	import modal_title_icon from '$lib/icons/Modal_Title_Icon.svg';
 	import modal_cross from '$lib/icons/modal_cross.svg';
 	import { PUBLIC_API_URL } from '$env/static/public';
@@ -22,6 +23,7 @@
 	let confirmationModal = $state(false);
 	let passwordResetModal = $state(false);
 	let profilePicLoading = $state(false);
+	let uploadStatus = $state('');
 
 	console.log(authToken);
 
@@ -78,6 +80,13 @@
 			const data = await response.json();
 			if (response.ok) {
 				console.log(data);
+				removeCookie('authToken');
+
+				if ($page.data.session) {
+					//user signed in with github
+					signOut();
+					window.location.href = '/login';
+				}
 				window.location.href = '/login';
 			}
 			if (!response.ok) {
@@ -107,12 +116,12 @@
 			});
 
 			const data = await response.json();
-			console.log(data.data.profile_photo_url);
 			profilePicLoading = false;
 			if (response.ok && data.data && data.data.profile_photo_url) {
 				profilePic = data.data.profile_photo_url;
 			}
 			if (!response.ok) {
+				uploadStatus = data.errors;
 				console.error('Profile picture update failed:', data);
 				return;
 			}
@@ -166,17 +175,17 @@
 
 <div class="flex items-center justify-center">
 	<div
-		class="w-[75rem] max-h-[65vh] overflow-y-auto bg-website-dark-primary text-brand-tertiary-gray border border-brand-primary-gray rounded-lg shadow-lg z-50"
+		class="w-[60rem] max-h-[70vh] overflow-y-auto bg-website-dark-primary text-brand-tertiary-gray border border-brand-primary-gray rounded-lg shadow-lg z-50"
 		in:scale={{ start: 0.9, duration: 200 }}
 	>
 		<!-- Modal Header -->
-		<div class="flex items-center justify-between p-6 border-b border-brand-primary-gray">
+		<div class="flex items-center justify-between p-4 border-b border-brand-primary-gray">
 			<div class="flex items-center gap-x-3">
 				<img src={modal_title_icon} alt="modal_title_icon" class="w-6" />
-				<h3 class="text-xl font-semibold text-left text-white">Account Details</h3>
+				<h3 class="font-semibold text-left text-white text-md">Account Details</h3>
 			</div>
 			<button type="button" class="cursor-pointer w-9" onclick={toggleAccountInfoModal}>
-				<img src={modal_cross} alt="Close modal" class="w-9" />
+				<img src={modal_cross} alt="Close modal" class="w-6" />
 			</button>
 		</div>
 
@@ -212,14 +221,14 @@
 					<PasswordResetModal {togglePasswordResetModal} />
 				</div>
 			{/if}
-			<div class="w-full px-6 py-10 mx-auto md:max-w-6xl">
+			<div class="w-full p-6 py-8 mx-auto md:max-w-6xl">
 				<!-- Profile Information Section -->
-				<h2 class="mb-1 text-xl font-semibold">Profile Information</h2>
+				<h2 class="mb-1 font-semibold text-md">Profile Information</h2>
 				<p class="mb-6 text-gray-400">
 					Update your account's profile information and email address.
 				</p>
 
-				<div class="w-full p-6 mb-12 rounded-lg bg-website-secondary">
+				<div class="w-full p-6 mb-8 rounded-lg bg-website-secondary">
 					<div class="flex items-center mb-4">
 						{#if profilePicLoading}
 							<div class="mx-5 mr-14">
@@ -240,6 +249,7 @@
 								}}
 							/>
 						</label>
+						<p class="ml-10 text-sm text-primary-red">{uploadStatus}</p>
 					</div>
 					<form>
 						<div class="mb-4">
@@ -273,7 +283,7 @@
 
 				<!-- Change Password Section -->
 
-				<h2 class="mb-1 text-xl font-semibold">Change Password</h2>
+				<h2 class="mb-1 font-semibold text-md">Change Password</h2>
 				<p class="mb-6 text-gray-400">Change your current password</p>
 				<div class="w-full p-6 mb-12 rounded-lg bg-website-secondary">
 					<p class="mb-6 text-gray-400">
@@ -291,7 +301,7 @@
 
 				<!-- Delete Account Section -->
 
-				<h2 class="mb-1 text-xl font-semibold">Delete Account</h2>
+				<h2 class="mb-1 font-semibold text-md">Delete Account</h2>
 				<p class="mb-6 text-gray-400">Permanently delete your account.</p>
 				<div class="w-full p-6 rounded-lg bg-website-secondary">
 					<p class="mb-6 text-gray-400">

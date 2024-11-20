@@ -14,21 +14,23 @@
 	const apiUrl = PUBLIC_API_URL;
 	const authToken = getAuthToken();
 	let changePasswordStatus = $state('Change Password');
-	let error = $state('');
+	let error = $state([]);
 
 	async function changePassword() {
 		if (!current_password || !new_password || !confirm_new_password) {
-			error = 'All fields are required';
+			// push error message to error array
+			error.push('All fields are required');
 			setTimeout(() => {
-				error = '';
+				error = [];
 			}, 3000);
 			return;
 		}
 
 		if (new_password !== confirm_new_password) {
-			error = 'Passwords do not match';
+			// push error message to error array
+			error.push('Passwords do not match');
 			setTimeout(() => {
-				error = '';
+				error = [];
 			}, 3000);
 			return;
 		}
@@ -55,6 +57,12 @@
 				setTimeout(() => {
 					togglePasswordResetModal();
 				}, 1000);
+			} else {
+				changePasswordStatus = 'Change Password';
+				error.push(data.errors.current_password[0]);
+				setTimeout(() => {
+					error = [];
+				}, 3000);
 			}
 		} catch (error) {
 			console.error(error);
@@ -86,14 +94,14 @@
 		<div class="flex items-center justify-between p-4 border-b border-brand-primary-gray">
 			<div class="flex items-center gap-x-3">
 				<img src={modal_title_icon} alt="modal title icon" class="w-6" />
-				<h3 class="text-xl font-semibold text-left text-white">Password Reset</h3>
+				<h3 class="font-semibold text-left text-white text-md">Password Reset</h3>
 			</div>
 			<button type="button" class="cursor-pointer w-9" on:click={togglePasswordResetModal}>
-				<img src={modal_cross} alt="Close modal" class="w-7" />
+				<img src={modal_cross} alt="Close modal" class="w-6" />
 			</button>
 		</div>
 
-		<form class="p-6">
+		<form class="p-4">
 			<div class="mb-4">
 				<label class="block mb-1 text-sm font-medium" for="name">Current Password</label>
 				<input
@@ -122,12 +130,14 @@
 				/>
 			</div>
 			<div class="flex items-center justify-center">
-				<p class="text-sm text-center text-red-500">{error}</p>
+				{#each error as message}
+					<p class="text-sm text-center text-red-500">{message}</p>
+				{/each}
 			</div>
 		</form>
 
 		<!-- Modal Footer -->
-		<div class="flex justify-end gap-4 p-4 border-t border-brand-primary-gray">
+		<div class="flex justify-end gap-4 p-3 border-t border-brand-primary-gray">
 			<button
 				on:click={changePassword}
 				class="px-4 py-2 text-white rounded-md bg-primary-green hover:brightness-90"

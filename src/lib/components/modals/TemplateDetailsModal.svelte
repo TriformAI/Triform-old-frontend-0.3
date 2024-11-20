@@ -47,27 +47,27 @@
 
 <div class="flex items-center justify-center">
 	<div
-		class="w-[75rem] bg-website-secondary text-brand-tertiary-gray border border-brand-primary-gray rounded-lg shadow-lg z-50"
+		class="w-[60rem] bg-website-secondary text-brand-tertiary-gray border border-brand-primary-gray rounded-lg shadow-lg z-50"
 		in:scale={{ start: 0.9, duration: 200 }}
 		out:fade={{ duration: 150 }}
 	>
 		<!-- Modal Header -->
-		<div class="flex items-center justify-between px-6 py-4 border-b border-brand-primary-gray">
+		<div class="flex items-center justify-between p-4 border-b border-brand-primary-gray">
 			<div class="flex items-center gap-x-3">
 				<img src={modal_title_icon} alt="modal_title_icon" class="w-6" />
 				{#if TemplateDetails.length > 0}
-					<h2 class="text-lg text-white">{TemplateDetails[0].name} Details</h2>
+					<h2 class="text-sm text-white">{TemplateDetails[0].name} Details</h2>
 				{:else}
-					<h2 class="text-lg text-white">Template Details</h2>
+					<h2 class="text-sm text-white">Template Details</h2>
 				{/if}
 			</div>
 			<button type="button" class="cursor-pointer w-9" onclick={toggleTemplateModal}>
-				<img src={modal_cross} alt="Close modal" class="w-7" />
+				<img src={modal_cross} alt="Close modal" class="w-6" />
 			</button>
 		</div>
 
 		<!-- Tab Headers -->
-		<div class="flex items-center w-full my-3 text-sm px-7 gap-x-5">
+		<div class="flex items-center w-full px-4 my-3 text-sm gap-x-5">
 			<button
 				class="p-1.5 cursor-pointer border-b-white"
 				class:border-b-2={activeTab === 'Edit Action'}
@@ -92,14 +92,14 @@
 		</div>
 
 		<!-- Tab Content -->
-		<div class="container px-7">
+		<div class="container px-4">
 			{#if TemplateDetails.length === 0}
 				<div class="flex items-center justify-center h-96">
-					<p class="text-lg text-center text-white">No data available</p>
+					<p class="text-sm text-center text-white">No data available</p>
 				</div>
 			{:else if loading}
 				<div class="flex items-center justify-center h-96">
-					<p class="text-lg text-center text-white">Loading...</p>
+					<p class="text-sm text-center text-white">Loading...</p>
 				</div>
 			{:else if activeTab === 'Edit Action'}
 				<CodeEditor code={TemplateDetails[0].code} />

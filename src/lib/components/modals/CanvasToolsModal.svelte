@@ -26,37 +26,37 @@
 		out:fade={{ duration: 150 }}
 	>
 		<!-- Modal Header -->
-		<div class="flex items-center justify-between p-6 border-b border-brand-primary-gray">
+		<div class="flex items-center justify-between p-4 border-b border-brand-primary-gray">
 			<div class="flex items-center gap-x-3">
 				<img src={modal_title_icon} alt="modal_title_icon" class="w-6" />
-				<h3 class="text-xl font-semibold text-left text-white">Available tools in the More Menu</h3>
+				<h3 class="font-semibold text-left text-white text-md">Available tools in the More Menu</h3>
 			</div>
 			<button
 				type="button"
 				class="cursor-pointer w-9"
 				onclick={() => canvasToolsModal.update((value) => false)}
 			>
-				<img src={modal_cross} alt="Close modal" class="w-9" />
+				<img src={modal_cross} alt="Close modal" class="w-6" />
 			</button>
 		</div>
 
 		<!-- Modal Body -->
-		<div class="flex flex-wrap items-center gap-5 p-10 rounded-b-lg bg-website-primary">
+		<div class="flex flex-wrap items-center gap-5 p-6 rounded-b-lg bg-website-primary">
 			{#each moreIcons as { id, icon, alt }}
 				<button
 					class="relative p-2 cursor-pointer bg-website-tertiary rounded-xl"
 					onclick={() => toggleIconVisibility(id)}
 				>
-					<img {alt} src={icon} class="w-8" />
-					<div class="absolute inset-y-0 right-0 top-10">
-						<img src={green_plus} alt="add" class="w-5" />
+					<img {alt} src={icon} class="w-5" />
+					<div class="absolute inset-y-0 right-0 top-8">
+						<img src={green_plus} alt="add" class="w-4" />
 					</div>
 				</button>
 			{/each}
 		</div>
 
 		<!-- Modal Footer -->
-		<div class="flex justify-end p-6 py-3 border-t border-brand-primary-gray bg-website-primary">
+		<div class="flex justify-end p-3 border-t border-brand-primary-gray bg-website-primary">
 			<Button
 				content={{ text: 'Done' }}
 				on:click={() => canvasToolsModal.update((value) => false)}

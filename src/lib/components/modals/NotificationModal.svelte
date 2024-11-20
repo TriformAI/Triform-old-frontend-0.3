@@ -12,7 +12,7 @@
 	out:fade={{ duration: 150 }}
 >
 	<div>
-		<h3 class="px-6 py-5 text-xl font-semibold text-left border-b border-brand-primary-gray">Notifications</h3>
+		<h3 class="px-6 py-5 text-md font-semibold text-left border-b border-brand-primary-gray">Notifications</h3>
 		<ul class="text-sm bg-website-primary rounded-b-2xl">
 			<li
 				class="flex items-baseline justify-between border-b p-7 border-b-brand-primary-gray hover:bg-white/5"

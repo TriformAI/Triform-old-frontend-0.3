@@ -36,7 +36,6 @@
 	const apiUrl = PUBLIC_API_URL;
 	const authToken = getAuthToken();
 
-
 	async function fetchProfile() {
 		try {
 			const response = await fetch(`${apiUrl}/api/v1/user/profile`, {
@@ -56,7 +55,7 @@
 					} else {
 						profilePic = data.data.profile_photo_url;
 					}
-					console.log(profilePic)
+					console.log(profilePic);
 				}
 			}
 			if (!response.ok) {
@@ -125,16 +124,16 @@
 {/if}
 
 <nav
-	class="flex items-center justify-between w-full px-10 py-3 text-brand-white bg-website-secondary"
+	class="flex items-center justify-between w-full px-10 py-2 text-brand-white bg-website-secondary"
 >
 	<div class="flex items-center overflow-auto gap-x-10">
-		<img alt="triform logo" src={logo} class="relative w-8 lg:w-14" />
+		<img alt="triform logo" src={logo} class="relative w-7 lg:w-12" />
 
 		<div class="flex gap-2 overflow-x-auto">
 			{#each tabs as tab}
 				<a
 					href=" "
-					class={`flex items-center flex-grow px-4 py-2 truncate duration-200 ease-in-out rounded-lg cursor-pointer group gap-x-2 ${tab.id === activeTabId && !$renameMode && 'bg-website-tertiary'} hover:bg-website-tertiary `}
+					class={`flex items-center flex-grow px-4 py-1.5 truncate duration-200 ease-in-out rounded-lg cursor-pointer group gap-x-2 ${tab.id === activeTabId && !$renameMode && 'bg-website-tertiary'} hover:bg-website-tertiary `}
 					on:click={() => setActiveTab(tab.id)}
 					draggable="true"
 					on:dragstart={(event) => handleDragStart(event, tab)}
@@ -152,7 +151,7 @@
 							on:input={(e) => (tab.label = e.target.value)}
 						/>
 					{:else}
-						<h1 class={`text-lg truncate ${tab.id === activeTabId ? 'min-w-28 w-full' : 'w-fit'}`}>
+						<h1 class={`text-md truncate ${tab.id === activeTabId ? 'min-w-28 w-full' : 'w-fit'}`}>
 							{tab.label}
 						</h1>
 					{/if}
@@ -183,7 +182,7 @@
 	<div class="flex items-center gap-x-5">
 		<button
 			on:click={() => toggleModal(shareCanvaModal)}
-			class={`w-fit flex items-center justify-center flex-shrink-0 gap-x-3 px-6 py-2 text-md font-medium text-brand-tertiary-gray hover:text-white transition duration-200 ease-in-out border rounded-lg bg-white/5 border-brand-light-gray hover:border-brand-tertiary-gray`}
+			class={`w-fit flex items-center justify-center flex-shrink-0 gap-x-3 px-4 py-1.5 text-sm font-medium text-brand-tertiary-gray hover:text-white transition duration-200 ease-in-out border rounded-lg bg-white/5 border-brand-light-gray hover:border-brand-tertiary-gray`}
 		>
 			Share Canva
 		</button>
@@ -199,7 +198,7 @@
 				viewBox="0 0 24 24"
 				stroke-width="1.5"
 				stroke="currentColor"
-				class="size-6"
+				class="size-5"
 			>
 				<path
 					stroke-linecap="round"
@@ -214,7 +213,7 @@
 		</button>
 
 		<div class="p-2 cursor-pointer hover:bg-website-tertiary rounded-xl">
-			<img alt="support icon" src={support_icon} class="w-6" />
+			<img alt="support icon" src={support_icon} class="w-5" />
 		</div>
 
 		<div class="relative pl-5 border-l-2 border-l-brand-primary-gray">

@@ -11,7 +11,7 @@
 	onclick={bubble('click')}
 	class={`${
 		content.width && content.width === 'full' ? 'w-full' : 'w-fit'
-	} flex items-center justify-center flex-shrink-0 gap-x-3 px-6 py-2.5 text-md font-medium 
+	} flex items-center justify-center flex-shrink-0 gap-x-3 px-6 py-2.5 text-sm font-medium 
     ${
 			type === 'success'
 				? 'bg-green-500 text-white hover:bg-green-600'

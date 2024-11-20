@@ -15,19 +15,22 @@
 	}
 </script>
 
-<div class="relative flex items-center justify-center top-20">
+<!-- Background Overlay -->
+<div class="fixed inset-0 z-40 bg-black bg-opacity-20 backdrop-blur-lg"></div>
+
+<div class="relative flex items-center justify-center top-10">
 	<div
-		class="w-[72rem] bg-website-secondary text-brand-tertiary-gray border border-brand-primary-gray rounded-lg shadow-lg z-50"
+		class="w-[60rem] bg-website-secondary text-brand-tertiary-gray border border-brand-primary-gray rounded-lg shadow-lg z-50"
 		in:scale={{ start: 0.9, duration: 200 }}
 	>
 		<!-- Modal Header -->
-		<div class="flex items-center justify-between px-6 py-4 border-b border-brand-primary-gray">
+		<div class="flex items-center justify-between p-4 border-b border-brand-primary-gray">
 			<div class="flex items-center gap-x-3">
 				<img src={modal_title_icon} alt="modal_title_icon" class="w-6" />
-				<h3 class="text-xl font-semibold text-left text-white">Action Name</h3>
+				<h3 class="font-semibold text-left text-white text-md">Action Name</h3>
 			</div>
 			<button type="button" class="cursor-pointer w-9" on:click={toggleModuleInfoModal}>
-				<img src={modal_cross} alt="Close modal" class="w-7" />
+				<img src={modal_cross} alt="Close modal" class="w-6" />
 			</button>
 		</div>
 

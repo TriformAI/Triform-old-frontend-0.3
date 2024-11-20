@@ -28,18 +28,18 @@
 		out:fade={{ duration: 150 }}
 	>
 		<!-- Modal Header -->
-		<div class="flex items-center justify-between p-6 border-b border-brand-primary-gray">
+		<div class="flex items-center justify-between p-4 border-b border-brand-primary-gray">
 			<div class="flex items-center gap-x-3">
 				<img src={modal_title_icon} alt="modal_title_icon" class="w-6" />
-				<h3 class="text-xl font-semibold text-left text-white">Share Canva</h3>
+				<h3 class="font-semibold text-left text-white text-md">Share Canva</h3>
 			</div>
 			<button type="button" class="w-8 cursor-pointer" onclick={toggleShareCanvaModal}>
-				<img src={modal_cross} alt="Close modal" class="w-8" />
+				<img src={modal_cross} alt="Close modal" class="w-6" />
 			</button>
 		</div>
 
 		<!-- Modal Body -->
-		<div class="p-6">
+		<div class="p-4">
 			<div class="flex items-center gap-x-4">
 				<button
 					class={`flex items-center justify-center flex-shrink-0 gap-x-3 px-4 py-2.5 text-sm font-medium text-brand-tertiary-gray hover:text-white transition duration-200 ease-in-out border rounded-lg bg-white/5 border-brand-primary-gray hover:border-brand-light-gray`}
@@ -77,7 +77,7 @@
 			<div>
 				<div class="flex items-center pt-8">
 					<img alt="profile logo" src={profile_logo} class="w-8 mr-3" />
-					<h4 class="text-lg text-white">Iggy</h4>
+					<h4 class="text-sm text-white">Iggy</h4>
 					<select
 						id="Label"
 						placeholder="Type here..."
@@ -90,7 +90,7 @@
 				</div>
 				<div class="flex items-center pt-8">
 					<img alt="profile logo" src={profile_logo} class="w-8 mr-3" />
-					<h4 class="text-lg text-white">Iggy</h4>
+					<h4 class="text-sm text-white">Iggy</h4>
 					<select
 						id="Label"
 						placeholder="Type here..."
@@ -103,7 +103,7 @@
 				</div>
 				<div class="flex items-center pt-8">
 					<img alt="profile logo" src={profile_logo} class="w-8 mr-3" />
-					<h4 class="text-lg text-white">Iggy</h4>
+					<h4 class="text-sm text-white">Iggy</h4>
 					<select
 						id="Label"
 						placeholder="Type here..."
