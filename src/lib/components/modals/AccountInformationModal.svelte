@@ -1,0 +1,278 @@
+<script>
+	import { fade, scale } from 'svelte/transition';
+	import Button from '$lib/components/Button.svelte';
+	import modal_title_icon from '$lib/icons/Modal_Title_Icon.svg';
+	import modal_cross from '$lib/icons/modal_cross.svg';
+	import { PUBLIC_API_URL } from '$env/static/public';
+	import { getAuthToken } from '$lib/stores/cookie';
+	import { onMount } from 'svelte';
+	import { page } from '$app/stores';
+	import ConfirmationModal from '$lib/components/modals/ConfirmationModal.svelte';
+	import PasswordResetModal from './PasswordResetModal.svelte';
+
+	const apiUrl = PUBLIC_API_URL;
+	const authToken = getAuthToken();
+	const profile = {};
+	const session = $page.data.session;
+	let name = $state('');
+	let email = $state('');
+	let profilePic = $state('');
+	let updateStatus = $state('Save');
+	let confirmationModal = $state(false);
+	let passwordResetModal = $state(false);
+
+	console.log(authToken);
+
+	let { toggleAccountInfoModal } = $props();
+
+	function toggleConfirmationModal() {
+		confirmationModal = !confirmationModal;
+	}
+
+	function togglePasswordResetModal() {
+		passwordResetModal = !passwordResetModal;
+	}
+
+	async function fetchProfile() {
+		try {
+			const response = await fetch(`${apiUrl}/api/v1/user/profile`, {
+				method: 'GET',
+				headers: {
+					Authorization: `Bearer ${authToken}`,
+					'Content-Type': 'application/json'
+				}
+			});
+
+			const data = await response.json();
+			if (response.ok && data.data) {
+				Object.assign(profile, data.data);
+				name = profile.name;
+				email = profile.email;
+				if (session) {
+					profilePic = session.user.image;
+				} else {
+					profilePic = profile.profile_photo_url;
+				}
+			}
+			if (!response.ok) {
+				console.error('Profile fetch failed:', data);
+				return;
+			}
+		} catch (error) {
+			console.error('An error occurred during profile fetch:', error);
+		}
+	}
+
+	async function deleteAccount() {
+		try {
+			const response = await fetch(`${apiUrl}/api/v1/user/profile`, {
+				method: 'DELETE',
+				headers: {
+					Authorization: `Bearer ${authToken}`,
+					'Content-Type': 'application/json'
+				}
+			});
+
+			const data = await response.json();
+			if (response.ok) {
+				console.log(data);
+				window.location.href = '/login';
+			}
+			if (!response.ok) {
+				console.error('Account deletion failed:', data);
+				return;
+			}
+		} catch (error) {
+			console.error('An error occurred during account deletion:', error);
+		}
+	}
+
+	async function updateAccount() {
+		// console.log(name);
+		// console.log(email);
+		// console.log(profilePic);
+		try {
+			updateStatus = 'Saving...';
+
+			// Prepare multipart form data
+			const formData = new FormData();
+			formData.append('name', name);
+			formData.append('email', email);
+			if (profilePic instanceof File) {
+				formData.append('photo', profilePic);
+			}
+
+			const response = await fetch(`${apiUrl}/api/v1/user/profile`, {
+				method: 'POST',
+				headers: {
+					Authorization: `Bearer ${authToken}`
+				},
+				body: formData
+			});
+
+			const data = await response.json();
+			if (response.ok) {
+				console.log(data);
+				updateStatus = 'Saved!';
+				setTimeout(() => {
+					updateStatus = 'Save';
+				}, 2000);
+			} else {
+				console.error('Account update failed:', data);
+			}
+		} catch (error) {
+			console.error('An error occurred during account update:', error);
+		}
+	}
+
+	onMount(() => {
+		fetchProfile();
+	});
+
+	onMount(() => {
+		document.body.style.overflow = 'hidden';
+	});
+</script>
+
+<!-- Background Overlay -->
+<div class="fixed inset-0 z-40 bg-black bg-opacity-20 backdrop-blur-lg"></div>
+
+<div class="flex items-center justify-center">
+	<div
+		class="w-[75rem] bg-website-dark-primary text-brand-tertiary-gray border border-brand-primary-gray rounded-lg shadow-lg z-50"
+		in:scale={{ start: 0.9, duration: 200 }}
+	>
+		<!-- Modal Header -->
+		<div class="flex items-center justify-between p-6 border-b border-brand-primary-gray">
+			<div class="flex items-center gap-x-3">
+				<img src={modal_title_icon} alt="modal_title_icon" class="w-6" />
+				<h3 class="text-xl font-semibold text-left text-white">Account Details</h3>
+			</div>
+			<button type="button" class="cursor-pointer w-9" onclick={toggleAccountInfoModal}>
+				<img src={modal_cross} alt="Close modal" class="w-9" />
+			</button>
+		</div>
+
+		<section class="overflow-y-auto font-sans antialiased text-white max-h-[800px]">
+			<!-- Confirmation Modal -->
+			{#if confirmationModal}
+				<div class="fixed inset-0 flex items-center justify-center">
+					<ConfirmationModal
+						title="Confirmation"
+						body="Are you sure you want to delete this module?"
+						footer={[
+							{
+								text: 'Cancel',
+								onClick: toggleConfirmationModal,
+								type: 'default'
+							},
+							{
+								text: 'Delete',
+								onClick: () => {
+									deleteAccount();
+								},
+								type: 'error'
+							}
+						]}
+						onModalClose={toggleConfirmationModal}
+					/>
+				</div>
+			{/if}
+
+			<!-- Password Modal -->
+			{#if passwordResetModal}
+				<div class="fixed inset-0 flex items-center justify-center">
+					<PasswordResetModal {togglePasswordResetModal} />
+				</div>
+			{/if}
+			<div class="w-full px-6 py-10 mx-auto md:max-w-6xl">
+				<!-- Profile Information Section -->
+				<h2 class="mb-1 text-xl font-semibold">Profile Information</h2>
+				<p class="mb-6 text-gray-400">
+					Update your account's profile information and email address.
+				</p>
+
+				<div class="w-full p-6 mb-12 rounded-lg bg-website-secondary">
+					<div class="flex items-center mb-4">
+						<img src={profilePic} alt="profilePic" class="mr-10 rounded-full w-14" />
+						<label
+							class="px-4 py-2 text-white rounded-md cursor-pointer bg-brand-primary-gray hover:brightness-90"
+						>
+							Select a New Photo
+							<input
+								type="file"
+								class="hidden"
+								onchange={(e) => (profilePic = e.target.files[0])}
+							/>
+						</label>
+					</div>
+					<form>
+						<div class="mb-4">
+							<label class="block mb-1 text-sm font-medium" for="name">Name</label>
+							<input
+								id="name"
+								type="text"
+								class="w-full p-3 text-white border border-gray-600 rounded-md bg-website-dark-primary"
+								bind:value={name}
+							/>
+						</div>
+						<div class="mb-4">
+							<label class="block mb-1 text-sm font-medium" for="email">Email</label>
+							<input
+								id="email"
+								type="email"
+								class="w-full p-3 text-white border border-gray-600 rounded-md bg-website-dark-primary"
+								bind:value={email}
+							/>
+						</div>
+						<div class="flex items-center justify-end">
+							<button
+								onclick={updateAccount}
+								type="submit"
+								class="py-2 text-white rounded-md px-7 bg-brand-primary-gray hover:brightness-90"
+								>{updateStatus}</button
+							>
+						</div>
+					</form>
+				</div>
+
+				<!-- Change Password Section -->
+
+				<h2 class="mb-1 text-xl font-semibold">Change Password</h2>
+				<p class="mb-6 text-gray-400">Change your current password</p>
+				<div class="w-full p-6 mb-12 rounded-lg bg-website-secondary">
+					<p class="mb-6 text-gray-400">
+						Ensure your account is using a long, random password to stay secure. Use a password
+						manager to generate and store your passwords.
+					</p>
+					<div class="flex items-center justify-end">
+						<button
+							onclick={togglePasswordResetModal}
+							class="px-4 py-2 text-white rounded-md bg-primary-green hover:brightness-90"
+							>Change Password</button
+						>
+					</div>
+				</div>
+
+				<!-- Delete Account Section -->
+
+				<h2 class="mb-1 text-xl font-semibold">Delete Account</h2>
+				<p class="mb-6 text-gray-400">Permanently delete your account.</p>
+				<div class="w-full p-6 rounded-lg bg-website-secondary">
+					<p class="mb-6 text-gray-400">
+						Once your account is deleted, all of its resources and data will be permanently deleted.
+						Before deleting your account, please download any data or information that you wish to
+						retain.
+					</p>
+					<div class="flex items-center justify-end">
+						<button
+							onclick={toggleConfirmationModal}
+							class="px-4 py-2 text-white rounded-md bg-primary-red hover:brightness-90"
+							>Delete Account</button
+						>
+					</div>
+				</div>
+			</div>
+		</section>
+	</div>
+</div>

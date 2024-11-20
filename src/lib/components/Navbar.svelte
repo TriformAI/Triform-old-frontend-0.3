@@ -11,6 +11,9 @@
 	import modal_cross from '$lib/icons/modal_cross.svg';
 	import add from '$lib/icons/add.svg';
 	import { page } from '$app/stores';
+	import { PUBLIC_API_URL } from '$env/static/public';
+	import { getAuthToken } from '$lib/stores/cookie';
+
 	import {
 		profileDropdown,
 		notificationOpen,
@@ -26,18 +29,47 @@
 	let tabs = [{ id: 1, label: 'Canvas 1' }];
 	let nextTabId = 2;
 	let activeTabId = 1;
-	let profilePic = null;
 
 	// @ts-ignore
 	let draggedTab = null; // Track the dragged tab
+	let profilePic = '';
+	const apiUrl = PUBLIC_API_URL;
+	const authToken = getAuthToken();
+
+
+	async function fetchProfile() {
+		try {
+			const response = await fetch(`${apiUrl}/api/v1/user/profile`, {
+				method: 'GET',
+				headers: {
+					Authorization: `Bearer ${authToken}`,
+					'Content-Type': 'application/json'
+				}
+			});
+
+			const data = await response.json();
+			if (response.ok && data.data) {
+				if (browser) {
+					const session = $page.data.session;
+					if (session) {
+						profilePic = session.user.image;
+					} else {
+						profilePic = data.data.profile_photo_url;
+					}
+					console.log(profilePic)
+				}
+			}
+			if (!response.ok) {
+				console.error('Profile fetch failed:', data);
+				return;
+			}
+		} catch (error) {
+			console.error('An error occurred during profile fetch:', error);
+		}
+	}
 
 	onMount(() => {
-		if (browser) {
-			const session = $page.data.session;
-			if (session) {
-				profilePic = session.user.image;
-			}
-		}
+		fetchProfile();
 	});
 
 	function addTab() {
@@ -192,7 +224,7 @@
 				aria-label="Profile"
 				on:click={() => toggleModal(profileDropdown)}
 			>
-				<img alt="profile logo" src={profilePic || profile_logo} class="w-8 rounded-full" />
+				<img alt="profile logo" src={profilePic} class="w-8 rounded-full" />
 			</button>
 
 			{#if $profileDropdown}

@@ -3,7 +3,6 @@
 	import { fade, scale } from 'svelte/transition';
 	import modal_title_icon from '$lib/icons/Modal_Title_Icon.svg';
 	import search_icon from '$lib/icons/search.svg';
-	import filter from '$lib/icons/filter.svg';
 	import unpined from '$lib/icons/unpined.svg';
 	import pined from '$lib/icons/pined.svg';
 	import Add from '$lib/icons/add.svg';
@@ -11,6 +10,8 @@
 	import { PUBLIC_API_URL } from '$env/static/public';
 	import { getAuthToken } from '$lib/stores/cookie';
 	import { onMount } from 'svelte';
+	import { templateStore, templateLoaded, templateID } from '$lib/stores/template';
+	import { get } from 'svelte/store';
 
 	let apiUrl = PUBLIC_API_URL;
 	let authToken = getAuthToken();
@@ -24,13 +25,13 @@
 		pined_unpined = !pined_unpined;
 	}
 
-	let actualTemplates = [];
-
 	onMount(() => {
 		fetchTemplates();
 	});
 
 	async function fetchTemplates() {
+		if (get(templateLoaded)) return; // Skip fetching if templates are already loaded
+
 		try {
 			loading = true;
 			const response = await fetch(`${apiUrl}/api/v1/templates`, {
@@ -41,19 +42,21 @@
 			});
 			const data = await response.json();
 			loading = false;
-			actualTemplates = data.data;
+			templateStore.set(data.data); // Save data to the store
+			templateLoaded.set(true); // Mark templates as loaded
 		} catch (error) {
 			loading = false;
-			console.error('Error fetching variables:', error);
+			console.error('Error fetching templates:', error);
 		}
 	}
 
 	// Computed property to filter variables based on searchTerm
-	$: filteredTemplates = actualTemplates.filter((template) =>
+	$: filteredTemplates = $templateStore.filter((template) =>
 		template.name.toLowerCase().includes(searchTerm.toLowerCase())
 	);
 
 	const toggleTemplateModal = () => {
+		// set the template id
 		templateLibraryModal.update((value) => false);
 		templateModal.update((value) => !value);
 	};
@@ -131,7 +134,10 @@
 								</svg>
 								<a
 									href={`?TID=${category.id}`}
-									onclick={toggleTemplateModal}
+									onclick={() => {
+										templateID.set(category.id);
+										toggleTemplateModal();
+									}}
 									class="text-xs hover:text-white">View Details</a
 								>
 							</div>

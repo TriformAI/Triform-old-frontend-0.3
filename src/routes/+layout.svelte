@@ -58,11 +58,7 @@
 	onMount(() => {
 		if (browser) {
 			const session = $page.data.session;
-			// console.log('session', session);
-			if (
-				!isAuthenticated(session) &&
-				$page.url.pathname === '/dashboard'
-			) {
+			if (!isAuthenticated(session) && $page.url.pathname === '/dashboard') {
 				window.location.href = '/login';
 			}
 		}

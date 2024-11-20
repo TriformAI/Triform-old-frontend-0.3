@@ -19,7 +19,8 @@
 		attachTemplateModal,
 		templateModal,
 		templateLibraryModal,
-		attachComponentModal
+		attachComponentModal,
+		accountInformationModal
 	} from '$lib/stores/modals';
 	import StatusModal from '$lib/components/modals/StatusModal.svelte';
 	import ThresholdAlertModal from '$lib/components/modals/ThresholdAlertModal.svelte';
@@ -31,7 +32,7 @@
 	import TemplateDetailsModal from '$lib/components/modals/TemplateDetailsModal.svelte';
 	import ShareCanvaModal from '$lib/components/modals/ShareCanvaModal.svelte';
 	import AttachComponent from '$lib/components/modals/AttachComponent.svelte';
-
+	import AccountInformationModal from '$lib/components/modals/AccountInformationModal.svelte';
 
 	const toggleAttachComponentModal = () => {
 		createModuleModal.update((value) => false);
@@ -64,6 +65,10 @@
 
 	const toggleShareCanvaModal = () => {
 		shareCanvaModal.update((value) => !value);
+	};
+
+	const toggleAccountInfoModal = () => {
+		accountInformationModal.update((value) => !value);
 	};
 
 	const nodeTypes = {
@@ -167,7 +172,6 @@
 	const snapGrid = [1, 1];
 
 	const proOptions = { hideAttribution: true };
-
 </script>
 
 <!-- <section
@@ -224,6 +228,9 @@
 	{/if}
 	{#if $shareCanvaModal}
 		<ShareCanvaModal {toggleShareCanvaModal} />
+	{/if}
+	{#if $accountInformationModal}
+		<AccountInformationModal {toggleAccountInfoModal} />
 	{/if}
 	<SvelteFlow {nodes} {edges} {nodeTypes} fitView {snapGrid} {proOptions}>
 		<Background bgColor="#181819" patternColor="#1D1E20" variant="lines" gap={20} size={1} />

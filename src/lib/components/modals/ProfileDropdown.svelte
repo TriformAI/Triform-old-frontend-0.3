@@ -10,6 +10,7 @@
 	import { getAuthToken, removeCookie } from '$lib/stores/cookie';
 	import { page } from '$app/stores';
 	import { signOut } from '@auth/sveltekit/client';
+	import { accountInformationModal, profileDropdown } from '$lib/stores/modals';
 
 	const apiUrl = PUBLIC_API_URL;
 	const authToken = getAuthToken();
@@ -27,7 +28,7 @@
 			});
 
 			const data = await response.json();
-			console.log(data)
+			console.log(data);
 			if (!response.ok) {
 				console.error('Logout failed:', data);
 				return;
@@ -56,13 +57,16 @@
 	in:scale={{ start: 0.9, duration: 200 }}
 	out:fade={{ duration: 150 }}
 >
-	<a
-		href=" "
-		class="flex items-center px-10 py-4 text-md gap-x-4 hover:bg-website-tertiary rounded-t-2xl"
+	<button
+		on:click={() => {
+			profileDropdown.set(false);
+			accountInformationModal.set(true);
+		}}
+		class="flex items-center w-full px-10 py-4 text-md gap-x-4 hover:bg-website-tertiary rounded-t-2xl"
 	>
 		<img src={account} alt="account" class="inline-block w-5" />
 		<p>Account</p>
-	</a>
+	</button>
 	<a href=" " class="flex items-center px-10 py-4 text-md gap-x-4 hover:bg-website-tertiary">
 		<img src={billing} alt="billing" class="inline-block w-5" />
 		<p>Billing</p>

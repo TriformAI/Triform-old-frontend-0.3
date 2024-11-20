@@ -13,7 +13,6 @@
 	let errorMessage = '';
 	let loading = false;
 	const apiUrl = PUBLIC_API_URL;
-	const session = $page.data.session;
 
 	async function handleLogin(event) {
 		event.preventDefault();
