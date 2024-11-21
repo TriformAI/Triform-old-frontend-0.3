@@ -49,16 +49,16 @@
 </script>
 
 <div
-	class="absolute left-8 top-40 mt-2 w-[30rem] bg-website-secondary text-brand-tertiary-gray border border-brand-primary-gray rounded-lg shadow-lg z-50"
+	class="absolute left-8 top-40 mt-2 w-[26rem] bg-website-secondary text-brand-tertiary-gray border border-brand-primary-gray rounded-lg shadow-lg z-50"
 	in:scale={{ start: 0.9, duration: 200 }}
 	out:fade={{ duration: 150 }}
 >
 	<!-- Modal Header -->
-	<div class="flex flex-col px-4 py-6 gap-y-5 ">
+	<div class="flex flex-col p-4 gap-y-5 ">
 		<div class="flex items-center justify-between">
 			<div class="flex items-center gap-x-3">
 				<img src={modal_title_icon} alt="modal_title_icon" class="w-6" />
-				<h3 class="text-md font-semibold text-left text-white">Storage Management</h3>
+				<h3 class="font-semibold text-left text-white text-md">Storage Management</h3>
 			</div>
 			{#if pined_unpined}
 				<button type="button" class="w-6 cursor-pointer" onclick={togglePined} aria-label="Pin">
@@ -76,34 +76,32 @@
 					id="search"
 					type="text"
 					placeholder="Search Anything..."
-					class="w-full px-4 py-4 text-md border rounded-md bg-website-secondary border-brand-primary-gray"
+					class="w-full p-3 border rounded-md text-md bg-website-secondary border-brand-primary-gray"
 					bind:value={searchTerm}
 				/>
-				<img src={search_icon} alt="search_icon" class="absolute inset-y-0 w-6 right-3 top-5" />
+				<img src={search_icon} alt="search_icon" class="absolute inset-y-0 w-5 right-3 top-3.5" />
 			</div>
-			<div class="p-4 ml-3 cursor-pointer hover:bg-website-tertiary rounded-xl">
-				<img src={filter} alt="filter" class="w-8" />
-			</div>
+
 		</div>
 	</div>
 
 	<!-- Collapsible Category List -->
-	<div class=" overflow-y-auto h-[32rem] bg-website-primary">
+	<div class=" overflow-y-auto h-[22rem] bg-website-primary">
 		{#each filteredContainers as category, i}
 			<div
-				class={`py-3 px-5 group flex items-center justify-between w-full duration-200 ease-in-out hover:bg-website-tertiary border-y border-y-brand-primary-gray`}
+				class={`py-2 px-5 group flex items-center justify-between w-full duration-200 ease-in-out hover:bg-website-tertiary border-y border-y-brand-primary-gray`}
 			>
-				<button class="flex flex-col w-full py-4">
-					<h3 class="my-1 text-md font-bold text-white">{category.name}</h3>
-					<div class="flex items-center my-1 gap-x-5 text-brand-light-gray">
-						<h3 class="text-sm">{category.date}</h3>
+				<button class="flex flex-col w-full py-2">
+					<h3 class="my-0.5 font-bold text-white text-md">{category.name}</h3>
+					<div class="flex items-center my-0.5 gap-x-5 text-brand-light-gray">
+						<h3 class="text-xs">{category.date}</h3>
 						<p>.</p>
-						<h3 class="text-sm">{category.id}</h3>
+						<h3 class="text-xs">{category.id}</h3>
 					</div>
 					{#if category.active}
-						<p class="text-primary-green">Active</p>
+						<p class="text-sm text-primary-green">Active</p>
 					{:else}
-						<p class="text-primary-red">Inactive</p>
+						<p class="text-sm text-primary-red">Inactive</p>
 					{/if}
 				</button>
 				<Button content={{ text: 'Attach' }} />
@@ -112,7 +110,7 @@
 	</div>
 
 	<!-- Modal Footer -->
-	<div class="flex items-center justify-center p-6 bg-website-primary ">
+	<div class="flex items-center justify-center p-3 bg-website-primary ">
 		<Button content={{ width: 'full', icon: Add, text: 'New Storage' }} />
 	</div>
 </div>

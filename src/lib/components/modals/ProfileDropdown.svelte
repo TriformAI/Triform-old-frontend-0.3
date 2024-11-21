@@ -18,30 +18,29 @@
 	// Function to handle logout
 	async function handleLogout() {
 		try {
-			// Call the logout API
-			const response = await fetch(`${apiUrl}/api/v1/logout`, {
-				method: 'POST',
-				headers: {
-					Authorization: `Bearer ${authToken}`,
-					'Content-Type': 'application/json'
+			if (authToken) {
+				// Call the logout API
+				const response = await fetch(`${apiUrl}/api/v1/logout`, {
+					method: 'POST',
+					headers: {
+						Authorization: `Bearer ${authToken}`,
+						'Content-Type': 'application/json'
+					}
+				});
+
+				const data = await response.json();
+				console.log(data);
+				if (response.ok) {
+					removeCookie('authToken');
+					if ($page.data.session) {
+						signOut();
+					}
+					window.location.href = '/login';
+				} else {
+					console.error('Logout failed:', data);
+					return;
 				}
-			});
-
-			const data = await response.json();
-			console.log(data);
-			if (!response.ok) {
-				console.error('Logout failed:', data);
-				return;
-			}
-			removeCookie('authToken');
-
-			if ($page.data.session) {
-				//user signed in with github
-				signOut();
-				window.location.href = '/login';
-			}
-
-			if (!authToken) {
+			} else {
 				console.log('No auth token found.');
 				window.location.href = '/login';
 				return;

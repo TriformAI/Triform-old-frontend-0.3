@@ -77,7 +77,7 @@
 			toasts.add({
 				title: 'Pusher Event',
 				description: JSON.stringify(data),
-				duration: 10000,
+				duration: 5000,
 				placement: 'top-right',
 				type: 'success',
 				theme: 'dark'

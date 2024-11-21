@@ -172,6 +172,10 @@
 	const snapGrid = [1, 1];
 
 	const proOptions = { hideAttribution: true };
+
+	const defaultEdgeOptions = {
+		animated: true, // Ensures all edges are animated
+	};
 </script>
 
 <!-- <section
@@ -232,7 +236,7 @@
 	{#if $accountInformationModal}
 		<AccountInformationModal {toggleAccountInfoModal} />
 	{/if}
-	<SvelteFlow {nodes} {edges} {nodeTypes} fitView {snapGrid} {proOptions}>
+	<SvelteFlow {nodes} {edges} {nodeTypes} fitView {snapGrid} {proOptions} {defaultEdgeOptions}>
 		<Background bgColor="#181819" patternColor="#1D1E20" variant="lines" gap={20} size={1} />
 	</SvelteFlow>
 </section>

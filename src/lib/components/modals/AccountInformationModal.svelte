@@ -11,6 +11,7 @@
 	import ConfirmationModal from '$lib/components/modals/ConfirmationModal.svelte';
 	import PasswordResetModal from './PasswordResetModal.svelte';
 	import Spinner from '$lib/components/Spinner.svelte';
+	import { toasts } from 'svelte-toasts';
 
 	const apiUrl = PUBLIC_API_URL;
 	const authToken = getAuthToken();
@@ -24,6 +25,7 @@
 	let passwordResetModal = $state(false);
 	let profilePicLoading = $state(false);
 	let uploadStatus = $state('');
+	let linkedToGithub = $state(false);
 
 	console.log(authToken);
 
@@ -34,6 +36,17 @@
 	}
 
 	function togglePasswordResetModal() {
+		if (linkedToGithub) {
+			toasts.add({
+				title: 'Password Change',
+				description: 'You cannot change your password because your account is linked to GitHub',
+				duration: 5000,
+				placement: 'top-right',
+				type: 'info',
+				theme: 'dark'
+			});
+			return;
+		}
 		passwordResetModal = !passwordResetModal;
 	}
 
@@ -48,13 +61,17 @@
 			});
 
 			const data = await response.json();
+			console.log(data);
 			if (response.ok && data.data) {
 				Object.assign(profile, data.data);
 				name = profile.name;
 				email = profile.email;
 				if (session) {
+					console.log('A');
 					profilePic = session.user.image;
+					linkedToGithub = profile.github_token ? true : false;
 				} else {
+					console.log('B');
 					profilePic = profile.profile_photo_url;
 				}
 			}
@@ -288,13 +305,14 @@
 				<p class="mb-6 text-gray-400">Change your current password</p>
 				<div class="w-full p-6 mb-12 rounded-lg bg-website-secondary">
 					<p class="mb-6 text-gray-400">
-						Ensure your account is using a long, random password to stay secure. Use a password
-						manager to generate and store your passwords.
+						Ensure your account is secure by using a long, random password. Use a password manager
+						to generate and store your passwords. Please note that you can only change your password
+						if your account is not registered with GitHub.
 					</p>
 					<div class="flex items-center justify-end">
 						<button
 							onclick={togglePasswordResetModal}
-							class="px-4 py-2 text-white rounded-md bg-primary-green hover:brightness-90"
+							class={` ${linkedToGithub ? 'bg-primary-green brightness-50 cursor-not-allowed' : 'bg-primary-green hover:brightness-90'} px-4 py-2 text-white rounded-md `}
 							>Change Password</button
 						>
 					</div>

@@ -27,14 +27,14 @@
 </script>
 
 {#if !collapsed}
-	<div class="relative flex items-center justify-center mx-auto opacity-0 group-hover:opacity-100">
+	<div class="relative flex items-center justify-center mx-auto transition-transform translate-y-10 opacity-0 group-hover:opacity-100">
 		<svg
 			xmlns="http://www.w3.org/2000/svg"
 			fill="none"
 			viewBox="0 0 24 24"
 			stroke-width="3"
 			stroke="white"
-			class="transition-transform duration-200 ease-linear size-6 group-hover:-translate-y-3"
+			class="transition-transform duration-150 ease-linear size-6 group-hover:-translate-y-3"
 		>
 			<path stroke-linecap="round" stroke-linejoin="round" d="m4.5 15.75 7.5-7.5 7.5 7.5" />
 		</svg>
@@ -43,7 +43,7 @@
 
 <div
 	onclick={() => (collapsed = true)}
-	class={`${$statusModal ? 'pt-7 mt-8' : ''} z-50 w-full px-7 border-t border-t-brand-primary-gray text-brand-white bg-website-primary shadow-2xl duration-200 ease-linear transition-transform ${!collapsed ? 'group-hover:-translate-y-2 py-3 cursor-pointer mt-[3.2rem]' : ' -translate-y-[70%] cursor-default'}`}
+	class={`${$statusModal ? 'pt-7 mt-8' : ''} z-50 w-full px-7 border-t border-t-brand-primary-gray text-brand-white bg-website-primary shadow-2xl duration-200 ease-linear transition-transform ${!collapsed ? 'group-hover:-translate-y-2 py-3 cursor-pointer mt-[3.2rem]' : ' -translate-y-[70%] cursor-default mt-7'}`}
 >
 	{#if collapsed}
 		<button

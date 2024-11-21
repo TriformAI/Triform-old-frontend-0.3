@@ -12,10 +12,10 @@
 	out:fade={{ duration: 150 }}
 >
 	<div>
-		<h3 class="px-6 py-5 text-md font-semibold text-left border-b border-brand-primary-gray">Notifications</h3>
+		<h3 class="px-6 py-5 font-semibold text-left border-b text-md border-brand-primary-gray">Notifications</h3>
 		<ul class="text-sm bg-website-primary rounded-b-2xl">
 			<li
-				class="flex items-baseline justify-between border-b p-7 border-b-brand-primary-gray hover:bg-white/5"
+				class="flex items-baseline justify-between p-5 border-b border-b-brand-primary-gray hover:bg-white/5"
 			>
 				<div class="flex items-baseline text-left gap-x-3">
 					<!-- Placeholder for Status Icon -->
@@ -30,7 +30,7 @@
 				<span class="flex-shrink-0 text-xs text-brand-light-gray">2h ago</span>
 			</li>
 			<li
-				class="flex items-start justify-between border-b p-7 border-b-brand-primary-gray hover:bg-white/5"
+				class="flex items-start justify-between p-5 border-b border-b-brand-primary-gray hover:bg-white/5"
 			>
 				<div class="flex items-start text-left gap-x-3">
 					<!-- Placeholder for Error Icon -->
@@ -45,7 +45,7 @@
 				</div>
 				<span class="flex-shrink-0 text-xs text-brand-light-gray">2h ago</span>
 			</li>
-			<li class="flex items-start justify-between p-7 hover:bg-white/5 rounded-b-2xl">
+			<li class="flex items-start justify-between p-5 hover:bg-white/5 rounded-b-2xl">
 				<div class="flex items-start text-left gap-x-3">
 					<!-- Placeholder for Performance Issue Icon -->
 					<img src={warning} alt="warning" class="relative w-7 top-1" />
