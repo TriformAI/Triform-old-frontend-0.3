@@ -116,6 +116,7 @@
 			});
 
 			const data = await response.json();
+			console.log(data);
 			profilePicLoading = false;
 			if (response.ok && data.data && data.data.profile_photo_url) {
 				profilePic = data.data.profile_photo_url;

@@ -85,10 +85,10 @@
 		{/if}
 	{/each}
 	<!-- Canvas 1 dropdown -->
-	<div class="flex items-center gap-x-7">
+	<div class="flex items-center gap-x-5">
 		<button
 			onclick={() => toggleModal(canvasDropdownOpen)}
-			class="flex items-center px-4 py-2 pr-8 border-r-2 cursor-pointer gap-x-3 border-r-brand-primary-gray"
+			class="flex items-center px-4 py-2 pr-6 border-r-2 cursor-pointer gap-x-3 border-r-brand-primary-gray"
 		>
 			<h1 class="text-md">Canvas 1</h1>
 			<svg
@@ -104,18 +104,18 @@
 		</button>
 
 		<!-- Undo Redo -->
-		<div class="flex items-center gap-x-4">
+		<div class="flex items-center gap-x-2">
 			<div class="p-2 cursor-pointer hover:bg-website-tertiary rounded-xl">
-				<img alt="undo logo" src={undo_logo} class="w-5" />
+				<img alt="undo logo" src={undo_logo} class="w-[1.15rem]" />
 			</div>
 			<div class="p-2 cursor-pointer hover:bg-website-tertiary rounded-xl">
-				<img alt="redo logo" src={redo_logo} class="w-5" />
+				<img alt="redo logo" src={redo_logo} class="w-[1.15rem]" />
 			</div>
 		</div>
 	</div>
 
 	<!-- Central Tools  -->
-	<div class="relative flex items-center gap-x-4 left-10">
+	<div class="relative flex items-center gap-x-3 left-10">
 		{#each icons.filter((icon) => icon.visibleOnToolbar) as { id, icon, alt, modalComponent }, index}
 			<a
 				href=" "
@@ -154,8 +154,8 @@
 	</div>
 
 	<!-- Zoom in Zoom out Fit screen -->
-	<div class="flex items-center gap-x-3">
-		<div class="flex items-center gap-x-3">
+	<div class="flex items-center gap-x-4">
+		<div class="flex items-center gap-x-2">
 			<button onclick={zoomIn} class="p-2 cursor-pointer hover:bg-website-tertiary rounded-xl">
 				<img alt="zoom_in" src={zoom_in} class="w-5" />
 			</button>
@@ -168,7 +168,7 @@
 		</div>
 
 		<!-- Grid  -->
-		<div class="px-4 border-x-2 border-x-brand-primary-gray">
+		<div class="px-5 border-x-2 border-x-brand-primary-gray">
 			<div class="p-1.5 cursor-pointer bg-website-tertiary rounded-xl">
 				<img src={grid_icon} alt="grid_icon" class="w-5" />
 			</div>
@@ -176,7 +176,7 @@
 
 		<!-- Draw Search -->
 		<button
-			class="flex items-center mx-2 cursor-pointer"
+			class="flex items-center mx-2 ml-3 cursor-pointer"
 			onclick={() => toggleModal(freeFormAutoArrangeModal)}
 		>
 			<img src={draw_icon} alt="draw_icon" class="w-5" />
