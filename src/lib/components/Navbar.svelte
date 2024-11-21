@@ -49,12 +49,7 @@
 			const data = await response.json();
 			if (response.ok && data.data) {
 				if (browser) {
-					const session = $page.data.session;
-					if (session) {
-						profilePic = session.user.image;
-					} else {
-						profilePic = data.data.profile_photo_url;
-					}
+					profilePic = data.data.profile_photo_url;
 					console.log(profilePic);
 				}
 			}

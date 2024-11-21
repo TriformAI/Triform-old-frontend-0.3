@@ -15,7 +15,7 @@
 	<img
 		src={APINode}
 		alt="ApiNode"
-		class={`rounded-full w-14 h-14 ${selected && 'shadow-lg shadow-green-800 duration-100 ease-linear'}`}
+		class={`rounded-full w-12 h-12 ${selected && 'shadow-lg shadow-green-800 duration-100 ease-linear'}`}
 	/>
 	<!-- <Handle type="source" position={Position.Bottom} /> -->
 	 <CustomHandle type="source" position="bottom" />

@@ -16,7 +16,7 @@
 	<img
 		src={AgentNode}
 		alt="AgentNode"
-		class={`rounded-full w-14 h-14 ${selected && 'shadow-lg shadow-red-800 duration-100 ease-linear'}`}
+		class={`rounded-full w-12 h-12 ${selected && 'shadow-lg shadow-red-800 duration-100 ease-linear'}`}
 	/>
 	<CustomHandle type="source" position="bottom" />
 </div>

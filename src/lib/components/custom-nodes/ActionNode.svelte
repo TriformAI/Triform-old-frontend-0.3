@@ -14,6 +14,6 @@
 	<img
 		src={Actions}
 		alt="Actions"
-		class={`rounded-full w-14 h-14 ${selected && 'shadow-lg shadow-slate-600 duration-100 ease-linear'}`}
+		class={`rounded-full w-12 h-12 ${selected && 'shadow-lg shadow-slate-600 duration-100 ease-linear'}`}
 	/>
 </div>

@@ -66,14 +66,8 @@
 				Object.assign(profile, data.data);
 				name = profile.name;
 				email = profile.email;
-				if (session) {
-					console.log('A');
-					profilePic = session.user.image;
-					linkedToGithub = profile.github_token ? true : false;
-				} else {
-					console.log('B');
-					profilePic = profile.profile_photo_url;
-				}
+				linkedToGithub = profile.github_token ? true : false;
+				profilePic = profile.profile_photo_url;
 			}
 			if (!response.ok) {
 				console.error('Profile fetch failed:', data);
