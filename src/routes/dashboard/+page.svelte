@@ -35,9 +35,7 @@
 	import AccountInformationModal from '$lib/components/modals/AccountInformationModal.svelte';
 	import { PUBLIC_PRODUCTION } from '$env/static/public';
 
-	const production = PUBLIC_PRODUCTION;
-
-	console.log(production)
+	const production = PUBLIC_PRODUCTION === 'true' ? true : false;
 
 	const toggleAttachComponentModal = () => {
 		createModuleModal.update((value) => false);
@@ -202,7 +200,7 @@
 		<Button content={{ icon: Add, text: 'New Agent' }} />
 	</div> -->
 <!-- </section> -->
-<section class={`${production ? 'h-[calc(100vh-14.58rem)]' : 'h-[calc(100vh-13.58rem)]'}`}>
+<section class={`${production ? 'h-[calc(100vh-13.58rem)]' : 'h-[calc(100vh-14.58rem)]'}`}>
 	{#if $canvasToolsModal}
 		<CanvasToolsModal />
 	{/if}
