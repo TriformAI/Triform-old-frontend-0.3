@@ -33,6 +33,11 @@
 	import ShareCanvaModal from '$lib/components/modals/ShareCanvaModal.svelte';
 	import AttachComponent from '$lib/components/modals/AttachComponent.svelte';
 	import AccountInformationModal from '$lib/components/modals/AccountInformationModal.svelte';
+	import { PUBLIC_PRODUCTION } from '$env/static/public';
+
+	const production = PUBLIC_PRODUCTION;
+
+	console.log(production)
 
 	const toggleAttachComponentModal = () => {
 		createModuleModal.update((value) => false);
@@ -174,7 +179,7 @@
 	const proOptions = { hideAttribution: true };
 
 	const defaultEdgeOptions = {
-		animated: true, // Ensures all edges are animated
+		animated: true // Ensures all edges are animated
 	};
 </script>
 
@@ -197,7 +202,7 @@
 		<Button content={{ icon: Add, text: 'New Agent' }} />
 	</div> -->
 <!-- </section> -->
-<section class="h-[calc(100vh-13rem)]">
+<section class={`${production ? 'h-[calc(100vh-14.58rem)]' : 'h-[calc(100vh-13.58rem)]'}`}>
 	{#if $canvasToolsModal}
 		<CanvasToolsModal />
 	{/if}
