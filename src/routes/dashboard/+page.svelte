@@ -197,7 +197,7 @@
 		<Button content={{ icon: Add, text: 'New Agent' }} />
 	</div> -->
 <!-- </section> -->
-<section class="h-[calc(100vh-14.58rem)]">
+<section class="h-[calc(100vh-13rem)]">
 	{#if $canvasToolsModal}
 		<CanvasToolsModal />
 	{/if}
