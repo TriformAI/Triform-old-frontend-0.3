@@ -17,7 +17,6 @@
 	const apiUrl = PUBLIC_API_URL;
 	const authToken = getAuthToken();
 	const profile = {};
-	const session = $page.data.session;
 	let name = $state('');
 	let email = $state('');
 	let updateStatus = $state('Save');
@@ -26,8 +25,6 @@
 	let profilePicLoading = $state(false);
 	let uploadStatus = $state('');
 	let linkedToGithub = $state(false);
-
-	console.log(authToken);
 
 	let { toggleAccountInfoModal } = $props();
 

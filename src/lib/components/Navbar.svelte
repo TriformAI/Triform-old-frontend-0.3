@@ -14,6 +14,7 @@
 	import { PUBLIC_API_URL } from '$env/static/public';
 	import { getAuthToken } from '$lib/stores/cookie';
 	import { profilePic } from '$lib/stores/profile';
+	import Spinner from './Spinner.svelte';
 
 	import {
 		profileDropdown,
@@ -35,9 +36,11 @@
 	let draggedTab = null; // Track the dragged tab
 	const apiUrl = PUBLIC_API_URL;
 	const authToken = getAuthToken();
+	let loading = $state(false);
 
 	async function fetchProfile() {
 		try {
+			loading = true;
 			const response = await fetch(`${apiUrl}/api/v1/user/profile`, {
 				method: 'GET',
 				headers: {
@@ -47,10 +50,10 @@
 			});
 
 			const data = await response.json();
+			loading = false;
 			if (response.ok && data.data) {
 				if (browser) {
 					profilePic.set(data.data.profile_photo_url);
-					console.log(profilePic)
 				}
 			}
 			if (!response.ok) {
@@ -212,14 +215,18 @@
 		</div>
 
 		<div class="relative pl-5 border-l-2 border-l-brand-primary-gray">
-			<button
-				type="button"
-				class="w-8 cursor-pointer"
-				aria-label="Profile"
-				on:click={() => toggleModal(profileDropdown)}
-			>
-				<img alt="profile logo" src={$profilePic} class="w-8 rounded-full" />
-			</button>
+			{#if $profilePic === null || loading}
+				<Spinner class="w-8 h-8" />
+			{:else}
+				<button
+					type="button"
+					class="w-8 cursor-pointer"
+					aria-label="Profile"
+					on:click={() => toggleModal(profileDropdown)}
+				>
+					<img alt="profile logo" src={$profilePic} class="w-8 rounded-full" />
+				</button>
+			{/if}
 
 			{#if $profileDropdown}
 				<ProfileDropdown />
