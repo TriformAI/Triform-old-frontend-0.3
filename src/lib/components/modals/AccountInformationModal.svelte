@@ -247,7 +247,7 @@
 								<Spinner />
 							</div>
 						{:else}
-							<img src={profilePic} alt="profilePic" class="mr-10 rounded-full w-14" />
+							<img src={$profilePic} alt="profilePic" class="mr-10 rounded-full w-14" />
 						{/if}
 						<label
 							class="px-4 py-2 text-white rounded-md cursor-pointer bg-brand-primary-gray hover:brightness-90"
