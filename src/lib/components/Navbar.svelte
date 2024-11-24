@@ -13,6 +13,7 @@
 	import { page } from '$app/stores';
 	import { PUBLIC_API_URL } from '$env/static/public';
 	import { getAuthToken } from '$lib/stores/cookie';
+	import { profilePic } from '$lib/stores/profile';
 
 	import {
 		profileDropdown,
@@ -32,7 +33,6 @@
 
 	// @ts-ignore
 	let draggedTab = null; // Track the dragged tab
-	let profilePic = '';
 	const apiUrl = PUBLIC_API_URL;
 	const authToken = getAuthToken();
 
@@ -49,8 +49,7 @@
 			const data = await response.json();
 			if (response.ok && data.data) {
 				if (browser) {
-					profilePic = data.data.profile_photo_url;
-					console.log(profilePic);
+					profilePic.update((value) => data.data.profile_photo_url);
 				}
 			}
 			if (!response.ok) {

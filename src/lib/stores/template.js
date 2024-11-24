@@ -1,4 +1,3 @@
-// src/lib/stores/templateStore.js
 import { writable } from 'svelte/store';
 
 export const templateStore = writable([]);

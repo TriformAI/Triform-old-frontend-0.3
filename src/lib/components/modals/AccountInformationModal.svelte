@@ -12,6 +12,7 @@
 	import PasswordResetModal from './PasswordResetModal.svelte';
 	import Spinner from '$lib/components/Spinner.svelte';
 	import { toasts } from 'svelte-toasts';
+	import { profilePic } from '$lib/stores/profile';
 
 	const apiUrl = PUBLIC_API_URL;
 	const authToken = getAuthToken();
@@ -19,7 +20,6 @@
 	const session = $page.data.session;
 	let name = $state('');
 	let email = $state('');
-	let profilePic = $state('');
 	let updateStatus = $state('Save');
 	let confirmationModal = $state(false);
 	let passwordResetModal = $state(false);
@@ -67,7 +67,7 @@
 				name = profile.name;
 				email = profile.email;
 				linkedToGithub = profile.github_token ? true : false;
-				profilePic = profile.profile_photo_url;
+				profilePic.update((value) => profile.profile_photo_url);
 			}
 			if (!response.ok) {
 				console.error('Profile fetch failed:', data);
@@ -130,7 +130,7 @@
 			console.log(data);
 			profilePicLoading = false;
 			if (response.ok && data.data && data.data.profile_photo_url) {
-				profilePic = data.data.profile_photo_url;
+				profilePic.update((value) => data.data.profile_photo_url);
 			}
 			if (!response.ok) {
 				uploadStatus = data.errors;
