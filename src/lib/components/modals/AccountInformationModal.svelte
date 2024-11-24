@@ -67,7 +67,7 @@
 				name = profile.name;
 				email = profile.email;
 				linkedToGithub = profile.github_token ? true : false;
-				profilePic.update((value) => profile.profile_photo_url);
+				profilePic.set(profile.profile_photo_url);
 			}
 			if (!response.ok) {
 				console.error('Profile fetch failed:', data);
@@ -130,7 +130,7 @@
 			console.log(data);
 			profilePicLoading = false;
 			if (response.ok && data.data && data.data.profile_photo_url) {
-				profilePic.update((value) => data.data.profile_photo_url);
+				profilePic.set(data.data.profile_photo_url);
 			}
 			if (!response.ok) {
 				uploadStatus = data.errors;

@@ -49,7 +49,8 @@
 			const data = await response.json();
 			if (response.ok && data.data) {
 				if (browser) {
-					profilePic.update((value) => data.data.profile_photo_url);
+					profilePic.set(data.data.profile_photo_url);
+					console.log(profilePic)
 				}
 			}
 			if (!response.ok) {
@@ -217,7 +218,7 @@
 				aria-label="Profile"
 				on:click={() => toggleModal(profileDropdown)}
 			>
-				<img alt="profile logo" src={profilePic} class="w-8 rounded-full" />
+				<img alt="profile logo" src={$profilePic} class="w-8 rounded-full" />
 			</button>
 
 			{#if $profileDropdown}
