@@ -200,7 +200,7 @@
 		<Button content={{ icon: Add, text: 'New Agent' }} />
 	</div> -->
 <!-- </section> -->
-<section class={`${production ? 'h-[calc(100vh-13.58rem)]' : 'h-[calc(100vh-14.58rem)]'}`}>
+<section class={`${production ? 'h-[calc(100vh-13.38rem)]' : 'h-[calc(100vh-14.58rem)]'}`}>
 	{#if $canvasToolsModal}
 		<CanvasToolsModal />
 	{/if}
