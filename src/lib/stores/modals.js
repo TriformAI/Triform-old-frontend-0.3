@@ -26,6 +26,7 @@ export const renameMode = writable(false);
 export const templateModal = writable(false);
 export const shareCanvaModal = writable(false);
 export const accountInformationModal = writable(false);
+export const billingInformationModal = writable(false);
 
 //make a general toggle function for a specific modal as input parameter and make all other modals false
 export function toggleModal(modal) {

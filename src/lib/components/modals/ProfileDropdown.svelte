@@ -10,7 +10,11 @@
 	import { getAuthToken, removeCookie } from '$lib/stores/cookie';
 	import { page } from '$app/stores';
 	import { signOut } from '@auth/sveltekit/client';
-	import { accountInformationModal, profileDropdown } from '$lib/stores/modals';
+	import {
+		accountInformationModal,
+		profileDropdown,
+		billingInformationModal
+	} from '$lib/stores/modals';
 
 	const apiUrl = PUBLIC_API_URL;
 	const authToken = getAuthToken();
@@ -66,10 +70,16 @@
 		<img src={account} alt="account" class="inline-block w-5" />
 		<p>Account</p>
 	</button>
-	<a href=" " class="flex items-center px-10 py-4 text-md gap-x-4 hover:bg-website-tertiary">
+	<button
+		on:click={() => {
+			profileDropdown.set(false);
+			billingInformationModal.set(true);
+		}}
+		class="flex items-center w-full px-10 py-4 text-md gap-x-4 hover:bg-website-tertiary"
+	>
 		<img src={billing} alt="billing" class="inline-block w-5" />
 		<p>Billing</p>
-	</a>
+	</button>
 	<a href=" " class="flex items-center px-10 py-4 text-md gap-x-4 hover:bg-website-tertiary">
 		<img src={team_settings} alt="team settings" class="inline-block w-5" />
 		<p>Team Settings</p>

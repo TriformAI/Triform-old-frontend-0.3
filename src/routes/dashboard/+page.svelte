@@ -20,7 +20,8 @@
 		templateModal,
 		templateLibraryModal,
 		attachComponentModal,
-		accountInformationModal
+		accountInformationModal,
+		billingInformationModal
 	} from '$lib/stores/modals';
 	import StatusModal from '$lib/components/modals/StatusModal.svelte';
 	import ThresholdAlertModal from '$lib/components/modals/ThresholdAlertModal.svelte';
@@ -33,6 +34,7 @@
 	import ShareCanvaModal from '$lib/components/modals/ShareCanvaModal.svelte';
 	import AttachComponent from '$lib/components/modals/AttachComponent.svelte';
 	import AccountInformationModal from '$lib/components/modals/AccountInformationModal.svelte';
+	import BillingInformationModal from '$lib/components/modals/BillingInformationModal.svelte';
 	import { PUBLIC_PRODUCTION } from '$env/static/public';
 
 	const production = PUBLIC_PRODUCTION === 'true' ? true : false;
@@ -72,6 +74,10 @@
 
 	const toggleAccountInfoModal = () => {
 		accountInformationModal.update((value) => !value);
+	};
+
+	const toggleBillingInfoModal = () => {
+		billingInformationModal.update((value) => !value);
 	};
 
 	const nodeTypes = {
@@ -200,7 +206,7 @@
 		<Button content={{ icon: Add, text: 'New Agent' }} />
 	</div> -->
 <!-- </section> -->
-<section class={`${production ? 'h-[calc(100vh-13.22rem)]' : 'h-[calc(100vh-14.58rem)]'}`}>
+<section class="h-[calc(100vh-13.22rem)]">
 	{#if $canvasToolsModal}
 		<CanvasToolsModal />
 	{/if}
@@ -238,6 +244,9 @@
 	{/if}
 	{#if $accountInformationModal}
 		<AccountInformationModal {toggleAccountInfoModal} />
+	{/if}
+	{#if $billingInformationModal}
+		<BillingInformationModal {toggleBillingInfoModal} />
 	{/if}
 	<SvelteFlow {nodes} {edges} {nodeTypes} fitView {snapGrid} {proOptions} {defaultEdgeOptions}>
 		<Background bgColor="#181819" patternColor="#1D1E20" variant="lines" gap={20} size={1} />

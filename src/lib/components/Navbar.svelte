@@ -12,6 +12,7 @@
 	import add from '$lib/icons/add.svg';
 	import { page } from '$app/stores';
 	import { PUBLIC_API_URL } from '$env/static/public';
+	import { PUBLIC_PRODUCTION } from '$env/static/public';
 	import { getAuthToken } from '$lib/stores/cookie';
 	import { profilePic } from '$lib/stores/profile';
 	import Spinner from './Spinner.svelte';
@@ -37,6 +38,7 @@
 	const apiUrl = PUBLIC_API_URL;
 	const authToken = getAuthToken();
 	let loading = $state(false);
+	const production = PUBLIC_PRODUCTION === 'true' ? true : false;
 
 	async function fetchProfile() {
 		try {
@@ -224,7 +226,11 @@
 					aria-label="Profile"
 					on:click={() => toggleModal(profileDropdown)}
 				>
-					<img alt="profile logo" src={$profilePic} class="w-8 rounded-full" />
+					<img
+						alt="profile logo"
+						src={production ? $profilePic : profile_logo}
+						class="w-8 rounded-full"
+					/>
 				</button>
 			{/if}
 

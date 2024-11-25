@@ -253,6 +253,7 @@
 							<input
 								type="file"
 								class="hidden"
+								accept = "image/*"
 								onchange={(e) => {
 									updateProfilePic(e.target.files[0]);
 								}}
