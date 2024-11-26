@@ -31,6 +31,9 @@ jobs:
           GITHUB_CLIENT_ID: ${{ secrets.GH_CLIENT_ID }}
           GITHUB_CLIENT_SECRET: ${{ secrets.GH_CLIENT_SECRET }}
 
+      - name: Copy Build Index to Root
+        run: cp .svelte-kit/output/prerendered/pages/index.html .svelte-kit/index.html
+
       - name: Upload files to S3
         run: |
           aws s3 sync .svelte-kit/ s3://$S3_BUCKET_NAME --delete
