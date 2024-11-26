@@ -44,6 +44,7 @@
     "@auth/sveltekit": "^1.7.3",
     "@monaco-editor/loader": "^1.4.0",
     "@xyflow/svelte": "^0.1.23",
+    "chart.js": "^4.4.6",
     "fs": "^0.0.1-security",
     "path": "^0.12.7",
     "pusher-js": "^8.4.0-rc2",

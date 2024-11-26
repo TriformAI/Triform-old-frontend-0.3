@@ -40,6 +40,8 @@
 	let loading = $state(false);
 	const production = PUBLIC_PRODUCTION === 'true' ? true : false;
 
+	console.log(authToken);
+
 	async function fetchProfile() {
 		try {
 			loading = true;

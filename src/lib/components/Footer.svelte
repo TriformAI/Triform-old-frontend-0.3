@@ -9,6 +9,7 @@
 	import graph_2 from '$lib/images/Footer_Graph_2.svg';
 	import graph_3 from '$lib/images/Footer_Graph_3.svg';
 	import { footerPanel, statusModal } from '$lib/stores/modals';
+	import Chart from './Chart.svelte';
 
 	let collapsed;
 	run(() => {
@@ -27,7 +28,9 @@
 </script>
 
 {#if !collapsed}
-	<div class="relative flex items-center justify-center mx-auto transition-transform translate-y-10 opacity-0 group-hover:opacity-100">
+	<div
+		class="relative flex items-center justify-center mx-auto transition-transform translate-y-10 opacity-0 group-hover:opacity-100"
+	>
 		<svg
 			xmlns="http://www.w3.org/2000/svg"
 			fill="none"
@@ -85,33 +88,33 @@
 		</div>
 	</div>
 	{#if collapsed}
-		<div class="flex items-center justify-between w-full py-5 pt-10">
-			<div>
+		<div class="flex items-center justify-between w-full py-10 gap-x-8">
+			<div class="w-full">
 				<div class="flex items-start justify-between w-full mb-5">
 					<h2 class="relative flex items-center text-white text-md left-5">Runs per Hour</h2>
 					<p class="text-white text-md">
 						0 <span class="ml-3 text-md text-brand-light-gray">+0.0%</span>
 					</p>
 				</div>
-				<img src={graph_1} alt="graph_1" />
+				<Chart lineColor={'#22C55E'} width={32} height={15}/>
 			</div>
-			<div>
+			<div class="w-full">
 				<div class="flex items-start justify-between w-full mb-5">
 					<h2 class="relative flex items-center text-white text-md left-5">Errors per Hour</h2>
 					<p class="text-white text-md">
 						0 <span class="ml-3 text-md text-brand-light-gray">+0.0%</span>
 					</p>
 				</div>
-				<img src={graph_2} alt="graph_2" />
+				<Chart lineColor={'#F44336'} width={32} height={15}/>
 			</div>
-			<div>
+			<div class="w-full">
 				<div class="flex items-start justify-between w-full mb-5">
 					<h2 class="relative flex items-center text-white text-md left-5">Alerts</h2>
 					<p class="text-white text-md">
 						0 <span class="ml-3 text-md text-brand-light-gray">+0.0%</span>
 					</p>
 				</div>
-				<img src={graph_3} alt="graph_3" />
+				<Chart lineColor={'#FFC107'} width={32} height={15}/>
 			</div>
 		</div>
 	{/if}

@@ -13,7 +13,9 @@
 	import {
 		accountInformationModal,
 		profileDropdown,
-		billingInformationModal
+		billingInformationModal,
+		teamInformationModal
+
 	} from '$lib/stores/modals';
 
 	const apiUrl = PUBLIC_API_URL;
@@ -80,10 +82,16 @@
 		<img src={billing} alt="billing" class="inline-block w-5" />
 		<p>Billing</p>
 	</button>
-	<a href=" " class="flex items-center px-10 py-4 text-md gap-x-4 hover:bg-website-tertiary">
+	<button
+		on:click={() => {
+			profileDropdown.set(false);
+			teamInformationModal.set(true);
+		}}
+		class="flex items-center w-full px-10 py-4 text-md gap-x-4 hover:bg-website-tertiary"
+	>
 		<img src={team_settings} alt="team settings" class="inline-block w-5" />
 		<p>Team Settings</p>
-	</a>
+	</button>
 	<a href=" " class="flex items-center px-10 py-4 text-md gap-x-4 hover:bg-website-tertiary">
 		<img src={settings} alt="settings" class="inline-block w-5" />
 		<p>Settings</p>

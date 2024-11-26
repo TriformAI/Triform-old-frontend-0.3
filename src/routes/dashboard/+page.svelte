@@ -21,7 +21,8 @@
 		templateLibraryModal,
 		attachComponentModal,
 		accountInformationModal,
-		billingInformationModal
+		billingInformationModal,
+		teamInformationModal
 	} from '$lib/stores/modals';
 	import StatusModal from '$lib/components/modals/StatusModal.svelte';
 	import ThresholdAlertModal from '$lib/components/modals/ThresholdAlertModal.svelte';
@@ -35,6 +36,7 @@
 	import AttachComponent from '$lib/components/modals/AttachComponent.svelte';
 	import AccountInformationModal from '$lib/components/modals/AccountInformationModal.svelte';
 	import BillingInformationModal from '$lib/components/modals/BillingInformationModal.svelte';
+	import TeamInformationModal from '$lib/components/modals/TeamInformationModal.svelte';
 	import { PUBLIC_PRODUCTION } from '$env/static/public';
 
 	const production = PUBLIC_PRODUCTION === 'true' ? true : false;
@@ -78,6 +80,10 @@
 
 	const toggleBillingInfoModal = () => {
 		billingInformationModal.update((value) => !value);
+	};
+
+	const toggleTeamInfoModal = () => {
+		teamInformationModal.update((value) => !value);
 	};
 
 	const nodeTypes = {
@@ -247,6 +253,9 @@
 	{/if}
 	{#if $billingInformationModal}
 		<BillingInformationModal {toggleBillingInfoModal} />
+	{/if}
+	{#if $teamInformationModal}
+		<TeamInformationModal {toggleTeamInfoModal} />
 	{/if}
 	<SvelteFlow {nodes} {edges} {nodeTypes} fitView {snapGrid} {proOptions} {defaultEdgeOptions}>
 		<Background bgColor="#181819" patternColor="#1D1E20" variant="lines" gap={20} size={1} />

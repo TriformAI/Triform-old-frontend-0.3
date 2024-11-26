@@ -5,6 +5,8 @@
 	import modal_title_icon from '$lib/icons/Modal_Title_Icon.svg';
 	import modal_cross from '$lib/icons/modal_cross.svg';
 	import { PUBLIC_API_URL } from '$env/static/public';
+	import profile_logo from '$lib/images/profile_logo.png';
+	import { PUBLIC_PRODUCTION } from '$env/static/public';
 	import { getAuthToken } from '$lib/stores/cookie';
 	import { onMount } from 'svelte';
 	import { page } from '$app/stores';
@@ -15,6 +17,7 @@
 	import { profilePic } from '$lib/stores/profile';
 
 	const apiUrl = PUBLIC_API_URL;
+	const production = PUBLIC_PRODUCTION === 'true' ? true : false;
 	const authToken = getAuthToken();
 	const profile = {};
 	let name = $state('');
@@ -163,9 +166,11 @@
 					updateStatus = 'Save';
 				}, 2000);
 			} else {
+				updateStatus = 'Save';
 				console.error('Account update failed:', data);
 			}
 		} catch (error) {
+			updateStatus = 'Save';
 			console.error('An error occurred during account update:', error);
 		}
 	}
@@ -204,7 +209,7 @@
 				<div class="fixed inset-0 flex items-center justify-center">
 					<ConfirmationModal
 						title="Confirmation"
-						body="Are you sure you want to delete this module?"
+						body="Are you sure you want to delete this account?"
 						footer={[
 							{
 								text: 'Cancel',
@@ -244,7 +249,11 @@
 								<Spinner />
 							</div>
 						{:else}
-							<img src={$profilePic} alt="profilePic" class="mr-10 rounded-full w-14" />
+							<img
+								src={production ? $profilePic : profile_logo}
+								alt="profilePic"
+								class="mr-10 rounded-full w-14"
+							/>
 						{/if}
 						<label
 							class="px-4 py-2 text-white rounded-md cursor-pointer bg-brand-primary-gray hover:brightness-90"
@@ -253,7 +262,7 @@
 							<input
 								type="file"
 								class="hidden"
-								accept = "image/*"
+								accept="image/*"
 								onchange={(e) => {
 									updateProfilePic(e.target.files[0]);
 								}}

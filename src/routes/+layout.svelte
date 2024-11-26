@@ -123,7 +123,7 @@
 				<Toolbar />
 			</div>
 
-			<ToastContainer placement="bottom-right" let:data>
+			<ToastContainer placement="top-right" let:data>
 				<FlatToast {data} />
 			</ToastContainer>
 

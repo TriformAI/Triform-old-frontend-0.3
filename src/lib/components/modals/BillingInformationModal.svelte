@@ -12,20 +12,112 @@
 	import PasswordResetModal from './PasswordResetModal.svelte';
 	import Spinner from '$lib/components/Spinner.svelte';
 	import { toasts } from 'svelte-toasts';
-	import { profilePic } from '$lib/stores/profile';
+	import Chart from '../Chart.svelte';
 
+	const authToken = getAuthToken();
+	const apiUrl = PUBLIC_API_URL;
+	let loading = $state(false);
+	let currentTeam = $state({});
+	let paymentMethodAdded = $state(false);
 	let { toggleBillingInfoModal } = $props();
 	let activeTab = $state('credit-management');
-	let topupThreshold = '$5';
-	let topupAmount = '$20';
-	let monthlyBudget = '$50';
+	let topupThreshold = $state('$0');
+	let topupAmount = $state('$0');
+	let monthlyBudget = $state('$0');
 
 	function setActiveTab(tab) {
 		activeTab = tab;
 	}
 
+	function checkPaymentMethodAdded(currentTeam) {
+		if (currentTeam && currentTeam.stripe_id === null) {
+			paymentMethodAdded = false;
+		} else {
+			paymentMethodAdded = true;
+		}
+	}
+
+	async function BillingPortal() {
+		try {
+			loading = true;
+			const response = await fetch(`${apiUrl}/api/v1/billing/portal`, {
+				method: 'GET',
+				headers: {
+					Authorization: `Bearer ${authToken}`,
+					'Content-Type': 'application/json'
+				}
+			});
+
+			const data = await response.json();
+			loading = false;
+			if (response.ok && data) {
+				window.location.href = data.portal_link;
+			}
+		} catch (error) {
+			console.error('An error occurred during profile fetch:', error);
+		}
+	}
+
+	async function FetchCurrentTeam() {
+		try {
+			const response = await fetch(`${apiUrl}/api/v1/current-team`, {
+				method: 'GET',
+				headers: {
+					Authorization: `Bearer ${authToken}`,
+					'Content-Type': 'application/json'
+				}
+			});
+
+			const data = await response.json();
+			console.log(data.data);
+			if (response.ok && data) {
+				currentTeam = data.data;
+				checkPaymentMethodAdded(currentTeam);
+				if (currentTeam) {
+					topupThreshold = `$${currentTeam.credit_threshold}`;
+					topupAmount = `$${currentTeam.credit_topup}`;
+					monthlyBudget = `$${currentTeam.monthly_limit}`;
+				}
+			} else {
+				console.error('Current Team fetch failed:', data);
+			}
+		} catch (error) {
+			console.error('An error occurred during team fetch:', error);
+		}
+	}
+
+	async function UpdateBillingSettings() {
+		try {
+			loading = true;
+			const response = await fetch(`${apiUrl}/api/v1/billing/preferences`, {
+				method: 'POST',
+				headers: {
+					Authorization: `Bearer ${authToken}`,
+					'Content-Type': 'application/json'
+				},
+				body: JSON.stringify({
+					credit_topup: topupAmount === '$0' ? 0 : topupAmount.replace('$', ''),
+					credit_threshold: topupThreshold === '$0' ? 0 : topupThreshold.replace('$', ''),
+					monthly_limit: monthlyBudget === '$0' ? 0 : monthlyBudget.replace('$', '')
+				})
+			});
+
+			const data = await response.json();
+			console.log(data);
+			loading = false;
+			if (response.ok && data) {
+				toasts.success('Billing settings updated successfully');
+			} else {
+				console.error('Billing settings update failed:', data);
+			}
+		} catch (error) {
+			console.error('An error occurred during billing settings update:', error);
+		}
+	}
+
 	onMount(() => {
 		document.body.style.overflow = 'hidden';
+		FetchCurrentTeam();
 	});
 </script>
 
@@ -83,35 +175,42 @@
 		{#if activeTab === 'credit-management'}
 			<section class="font-sans antialiased text-white h-[40rem] overflow-y-auto">
 				<div class="p-6 rounded-lg">
-					<div class="p-4 mb-6 rounded-md bg-brand-tertiary-gray">
-						<div class="flex items-center">
-							<div class="flex-shrink-0">
-								<svg
-									xmlns="http://www.w3.org/2000/svg"
-									fill="none"
-									viewBox="0 0 24 24"
-									stroke-width="1.5"
-									stroke="#2A2B2C"
-									class="size-7"
-								>
-									<path
-										stroke-linecap="round"
-										stroke-linejoin="round"
-										d="m11.25 11.25.041-.02a.75.75 0 0 1 1.063.852l-.708 2.836a.75.75 0 0 0 1.063.853l.041-.021M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Zm-9-3.75h.008v.008H12V8.25Z"
-									/>
-								</svg>
-							</div>
-							<div class="ml-3">
-								<p class="text-sm text-gray-800">You have not added a payment method.</p>
-								<a
-									href="#"
-									class="text-sm font-medium text-gray-800 duration-100 ease-in-out hover:text-gray-700 hover:font-bold"
-									>Add a Payment Method &rarr;</a
-								>
+					{#if !paymentMethodAdded}
+						<div class="p-4 mb-6 rounded-md bg-brand-tertiary-gray">
+							<div class="flex items-center">
+								<div class="flex-shrink-0">
+									<svg
+										xmlns="http://www.w3.org/2000/svg"
+										fill="none"
+										viewBox="0 0 24 24"
+										stroke-width="1.5"
+										stroke="#2A2B2C"
+										class="size-7"
+									>
+										<path
+											stroke-linecap="round"
+											stroke-linejoin="round"
+											d="m11.25 11.25.041-.02a.75.75 0 0 1 1.063.852l-.708 2.836a.75.75 0 0 0 1.063.853l.041-.021M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Zm-9-3.75h.008v.008H12V8.25Z"
+										/>
+									</svg>
+								</div>
+								<div class="ml-3">
+									<p class="text-sm text-gray-800">You have not added a payment method.</p>
+									{#if loading}
+										<div class="flex items-center justify-center mt-2">
+											<Spinner class="w-8 h-8" />
+										</div>
+									{:else}
+										<button
+											onclick={BillingPortal}
+											class="text-sm font-medium text-gray-800 duration-100 ease-in-out hover:text-gray-700 hover:font-bold"
+											>Add a Payment Method &rarr;
+										</button>
+									{/if}
+								</div>
 							</div>
 						</div>
-					</div>
-
+					{/if}
 					<div class="space-y-8 divide-y divide-gray-700">
 						<div>
 							<div class="flex flex-col items-start justify-between gap-4 mb-4 lg:flex-row">
@@ -119,10 +218,13 @@
 									<div class="flex items-center gap-x-6">
 										<div>
 											<p class="text-lg font-bold text-white">Credit Balance</p>
-											<p class="text-xl font-bold text-white">$0</p>
+											<p class="text-xl font-bold text-white">
+												{currentTeam ? `$${currentTeam.credit_balance}` : '$0'}
+											</p>
 										</div>
 										<button
-											class="px-4 py-2 text-sm font-bold text-white bg-gray-600 rounded-md hover:bg-gray-700"
+											disabled={loading || !paymentMethodAdded}
+											class={`${loading || !paymentMethodAdded ? 'bg-gray-700 cursor-not-allowed' : 'bg-gray-600  hover:bg-gray-700'} px-4 py-2 text-sm font-bold text-white rounded-md `}
 										>
 											+ Add Credits
 										</button>
@@ -131,11 +233,13 @@
 
 								<div class="flex space-x-3">
 									<button
+										onclick={() => setActiveTab('top-ups')}
 										class="px-7 py-2.5 text-sm font-bold text-white rounded-md bg-website-tertiary hover:bg-gray-600"
 									>
 										Top-up Preferences
 									</button>
 									<button
+										onclick={() => setActiveTab('history')}
 										class="px-7 py-2.5 text-sm font-bold text-white rounded-md bg-website-tertiary hover:bg-gray-600"
 									>
 										Billing History
@@ -152,7 +256,7 @@
 										<option>Last 30 Days</option>
 									</select>
 								</div>
-								<div class="h-48 rounded-lg">Chart Placeholder</div>
+								<Chart lineColor={'#22C55E'} width={32} height={13} />
 							</div>
 						</div>
 
@@ -166,7 +270,7 @@
 										<option>Last 30 Days</option>
 									</select>
 								</div>
-								<div class="h-48 rounded-md">Chart Placeholder</div>
+								<Chart lineColor={'#FFC107'} width={32} height={13} />
 							</div>
 						</div>
 					</div>
@@ -178,20 +282,27 @@
 		{#if activeTab === 'payment-info'}
 			<section class="font-sans antialiased text-white h-[40rem] overflow-y-auto">
 				<div class="p-6 rounded-lg">
-					<h3 class="max-w-3xl mb-4">
+					<h3 class="max-w-3xl mb-4 text-lg font-semibold">
 						We use Stripe to manage your payment methods. You can view and update your payment
 						method in the Stripe Dashboard.
 					</h3>
 					<div class="p-4 rounded-md bg-website-secondary">
 						<div class="flex items-center justify-between">
 							<p class="mb-4 text-lg font-bold text-white">Payment Method</p>
-							<a
-								href="#"
-								dusk="manage-payment-method"
-								class="px-5 py-2 text-sm font-bold text-white uppercase rounded-md hover:brightness-75 bg-website-dark-primary"
-							>
-								Manage Payment Method
-							</a>
+							{#if loading}
+								<button
+									class="py-2.5 text-sm font-bold text-white uppercase rounded-md px-28 hover:brightness-75 bg-website-dark-primary"
+								>
+									<Spinner class="w-8 h-8" />
+								</button>
+							{:else}
+								<button
+									onclick={BillingPortal}
+									class="px-5 py-2 text-sm font-bold text-white uppercase rounded-md hover:brightness-75 bg-website-dark-primary"
+								>
+									Manage Payment Method
+								</button>
+							{/if}
 						</div>
 						<!-- <p class="mb-5 text-gray-300 text-md">Your default payment method is</p> -->
 						<!-- <div class="py-2 font-bold text-white uppercase border border-gray-600 rounded-md px-7 text-md w-fit">
@@ -209,7 +320,7 @@
 			<section class="font-sans antialiased text-white h-[40rem] overflow-y-auto">
 				<div class="p-6 rounded-lg">
 					<div class="space-y-8 divide-y divide-gray-700">
-						<div class="p-5 rounded-lg bg-website-tertiary">
+						<div class="p-5 rounded-lg bg-website-secondary">
 							<div class="flex justify-between gap-4 mb-6">
 								<!-- Top-up Threshold -->
 								<div class="flex flex-col w-full">
@@ -221,7 +332,7 @@
 										<div class="relative ml-1 group">
 											<span class="text-gray-400 cursor-pointer">&#9432;</span>
 											<div
-												class="absolute hidden h-[55px] w-[400px] p-3 mb-2 text-sm text-white rounded-md shadow-lg bg-website-dark-primary bottom-full group-hover:block"
+												class="absolute hidden min-h-[60px] w-[400px] p-2 mb-2 text-sm text-white rounded-md shadow-lg bg-gray-800 group-hover:block"
 											>
 												If your balance falls below this threshold, your account will be
 												automatically credited by the top-up amount.
@@ -246,7 +357,7 @@
 										<div class="relative ml-1 group">
 											<span class="text-gray-400 cursor-pointer">&#9432;</span>
 											<div
-												class="absolute hidden h-[55px] w-[350px] p-3 mb-2 text-sm text-white rounded-md shadow-lg bg-website-dark-primary bottom-full group-hover:block"
+												class="absolute hidden min-h-[60px] w-[350px] p-3 mb-2 text-sm text-white rounded-md shadow-lg bg-gray-800 group-hover:block"
 											>
 												Automatically credit the account by the amount below if credit usage falls
 												below the threshold.
@@ -272,7 +383,7 @@
 									<div class="relative ml-1 group">
 										<span class="text-gray-400 cursor-pointer">&#9432;</span>
 										<div
-											class="absolute hidden h-[77px] w-[300px] p-3 mb-2 text-sm text-white rounded-md shadow-lg bg-website-dark-primary bottom-full group-hover:block"
+											class="absolute hidden min-h-[80px] w-[300px] p-3 mb-2 text-sm text-white rounded-md shadow-lg bg-gray-800 bottom-full group-hover:block"
 										>
 											If your organization exceeds this threshold in a given calendar month (UTC),
 											an email notification will be sent.
@@ -286,12 +397,20 @@
 									class="p-3 text-white rounded-md bg-website-dark-primary"
 								/>
 							</div>
-
-							<button
-								class="px-6 py-3 text-sm font-bold text-white bg-gray-600 rounded-md hover:bg-gray-700"
-							>
-								Save Settings
-							</button>
+							{#if loading}
+								<button
+									class="px-16 py-3 text-sm font-bold text-white bg-gray-600 rounded-md hover:bg-gray-700"
+								>
+									<Spinner class="w-8 h-8" />
+								</button>
+							{:else}
+								<button
+									onclick={UpdateBillingSettings}
+									class="px-6 py-3 text-sm font-bold text-white bg-gray-600 rounded-md hover:bg-gray-700"
+								>
+									Save Settings
+								</button>
+							{/if}
 						</div>
 					</div>
 				</div>
@@ -302,34 +421,86 @@
 		{#if activeTab === 'history'}
 			<section class="font-sans antialiased text-white h-[40rem] overflow-y-auto">
 				<div class="p-6 rounded-lg">
-					<h3 class="max-w-3xl mb-4">
+					<h3 class="max-w-3xl mb-4 text-lg font-semibold">
 						View your billing history for credit topups, flows execution & storage.
 					</h3>
-					<div class="p-4 mb-6 rounded-md bg-brand-tertiary-gray">
-						<div class="flex items-center">
-							<div class="flex-shrink-0">
-								<svg
-									xmlns="http://www.w3.org/2000/svg"
-									fill="none"
-									viewBox="0 0 24 24"
-									stroke-width="1.5"
-									stroke="#2A2B2C"
-									class="size-7"
-								>
-									<path
-										stroke-linecap="round"
-										stroke-linejoin="round"
-										d="m11.25 11.25.041-.02a.75.75 0 0 1 1.063.852l-.708 2.836a.75.75 0 0 0 1.063.853l.041-.021M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Zm-9-3.75h.008v.008H12V8.25Z"
-									/>
-								</svg>
+					{#if !paymentMethodAdded}
+						<div class="p-4 mb-6 rounded-md bg-brand-tertiary-gray">
+							<div class="flex items-center">
+								<div class="flex-shrink-0">
+									<svg
+										xmlns="http://www.w3.org/2000/svg"
+										fill="none"
+										viewBox="0 0 24 24"
+										stroke-width="1.5"
+										stroke="#2A2B2C"
+										class="size-7"
+									>
+										<path
+											stroke-linecap="round"
+											stroke-linejoin="round"
+											d="m11.25 11.25.041-.02a.75.75 0 0 1 1.063.852l-.708 2.836a.75.75 0 0 0 1.063.853l.041-.021M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Zm-9-3.75h.008v.008H12V8.25Z"
+										/>
+									</svg>
+								</div>
+
+								<div class="ml-3">
+									<p class="text-sm text-gray-800">You have not added a payment method.</p>
+									{#if loading}
+										<div class="flex items-center justify-center mt-2">
+											<Spinner class="w-8 h-8" />
+										</div>
+									{:else}
+										<button
+											onclick={BillingPortal}
+											class="text-sm font-medium text-gray-800 duration-100 ease-in-out hover:text-gray-700 hover:font-bold"
+											>Add a Payment Method &rarr;
+										</button>
+									{/if}
+								</div>
 							</div>
-							<div class="ml-3">
-								<p class="text-sm text-gray-800">You have not added a payment method.</p>
-								<a
-									href="#"
-									class="text-sm font-medium text-gray-800 duration-100 ease-in-out hover:text-gray-700 hover:font-bold"
-									>Add a Payment Method &rarr;</a
-								>
+						</div>
+					{/if}
+					<div class="space-y-8 divide-y divide-gray-700">
+						<div>
+							<div class="p-4 rounded-md bg-website-secondary">
+								<div class="flex items-center justify-between mb-4">
+									<p class="text-lg font-bold text-white">Credit Top up History</p>
+									<select class="p-2 px-5 text-white rounded-lg bg-website-dark-primary">
+										<option>Last 7 Days</option>
+										<option>Last 12 Days</option>
+										<option>Last 30 Days</option>
+									</select>
+								</div>
+								<Chart lineColor={'#72C9EC'} width={32} height={13} />
+							</div>
+						</div>
+
+						<div>
+							<div class="p-4 mt-8 rounded-md bg-website-secondary">
+								<div class="flex items-center justify-between mb-4">
+									<p class="text-lg font-bold text-white">Flows Transaction History</p>
+									<select class="p-2 px-5 text-white rounded-lg bg-website-dark-primary">
+										<option>Last 7 Days</option>
+										<option>Last 12 Days</option>
+										<option>Last 30 Days</option>
+									</select>
+								</div>
+								<Chart lineColor={'#833FB4'} width={32} height={13} />
+							</div>
+						</div>
+
+						<div>
+							<div class="p-4 mt-8 rounded-md bg-website-secondary">
+								<div class="flex items-center justify-between mb-4">
+									<p class="text-lg font-bold text-white">Storage Transaction History</p>
+									<select class="p-2 px-5 text-white rounded-lg bg-website-dark-primary">
+										<option>Last 7 Days</option>
+										<option>Last 12 Days</option>
+										<option>Last 30 Days</option>
+									</select>
+								</div>
+								<Chart lineColor={'#A4771C'} width={32} height={13} />
 							</div>
 						</div>
 					</div>
