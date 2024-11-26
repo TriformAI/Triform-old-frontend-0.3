@@ -23,10 +23,17 @@ jobs:
 
       - name: Build the Svelte app
         run: npm run build
+        env:
+          PUBLIC_API_URL: ${{ secrets.PUBLIC_API_URL }}
+          PUBLIC_PRODUCTION: ${{ secrets.PUBLIC_PRODUCTION }}
+          AUTH_SECRET: ${{ secrets.AUTH_SECRET }}
+          AUTH_TRUST_HOST: ${{ secrets.AUTH_TRUST_HOST }}
+          GITHUB_CLIENT_ID: ${{ secrets.GH_CLIENT_ID }}
+          GITHUB_CLIENT_SECRET: ${{ secrets.GH_CLIENT_SECRET }}
 
       - name: Upload files to S3
         run: |
-          aws s3 sync build/ s3://$S3_BUCKET_NAME --delete
+          aws s3 sync .svelte-kit/ s3://$S3_BUCKET_NAME --delete
         env:
           AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
           AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
