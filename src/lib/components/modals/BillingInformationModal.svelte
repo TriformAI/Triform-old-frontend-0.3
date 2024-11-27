@@ -13,6 +13,7 @@
 	import Spinner from '$lib/components/Spinner.svelte';
 	import { toasts } from 'svelte-toasts';
 	import Chart from '../Chart.svelte';
+	import CreditUsageChart from '../CreditUsageChart.svelte';
 
 	const authToken = getAuthToken();
 	const apiUrl = PUBLIC_API_URL;
@@ -24,13 +25,21 @@
 	let topupThreshold = $state('$0');
 	let topupAmount = $state('$0');
 	let monthlyBudget = $state('$0');
+	let billingUsage = $state();
+	let selectedRange = $state('last_7_days');
+
+	// Handle dropdown change
+	function handleRangeChange(event) {
+		selectedRange = event.target.value;
+		FetchBillingUsage();
+	}
 
 	function setActiveTab(tab) {
 		activeTab = tab;
 	}
 
 	function checkPaymentMethodAdded(currentTeam) {
-		if (currentTeam && currentTeam.stripe_id === null) {
+		if (currentTeam && (currentTeam.pm_last_four === null || currentTeam.pm_type === null)) {
 			paymentMethodAdded = false;
 		} else {
 			paymentMethodAdded = true;
@@ -86,6 +95,32 @@
 		}
 	}
 
+	async function FetchBillingUsage() {
+		try {
+			const response = await fetch(`${apiUrl}/api/v1/billing/usage`, {
+				method: 'POST',
+				headers: {
+					Authorization: `Bearer ${authToken}`,
+					'Content-Type': 'application/json'
+				},
+
+				body: JSON.stringify({
+					range: selectedRange
+				})
+			});
+
+			const data = await response.json();
+			if (response.ok && data) {
+				billingUsage = data.data;
+				console.log(billingUsage);
+			} else {
+				console.error('Current Team fetch failed:', data);
+			}
+		} catch (error) {
+			console.error('An error occurred during team fetch:', error);
+		}
+	}
+
 	async function UpdateBillingSettings() {
 		try {
 			loading = true;
@@ -118,6 +153,7 @@
 	onMount(() => {
 		document.body.style.overflow = 'hidden';
 		FetchCurrentTeam();
+		FetchBillingUsage();
 	});
 </script>
 
@@ -129,7 +165,6 @@
 		class="w-[60rem] overflow-y-auto bg-website-dark-primary text-brand-tertiary-gray border border-brand-primary-gray rounded-lg shadow-lg z-50"
 		in:scale={{ start: 0.9, duration: 200 }}
 	>
-		<!-- Modal Header -->
 		<div class="flex items-center justify-between p-4 border-b border-brand-primary-gray">
 			<div class="flex items-center gap-x-3">
 				<img src={modal_title_icon} alt="modal_title_icon" class="w-6" />
@@ -250,13 +285,22 @@
 							<div class="p-4 rounded-md bg-website-secondary">
 								<div class="flex items-center justify-between mb-4">
 									<p class="text-lg font-bold text-white">Credit Usage</p>
-									<select class="p-2 px-5 text-white rounded-lg bg-website-dark-primary">
-										<option>Last 7 Days</option>
-										<option>Last 12 Days</option>
-										<option>Last 30 Days</option>
+									<select
+										onchange={handleRangeChange}
+										class="p-2 px-5 text-white rounded-lg bg-website-dark-primary"
+									>
+										<option value="last_7_days">Last 7 Days</option>
+										<option value="last_12_days">Last 12 Days</option>
+										<option value="last_30_days">Last 30 Days</option>
+										<option value="last_2_months">Last 2 Months</option>
 									</select>
 								</div>
-								<Chart lineColor={'#22C55E'} width={32} height={13} />
+								<CreditUsageChart
+									lineColor={'#22C55E'}
+									width={32}
+									height={13}
+									data={billingUsage}
+								/>
 							</div>
 						</div>
 
@@ -265,9 +309,10 @@
 								<div class="flex items-center justify-between mb-4">
 									<p class="text-lg font-bold text-white">Spending By Flow</p>
 									<select class="p-2 px-5 text-white rounded-lg bg-website-dark-primary">
-										<option>Last 7 Days</option>
-										<option>Last 12 Days</option>
-										<option>Last 30 Days</option>
+										<option value="last_7_days">Last 7 Days</option>
+										<option value="last_12_days">Last 12 Days</option>
+										<option value="last_30_days">Last 30 Days</option>
+										<option value="last_2_months">Last 2 Months</option>
 									</select>
 								</div>
 								<Chart lineColor={'#FFC107'} width={32} height={13} />
@@ -304,12 +349,14 @@
 								</button>
 							{/if}
 						</div>
-						<!-- <p class="mb-5 text-gray-300 text-md">Your default payment method is</p> -->
-						<!-- <div class="py-2 font-bold text-white uppercase border border-gray-600 rounded-md px-7 text-md w-fit">
-									{{ auth()->user()->currentTeam->pm_type }} **** **** ****
-									{{ auth()->user()->currentTeam->pm_last_four }}
-								</div> -->
+						{#if paymentMethodAdded}
+							<p class="mb-5 text-gray-300 text-md">Your default payment method is</p>
+							<div class="py-2 font-bold text-white uppercase border border-gray-600 rounded-md px-7 text-md w-fit">
+										{currentTeam.pm_type} **** **** **** {currentTeam.pm_last_four}
+							</div>
+						{:else}
 						<p class="mb-5 text-gray-300 text-md">No payment method has been added yet.</p>
+						{/if}
 					</div>
 				</div>
 			</section>
@@ -467,9 +514,10 @@
 								<div class="flex items-center justify-between mb-4">
 									<p class="text-lg font-bold text-white">Credit Top up History</p>
 									<select class="p-2 px-5 text-white rounded-lg bg-website-dark-primary">
-										<option>Last 7 Days</option>
-										<option>Last 12 Days</option>
-										<option>Last 30 Days</option>
+										<option value="last_7_days">Last 7 Days</option>
+										<option value="last_12_days">Last 12 Days</option>
+										<option value="last_30_days">Last 30 Days</option>
+										<option value="last_2_months">Last 2 Months</option>
 									</select>
 								</div>
 								<Chart lineColor={'#72C9EC'} width={32} height={13} />
@@ -481,9 +529,10 @@
 								<div class="flex items-center justify-between mb-4">
 									<p class="text-lg font-bold text-white">Flows Transaction History</p>
 									<select class="p-2 px-5 text-white rounded-lg bg-website-dark-primary">
-										<option>Last 7 Days</option>
-										<option>Last 12 Days</option>
-										<option>Last 30 Days</option>
+										<option value="last_7_days">Last 7 Days</option>
+										<option value="last_12_days">Last 12 Days</option>
+										<option value="last_30_days">Last 30 Days</option>
+										<option value="last_2_months">Last 2 Months</option>
 									</select>
 								</div>
 								<Chart lineColor={'#833FB4'} width={32} height={13} />
@@ -495,9 +544,10 @@
 								<div class="flex items-center justify-between mb-4">
 									<p class="text-lg font-bold text-white">Storage Transaction History</p>
 									<select class="p-2 px-5 text-white rounded-lg bg-website-dark-primary">
-										<option>Last 7 Days</option>
-										<option>Last 12 Days</option>
-										<option>Last 30 Days</option>
+										<option value="last_7_days">Last 7 Days</option>
+										<option value="last_12_days">Last 12 Days</option>
+										<option value="last_30_days">Last 30 Days</option>
+										<option value="last_2_months">Last 2 Months</option>
 									</select>
 								</div>
 								<Chart lineColor={'#A4771C'} width={32} height={13} />
