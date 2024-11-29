@@ -54,7 +54,6 @@
 
 	async function UpdateCredits() {
 		try {
-			loading = true;
 			const response = await fetch(`${apiUrl}/api/v1/billing/credits`, {
 				method: 'POST',
 				headers: {
@@ -64,9 +63,9 @@
 			});
 
 			const data = await response.json();
-			loading = false;
 			if (response.ok && data) {
 				toasts.success('Credits added successfully');
+				credit_balance = credit_balance + parseInt(topupAmount.replace('$', ''), 10);
 			} else {
 				console.error('Credits update failed:', data);
 			}
