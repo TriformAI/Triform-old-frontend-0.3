@@ -27,6 +27,12 @@
 	let monthlyBudget = $state('$0');
 	let billingUsage = $state();
 	let selectedRange = $state('last_7_days');
+	let confirmationModal = $state(false);
+	let credit_balance = $state(0);
+
+	function toggleConfirmationModal() {
+		confirmationModal = !confirmationModal;
+	}
 
 	// Handle dropdown change
 	function handleRangeChange(event) {
@@ -43,6 +49,29 @@
 			paymentMethodAdded = false;
 		} else {
 			paymentMethodAdded = true;
+		}
+	}
+
+	async function UpdateCredits() {
+		try {
+			loading = true;
+			const response = await fetch(`${apiUrl}/api/v1/billing/credits`, {
+				method: 'POST',
+				headers: {
+					Authorization: `Bearer ${authToken}`,
+					'Content-Type': 'application/json'
+				}
+			});
+
+			const data = await response.json();
+			loading = false;
+			if (response.ok && data) {
+				toasts.success('Credits added successfully');
+			} else {
+				console.error('Credits update failed:', data);
+			}
+		} catch (error) {
+			console.error('An error occurred during credits update:', error);
 		}
 	}
 
@@ -86,6 +115,7 @@
 					topupThreshold = `$${currentTeam.credit_threshold}`;
 					topupAmount = `$${currentTeam.credit_topup}`;
 					monthlyBudget = `$${currentTeam.monthly_limit}`;
+					credit_balance = currentTeam.credit_balance;
 				}
 			} else {
 				console.error('Current Team fetch failed:', data);
@@ -174,7 +204,31 @@
 				<img src={modal_cross} alt="Close modal" class="w-6" />
 			</button>
 		</div>
-
+		<!-- Confirmation Modal -->
+		{#if confirmationModal}
+			<div class="fixed inset-0 flex items-center justify-center">
+				<ConfirmationModal
+					title="Confirmation"
+					body="Are you sure you want to add credits to your account?"
+					footer={[
+						{
+							text: 'Cancel',
+							onClick: toggleConfirmationModal,
+							type: 'default'
+						},
+						{
+							text: 'Confirm',
+							onClick: () => {
+								UpdateCredits();
+								toggleConfirmationModal();
+							},
+							type: 'info'
+						}
+					]}
+					onModalClose={toggleConfirmationModal}
+				/>
+			</div>
+		{/if}
 		<div class="flex items-center w-full px-4 my-3 text-sm gap-x-5">
 			<button
 				class="p-1.5 cursor-pointer border-b-white"
@@ -254,10 +308,11 @@
 										<div>
 											<p class="text-lg font-bold text-white">Credit Balance</p>
 											<p class="text-xl font-bold text-white">
-												{currentTeam ? `$${currentTeam.credit_balance}` : '$0'}
+												{`$${credit_balance}`}
 											</p>
 										</div>
 										<button
+											onclick={toggleConfirmationModal}
 											disabled={loading || !paymentMethodAdded}
 											class={`${loading || !paymentMethodAdded ? 'bg-gray-700 cursor-not-allowed' : 'bg-gray-600  hover:bg-gray-700'} px-4 py-2 text-sm font-bold text-white rounded-md `}
 										>
@@ -351,11 +406,13 @@
 						</div>
 						{#if paymentMethodAdded}
 							<p class="mb-5 text-gray-300 text-md">Your default payment method is</p>
-							<div class="py-2 font-bold text-white uppercase border border-gray-600 rounded-md px-7 text-md w-fit">
-										{currentTeam.pm_type} **** **** **** {currentTeam.pm_last_four}
+							<div
+								class="py-2 font-bold text-white uppercase border border-gray-600 rounded-md px-7 text-md w-fit"
+							>
+								{currentTeam.pm_type} **** **** **** {currentTeam.pm_last_four}
 							</div>
 						{:else}
-						<p class="mb-5 text-gray-300 text-md">No payment method has been added yet.</p>
+							<p class="mb-5 text-gray-300 text-md">No payment method has been added yet.</p>
 						{/if}
 					</div>
 				</div>
