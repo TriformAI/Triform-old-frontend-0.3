@@ -191,7 +191,7 @@
 
 <div class="flex items-center justify-center">
 	<div
-		class="w-[60rem] overflow-y-auto bg-website-dark-primary text-brand-tertiary-gray border border-brand-primary-gray rounded-lg shadow-lg z-50"
+		class="w-[60rem] max-h-[70vh] overflow-y-auto bg-website-dark-primary text-brand-tertiary-gray border border-brand-primary-gray rounded-lg shadow-lg z-50"
 		in:scale={{ start: 0.9, duration: 200 }}
 	>
 		<div class="flex items-center justify-between p-4 border-b border-brand-primary-gray">
@@ -261,7 +261,7 @@
 
 		<!-- credit-management tab -->
 		{#if activeTab === 'credit-management'}
-			<section class="font-sans antialiased text-white h-[40rem] overflow-y-auto">
+			<section class="font-sans antialiased text-white">
 				<div class="p-6 rounded-lg">
 					{#if !paymentMethodAdded}
 						<div class="p-4 mb-6 rounded-md bg-brand-tertiary-gray">

@@ -45,7 +45,7 @@ export const iconsStore = writable([
 		id: 4,
 		icon: toolbar_icon_4,
 		alt: 'Toolbar Icon 4',
-		visibleOnToolbar: true,
+		visibleOnToolbar: false,
 		modalComponent: consoleModal
 	},
 	{
@@ -59,7 +59,7 @@ export const iconsStore = writable([
 		id: 6,
 		icon: toolbar_icon_6,
 		alt: 'Toolbar Icon 6',
-		visibleOnToolbar: false,
+		visibleOnToolbar: true,
 		modalComponent: storageModal
 	},
 	{
