@@ -26,8 +26,17 @@ export default {
 			},
 			borderRadius: {
 				'4xl': '13px'
-			}
-		}
+			},
+
+      spacing: {
+        '1': '4px',
+        '2': '6px',
+        '3': '8px',
+        '4': '12px',
+        '5': '16px',
+        '6': '24px',
+      },
+		},
 	},
 
 	plugins: []
