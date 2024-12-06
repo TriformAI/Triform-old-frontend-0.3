@@ -74,7 +74,7 @@
 </script>
 
 <div
-	class="flex items-center justify-between w-full py-2 border-b px-7 border-b-brand-primary-gray text-brand-white bg-website-primary"
+	class="flex items-center justify-between w-full py-0 border-b px-7 border-b-brand-primary-gray text-brand-white bg-website-primary"
 >
 	<!-- Dropdown menu with fade and scale animation -->
 
