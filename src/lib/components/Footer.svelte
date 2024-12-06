@@ -46,7 +46,7 @@
 
 <div
 	onclick={() => (collapsed = true)}
-	class={`${$statusModal ? 'pt-3' : ''} z-50 w-full px-7 border-t border-t-brand-primary-gray text-brand-white bg-website-primary shadow-2xl duration-200 ease-linear transition-transform ${!collapsed ? 'group-hover:-translate-y-2 py-2 cursor-pointer ' : ' -translate-y-[70%] cursor-default  pb-10 '}`}
+	class={`${$statusModal ? 'pt-3' : ''} z-50 w-full px-7 border-t border-t-brand-primary-gray text-brand-white bg-website-primary shadow-2xl duration-200 ease-linear transition-transform ${!collapsed ? 'group-hover:-translate-y-2 py-2 cursor-pointer ' : ' -translate-y-[70%] cursor-default pb-10 '}`}
 >
 	{#if collapsed}
 		<button
@@ -72,18 +72,18 @@
 	<div class="flex items-center justify-between w-full py-0">
 		<div class="flex items-center gap-x-3">
 			<img src={green_check} alt="green_check" class="w-5" />
-			<h2 class="text-md text-primary-green">All system are operational</h2>
+			<h2 class="text-sm text-primary-green">All system are operational</h2>
 		</div>
 
 		<div class="flex items-center gap-x-14">
-			<h2 class="flex items-center text-md text-brand-light-gray gap-x-4">
-				<span class="text-md text-brand-tertiary-gray relative bottom-0.5">0</span> Runs per Hour
+			<h2 class="flex items-center text-sm text-brand-light-gray gap-x-3">
+				<span class="relative text-lg text-brand-tertiary-gray bottom-0.5">0</span> Runs per Hour
 			</h2>
 			<h2 class="flex items-center text-md text-brand-light-gray gap-x-4">
-				<span class="text-md text-brand-tertiary-gray relative bottom-0.5">0</span> Errors per Hour
+				<span class="relative text-lg text-brand-tertiary-gray bottom-0.5">0</span> Errors per Hour
 			</h2>
 			<h2 class="flex items-center text-md text-brand-light-gray gap-x-4">
-				<span class="text-md text-brand-tertiary-gray relative bottom-0.5">0</span> Alerts
+				<span class="relative text-lg text-brand-tertiary-gray bottom-0.5">0</span> Alerts
 			</h2>
 		</div>
 	</div>

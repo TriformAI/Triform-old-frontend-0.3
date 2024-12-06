@@ -22,12 +22,16 @@
 	const profile = $state({});
 	let teamName = $state({});
 	let updateStatus = $state('Save');
+	let addingStatus = $state('Invite');
 
 	let confirmationModal = $state(false);
 	let profilePicLoading = $state(false);
+	let email = $state('');
+	let role = $state('admin');
 
 	let { toggleTeamInfoModal } = $props();
 	let currentTeam = $state({});
+	let invitations = $state([]);
 
 	function toggleConfirmationModal() {
 		confirmationModal = !confirmationModal;
@@ -67,7 +71,6 @@
 			});
 
 			const data = await response.json();
-			console.log(data.data);
 			if (response.ok && data) {
 				currentTeam = data.data;
 				teamName = data.data.name;
@@ -96,7 +99,7 @@
 			const data = await response.json();
 
 			if (response.ok && data) {
-				toasts.success('Team name updated successfully');
+				toasts.success(`Team name updated to ${teamName}`);
 				updateStatus = 'Saved!';
 				setTimeout(() => {
 					updateStatus = 'Save';
@@ -111,10 +114,109 @@
 		}
 	}
 
+	async function fetchInvitations() {
+		try {
+			const response = await fetch(`${apiUrl}/api/v1/invitations`, {
+				method: 'GET',
+				headers: {
+					Authorization: `Bearer ${authToken}`,
+					'Content-Type': 'application/json'
+				}
+			});
+
+			const data = await response.json();
+			if (response.ok && data.data) {
+				invitations = data.data;
+			}
+			if (!response.ok) {
+				console.error('Invitations fetch failed:', data);
+				return;
+			}
+		} catch (error) {
+			console.error('An error occurred during invitations fetch:', error);
+		}
+	}
+
+	async function createInvitation() {
+		if (!email) {
+			toasts.error('Please enter an email address');
+			return;
+		}
+
+		if (!role && !currentTeam) {
+			return;
+		}
+
+		//validate email
+		const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+		if (!emailRegex.test(email)) {
+			toasts.error('Please enter a valid email address');
+			return;
+		}
+
+		try {
+			addingStatus = 'Sending...';
+			const response = await fetch(`${apiUrl}/api/v1/teams/${currentTeam.id}/invite`, {
+				method: 'POST',
+				headers: {
+					Authorization: `Bearer ${authToken}`,
+					'Content-Type': 'application/json'
+				},
+				body: JSON.stringify({
+					email,
+					role
+				})
+			});
+
+			const data = await response.json();
+
+			if (response.ok && data.type === 'success') {
+				fetchInvitations();
+				toasts.success(`Team invitation sent to ${email}`);
+				addingStatus = 'Sent!';
+				setTimeout(() => {
+					addingStatus = 'Add';
+				}, 2000);
+			}
+			if (!response.ok) {
+				addingStatus = 'Add';
+				console.error('Invitation creation failed:', data);
+				return;
+			}
+		} catch (error) {
+			addingStatus = 'Add';
+			console.error('An error occurred during invitation creation:', error);
+		}
+	}
+
+	async function declineInvitation(id) {
+		try {
+			const response = await fetch(`${apiUrl}/api/v1/invitations/${id}`, {
+				method: 'DELETE',
+				headers: {
+					Authorization: `Bearer ${authToken}`,
+					'Content-Type': 'application/json'
+				}
+			});
+
+			const data = await response.json();
+			if (response.ok && data) {
+				fetchInvitations();
+			}
+			if (!response.ok) {
+				console.error('Invitation decline failed:', data);
+				return;
+			}
+		} catch (error) {
+			console.error('An error occurred during invitation decline:', error);
+		}
+	}
+
 	onMount(() => {
 		document.body.style.overflow = 'hidden';
 		fetchProfile();
 		FetchCurrentTeam();
+		fetchInvitations();
 	});
 </script>
 
@@ -208,8 +310,110 @@
 					</form>
 				</div>
 
-				<!-- Delete Account Section -->
+				<!-- Add Team Member Section -->
+				<h2 class="mb-1 font-semibold text-md">Add Team Member</h2>
+				<p class="mb-6 text-gray-400">
+					Add a new team member to your team, allowing them to collaborate with you.
+				</p>
+				<div class="w-full p-6 mb-8 rounded-lg bg-website-secondary">
+					<div class="mb-4">
+						<label class="block mb-1 text-sm font-medium" for="email">Email</label>
+						<input
+							bind:value={email}
+							id="email"
+							type="email"
+							class="w-full p-3 text-white border border-gray-600 rounded-md bg-website-dark-primary"
+						/>
+					</div>
+					<div class="mb-4">
+						<p class="block mb-1 text-sm font-medium">Role</p>
+						<div class="mt-4 border border-white divide-y rounded-lg divide-y-white">
+							<div class="p-4 cursor-pointer hover:bg-white/5" onclick={() => (role = 'admin')}>
+								<div class="flex items-start w-full gap-x-4">
+									<h3 class="text-sm text-white">Administrator</h3>
+									{#if role === 'admin'}
+										<div class="relative bottom-1">
+											<svg
+												xmlns="http://www.w3.org/2000/svg"
+												fill="none"
+												viewBox="0 0 24 24"
+												stroke-width="1.5"
+												stroke="#22C55E"
+												class="size-6"
+											>
+												<path
+													stroke-linecap="round"
+													stroke-linejoin="round"
+													d="M9 12.75 11.25 15 15 9.75M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z"
+												/>
+											</svg>
+										</div>
+									{/if}
+								</div>
+								<p class="mt-1 text-xs text-gray-400">
+									Administrator users can perform any action.
+								</p>
+							</div>
+							<div class="p-4 cursor-pointer hover:bg-white/5" onclick={() => (role = 'editor')}>
+								<div class="flex items-start w-full gap-x-4">
+									<h3 class="text-sm text-white">Editor</h3>
+									{#if role === 'editor'}
+										<div class="relative bottom-1">
+											<svg
+												xmlns="http://www.w3.org/2000/svg"
+												fill="none"
+												viewBox="0 0 24 24"
+												stroke-width="1.5"
+												stroke="#22C55E"
+												class="size-6"
+											>
+												<path
+													stroke-linecap="round"
+													stroke-linejoin="round"
+													d="M9 12.75 11.25 15 15 9.75M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z"
+												/>
+											</svg>
+										</div>
+									{/if}
+								</div>
+								<p class="mt-1 text-xs text-gray-400">
+									Editors users have the ability to read, create and update
+								</p>
+							</div>
+						</div>
+					</div>
+					<div class="flex items-center justify-end">
+						<button
+							onclick={createInvitation}
+							disabled={!currentTeam && !role}
+							type="submit"
+							class="px-4 py-2 text-white rounded-md bg-brand-primary-gray hover:brightness-90"
+							>{addingStatus}</button
+						>
+					</div>
+				</div>
 
+				{#if invitations.length > 0}
+					<h2 class="mb-1 font-semibold text-md">Pending Team Invitations</h2>
+					<p class="mb-6 text-gray-400">
+						These people have been invited to your team and have been sent an invitation email. They
+						may join the team by accepting the email invitation.
+					</p>
+					<div class="w-full p-6 mb-8 rounded-lg bg-website-secondary">
+						<div class="flex items-center justify-between w-full">
+							{#each invitations as invitation}
+								<p class="text-gray-400">{invitation.email}</p>
+								<button
+									onclick={() => declineInvitation(invitation.id)}
+									class="px-4 py-2 text-xs border rounded-md text-primary-red border-primary-red hover:brightness-90"
+									>Cancel</button
+								>
+							{/each}
+						</div>
+					</div>
+				{/if}
+
+				<!-- Delete Account Section -->
 				<h2 class="mb-1 font-semibold text-md">Delete Team</h2>
 				<p class="mb-6 text-gray-400">Permanently delete your account.</p>
 				<div class="w-full p-6 rounded-lg bg-website-secondary">
