@@ -39,8 +39,6 @@
 	import TeamInformationModal from '$lib/components/modals/TeamInformationModal.svelte';
 	import { PUBLIC_PRODUCTION } from '$env/static/public';
 
-	const production = PUBLIC_PRODUCTION === 'true' ? true : false;
-
 	const toggleAttachComponentModal = () => {
 		createModuleModal.update((value) => false);
 		attachTemplateModal.update((value) => false);
@@ -193,26 +191,7 @@
 	};
 </script>
 
-<!-- <section
-	class={`flex flex-col justify-center items-center bg-website-dark-primary text-brand-white min-h-[calc(100vh-16.4rem)]`}
->
-
-<!-- <div class="relative flex flex-col items-center max-w-xl my-auto top-32">
-		<h2
-			class={`text-2xl leading-normal text-center text-brand-light-gray ${($statusModal || $thresholdModal) && 'hidden'}`}
-		>
-			Right-click to Create Action/Agent/API or Drag from Toolbox
-		</h2>
-	</div> -->
-
-<!-- This div will push the buttons to the bottom -->
-<!-- <div class="flex items-center justify-center pb-10 mt-auto gap-x-6">
-		<Button content={{ icon: Add, text: 'New Action' }} on:click={toggleCreateModuleModal} />
-		<Button content={{ icon: Add, text: 'New API' }} />
-		<Button content={{ icon: Add, text: 'New Agent' }} />
-	</div> -->
-<!-- </section> -->
-<section class="h-[calc(100vh-12.53rem)]">
+<section class="h-[calc(100vh-156.1px)]">
 	{#if $canvasToolsModal}
 		<CanvasToolsModal />
 	{/if}

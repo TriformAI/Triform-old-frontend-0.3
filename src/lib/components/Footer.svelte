@@ -46,7 +46,7 @@
 
 <div
 	onclick={() => (collapsed = true)}
-	class={`${$statusModal ? 'pt-3' : ''} z-50 w-full px-7 border-t border-t-brand-primary-gray text-brand-white bg-website-primary shadow-2xl duration-200 ease-linear transition-transform ${!collapsed ? 'group-hover:-translate-y-2 py-3 cursor-pointer ' : ' -translate-y-[70%] cursor-default pb-10 '}`}
+	class={`${$statusModal ? 'pt-3' : ''} z-50 w-full px-7 border-t border-t-brand-primary-gray text-brand-white bg-website-primary shadow-2xl duration-200 ease-linear transition-transform ${!collapsed ? 'group-hover:-translate-y-2 py-2 cursor-pointer ' : ' -translate-y-[70%] cursor-default pb-10 '}`}
 >
 	{#if collapsed}
 		<button
@@ -69,7 +69,7 @@
 			</svg>
 		</button>
 	{/if}
-	<div class="flex items-center justify-between w-full py-1">
+	<div class="flex items-center justify-between w-full py-0">
 		<div class="flex items-center gap-x-3">
 			<img src={green_check} alt="green_check" class="w-5" />
 			<h2 class="text-sm text-primary-green">All system are operational</h2>
