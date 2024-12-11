@@ -97,7 +97,8 @@
 			type: 'api-node',
 			position: { x: 80, y: 0 },
 			data: {
-				name: 'API Node A'
+				name: 'API Node A',
+				mode: 'running'
 			}
 		},
 		{
@@ -105,7 +106,8 @@
 			type: 'agent-node',
 			position: { x: 0, y: 120 },
 			data: {
-				name: 'Agent Node A'
+				name: 'Agent Node A',
+				mode: 'error'
 			}
 		},
 		{
@@ -113,7 +115,8 @@
 			type: 'action-node',
 			position: { x: 80, y: 250 },
 			data: {
-				name: 'Action Node A'
+				name: 'Action Node A',
+				mode: 'success'
 			}
 		},
 		{
@@ -121,7 +124,8 @@
 			type: 'api-node',
 			position: { x: 300, y: 0 },
 			data: {
-				name: 'API Node B'
+				name: 'API Node B',
+				mode: 'success'
 			}
 		},
 		{
@@ -129,7 +133,8 @@
 			type: 'agent-node',
 			position: { x: 230, y: 120 },
 			data: {
-				name: 'Agent Node B'
+				name: 'Agent Node B',
+				mode: 'running'
 			}
 		},
 		{
@@ -137,7 +142,8 @@
 			type: 'action-node',
 			position: { x: 300, y: 250 },
 			data: {
-				name: 'Action Node B'
+				name: 'Action Node B',
+				mode: 'error'
 			}
 		}
 	]);

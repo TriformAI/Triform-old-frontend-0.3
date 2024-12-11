@@ -9,10 +9,6 @@
 	import { onMount } from 'svelte';
 
 	export let toggleShareCanvaModal;
-
-	onMount(() => {
-		document.body.style.overflow = 'hidden'; // Disable scrolling
-	});
 </script>
 
 <!-- Background Overlay -->

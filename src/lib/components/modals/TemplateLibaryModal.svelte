@@ -63,7 +63,7 @@
 </script>
 
 <div
-	class="absolute left-8 top-44 mt-2 w-[38rem] bg-website-secondary text-brand-tertiary-gray border border-brand-primary-gray rounded-lg shadow-lg z-50"
+	class="absolute left-8 top-28 mt-2 w-[38rem] bg-website-secondary text-brand-tertiary-gray border border-brand-primary-gray rounded-lg shadow-lg z-50"
 	in:scale={{ start: 0.9, duration: 200 }}
 	out:fade={{ duration: 150 }}
 >
@@ -90,7 +90,7 @@
 					id="search"
 					type="text"
 					placeholder="Search..."
-					class="w-full px-4 py-2.5 text-md border rounded-md bg-website-secondary border-brand-primary-gray"
+					class="w-full px-4 py-3 text-xs border rounded-md bg-website-secondary border-brand-primary-gray"
 					bind:value={searchTerm}
 				/>
 				<img src={search_icon} alt="search_icon" class="absolute inset-y-0 w-5 right-3 top-3" />

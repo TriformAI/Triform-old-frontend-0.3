@@ -17,7 +17,6 @@
 		<a href="/dashboard" class="flex items-center h-16 m-1 shrink-0 w-fit">
 			<!-- Replace with your logo/image -->
 			<img alt="triform logo" src={logo} class="relative w-8 lg:w-10 lg:left-0 left-2" />
-			
 		</a>
 
 		<!-- Main Navigation -->
@@ -25,7 +24,10 @@
 			<nav class="flex flex-col">
 				<ul role="list" class="flex flex-col flex-1 gap-y-7">
 					<li class={menu ? 'mx-2' : 'px-3'}>
-						<ul role="list" class="lg:-mx-4 -mx-1 space-y-2 text-brand-light-gray text-sm font-semibold">
+						<ul
+							role="list"
+							class="lg:-mx-4 -mx-1 space-y-2 text-brand-light-gray text-sm font-semibold"
+						>
 							<!-- Dashboard Link -->
 							<a
 								href="/dashboard"
@@ -97,13 +99,11 @@
 									/>
 								</svg>
 
-
-									<span
-										class={`lg:block hidden ml-4 group-hover:text-white duration-100 ease-linear ${currentPath === '/modules' ? ' text-white' : 'text-gray-500'}`}
-									>
-										Modules
-									</span>
-								
+								<span
+									class={`lg:block hidden ml-4 group-hover:text-white duration-100 ease-linear ${currentPath === '/modules' ? ' text-white' : 'text-gray-500'}`}
+								>
+									Modules
+								</span>
 							</a>
 
 							<!-- Flows Link -->
@@ -125,13 +125,11 @@
 									/>
 								</svg>
 
-							
-									<span
-										class={`lg:block hidden ml-4 group-hover:text-white duration-100 ease-linear ${currentPath === '/flows' ? ' text-white' : 'text-gray-500'}`}
-									>
-										Flows
-									</span>
-						
+								<span
+									class={`lg:block hidden ml-4 group-hover:text-white duration-100 ease-linear ${currentPath === '/flows' ? ' text-white' : 'text-gray-500'}`}
+								>
+									Flows
+								</span>
 							</a>
 
 							<!-- Environment Link -->
@@ -153,13 +151,11 @@
 									/>
 								</svg>
 
-							
-									<span
-										class={`lg:block hidden ml-4 group-hover:text-white duration-100 ease-linear ${currentPath === '/environment' ? ' text-white' : 'text-gray-500'}`}
-									>
-										Environment
-									</span>
-							
+								<span
+									class={`lg:block hidden ml-4 group-hover:text-white duration-100 ease-linear ${currentPath === '/environment' ? ' text-white' : 'text-gray-500'}`}
+								>
+									Environment
+								</span>
 							</a>
 
 							<!-- Template Library Link -->
@@ -181,13 +177,11 @@
 									/>
 								</svg>
 
-							
-									<span
-										class={`lg:block hidden ml-4 group-hover:text-white duration-100 ease-linear ${currentPath === '/library' ? ' text-white' : 'text-gray-500'}`}
-									>
-										Template Library
-									</span>
-						
+								<span
+									class={`lg:block hidden ml-4 group-hover:text-white duration-100 ease-linear ${currentPath === '/library' ? ' text-white' : 'text-gray-500'}`}
+								>
+									Template Library
+								</span>
 							</a>
 
 							<!-- Storage Link -->
@@ -209,12 +203,11 @@
 									/>
 								</svg>
 
-									<span
-										class={`lg:block hidden ml-4 group-hover:text-white duration-100 ease-linear ${currentPath === '/storage' ? ' text-white' : 'text-gray-500'}`}
-									>
-										Storage
-									</span>
-						
+								<span
+									class={`lg:block hidden ml-4 group-hover:text-white duration-100 ease-linear ${currentPath === '/storage' ? ' text-white' : 'text-gray-500'}`}
+								>
+									Storage
+								</span>
 							</a>
 						</ul>
 					</li>
@@ -225,7 +218,10 @@
 			<nav class="flex flex-col">
 				<ul role="list" class="flex flex-col flex-1 mb-4 gap-y-7">
 					<li class={menu ? 'mx-2' : 'px-4'}>
-						<ul role="list" class="lg:-mx-4 -mx-1 space-y-2 text-brand-light-gray text-sm font-semibold">
+						<ul
+							role="list"
+							class="lg:-mx-4 -mx-1 space-y-2 text-brand-light-gray text-sm font-semibold"
+						>
 							<a
 								href="/billings"
 								class={`flex items-center p-4 rounded-2xl duration-100 ease-linear hover:bg-[#171F2D] group ${currentPath === '/billings' && 'bg-[#171F2D]'}`}
@@ -244,12 +240,11 @@
 									/>
 								</svg>
 
-									<span
-										class={`lg:block hidden ml-4 group-hover:text-white duration-100 ease-linear ${currentPath === '/billings' ? ' text-white' : 'text-gray-500'}`}
-									>
-										Billings
-									</span>
-						
+								<span
+									class={`lg:block hidden ml-4 group-hover:text-white duration-100 ease-linear ${currentPath === '/billings' ? ' text-white' : 'text-gray-500'}`}
+								>
+									Billings
+								</span>
 							</a>
 
 							<a
@@ -270,13 +265,11 @@
 									/>
 								</svg>
 
-							
-									<span
-										class={`lg:block hidden ml-4 group-hover:text-white duration-100 ease-linear text-gray-500`}
-									>
-										Support
-									</span>
-							
+								<span
+									class={`lg:block hidden ml-4 group-hover:text-white duration-100 ease-linear text-gray-500`}
+								>
+									Support
+								</span>
 							</a>
 						</ul>
 					</li>
@@ -290,11 +283,10 @@
 						<div class="relative p-1 text-xs bg-white rounded-full text-blue lg:left-0 left-1">
 							AN
 						</div>
-						
-							<div class="hidden lg:block">
-								<span class="truncate max-w-[8rem]">Team Name</span>
-							</div>
-					
+
+						<div class="hidden lg:block">
+							<span class="truncate max-w-[8rem]">Team Name</span>
+						</div>
 					</button>
 				</div>
 			</nav>

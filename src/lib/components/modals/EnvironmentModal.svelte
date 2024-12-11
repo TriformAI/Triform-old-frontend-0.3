@@ -11,6 +11,7 @@
 	import { PUBLIC_API_URL } from '$env/static/public';
 	import { getAuthToken } from '$lib/stores/cookie';
 	import Spinner from '../Spinner.svelte';
+	import search_icon from '$lib/icons/search.svg';
 
 	let apiUrl = PUBLIC_API_URL;
 	let authToken = getAuthToken();
@@ -26,6 +27,12 @@
 	let nameInput; // Reference for auto-focus
 	let error = $state(''); // Error message
 	let loading = $state(false);
+	let searchTerm = $state('');
+
+	//filter variables based on search term
+	let filteredVariables = $derived(
+		variables.filter((variable) => variable.key.toLowerCase().includes(searchTerm.toLowerCase()))
+	);
 
 	onMount(() => {
 		fetchEnvironmentVariables();
@@ -179,7 +186,7 @@
 
 <a
 	href="#environment-modal"
-	class="absolute z-50 mt-2 border rounded-lg shadow-lg left-8 top-40 w-96 bg-website-secondary text-brand-tertiary-gray border-brand-primary-gray"
+	class="absolute z-50 mt-2 border rounded-lg shadow-lg left-8 top-28 w-96 bg-website-secondary text-brand-tertiary-gray border-brand-primary-gray"
 	in:scale={{ start: 0.9, duration: 200 }}
 	out:fade={{ duration: 150 }}
 	onclick={handleClickOutside}
@@ -189,7 +196,7 @@
 		<div class="flex items-center justify-between">
 			<div class="flex items-center gap-x-3">
 				<img src={modal_title_icon} alt="modal_title_icon" class="w-6" />
-				<h3 class="text-md font-semibold text-left text-white">Environment Variables</h3>
+				<h3 class="font-semibold text-left text-white text-md">Environment Variables</h3>
 			</div>
 			{#if pined_unpined}
 				<button type="button" class="w-6 cursor-pointer" onclick={togglePined} aria-label="Pin">
@@ -200,6 +207,18 @@
 					<img src={unpined} alt="unpined" class="w-6" />
 				</button>
 			{/if}
+		</div>
+		<div class="flex items-center w-full">
+			<div class="relative w-full">
+				<input
+					id="search"
+					type="text"
+					placeholder="Search Anything..."
+					class="w-full px-4 py-3 text-xs border rounded-md bg-website-secondary border-brand-primary-gray"
+					bind:value={searchTerm}
+				/>
+				<img src={search_icon} alt="search_icon" class="absolute inset-y-0 w-5 right-3 top-3" />
+			</div>
 		</div>
 	</div>
 
@@ -239,12 +258,12 @@
 	{:else}
 		<!-- Collapsible Category List -->
 		<div class="py-3 overflow-y-auto h-[40vh] bg-website-primary">
-			{#if variables.length === 0}
+			{#if filteredVariables.length === 0}
 				<div class="flex items-center justify-center h-full">
-					<p class="text-white">No Environment Variables Created.</p>
+					<p class="text-white">No Environment Variables Found.</p>
 				</div>
 			{:else}
-				{#each variables as category, i}
+				{#each filteredVariables as category, i}
 					<div
 						class={`flex items-center justify-between w-full duration-200 ease-in-out group
 				${activeIndex === i ? 'bg-website-tertiary' : `${!edit_delete_modal && 'hover:bg-website-tertiary'}`}`}

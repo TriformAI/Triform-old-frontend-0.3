@@ -35,22 +35,24 @@
 	}
 
 	// Filtered categories based on search term
-	let filteredCategories = $derived(categories
-		.map((category) => {
-			const filteredChildren = category.children.filter((child) =>
-				child.toLowerCase().includes(searchTerm.toLowerCase())
-			);
-			return {
-				...category,
-				children: filteredChildren,
-				hasMatch: filteredChildren.length > 0
-			};
-		})
-		.filter((category) => category.hasMatch || searchTerm === ''));
+	let filteredCategories = $derived(
+		categories
+			.map((category) => {
+				const filteredChildren = category.children.filter((child) =>
+					child.toLowerCase().includes(searchTerm.toLowerCase())
+				);
+				return {
+					...category,
+					children: filteredChildren,
+					hasMatch: filteredChildren.length > 0
+				};
+			})
+			.filter((category) => category.hasMatch || searchTerm === '')
+	);
 </script>
 
 <div
-	class="absolute z-50 mt-2 border rounded-lg shadow-lg right-8 top-40 w-96 bg-website-secondary text-brand-tertiary-gray border-brand-primary-gray"
+	class="absolute z-50 mt-2 border rounded-lg shadow-lg right-8 top-28 w-96 bg-website-secondary text-brand-tertiary-gray border-brand-primary-gray"
 	in:scale={{ start: 0.9, duration: 200 }}
 	out:fade={{ duration: 150 }}
 >
@@ -59,7 +61,7 @@
 		<div class="flex items-center justify-between">
 			<div class="flex items-center gap-x-3">
 				<img src={modal_title_icon} alt="modal_title_icon" class="w-6" />
-				<h3 class="text-md font-semibold text-left text-white">Search</h3>
+				<h3 class="font-semibold text-left text-white text-md">Search</h3>
 			</div>
 			{#if pined_unpined}
 				<button type="button" class="w-6 cursor-pointer" onclick={togglePined} aria-label="Pin">
@@ -76,10 +78,10 @@
 				id="search"
 				type="text"
 				placeholder="Search Anything..."
-				class="w-full px-4 py-3 border rounded-md text-md bg-website-secondary border-brand-primary-gray"
+				class="w-full px-4 py-3 text-xs border rounded-md bg-website-secondary border-brand-primary-gray"
 				bind:value={searchTerm}
 			/>
-			<img src={search_icon} alt="search_icon" class="absolute inset-y-0 w-6 right-3 top-3" />
+			<img src={search_icon} alt="search_icon" class="absolute inset-y-0 w-5 right-3 top-3" />
 		</div>
 	</div>
 
@@ -89,10 +91,10 @@
 			<div>
 				<!-- Category Header -->
 				<button
-					class="flex items-center justify-between w-full px-6 py-4 cursor-pointer"
+					class="flex items-center justify-between w-full px-6 py-3 cursor-pointer"
 					onclick={() => toggleCategory(i)}
 				>
-					<h3 class="my-1 font-bold text-white text-md">{category.name}</h3>
+					<h3 class="my-1 text-sm font-bold text-white">{category.name}</h3>
 					{#if category.collapsed}
 						<svg
 							xmlns="http://www.w3.org/2000/svg"
@@ -121,10 +123,10 @@
 				<!-- Child Items (Visible only if the category is not collapsed) -->
 				{#if !category.collapsed}
 					{#if category.children.length > 0}
-						<div class="w-full">
+						<div class="w-full text-xs">
 							{#each category.children as child}
 								<div
-									class="flex items-center w-full px-6 py-4 duration-200 ease-in-out cursor-pointer group gap-x-3 hover:bg-website-tertiary"
+									class="flex items-center w-full px-6 py-3 duration-200 ease-in-out cursor-pointer group gap-x-3 hover:bg-website-tertiary"
 								>
 									<!-- Icon that will be hidden initially and shown on hover -->
 									<img

@@ -178,10 +178,6 @@
 	onMount(() => {
 		fetchProfile();
 	});
-
-	onMount(() => {
-		document.body.style.overflow = 'hidden';
-	});
 </script>
 
 <!-- Background Overlay -->

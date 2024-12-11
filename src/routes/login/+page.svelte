@@ -52,7 +52,7 @@
 	}
 
 	function handleLoginWithGithub() {
-		document.cookie = "authType=login; path=/";
+		document.cookie = 'authType=login; path=/';
 		signIn('github', { callbackUrl: '/dashboard' });
 	}
 </script>

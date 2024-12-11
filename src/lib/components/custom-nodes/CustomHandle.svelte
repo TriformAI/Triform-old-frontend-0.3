@@ -9,7 +9,7 @@
 
 <div class="relative">
 	<div
-		class="relative w-2 h-2 border border-white rounded-full left-6 bottom-0.5 bg-brand-primary-dark-gray"
+		class="relative w-2 h-2 border border-white rounded-full left-[20px] bottom-0.25 bg-brand-primary-dark-gray"
 	>
 		<Handle
 			{type}

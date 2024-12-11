@@ -38,7 +38,6 @@
 		fetchEnvironmentVariables();
 		document.body.style.overflow = 'hidden'; // Disable scrolling
 	});
-
 </script>
 
 <!-- Background Overlay -->
@@ -62,9 +61,7 @@
 
 		<!-- Modal Body -->
 		<div class="rounded-b-lg bg-website-primary">
-			<form
-				class="grid grid-cols-2 gap-6 p-4 text-left divide-x-2 divide-brand-primary-gray"
-			>
+			<form class="grid grid-cols-2 gap-6 p-4 text-left divide-x-2 divide-brand-primary-gray">
 				<!-- Left Column -->
 				<div class="p-4">
 					<!-- Name Input -->

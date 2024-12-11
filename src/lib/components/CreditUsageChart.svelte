@@ -10,7 +10,6 @@
 	export let width;
 	export let height;
 	export let data; // New data prop to be passed into the component
-	
 
 	let labels = [];
 	let dataset = [];

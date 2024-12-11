@@ -10,10 +10,6 @@
 	export let footer = [];
 	export let onModalClose;
 
-	onMount(() => {
-		document.body.style.overflow = 'hidden'; // Disable scrolling
-	});
-
 	onDestroy(() => {
 		document.body.style.overflow = 'auto'; // Enable scrolling
 	});
@@ -48,7 +44,7 @@
 		<!-- Modal Footer -->
 		<div class="flex justify-end gap-4 p-3 border-t border-brand-primary-gray">
 			{#each footer as button (button.text)}
-				<Button content={{ text: button.text }} on:click={button.onClick} type={button.type}/>
+				<Button content={{ text: button.text }} on:click={button.onClick} type={button.type} />
 			{/each}
 		</div>
 	</div>

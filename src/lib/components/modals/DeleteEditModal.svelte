@@ -8,11 +8,11 @@
 
 	// Emit events for edit and delete actions
 	function handleEdit() {
-		dispatch("edit");
+		dispatch('edit');
 	}
 
 	function handleDelete() {
-		dispatch("delete");
+		dispatch('delete');
 	}
 </script>
 

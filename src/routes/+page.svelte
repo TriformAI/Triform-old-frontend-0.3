@@ -36,7 +36,9 @@
 			</svg>
 		</div>
 		<div class="items-center hidden ml-auto text-white lg:flex lg:gap-x-10">
-			<a href="/login" class="font-bold cursor-pointer hover:text-gray-400"><button>Login</button></a>
+			<a href="/login" class="font-bold cursor-pointer hover:text-gray-400"
+				><button>Login</button></a
+			>
 			<a href="/register">
 				<div class="btn btn1">
 					<div class="inner"></div>

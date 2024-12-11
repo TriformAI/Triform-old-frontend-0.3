@@ -69,10 +69,6 @@
 		}
 	}
 
-	onMount(() => {
-		document.body.style.overflow = 'hidden'; // Disable scrolling
-	});
-
 	onDestroy(() => {
 		document.body.style.overflow = 'auto'; // Enable scrolling
 	});

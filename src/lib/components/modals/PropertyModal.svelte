@@ -29,7 +29,7 @@
 </script>
 
 <div
-	class="absolute z-50 mt-2 border rounded-lg shadow-lg right-8 top-40 w-96 bg-website-secondary text-brand-tertiary-gray border-brand-primary-gray"
+	class="absolute z-50 mt-2 border rounded-lg shadow-lg right-8 top-28 w-96 bg-website-secondary text-brand-tertiary-gray border-brand-primary-gray"
 	in:scale={{ start: 0.9, duration: 200 }}
 	out:fade={{ duration: 150 }}
 >
@@ -38,7 +38,7 @@
 		<div class="flex items-center justify-between">
 			<div class="flex items-center gap-x-3">
 				<img src={modal_title_icon} alt="modal_title_icon" class="w-6" />
-				<h3 class="text-md font-semibold text-left text-white">Properties</h3>
+				<h3 class="font-semibold text-left text-white text-md">Properties</h3>
 			</div>
 			{#if pined_unpined}
 				<button type="button" class="w-6 cursor-pointer" onclick={togglePined} aria-label="Pin">

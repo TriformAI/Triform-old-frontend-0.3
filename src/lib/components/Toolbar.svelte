@@ -38,6 +38,7 @@
 	import TemplateLibaryModal from './modals/TemplateLibaryModal.svelte';
 	import PropertyModal from './modals/PropertyModal.svelte';
 	import ConsoleModal from './modals/ConsoleModal.svelte';
+	import { tabs, activeTabId } from '$lib/stores/canvas';
 
 	const { zoomOut, zoomIn, fitView } = useSvelteFlow();
 
@@ -90,7 +91,17 @@
 			onclick={() => toggleModal(canvasDropdownOpen)}
 			class="flex items-center px-4 py-2 pr-6 border-r-2 cursor-pointer gap-x-3 border-r-brand-primary-gray"
 		>
-			<h1 class="text-md">Canvas 1</h1>
+			<h1 class="text-md">
+				{#if $activeTabId && $tabs}
+					{#each $tabs as tab (tab.id)}
+						{#if tab.id === $activeTabId}
+							{tab.label}
+						{/if}
+					{/each}
+				{:else}
+					No Canvas
+				{/if}
+			</h1>
 			<svg
 				xmlns="http://www.w3.org/2000/svg"
 				fill="none"
@@ -130,10 +141,7 @@
 			>
 				<img {alt} src={icon} class="w-[1.15rem]" />
 				{#if $canvasToolsModal}
-					<button
-						class="absolute inset-y-0 right-0 top-7"
-						onclick={() => toggleIconVisibility(id)}
-					>
+					<button class="absolute inset-y-0 right-0 top-7" onclick={() => toggleIconVisibility(id)}>
 						<img src={red_remove} alt="minus" class="w-4" />
 					</button>
 				{/if}
@@ -157,20 +165,20 @@
 	<div class="flex items-center gap-x-4">
 		<div class="flex items-center gap-x-2">
 			<button onclick={zoomIn} class="p-2 cursor-pointer hover:bg-website-tertiary rounded-xl">
-				<img alt="zoom_in" src={zoom_in} class="w-5" />
+				<img alt="zoom_in" src={zoom_in} class="w-[1.15rem]" />
 			</button>
 			<button onclick={zoomOut} class="p-2 cursor-pointer hover:bg-website-tertiary rounded-xl">
-				<img alt="zoom_out" src={zoom_out} class="w-5" />
+				<img alt="zoom_out" src={zoom_out} class="w-[1.15rem]" />
 			</button>
 			<button onclick={fitView} class="p-2 cursor-pointer hover:bg-website-tertiary rounded-xl">
-				<img alt="fit_screen" src={fit_screen} class="w-5" />
+				<img alt="fit_screen" src={fit_screen} class="w-[1.15rem]" />
 			</button>
 		</div>
 
 		<!-- Grid  -->
 		<div class="px-5 border-x-2 border-x-brand-primary-gray">
 			<div class="p-1.5 cursor-pointer bg-website-tertiary rounded-xl">
-				<img src={grid_icon} alt="grid_icon" class="w-5" />
+				<img src={grid_icon} alt="grid_icon" class="w-[1.15rem]" />
 			</div>
 		</div>
 
@@ -179,7 +187,7 @@
 			class="flex items-center mx-2 ml-3 cursor-pointer"
 			onclick={() => toggleModal(freeFormAutoArrangeModal)}
 		>
-			<img src={draw_icon} alt="draw_icon" class="w-5" />
+			<img src={draw_icon} alt="draw_icon" class="w-[1.15rem]" />
 			<svg
 				xmlns="http://www.w3.org/2000/svg"
 				fill="none"
@@ -198,7 +206,7 @@
 			class="px-3.5 border-l-2 border-l-brand-primary-gray"
 		>
 			<div class="p-2 cursor-pointer hover:bg-website-tertiary rounded-xl">
-				<img src={search_icon} alt="search_icon" class="w-5" />
+				<img src={search_icon} alt="search_icon" class="w-[1.15rem]" />
 			</div>
 		</button>
 	</div>

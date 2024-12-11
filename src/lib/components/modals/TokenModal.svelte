@@ -190,7 +190,7 @@
 
 <a
 	href="#token-modal"
-	class="absolute z-50 mt-2 border rounded-lg shadow-lg left-8 top-40 w-96 bg-website-secondary text-brand-tertiary-gray border-brand-primary-gray"
+	class="absolute z-50 mt-2 border rounded-lg shadow-lg left-8 top-28 w-96 bg-website-secondary text-brand-tertiary-gray border-brand-primary-gray"
 	in:scale={{ start: 0.9, duration: 200 }}
 	out:fade={{ duration: 150 }}
 	onclick={() => (edit_delete_modal = false)}
@@ -200,7 +200,7 @@
 		<div class="flex items-center justify-between">
 			<div class="flex items-center gap-x-3">
 				<img src={modal_title_icon} alt="modal_title_icon" class="w-6" />
-				<h3 class="text-md font-semibold text-left text-white">API Token</h3>
+				<h3 class="font-semibold text-left text-white text-md">API Token</h3>
 			</div>
 			{#if pined_unpined}
 				<button type="button" class="w-6 cursor-pointer" onclick={togglePined} aria-label="Pin">
@@ -218,10 +218,10 @@
 					id="search"
 					type="text"
 					placeholder="Search Anything..."
-					class="w-full px-4 py-3 text-sm border rounded-md bg-website-secondary border-brand-primary-gray"
+					class="w-full px-4 py-3 text-xs border rounded-md bg-website-secondary border-brand-primary-gray"
 					bind:value={searchTerm}
 				/>
-				<img src={search_icon} alt="search_icon" class="absolute inset-y-0 w-6 right-3 top-3.5" />
+				<img src={search_icon} alt="search_icon" class="absolute inset-y-0 w-5 right-3 top-3" />
 			</div>
 		</div>
 	</div>
@@ -258,7 +258,7 @@
 		<div class="py-3 overflow-y-auto h-[40vh] bg-website-primary">
 			{#if tokens.length === 0}
 				<div class="flex items-center justify-center h-full">
-					<p class="text-white">No API Tokens Created.</p>
+					<p class="text-white">No API Tokens Found.</p>
 				</div>
 			{:else}
 				{#each filteredTokens as token, i}

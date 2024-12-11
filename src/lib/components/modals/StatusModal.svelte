@@ -81,7 +81,7 @@
 	>
 		<!-- Modal Header -->
 		<div class="flex items-center justify-between p-4 border-b border-brand-primary-gray">
-				<h3 class="pl-3 font-semibold text-left text-white text-md">Available Metrics</h3>
+			<h3 class="pl-3 font-semibold text-left text-white text-md">Available Metrics</h3>
 			<button
 				type="button"
 				class="cursor-pointer w-9"
@@ -92,8 +92,8 @@
 		</div>
 
 		<!-- Modal Body -->
-		<div class="px-2 py-3 rounded-b-lg bg-website-primary">
-			<div class="p-3 overflow-y-auto max-h-72">
+		<div class="px-2 py-2 rounded-b-lg bg-website-primary">
+			<div class="p-3 overflow-y-auto max-h-64">
 				<table class="w-full">
 					<thead class="sticky top-0 z-10 bg-website-primary">
 						<tr class="text-left bg-website-tertiary">
@@ -164,7 +164,7 @@
 								<td class="mx-auto rounded-lg cursor-pointer hover:bg-website-tertiary">
 									<button
 										type="button"
-										class="flex items-center justify-center w-full "
+										class="flex items-center justify-center w-full"
 										onclick={() => thresholdModal.update((value) => true)}
 									>
 										<img src={bell_icon} alt="bell_icon" class="w-5 mx-auto" />
@@ -179,7 +179,7 @@
 
 		<!-- Modal Footer -->
 		<div
-			class="flex justify-end p-4 border-t rounded-b-lg border-brand-primary-gray bg-website-primary"
+			class="flex justify-end p-2 border-t rounded-b-lg border-brand-primary-gray bg-website-primary"
 		>
 			<Button content={{ text: 'Done' }} on:click={() => statusModal.update((value) => false)} />
 		</div>

@@ -8,7 +8,6 @@
 	let confirmpassword = '';
 	let errorMessage = '';
 	let successMessage = '';
-
 </script>
 
 <section>

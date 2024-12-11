@@ -7,12 +7,14 @@
 </script>
 
 <div
-	class="absolute right-0 z-50 mt-2 border shadow-lg w-96 bg-website-secondary text-brand-white border-brand-primary-gray rounded-2xl"
+	class="absolute right-0 z-50 mt-5 border shadow-lg w-96 bg-website-secondary text-brand-white border-brand-primary-gray rounded-2xl"
 	in:scale={{ start: 0.9, duration: 200 }}
 	out:fade={{ duration: 150 }}
 >
 	<div>
-		<h3 class="px-6 py-5 font-semibold text-left border-b text-md border-brand-primary-gray">Notifications</h3>
+		<h3 class="px-6 py-5 font-semibold text-left border-b text-md border-brand-primary-gray">
+			Notifications
+		</h3>
 		<ul class="text-sm bg-website-primary rounded-b-2xl">
 			<li
 				class="flex items-baseline justify-between p-5 border-b border-b-brand-primary-gray hover:bg-white/5"

@@ -67,11 +67,6 @@
 	let filteredTemplates = $derived(
 		templates.filter((template) => template.name.toLowerCase().includes(searchTerm.toLowerCase()))
 	);
-
-	onMount(() => {
-		document.body.style.overflow = 'hidden'; // Disable scrolling
-	});
-
 </script>
 
 <!-- Background Overlay -->
@@ -117,7 +112,6 @@
 						/>
 						<img src={search_icon} alt="search_icon" class="absolute inset-y-0 w-5 right-3 top-4" />
 					</div>
-					
 				</div>
 
 				<!-- Template Selection -->

@@ -1,7 +1,7 @@
 <script>
 	export let content = '';
-	
-	console.log(content)
+
+	console.log(content);
 
 	// Basic Markdown parser function
 	function parseMarkdown(md) {
@@ -40,7 +40,7 @@
 	let parsedContent = parseMarkdown(content);
 </script>
 
-<div class="h-full p-6 overflow-y-auto text-white ">
+<div class="h-full p-6 overflow-y-auto text-white">
 	{@html parsedContent}
 	<!-- Render parsed content as raw HTML -->
 </div>

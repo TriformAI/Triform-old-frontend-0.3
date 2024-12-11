@@ -26,10 +26,6 @@
 	let pined_unpined = $state(false);
 	let folders = $state([]);
 
-	let filteredFolders = $derived(
-		folders.filter((folder) => folder.name.toLowerCase().includes(searchTerm.toLowerCase()))
-	);
-
 	let showFolderForm = $state(false);
 	let isEditing = false;
 	let editFolderId = null;
@@ -49,10 +45,6 @@
 		{
 			name: 'Action B',
 			tags: ['Tag A', 'Tag B', 'Tag C']
-		},
-		{
-			name: 'Action A',
-			tags: ['Tag A', 'Tag B', 'Tag C']
 		}
 	]);
 
@@ -64,15 +56,15 @@
 		{
 			name: 'Agent B',
 			tags: ['Tag A', 'Tag B', 'Tag C']
-		},
-		{
-			name: 'Agent A',
-			tags: ['Tag A', 'Tag B', 'Tag C']
 		}
 	]);
 
 	// Variable to keep track of the active tab
 	let activeTab = $state('action');
+
+	let filteredFolders = $derived(
+		folders.filter((folder) => folder.name.toLowerCase().includes(searchTerm.toLowerCase()))
+	);
 
 	// Function to set the active tab
 	function setActiveTab(tab) {
@@ -218,7 +210,7 @@
 
 <a
 	href="#component-toolbox-modal"
-	class="absolute left-8 top-40 mt-2 w-[25rem] bg-website-secondary text-brand-tertiary-gray border border-brand-primary-gray rounded-lg shadow-lg z-50"
+	class="absolute left-8 top-28 mt-2 w-[25rem] bg-website-secondary text-brand-tertiary-gray border border-brand-primary-gray rounded-lg shadow-lg z-50"
 	in:scale={{ start: 0.9, duration: 200 }}
 	out:fade={{ duration: 150 }}
 	onclick={() => (edit_delete_modal = false)}
@@ -228,7 +220,7 @@
 		<div class="flex items-center justify-between">
 			<div class="flex items-center gap-x-3">
 				<img src={modal_title_icon} alt="modal_title_icon" class="w-6" />
-				<h3 class="text-md font-semibold text-left text-white">Components Toolbox</h3>
+				<h3 class="font-semibold text-left text-white text-md">Components Toolbox</h3>
 			</div>
 			{#if pined_unpined}
 				<button type="button" class="w-6 cursor-pointer" onclick={togglePined} aria-label="Pin">
@@ -256,23 +248,23 @@
 				Agents
 			</button>
 		</div>
-		<div class="flex items-center w-full">
+		<div class="flex items-center w-full mt-2">
 			<div class="relative w-full">
 				<input
 					id="search"
 					type="text"
 					placeholder="Search Anything..."
-					class="w-full px-4 py-2 border rounded-md text-md bg-website-secondary border-brand-primary-gray"
+					class="w-full px-4 py-3 text-xs border rounded-md bg-website-secondary border-brand-primary-gray"
 					bind:value={searchTerm}
 				/>
-				<img src={search_icon} alt="search_icon" class="absolute inset-y-0 w-6 right-3 top-2.5" />
+				<img src={search_icon} alt="search_icon" class="absolute inset-y-0 w-5 right-3 top-3" />
 			</div>
 
 			<button
 				class="p-3 ml-2 cursor-pointer hover:bg-website-tertiary rounded-xl"
 				onclick={openAddFolderForm}
 			>
-				<img src={new_folder} alt="new_folder" class="w-8" />
+				<img src={new_folder} alt="new_folder" class="w-7" />
 			</button>
 		</div>
 	</div>
@@ -291,15 +283,6 @@
 				<p class="mt-auto text-sm text-center text-red-500">{error}</p>
 			{/if}
 		</div>
-		<div
-			class="flex items-center justify-end px-6 py-3 border-t gap-x-5 bg-website-primary border-brand-primary-gray"
-		>
-			<Button content={{ width: 'fit', text: 'Cancel' }} on:click={closeForm} />
-			<Button
-				content={{ width: 'fit', text: isEditing ? 'Update' : 'Create' }}
-				on:click={saveFolder}
-			/>
-		</div>
 	{:else if loading}
 		<div class="h-[35vh] p-4 flex items-center justify-center">
 			<Spinner />
@@ -313,7 +296,7 @@
 					>
 						<button class="flex items-center w-full px-6 py-3">
 							<img src={folder_icon} alt="folder" class="w-6 mr-4" />
-							<h1 class="truncate w-[13rem] text-left">{folder.name}</h1>
+							<h1 class="truncate w-[13rem] text-left text-sm">{folder.name}</h1>
 						</button>
 						{#if edit_delete_modal && activeIndex === i}
 							<DeleteEditModal
@@ -343,13 +326,13 @@
 						<div class="flex items-center w-full px-4 py-3 my-2 hover:bg-website-tertiary">
 							<img src={Actions} alt="actions" class="w-10 mr-1" />
 							<div>
-								<h1>{action.name}</h1>
+								<h1 class="text-sm">{action.name}</h1>
 								<p class="text-xs text-brand-light-gray">Category</p>
 							</div>
 							<div class="flex items-center gap-2 ml-auto">
 								{#each action.tags as tag}
 									<span
-										class="px-2 py-1 text-xs border rounded-md cursor-pointer text-brand-light-gray bg-website-secondary border-white/10 hover:border-white/30"
+										class="px-2 py-1 text-[0.5rem] border rounded-md cursor-pointer text-brand-light-gray bg-website-secondary border-white/10 hover:border-white/30"
 										>{tag}</span
 									>
 								{/each}
@@ -363,13 +346,13 @@
 						<div class="flex items-center w-full px-4 py-3 my-2 hover:bg-website-tertiary">
 							<img src={Agents} alt="agents" class="w-10 mr-2" />
 							<div>
-								<h1>{agent.name}</h1>
+								<h1 class="text-sm">{agent.name}</h1>
 								<p class="text-xs text-brand-light-gray">Category</p>
 							</div>
 							<div class="flex items-center gap-2 ml-auto">
 								{#each agent.tags as tag}
 									<span
-										class="px-2 py-1 text-xs border rounded-md cursor-pointer text-brand-light-gray bg-website-secondary border-white/10 hover:border-white/30"
+										class="px-2 py-1 text-[0.5rem] border rounded-md cursor-pointer text-brand-light-gray bg-website-secondary border-white/10 hover:border-white/30"
 										>{tag}</span
 									>
 								{/each}
@@ -383,9 +366,17 @@
 
 	<!-- Modal Footer -->
 	<div
-		class="flex items-center justify-center px-6 py-3 border-t gap-x-5 bg-website-primary border-brand-primary-gray"
+		class="flex items-center justify-end px-6 py-3 border-t gap-x-5 bg-website-primary border-brand-primary-gray"
 	>
-		{#if activeTab === 'action'}
+		{#if showFolderForm}
+			<div class="flex items-center justify-end gap-x-5">
+				<Button content={{ width: 'fit', text: 'Cancel' }} on:click={closeForm} />
+				<Button
+					content={{ width: 'fit', text: isEditing ? 'Update' : 'Create' }}
+					on:click={saveFolder}
+				/>
+			</div>
+		{:else if activeTab === 'action'}
 			<Button
 				content={{ width: 'full', icon: Add, text: 'New Action' }}
 				on:click={() => {

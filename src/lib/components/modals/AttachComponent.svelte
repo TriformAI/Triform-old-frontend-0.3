@@ -78,10 +78,6 @@
 	let filteredComponent = $derived(
 		components.filter((template) => template.name.toLowerCase().includes(searchTerm.toLowerCase()))
 	);
-
-	onMount(() => {
-		document.body.style.overflow = 'hidden'; // Disable scrolling
-	});
 </script>
 
 <!-- Background Overlay -->

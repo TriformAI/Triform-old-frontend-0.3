@@ -69,7 +69,7 @@
 			</svg>
 		</button>
 	{/if}
-	<div class="flex items-center justify-between w-full py-0">
+	<div class="flex items-center justify-between w-full">
 		<div class="flex items-center gap-x-3">
 			<img src={green_check} alt="green_check" class="w-5" />
 			<h2 class="text-sm text-primary-green">All system are operational</h2>
@@ -88,7 +88,7 @@
 		</div>
 	</div>
 	{#if collapsed}
-		<div class="flex items-center justify-between w-full py-10 gap-x-8">
+		<div class="flex items-center justify-between w-full py-10 overflow-auto gap-x-8">
 			<div class="w-full">
 				<div class="flex items-start justify-between w-full mb-5">
 					<h2 class="relative flex items-center text-white text-md left-5">Runs per Hour</h2>
@@ -96,7 +96,7 @@
 						0 <span class="ml-3 text-md text-brand-light-gray">+0.0%</span>
 					</p>
 				</div>
-				<Chart lineColor={'#22C55E'} width={32} height={15}/>
+				<Chart lineColor={'#22C55E'} width={32} height={15} />
 			</div>
 			<div class="w-full">
 				<div class="flex items-start justify-between w-full mb-5">
@@ -105,7 +105,7 @@
 						0 <span class="ml-3 text-md text-brand-light-gray">+0.0%</span>
 					</p>
 				</div>
-				<Chart lineColor={'#F44336'} width={32} height={15}/>
+				<Chart lineColor={'#F44336'} width={32} height={15} />
 			</div>
 			<div class="w-full">
 				<div class="flex items-start justify-between w-full mb-5">
@@ -114,7 +114,7 @@
 						0 <span class="ml-3 text-md text-brand-light-gray">+0.0%</span>
 					</p>
 				</div>
-				<Chart lineColor={'#FFC107'} width={32} height={15}/>
+				<Chart lineColor={'#FFC107'} width={32} height={15} />
 			</div>
 		</div>
 	{/if}

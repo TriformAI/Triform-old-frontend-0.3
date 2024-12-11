@@ -15,7 +15,6 @@
 		profileDropdown,
 		billingInformationModal,
 		teamInformationModal
-
 	} from '$lib/stores/modals';
 
 	const apiUrl = PUBLIC_API_URL;

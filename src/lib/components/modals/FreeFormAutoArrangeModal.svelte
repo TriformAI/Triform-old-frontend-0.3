@@ -6,7 +6,7 @@
 </script>
 
 <div
-	class="absolute z-50 mt-2 border rounded-lg shadow-lg top-40 right-20 w-60 bg-website-primary text-brand-white border-brand-primary-gray"
+	class="absolute z-50 mt-2 border rounded-lg shadow-lg top-28 right-20 w-60 bg-website-primary text-brand-white border-brand-primary-gray"
 	in:scale={{ start: 0.9, duration: 200 }}
 	out:fade={{ duration: 150 }}
 >

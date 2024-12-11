@@ -71,9 +71,8 @@
 		}
 	}
 
-
 	function handleRegisterWithGithub() {
-		document.cookie = "authType=register; path=/";
+		document.cookie = 'authType=register; path=/';
 		signIn('github', { callbackUrl: '/dashboard' });
 	}
 </script>

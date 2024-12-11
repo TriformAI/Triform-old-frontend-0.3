@@ -7,6 +7,7 @@
 	import { toggleIconVisibility } from '$lib/stores/tools';
 	import Button from '$lib/components/Button.svelte';
 	import { iconsStore } from '$lib/stores/tools';
+	import { onMount } from 'svelte';
 
 	/**
 	 * @type {{ id: number; icon: string; alt: string; visibleOnToolbar: boolean; }[]}
@@ -17,7 +18,7 @@
 	});
 </script>
 
-<div class="fixed inset-0 z-40 bg-black top-40 bg-opacity-20 backdrop-blur-lg"></div>
+<div class="fixed inset-0 z-40 bg-black top-[6.5rem] bg-opacity-20 backdrop-blur-lg"></div>
 
 <div class="relative flex items-center justify-center top-52">
 	<div
