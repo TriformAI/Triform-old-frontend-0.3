@@ -1,7 +1,9 @@
 <script>
+	import { onMount } from 'svelte';
 	import { writable } from 'svelte/store';
 	import { SvelteFlow, Background } from '@xyflow/svelte';
 
+	import { mainAreaRef } from '$lib/stores/layoutRefs';
 	// 👇 this is important! You need to import the styles for Svelte Flow to work
 	import '@xyflow/svelte/dist/style.css';
 
@@ -195,9 +197,13 @@
 	const defaultEdgeOptions = {
 		animated: true // Ensures all edges are animated
 	};
+	let instance;
+	onMount(() => {
+		mainAreaRef.set(instance);
+	});
 </script>
 
-<section class="h-[calc(100vh-156.1px)]">
+<section class="h-[calc(100vh-156.1px)]" bind:this={instance}>
 	{#if $canvasToolsModal}
 		<CanvasToolsModal />
 	{/if}

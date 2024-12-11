@@ -1,5 +1,7 @@
 <script>
-	import { fade, scale } from 'svelte/transition';
+	import { get } from 'svelte/store';
+	import { mainAreaRef } from '$lib/stores/layoutRefs';
+	import ToolWindow from '$lib/components/ToolWindow.svelte';
 	import modal_title_icon from '$lib/icons/Modal_Title_Icon.svg';
 	import search_icon from '$lib/icons/search.svg';
 	import unpined from '$lib/icons/unpined.svg';
@@ -208,184 +210,177 @@
 	}
 </script>
 
-<a
-	href="#component-toolbox-modal"
-	class="absolute left-8 top-28 mt-2 w-[25rem] bg-website-secondary text-brand-tertiary-gray border border-brand-primary-gray rounded-lg shadow-lg z-50"
-	in:scale={{ start: 0.9, duration: 200 }}
-	out:fade={{ duration: 150 }}
-	onclick={() => (edit_delete_modal = false)}
+<ToolWindow
+	initialSize={{ width: 25 * 16, height: 500 }}
+	boundsRef={get(mainAreaRef)}
+	headerIcon={modal_title_icon}
+	inScale={{ start: 0.9, duration: 200 }}
+	outFade={{ duration: 150 }}
+	headerText="Components Toolbox"
 >
-	<!-- Search Modal Header -->
-	<div class="flex flex-col px-4 py-4 border-b gap-y-3 border-brand-primary-gray">
-		<div class="flex items-center justify-between">
-			<div class="flex items-center gap-x-3">
-				<img src={modal_title_icon} alt="modal_title_icon" class="w-6" />
-				<h3 class="font-semibold text-left text-white text-md">Components Toolbox</h3>
-			</div>
-			{#if pined_unpined}
-				<button type="button" class="w-6 cursor-pointer" onclick={togglePined} aria-label="Pin">
-					<img src={pined} alt="pined" class="w-6" />
-				</button>
-			{:else}
-				<button type="button" class="w-6 cursor-pointer" onclick={togglePined} aria-label="Unpin">
-					<img src={unpined} alt="unpined" class="w-6" />
-				</button>
-			{/if}
-		</div>
-		<div class="flex items-center w-full text-sm gap-x-5">
-			<button
-				class="p-1.5 cursor-pointer border-b-white"
-				class:border-b-2={activeTab === 'action'}
-				onclick={() => setActiveTab('action')}
-			>
-				Actions
-			</button>
-			<button
-				class="p-1.5 cursor-pointer border-b-white"
-				class:border-b-2={activeTab === 'agent'}
-				onclick={() => setActiveTab('agent')}
-			>
-				Agents
-			</button>
-		</div>
-		<div class="flex items-center w-full mt-2">
-			<div class="relative w-full">
-				<input
-					id="search"
-					type="text"
-					placeholder="Search Anything..."
-					class="w-full px-4 py-3 text-xs border rounded-md bg-website-secondary border-brand-primary-gray"
-					bind:value={searchTerm}
-				/>
-				<img src={search_icon} alt="search_icon" class="absolute inset-y-0 w-5 right-3 top-3" />
-			</div>
-
-			<button
-				class="p-3 ml-2 cursor-pointer hover:bg-website-tertiary rounded-xl"
-				onclick={openAddFolderForm}
-			>
-				<img src={new_folder} alt="new_folder" class="w-7" />
-			</button>
-		</div>
-	</div>
-
-	<!-- Add/Edit Folder Form -->
-	{#if showFolderForm}
-		<div class="h-[20rem] flex flex-col p-4 gap-y-4 bg-website-primary">
-			<input
-				type="text"
-				bind:this={nameInput}
-				bind:value={folderForm.name}
-				placeholder="Folder Name"
-				class="w-full p-2 text-white bg-transparent border rounded-md border-brand-primary-gray"
-			/>
-			{#if error}
-				<p class="mt-auto text-sm text-center text-red-500">{error}</p>
-			{/if}
-		</div>
-	{:else if loading}
-		<div class="h-[35vh] p-4 flex items-center justify-center">
-			<Spinner />
-		</div>
-	{:else}
-		<div class="overflow-y-auto h-[35vh] py-3 bg-website-primary">
-			{#each filteredFolders as folder, i}
-				{#if folder.type === activeTab}
-					<div
-						class="flex items-center justify-between w-full duration-200 ease-in-out group hover:bg-website-tertiary"
-					>
-						<button class="flex items-center w-full px-6 py-3">
-							<img src={folder_icon} alt="folder" class="w-6 mr-4" />
-							<h1 class="truncate w-[13rem] text-left text-sm">{folder.name}</h1>
-						</button>
-						{#if edit_delete_modal && activeIndex === i}
-							<DeleteEditModal
-								on:click={(e) => e.stopPropagation()}
-								on:edit={() => handleEdit(folder.id)}
-								on:delete={() => handleDelete(folder.id)}
-							/>
-						{/if}
-						<div class="items-center hidden mr-3 group-hover:flex gap-x-4">
-							<button
-								type="button"
-								class="w-5 cursor-pointer"
-								onclick={(e) => {
-									e.stopPropagation();
-									toggleEditDeleteModal(i);
-								}}
-							>
-								<img src={dots} alt="dots" class="w-6" />
-							</button>
-						</div>
-					</div>
-				{/if}
-			{/each}
-			{#if activeTab == 'action'}
-				<div>
-					{#each actions as action}
-						<div class="flex items-center w-full px-4 py-3 my-2 hover:bg-website-tertiary">
-							<img src={Actions} alt="actions" class="w-10 mr-1" />
-							<div>
-								<h1 class="text-sm">{action.name}</h1>
-								<p class="text-xs text-brand-light-gray">Category</p>
-							</div>
-							<div class="flex items-center gap-2 ml-auto">
-								{#each action.tags as tag}
-									<span
-										class="px-2 py-1 text-[0.5rem] border rounded-md cursor-pointer text-brand-light-gray bg-website-secondary border-white/10 hover:border-white/30"
-										>{tag}</span
-									>
-								{/each}
-							</div>
-						</div>
-					{/each}
-				</div>
-			{:else if activeTab == 'agent'}
-				<div>
-					{#each agents as agent}
-						<div class="flex items-center w-full px-4 py-3 my-2 hover:bg-website-tertiary">
-							<img src={Agents} alt="agents" class="w-10 mr-2" />
-							<div>
-								<h1 class="text-sm">{agent.name}</h1>
-								<p class="text-xs text-brand-light-gray">Category</p>
-							</div>
-							<div class="flex items-center gap-2 ml-auto">
-								{#each agent.tags as tag}
-									<span
-										class="px-2 py-1 text-[0.5rem] border rounded-md cursor-pointer text-brand-light-gray bg-website-secondary border-white/10 hover:border-white/30"
-										>{tag}</span
-									>
-								{/each}
-							</div>
-						</div>
-					{/each}
-				</div>
-			{/if}
-		</div>
-	{/if}
-
-	<!-- Modal Footer -->
-	<div
-		class="flex items-center justify-end px-6 py-3 border-t gap-x-5 bg-website-primary border-brand-primary-gray"
+	<a
+		href="#component-toolbox-modal"
+		class="grow shrink min-h-0 flex flex-col h-full"
+		onclick={() => (edit_delete_modal = false)}
 	>
+		<!-- Search Modal Header -->
+		<div class="flex flex-col px-4 py-4 border-b gap-y-3 border-brand-primary-gray">
+			<div class="flex items-center w-full text-sm gap-x-5">
+				<button
+					class="p-1.5 cursor-pointer border-b-white"
+					class:border-b-2={activeTab === 'action'}
+					onclick={() => setActiveTab('action')}
+				>
+					Actions
+				</button>
+				<button
+					class="p-1.5 cursor-pointer border-b-white"
+					class:border-b-2={activeTab === 'agent'}
+					onclick={() => setActiveTab('agent')}
+				>
+					Agents
+				</button>
+			</div>
+			<div class="flex items-center w-full">
+				<div class="relative w-full">
+					<input
+						id="search"
+						type="text"
+						placeholder="Search Anything..."
+						class="w-full px-4 py-2 border rounded-md text-md bg-website-secondary border-brand-primary-gray"
+						bind:value={searchTerm}
+					/>
+					<img src={search_icon} alt="search_icon" class="absolute inset-y-0 w-6 right-3 top-2.5" />
+				</div>
+
+				<button
+					class="p-3 ml-2 cursor-pointer hover:bg-website-tertiary rounded-xl"
+					onclick={openAddFolderForm}
+				>
+					<img src={new_folder} alt="new_folder" class="w-8" />
+				</button>
+			</div>
+		</div>
+
+		<!-- Add/Edit Folder Form -->
 		{#if showFolderForm}
-			<div class="flex items-center justify-end gap-x-5">
+			<div class="grow shrink flex flex-col p-4 gap-y-4 bg-website-primary">
+				<input
+					type="text"
+					bind:this={nameInput}
+					bind:value={folderForm.name}
+					placeholder="Folder Name"
+					class="w-full p-2 text-white bg-transparent border rounded-md border-brand-primary-gray"
+				/>
+				{#if error}
+					<p class="mt-auto text-sm text-center text-red-500">{error}</p>
+				{/if}
+			</div>
+			<div
+				class="flex items-center justify-end px-6 py-3 border-t gap-x-5 bg-website-primary border-brand-primary-gray"
+			>
 				<Button content={{ width: 'fit', text: 'Cancel' }} on:click={closeForm} />
 				<Button
 					content={{ width: 'fit', text: isEditing ? 'Update' : 'Create' }}
 					on:click={saveFolder}
 				/>
 			</div>
-		{:else if activeTab === 'action'}
-			<Button
-				content={{ width: 'full', icon: Add, text: 'New Action' }}
-				on:click={() => {
-					componentToolsBoxModal.update((value) => false);
-					attachComponentModal.update((value) => true);
-				}}
-			/>
-		{:else if activeTab === 'agent'}
-			<Button content={{ width: 'full', icon: Add, text: 'New Agent' }} />
+		{:else if loading}
+			<div class="h-[35vh] p-4 flex items-center justify-center">
+				<Spinner />
+			</div>
+		{:else}
+			<div class="overflow-y-auto grow shrink py-3 bg-website-primary">
+				{#each filteredFolders as folder, i}
+					{#if folder.type === activeTab}
+						<div
+							class="flex items-center justify-between w-full duration-200 ease-in-out group hover:bg-website-tertiary"
+						>
+							<button class="flex items-center w-full px-6 py-3">
+								<img src={folder_icon} alt="folder" class="w-6 mr-4" />
+								<h1 class="truncate w-[13rem] text-left">{folder.name}</h1>
+							</button>
+							{#if edit_delete_modal && activeIndex === i}
+								<DeleteEditModal
+									on:click={(e) => e.stopPropagation()}
+									on:edit={() => handleEdit(folder.id)}
+									on:delete={() => handleDelete(folder.id)}
+								/>
+							{/if}
+							<div class="items-center hidden mr-3 group-hover:flex gap-x-4">
+								<button
+									type="button"
+									class="w-5 cursor-pointer"
+									onclick={(e) => {
+										e.stopPropagation();
+										toggleEditDeleteModal(i);
+									}}
+								>
+									<img src={dots} alt="dots" class="w-6" />
+								</button>
+							</div>
+						</div>
+					{/if}
+				{/each}
+				{#if activeTab == 'action'}
+					<div>
+						{#each actions as action}
+							<div class="flex items-center w-full px-4 py-3 my-2 hover:bg-website-tertiary">
+								<img src={Actions} alt="actions" class="w-10 mr-1" />
+								<div>
+									<h1>{action.name}</h1>
+									<p class="text-xs text-brand-light-gray">Category</p>
+								</div>
+								<div class="flex items-center gap-2 ml-auto">
+									{#each action.tags as tag}
+										<span
+											class="px-2 py-1 text-xs border rounded-md cursor-pointer text-brand-light-gray bg-website-secondary border-white/10 hover:border-white/30"
+											>{tag}</span
+										>
+									{/each}
+								</div>
+							</div>
+						{/each}
+					</div>
+				{:else if activeTab == 'agent'}
+					<div>
+						{#each agents as agent}
+							<div class="flex items-center w-full px-4 py-3 my-2 hover:bg-website-tertiary">
+								<img src={Agents} alt="agents" class="w-10 mr-2" />
+								<div>
+									<h1>{agent.name}</h1>
+									<p class="text-xs text-brand-light-gray">Category</p>
+								</div>
+								<div class="flex items-center gap-2 ml-auto">
+									{#each agent.tags as tag}
+										<span
+											class="px-2 py-1 text-xs border rounded-md cursor-pointer text-brand-light-gray bg-website-secondary border-white/10 hover:border-white/30"
+											>{tag}</span
+										>
+									{/each}
+								</div>
+							</div>
+						{/each}
+					</div>
+				{/if}
+			</div>
 		{/if}
-	</div>
-</a>
+
+		<!-- Modal Footer -->
+		<div
+			class="flex items-center justify-center px-6 py-3 border-t gap-x-5 bg-website-primary border-brand-primary-gray"
+		>
+			{#if activeTab === 'action'}
+				<Button
+					content={{ width: 'full', icon: Add, text: 'New Action' }}
+					on:click={() => {
+						componentToolsBoxModal.update((value) => false);
+						attachComponentModal.update((value) => true);
+					}}
+				/>
+			{:else if activeTab === 'agent'}
+				<Button content={{ width: 'full', icon: Add, text: 'New Agent' }} />
+			{/if}
+		</div>
+	</a>
+</ToolWindow>
