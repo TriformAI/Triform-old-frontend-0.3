@@ -1,10 +1,7 @@
 <!-- @migration-task Error while migrating Svelte code: `<button>` is invalid inside `<button>` -->
 <script>
-	import { fade, scale } from 'svelte/transition';
 	import modal_title_icon from '$lib/icons/Modal_Title_Icon.svg';
 	import search_icon from '$lib/icons/search.svg';
-	import unpined from '$lib/icons/unpined.svg';
-	import pined from '$lib/icons/pined.svg';
 	import Add from '$lib/icons/add.svg';
 	import { templateLibraryModal, templateModal } from '$lib/stores/modals';
 	import { PUBLIC_API_URL } from '$env/static/public';
@@ -12,18 +9,13 @@
 	import { onMount } from 'svelte';
 	import { templateStore, templateLoaded, templateID } from '$lib/stores/template';
 	import { get } from 'svelte/store';
+	import { mainAreaRef } from '$lib/stores/layoutRefs';
+	import ToolWindow from '$lib/components/ToolWindow.svelte';
 
 	let apiUrl = PUBLIC_API_URL;
 	let authToken = getAuthToken();
-	let loading = false;
 
 	let searchTerm = '';
-
-	let pined_unpined = false;
-
-	function togglePined() {
-		pined_unpined = !pined_unpined;
-	}
 
 	onMount(() => {
 		fetchTemplates();
@@ -33,7 +25,6 @@
 		if (get(templateLoaded)) return; // Skip fetching if templates are already loaded
 
 		try {
-			loading = true;
 			const response = await fetch(`${apiUrl}/api/v1/templates`, {
 				method: 'GET',
 				headers: {
@@ -41,11 +32,9 @@
 				}
 			});
 			const data = await response.json();
-			loading = false;
 			templateStore.set(data.data); // Save data to the store
 			templateLoaded.set(true); // Mark templates as loaded
 		} catch (error) {
-			loading = false;
 			console.error('Error fetching templates:', error);
 		}
 	}
@@ -57,33 +46,19 @@
 
 	const toggleTemplateModal = () => {
 		// set the template id
-		templateLibraryModal.update((value) => false);
+		templateLibraryModal.update(() => false);
 		templateModal.update((value) => !value);
 	};
 </script>
 
-<div
-	class="absolute left-8 top-28 mt-2 w-[38rem] bg-website-secondary text-brand-tertiary-gray border border-brand-primary-gray rounded-lg shadow-lg z-50"
-	in:scale={{ start: 0.9, duration: 200 }}
-	out:fade={{ duration: 150 }}
+<ToolWindow
+	initialSize={{ width: 377, height: 38 * 16 }}
+	initialPosition={{ x: 32, y: 7 * 16 }}
+	boundsRef={get(mainAreaRef)}
+	headerIcon={modal_title_icon}
+	headerText="Templates Library"
 >
-	<!-- Modal Header -->
 	<div class="flex flex-col px-4 py-5 gap-y-5">
-		<div class="flex items-center justify-between">
-			<div class="flex items-center gap-x-3">
-				<img src={modal_title_icon} alt="modal_title_icon" class="w-6" />
-				<h3 class="font-semibold text-left text-white text-md">Templates Library</h3>
-			</div>
-			{#if pined_unpined}
-				<button type="button" class="w-6 cursor-pointer" onclick={togglePined} aria-label="Pin">
-					<img src={pined} alt="pined" class="w-6" />
-				</button>
-			{:else}
-				<button type="button" class="w-6 cursor-pointer" onclick={togglePined} aria-label="Unpin">
-					<img src={unpined} alt="unpined" class="w-6" />
-				</button>
-			{/if}
-		</div>
 		<div class="flex items-center w-full">
 			<div class="relative w-full">
 				<input
@@ -99,8 +74,8 @@
 	</div>
 
 	<!-- Collapsible Category List -->
-	<div class="py-4 overflow-y-auto h-[25rem] bg-website-primary">
-		{#each filteredTemplates as category, i}
+	<div class="py-4 grow overflow-y-auto bg-website-primary">
+		{#each filteredTemplates as category}
 			<div
 				class={`group flex items-center justify-between w-full duration-200 ease-in-out hover:bg-website-tertiary border-y border-y-brand-primary-gray`}
 			>
@@ -157,7 +132,7 @@
 			</div>
 		{/each}
 	</div>
-</div>
+</ToolWindow>
 
 <style>
 	.truncate-description {

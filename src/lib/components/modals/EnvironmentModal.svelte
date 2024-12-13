@@ -1,9 +1,6 @@
 <script>
-	import { fade, scale } from 'svelte/transition';
-	import modal_title_icon from '$lib/icons/Modal_Title_Icon.svg';
-	import unpined from '$lib/icons/unpined.svg';
-	import pined from '$lib/icons/pined.svg';
 	import Button from '$lib/components/Button.svelte';
+	import modal_title_icon from '$lib/icons/Modal_Title_Icon.svg';
 	import Add from '$lib/icons/add.svg';
 	import dots from '$lib/icons/dots.svg';
 	import DeleteEditModal from './DeleteEditModal.svelte';
@@ -12,19 +9,21 @@
 	import { getAuthToken } from '$lib/stores/cookie';
 	import Spinner from '../Spinner.svelte';
 	import search_icon from '$lib/icons/search.svg';
+	import { get } from 'svelte/store';
+	import { mainAreaRef } from '$lib/stores/layoutRefs';
+	import ToolWindow from '$lib/components/ToolWindow.svelte';
 
 	let apiUrl = PUBLIC_API_URL;
 	let authToken = getAuthToken();
 
-	let pined_unpined = $state(false);
 	let edit_delete_modal = $state(false);
 	let activeIndex = $state(null);
 	let variables = $state([]);
 	let showVariableForm = $state(false);
-	let isEditing = false;
+	let isEditing = $state(false);
 	let editVariableId = null;
-	let variableForm = { name: '', value: '' };
-	let nameInput; // Reference for auto-focus
+	let variableForm = $state({ name: '', value: '' });
+	let nameInput = $state(undefined); // Reference for auto-focus
 	let error = $state(''); // Error message
 	let loading = $state(false);
 	let searchTerm = $state('');
@@ -37,10 +36,6 @@
 	onMount(() => {
 		fetchEnvironmentVariables();
 	});
-
-	function togglePined() {
-		pined_unpined = !pined_unpined;
-	}
 
 	// Fetch all environment variables from the server
 	async function fetchEnvironmentVariables() {
@@ -164,14 +159,6 @@
 		);
 	}
 
-	// Handle clicking outside of the DeleteEditModal
-	function handleClickOutside(event) {
-		if (edit_delete_modal && !event.target.closest('.delete-edit-modal')) {
-			edit_delete_modal = false;
-			activeIndex = null;
-		}
-	}
-
 	// Toggle the Edit/Delete modal at the specific index
 	function toggleEditDeleteModal(index) {
 		if (activeIndex === index) {
@@ -182,43 +169,31 @@
 			edit_delete_modal = true;
 		}
 	}
+
+	let width = 382;
+	let height = 574;
 </script>
 
-<a
-	href="#environment-modal"
-	class="absolute z-50 mt-2 border rounded-lg shadow-lg left-8 top-28 w-96 bg-website-secondary text-brand-tertiary-gray border-brand-primary-gray"
-	in:scale={{ start: 0.9, duration: 200 }}
-	out:fade={{ duration: 150 }}
-	onclick={handleClickOutside}
+<ToolWindow
+	initialSize={{ width: width, height: height }}
+	initialPosition={{ x: 32, y: 7 * 16 }}
+	boundsRef={get(mainAreaRef)}
+	headerIcon={modal_title_icon}
+	inScale={{ start: 0.9, duration: 200 }}
+	outFade={{ duration: 150 }}
+	headerText="Environment Variables"
 >
 	<!-- Modal Header -->
-	<div class="flex flex-col px-4 py-4 border-b gap-y-5 border-brand-primary-gray">
-		<div class="flex items-center justify-between">
-			<div class="flex items-center gap-x-3">
-				<img src={modal_title_icon} alt="modal_title_icon" class="w-6" />
-				<h3 class="font-semibold text-left text-white text-md">Environment Variables</h3>
-			</div>
-			{#if pined_unpined}
-				<button type="button" class="w-6 cursor-pointer" onclick={togglePined} aria-label="Pin">
-					<img src={pined} alt="pined" class="w-6" />
-				</button>
-			{:else}
-				<button type="button" class="w-6 cursor-pointer" onclick={togglePined} aria-label="Unpin">
-					<img src={unpined} alt="unpined" class="w-6" />
-				</button>
-			{/if}
-		</div>
-		<div class="flex items-center w-full">
-			<div class="relative w-full">
-				<input
-					id="search"
-					type="text"
-					placeholder="Search Anything..."
-					class="w-full px-4 py-3 text-xs border rounded-md bg-website-secondary border-brand-primary-gray"
-					bind:value={searchTerm}
-				/>
-				<img src={search_icon} alt="search_icon" class="absolute inset-y-0 w-5 right-3 top-3" />
-			</div>
+	<div class="px-4 py-4 border-b gap-y-5 border-brand-primary-gray flex items-center w-full">
+		<div class="relative w-full">
+			<input
+				id="search"
+				type="text"
+				placeholder="Search Anything..."
+				class="w-full px-4 py-3 text-xs border rounded-md bg-website-secondary border-brand-primary-gray"
+				bind:value={searchTerm}
+			/>
+			<img src={search_icon} alt="search_icon" class="absolute inset-y-0 w-5 right-3 top-3" />
 		</div>
 	</div>
 
@@ -252,7 +227,7 @@
 			/>
 		</div>
 	{:else if loading}
-		<div class="h-[40vh] p-4 flex items-center justify-center">
+		<div class="grow p-4 flex items-center justify-center">
 			<Spinner />
 		</div>
 	{:else}
@@ -332,4 +307,4 @@
 			/>
 		</div>
 	{/if}
-</a>
+</ToolWindow>

@@ -1,15 +1,8 @@
 <script>
-	import { fade, scale } from 'svelte/transition';
 	import modal_title_icon from '$lib/icons/Modal_Title_Icon.svg';
-	import unpined from '$lib/icons/unpined.svg';
-	import pined from '$lib/icons/pined.svg';
-
-	let pined_unpined = $state(false);
-	let activeIndex = null; // Store the active index for the modal
-
-	function togglePined() {
-		pined_unpined = !pined_unpined;
-	}
+	import { get } from 'svelte/store';
+	import { mainAreaRef } from '$lib/stores/layoutRefs';
+	import ToolWindow from '$lib/components/ToolWindow.svelte';
 
 	let properties = $state([
 		{
@@ -28,32 +21,16 @@
 	}
 </script>
 
-<div
-	class="absolute z-50 mt-2 border rounded-lg shadow-lg right-8 top-28 w-96 bg-website-secondary text-brand-tertiary-gray border-brand-primary-gray"
-	in:scale={{ start: 0.9, duration: 200 }}
-	out:fade={{ duration: 150 }}
+<ToolWindow
+	initialSize={{ width: 25 * 16, height: 532 }}
+	boundsRef={get(mainAreaRef)}
+	headerIcon={modal_title_icon}
+	inScale={{ start: 0.9, duration: 200 }}
+	outFade={{ duration: 150 }}
+	headerText="Properties"
 >
-	<!-- Modal Header -->
-	<div class="flex flex-col px-4 py-6 border-b gap-y-5 border-brand-primary-gray">
-		<div class="flex items-center justify-between">
-			<div class="flex items-center gap-x-3">
-				<img src={modal_title_icon} alt="modal_title_icon" class="w-6" />
-				<h3 class="font-semibold text-left text-white text-md">Properties</h3>
-			</div>
-			{#if pined_unpined}
-				<button type="button" class="w-6 cursor-pointer" onclick={togglePined} aria-label="Pin">
-					<img src={pined} alt="pined" class="w-6" />
-				</button>
-			{:else}
-				<button type="button" class="w-6 cursor-pointer" onclick={togglePined} aria-label="Unpin">
-					<img src={unpined} alt="unpined" class="w-6" />
-				</button>
-			{/if}
-		</div>
-	</div>
-
 	<!-- Collapsible Category List -->
-	<div class="py-3 overflow-y-auto h-[29rem] bg-website-primary">
+	<div class="grow py-3 overflow-y-auto h-[29rem] bg-website-primary">
 		{#each properties as category, i}
 			<div>
 				<!-- Category Header -->
@@ -126,4 +103,4 @@
 			</div>
 		{/each}
 	</div>
-</div>
+</ToolWindow>

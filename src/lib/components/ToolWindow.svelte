@@ -12,8 +12,8 @@
 		boundsRef = null, // Reference to the bounding component
 		headerIcon = null,
 		headerText = null,
-		inScale = null,
-		outFade = null
+		inScale = { start: 0.9, duration: 200 },
+		outFade = { duration: 150 }
 	} = $props();
 
 	let selfRef;

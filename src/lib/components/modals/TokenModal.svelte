@@ -1,10 +1,6 @@
 <script>
-	import { fade, scale } from 'svelte/transition';
 	import modal_title_icon from '$lib/icons/Modal_Title_Icon.svg';
 	import search_icon from '$lib/icons/search.svg';
-	import filter from '$lib/icons/filter.svg';
-	import unpined from '$lib/icons/unpined.svg';
-	import pined from '$lib/icons/pined.svg';
 	import Button from '$lib/components/Button.svelte';
 	import Add from '$lib/icons/add.svg';
 	import dots from '$lib/icons/dots.svg';
@@ -13,12 +9,14 @@
 	import { PUBLIC_API_URL } from '$env/static/public';
 	import { getAuthToken } from '$lib/stores/cookie';
 	import Spinner from '../Spinner.svelte';
+	import { get } from 'svelte/store';
+	import { mainAreaRef } from '$lib/stores/layoutRefs';
+	import ToolWindow from '$lib/components/ToolWindow.svelte';
 
 	let apiUrl = PUBLIC_API_URL;
 	let authToken = getAuthToken();
 
 	let searchTerm = $state('');
-	let pined_unpined = $state(false);
 	let edit_delete_modal = $state(false);
 	let activeIndex = $state(null);
 	let tokens = $state([]);
@@ -27,20 +25,16 @@
 	);
 
 	let showTokenForm = $state(false);
-	let isEditing = false;
+	let isEditing = $state(false);
 	let editTokenId = null;
-	let tokenForm = { name: '' };
-	let nameInput;
+	let tokenForm = $state({ name: '' });
+	let nameInput = $state(undefined);
 	let error = $state('');
 	let loading = $state(false);
 
 	onMount(() => {
 		fetchTokens();
 	});
-
-	function togglePined() {
-		pined_unpined = !pined_unpined;
-	}
 
 	// Fetch API tokens
 	async function fetchTokens() {
@@ -188,47 +182,32 @@
 	}
 </script>
 
-<a
-	href="#token-modal"
-	class="absolute z-50 mt-2 border rounded-lg shadow-lg left-8 top-28 w-96 bg-website-secondary text-brand-tertiary-gray border-brand-primary-gray"
-	in:scale={{ start: 0.9, duration: 200 }}
-	out:fade={{ duration: 150 }}
-	onclick={() => (edit_delete_modal = false)}
+<ToolWindow
+	initialSize={{ width: 26 * 16, height: 577 }}
+	initialPosition={{ x: 32, y: 7 * 16 }}
+	boundsRef={get(mainAreaRef)}
+	headerIcon={modal_title_icon}
+	inScale={{ start: 0.9, duration: 200 }}
+	outFade={{ duration: 150 }}
+	headerText="API Tokens"
 >
 	<!-- Modal Header -->
-	<div class="flex flex-col px-4 py-5 border-b gap-y-5 border-brand-primary-gray">
-		<div class="flex items-center justify-between">
-			<div class="flex items-center gap-x-3">
-				<img src={modal_title_icon} alt="modal_title_icon" class="w-6" />
-				<h3 class="font-semibold text-left text-white text-md">API Token</h3>
-			</div>
-			{#if pined_unpined}
-				<button type="button" class="w-6 cursor-pointer" onclick={togglePined} aria-label="Pin">
-					<img src={pined} alt="pined" class="w-6" />
-				</button>
-			{:else}
-				<button type="button" class="w-6 cursor-pointer" onclick={togglePined} aria-label="Unpin">
-					<img src={unpined} alt="unpined" class="w-6" />
-				</button>
-			{/if}
-		</div>
-		<div class="flex items-center w-full">
-			<div class="relative w-full">
-				<input
-					id="search"
-					type="text"
-					placeholder="Search Anything..."
-					class="w-full px-4 py-3 text-xs border rounded-md bg-website-secondary border-brand-primary-gray"
-					bind:value={searchTerm}
-				/>
-				<img src={search_icon} alt="search_icon" class="absolute inset-y-0 w-5 right-3 top-3" />
-			</div>
-		</div>
+	<div
+		class="flex items-center relative w-full px-4 py-5 border-b gap-y-5 border-brand-primary-gray"
+	>
+		<input
+			id="search"
+			type="text"
+			placeholder="Search Anything..."
+			class="w-full px-4 py-3 text-xs border rounded-md bg-website-secondary border-brand-primary-gray"
+			bind:value={searchTerm}
+		/>
+		<img src={search_icon} alt="search_icon" class="absolute inset-y-0 w-5 right-6 top-6" />
 	</div>
 
 	<!-- Add/Edit Token Form -->
 	{#if showTokenForm}
-		<div class="flex flex-col h-[40vh] p-4 overflow-y-auto gap-y-4 bg-website-primary">
+		<div class="flex flex-col grow p-4 overflow-y-auto gap-y-4 bg-website-primary">
 			<input
 				type="text"
 				bind:this={nameInput}
@@ -250,12 +229,12 @@
 			/>
 		</div>
 	{:else if loading}
-		<div class="h-[40vh] p-4 flex items-center justify-center">
+		<div class="grow p-4 flex items-center justify-center">
 			<Spinner />
 		</div>
 	{:else}
 		<!-- Collapsible Category List -->
-		<div class="py-3 overflow-y-auto h-[40vh] bg-website-primary">
+		<div class="py-3 overflow-y-auto grow bg-website-primary">
 			{#if tokens.length === 0}
 				<div class="flex items-center justify-center h-full">
 					<p class="text-white">No API Tokens Found.</p>
@@ -362,4 +341,4 @@
 			<Button content={{ width: 'full', icon: Add, text: 'New API' }} on:click={openAddTokenForm} />
 		</div>
 	{/if}
-</a>
+</ToolWindow>

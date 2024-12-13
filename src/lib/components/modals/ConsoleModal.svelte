@@ -1,73 +1,52 @@
 <script>
-	import { fade, scale } from 'svelte/transition';
+	import { onMount } from 'svelte';
 	import modal_title_icon from '$lib/icons/Modal_Title_Icon.svg';
-	import search_icon from '$lib/icons/search.svg';
-	import filter from '$lib/icons/filter.svg';
-	import unpined from '$lib/icons/unpined.svg';
-	import pined from '$lib/icons/pined.svg';
-	import Button from '$lib/components/Button.svelte';
-	import Add from '$lib/icons/add.svg';
-	import dots from '$lib/icons/dots.svg';
-	import DeleteEditModal from './DeleteEditModal.svelte';
+	import { get } from 'svelte/store';
+	import { mainAreaRef } from '$lib/stores/layoutRefs';
+	import ToolWindow from '$lib/components/ToolWindow.svelte';
+	import ConsoleLine from '$lib/components/atoms/ConsoleLine.svelte';
 
-	let pined_unpined = $state(false);
+	let consoleDiv;
+	const scrollToBottom = () => {
+		if (consoleDiv) {
+			consoleDiv.scrollTop = consoleDiv.scrollHeight;
+		}
+	};
 
-	function togglePined() {
-		pined_unpined = !pined_unpined;
-	}
+	onMount(() => {
+		scrollToBottom();
+	});
+
+	let mainAreaRect = get(mainAreaRef).getBoundingClientRect();
+	let mainAreaWidth = mainAreaRect?.width;
+	let mainAreaHeight = mainAreaRect?.height;
 </script>
 
-<button
-	class="absolute z-50 w-[90%] right-20 border rounded-lg shadow-lg bottom-14 bg-website-secondary text-brand-tertiary-gray border-brand-primary-gray"
-	in:scale={{ start: 0.9, duration: 200 }}
-	out:fade={{ duration: 150 }}
+<ToolWindow
+	initialSize={{ width: 830, height: 277 }}
+	initialPosition={{ x: mainAreaWidth / 2 - 830 / 2, y: mainAreaHeight - 277 }}
+	boundsRef={get(mainAreaRef)}
+	headerIcon={modal_title_icon}
+	inScale={{ start: 0.9, duration: 200 }}
+	outFade={{ duration: 150 }}
+	headerText="Logs and Console"
 >
-	<!-- Modal Header -->
-	<div class="flex flex-col px-4 py-4 border-b gap-y-5 border-brand-primary-gray">
-		<div class="flex items-center justify-between">
-			<div class="flex items-center gap-x-3">
-				<img src={modal_title_icon} alt="modal_title_icon" class="w-6" />
-				<h3 class="font-semibold text-left text-white text-md">Logs and Console</h3>
-			</div>
-			<div class="flex items-center gap-x-10">
-				<img src={search_icon} alt="search" class="w-5" />
-				<div class="pl-8 border-l border-l-brand-primary-gray">
-					{#if pined_unpined}
-						<a
-							href=" "
-							aria-label="pinned"
-							class="w-6 cursor-pointer"
-							role="button"
-							tabindex="0"
-							onclick={togglePined}
-						>
-							<img src={pined} alt="pined" class="w-5" />
-						</a>
-					{:else}
-						<a
-							href=" "
-							class="w-6 cursor-pointer"
-							onclick={togglePined}
-							aria-label="Unpin"
-							role="button"
-							tabindex="0"
-						>
-							<img src={unpined} alt="unpined" class="w-5" />
-						</a>
-					{/if}
-				</div>
-			</div>
-		</div>
+	<div
+		bind:this={consoleDiv}
+		class="grow overflow-auto px-2 bg-website-dark-primary text-brand-tertiary-gray border-brand-primary-gray"
+	>
+		<!-- Modal Header -->
+		<!-- Collapsible Category List -->
+		{#each { length: 16 }}
+			<ConsoleLine
+				>Lorem ipsum dolor sit amet consectetur adipisicing elit. Mollitia, officia!</ConsoleLine
+			>
+			<ConsoleLine type="warning"
+				>Lorem ipsum dolor sit amet consectetur adipisicing elit. Mollitia, officia!</ConsoleLine
+			>
+			<ConsoleLine type="error"
+				>Lorem ipsum dolor sit amet consectetur adipisicing elit. Mollitia, officia!</ConsoleLine
+			>
+		{/each}
 	</div>
-
-	<!-- Collapsible Category List -->
-	<div class="px-4 py-6 space-y-4 text-sm text-left truncate bg-website-primary">
-		<h3>Lorem ipsum dolor sit amet consectetur adipisicing elit. Mollitia, officia!</h3>
-		<h3 class="text-primary-red">
-			Lorem ipsum dolor sit amet consectetur adipisicing elit. Mollitia, officia!
-		</h3>
-		<h3 class="text-primary-yellow">
-			Lorem ipsum dolor sit amet consectetur adipisicing elit. Mollitia, officia!
-		</h3>
-	</div>
-</button>
+</ToolWindow>

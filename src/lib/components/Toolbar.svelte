@@ -130,6 +130,7 @@
 		{#each icons.filter((icon) => icon.visibleOnToolbar) as { id, icon, alt, modalComponent }, index}
 			<a
 				href=" "
+				title={alt}
 				class={`relative p-2 cursor-pointer hover:bg-website-tertiary ${$canvasToolsModal && 'bg-website-tertiary'} rounded-xl`}
 				draggable={$canvasToolsModal ? 'true' : 'false'}
 				ondragstart={$canvasToolsModal ? () => handleDragStart(index) : null}
@@ -147,7 +148,7 @@
 				{/if}
 			</a>
 		{/each}
-		<div class="p-2 cursor-pointer hover:bg-website-tertiary rounded-xl">
+		<div title="More tools (WIP)" class="p-2 cursor-pointer hover:bg-website-tertiary rounded-xl">
 			<svg
 				xmlns="http://www.w3.org/2000/svg"
 				fill="none"

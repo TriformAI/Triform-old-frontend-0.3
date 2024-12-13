@@ -1,19 +1,19 @@
 <script>
-	import { fade, scale } from 'svelte/transition';
 	import modal_title_icon from '$lib/icons/Modal_Title_Icon.svg';
 	import search_icon from '$lib/icons/search.svg';
-	import unpined from '$lib/icons/unpined.svg';
-	import pined from '$lib/icons/pined.svg';
 	import Button from '$lib/components/Button.svelte';
 	import Add from '$lib/icons/add.svg';
 	import { onMount } from 'svelte';
 	import { PUBLIC_API_URL } from '$env/static/public';
 	import { getAuthToken } from '$lib/stores/cookie';
 	import Spinner from '../Spinner.svelte';
-	import format from 'date-fns/format';
+	import { format } from 'date-fns/format';
 	import dots from '$lib/icons/dots.svg';
 	import DeleteEditModal from './DeleteEditModal.svelte';
 	import { toasts } from 'svelte-toasts';
+	import { get } from 'svelte/store';
+	import { mainAreaRef } from '$lib/stores/layoutRefs';
+	import ToolWindow from '$lib/components/ToolWindow.svelte';
 
 	let apiUrl = PUBLIC_API_URL;
 	let authToken = getAuthToken();
@@ -24,13 +24,12 @@
 	let searchTerm = $state('');
 	let showForm = $state(false);
 	let loading = $state(false);
-	let pined_unpined = $state(false);
 	let isEditing = $state(false);
 	let edit_delete_modal = $state(false);
 	let activeIndex = $state(null);
 	let editingID = $state(null);
 	let modules = $state([]);
-	let selectedModuleIDs = {}; // For attach dropdowns
+	let selectedModuleIDs = $state({}); // For attach dropdowns
 	let selectedAttachedModuleIDs = {}; // For detach dropdowns
 
 	// Close the form and reset state
@@ -44,10 +43,6 @@
 
 	function ToggleForm() {
 		showForm = !showForm;
-	}
-
-	function togglePined() {
-		pined_unpined = !pined_unpined;
 	}
 
 	let containers = $state([]);
@@ -278,55 +273,32 @@
 			edit_delete_modal = true;
 		}
 	}
-
-	// Handle clicking outside of the DeleteEditModal
-	function handleClickOutside(event) {
-		if (edit_delete_modal && !event.target.closest('.delete-edit-modal')) {
-			edit_delete_modal = false;
-			activeIndex = null;
-		}
-	}
 </script>
 
-<a
-	href="#"
-	class="absolute left-8 top-28 mt-2 w-[26rem] bg-website-secondary text-brand-tertiary-gray border border-brand-primary-gray rounded-lg shadow-lg z-50"
-	in:scale={{ start: 0.9, duration: 200 }}
-	out:fade={{ duration: 150 }}
-	onclick={handleClickOutside}
+<ToolWindow
+	initialSize={{ width: 26 * 16, height: 529 }}
+	initialPosition={{ x: 32, y: 7 * 16 }}
+	boundsRef={get(mainAreaRef)}
+	headerIcon={modal_title_icon}
+	inScale={{ start: 0.9, duration: 200 }}
+	outFade={{ duration: 150 }}
+	headerText="Storage"
 >
 	<!-- Modal Header -->
-	<div class="flex flex-col p-4 gap-y-5">
-		<div class="flex items-center justify-between">
-			<div class="flex items-center gap-x-3">
-				<img src={modal_title_icon} alt="modal_title_icon" class="w-6" />
-				<h3 class="font-semibold text-left text-white text-md">Storage Management</h3>
-			</div>
-			{#if pined_unpined}
-				<button type="button" class="w-6 cursor-pointer" onclick={togglePined} aria-label="Pin">
-					<img src={pined} alt="pined" class="w-6" />
-				</button>
-			{:else}
-				<button type="button" class="w-6 cursor-pointer" onclick={togglePined} aria-label="Unpin">
-					<img src={unpined} alt="unpined" class="w-6" />
-				</button>
-			{/if}
-		</div>
-		<div class="flex items-center w-full">
-			<div class="relative w-full">
-				<input
-					id="search"
-					type="text"
-					placeholder="Search Anything..."
-					class="w-full px-4 py-3 text-xs border rounded-md bg-website-secondary border-brand-primary-gray"
-					bind:value={searchTerm}
-				/>
-				<img src={search_icon} alt="search_icon" class="absolute inset-y-0 w-5 right-3 top-3" />
-			</div>
+	<div class="flex p-4 gap-y-5 items-center w-full">
+		<div class="relative w-full">
+			<input
+				id="search"
+				type="text"
+				placeholder="Search Anything..."
+				class="w-full px-4 py-3 text-xs border rounded-md bg-website-secondary border-brand-primary-gray"
+				bind:value={searchTerm}
+			/>
+			<img src={search_icon} alt="search_icon" class="absolute inset-y-0 w-5 right-3 top-3" />
 		</div>
 	</div>
 	{#if showForm}
-		<div class="flex flex-col h-[22rem] py-4 px-5 overflow-y-auto gap-y-4 bg-website-primary">
+		<div class="grow flex flex-col py-4 px-5 overflow-y-auto gap-y-4 bg-website-primary">
 			<input
 				type="text"
 				bind:value={storageName}
@@ -352,11 +324,11 @@
 			/>
 		</div>
 	{:else if loading}
-		<div class="flex items-center justify-center h-[22rem]">
+		<div class="grow flex items-center justify-center">
 			<Spinner />
 		</div>
 	{:else}
-		<div class="overflow-y-auto h-[22rem] bg-website-primary">
+		<div class="overflow-y-auto grow bg-website-primary">
 			{#if !loading && containers.length === 0}
 				<div class="flex items-center justify-center h-full">
 					<p class="text-white">No Storage Created</p>
@@ -447,4 +419,4 @@
 			<Button content={{ width: 'full', icon: Add, text: 'New Storage' }} on:click={ToggleForm} />
 		</div>
 	{/if}
-</a>
+</ToolWindow>
