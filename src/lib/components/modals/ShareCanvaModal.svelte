@@ -12,10 +12,11 @@
 </script>
 
 <!-- Background Overlay -->
-<div
+<button
 	class="fixed inset-0 z-40 bg-black bg-opacity-20 backdrop-blur-lg"
-	out:fade={{ duration: 150 }}
-></div>
+	onclick={toggleShareCanvaModal}
+	aria-label="Close Share Information Modal"
+></button>
 
 <div class="relative flex items-center justify-center top-20">
 	<div

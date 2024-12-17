@@ -3,6 +3,7 @@
 	import { get } from 'svelte/store';
 	import { mainAreaRef } from '$lib/stores/layoutRefs';
 	import ToolWindow from '$lib/components/ToolWindow.svelte';
+	import { propertyModal } from '$lib/stores/modals';
 
 	let properties = $state([
 		{
@@ -19,15 +20,21 @@
 	function toggleCategory(index) {
 		properties[index].collapsed = !properties[index].collapsed;
 	}
+
+	function toggleModal() {
+		propertyModal.update((value) => !value);
+	}
 </script>
 
 <ToolWindow
 	initialSize={{ width: 25 * 16, height: 532 }}
+	initialPosition={{ x: 23, y: 7 * 3 }}
 	boundsRef={get(mainAreaRef)}
 	headerIcon={modal_title_icon}
 	inScale={{ start: 0.9, duration: 200 }}
 	outFade={{ duration: 150 }}
 	headerText="Properties"
+	{toggleModal}
 >
 	<!-- Collapsible Category List -->
 	<div class="grow py-3 overflow-y-auto h-[29rem] bg-website-primary">

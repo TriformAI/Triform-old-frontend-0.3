@@ -4,6 +4,7 @@
 	import iconPinned from '$lib/icons/pined.svg';
 	import default_icon from '$lib/icons/Modal_Title_Icon.svg';
 	import { fade, scale } from 'svelte/transition';
+	import modal_cross from '$lib/icons/modal_cross.svg';
 
 	let {
 		snapMargin = 20,
@@ -13,7 +14,8 @@
 		headerIcon = null,
 		headerText = null,
 		inScale = { start: 0.9, duration: 200 },
-		outFade = { duration: 150 }
+		outFade = { duration: 150 },
+		toggleModal
 	} = $props();
 
 	let selfRef;
@@ -129,37 +131,26 @@
 	onDestroy(() => {
 		window.removeEventListener('resize', calculateBounds);
 	});
-
-	let isPinned = $state(false);
-	function togglePinned() {
-		isPinned = !isPinned;
-	}
 </script>
 
 <div
 	in:scale={inScale}
 	out:fade={outFade}
 	bind:this={selfRef}
-	class="modal flex flex-col bg-website-secondary text-brand-tertiary-gray border border-brand-primary-gray rounded-lg shadow-lg"
+	class="flex flex-col border rounded-lg shadow-lg modal bg-website-secondary text-brand-tertiary-gray border-brand-primary-gray"
 	style="left: {position.x}px; top: {position.y}px; width: {size.width}px; height: {size.height}px; z-index: 10;"
 >
 	<div
-		class="header flex flex-row justify-between px-4 py-4 gap-y-3 border-brand-primary-gray"
+		class="flex flex-row justify-between px-4 py-4 header gap-y-3 border-brand-primary-gray"
 		onmousedown={handleMouseDown}
 	>
 		<div class="flex items-center gap-x-3">
 			<img src={headerIcon} alt="modal_title_icon" class="w-6" />
-			<h3 class="text-md font-semibold text-left text-white">{headerText}</h3>
+			<h3 class="font-semibold text-left text-white text-md">{headerText}</h3>
 		</div>
-		{#if isPinned}
-			<button type="button" class="w-6 cursor-pointer" onclick={togglePinned} aria-label="Pin">
-				<img src={iconPinned} alt="pinned" class="w-6" />
-			</button>
-		{:else}
-			<button type="button" class="w-6 cursor-pointer" onclick={togglePinned} aria-label="Unpin">
-				<img src={iconUnpinned} alt="unpinned" class="w-6" />
-			</button>
-		{/if}
+		<button type="button" class="relative cursor-pointer w-9 left-4" onclick={toggleModal}>
+			<img src={modal_cross} alt="Close modal" class="w-6" />
+		</button>
 	</div>
 
 	<slot />

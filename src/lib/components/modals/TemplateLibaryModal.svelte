@@ -49,14 +49,19 @@
 		templateLibraryModal.update(() => false);
 		templateModal.update((value) => !value);
 	};
+
+	function toggleModal() {
+		templateLibraryModal.update((value) => !value);
+	}
 </script>
 
 <ToolWindow
 	initialSize={{ width: 377, height: 38 * 16 }}
-	initialPosition={{ x: 32, y: 7 * 16 }}
+	initialPosition={{ x: 23, y: 7 * 3 }}
 	boundsRef={get(mainAreaRef)}
 	headerIcon={modal_title_icon}
 	headerText="Templates Library"
+	{toggleModal}
 >
 	<div class="flex flex-col px-4 py-5 gap-y-5">
 		<div class="flex items-center w-full">
@@ -74,7 +79,7 @@
 	</div>
 
 	<!-- Collapsible Category List -->
-	<div class="py-4 grow overflow-y-auto bg-website-primary">
+	<div class="py-4 overflow-y-auto grow bg-website-primary">
 		{#each filteredTemplates as category}
 			<div
 				class={`group flex items-center justify-between w-full duration-200 ease-in-out hover:bg-website-tertiary border-y border-y-brand-primary-gray`}

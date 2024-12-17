@@ -14,6 +14,7 @@
 	import { get } from 'svelte/store';
 	import { mainAreaRef } from '$lib/stores/layoutRefs';
 	import ToolWindow from '$lib/components/ToolWindow.svelte';
+	import { storageModal } from '$lib/stores/modals';
 
 	let apiUrl = PUBLIC_API_URL;
 	let authToken = getAuthToken();
@@ -273,19 +274,24 @@
 			edit_delete_modal = true;
 		}
 	}
+
+	function toggleModal() {
+		storageModal.update((value) => !value);
+	}
 </script>
 
 <ToolWindow
 	initialSize={{ width: 26 * 16, height: 529 }}
-	initialPosition={{ x: 32, y: 7 * 16 }}
+	initialPosition={{ x: 23, y: 7 * 3 }}
 	boundsRef={get(mainAreaRef)}
 	headerIcon={modal_title_icon}
 	inScale={{ start: 0.9, duration: 200 }}
 	outFade={{ duration: 150 }}
 	headerText="Storage"
+	{toggleModal}
 >
 	<!-- Modal Header -->
-	<div class="flex p-4 gap-y-5 items-center w-full">
+	<div class="flex items-center w-full p-4 gap-y-5">
 		<div class="relative w-full">
 			<input
 				id="search"
@@ -298,7 +304,7 @@
 		</div>
 	</div>
 	{#if showForm}
-		<div class="grow flex flex-col py-4 px-5 overflow-y-auto gap-y-4 bg-website-primary">
+		<div class="flex flex-col px-5 py-4 overflow-y-auto grow gap-y-4 bg-website-primary">
 			<input
 				type="text"
 				bind:value={storageName}
@@ -324,7 +330,7 @@
 			/>
 		</div>
 	{:else if loading}
-		<div class="grow flex items-center justify-center">
+		<div class="flex items-center justify-center grow">
 			<Spinner />
 		</div>
 	{:else}

@@ -208,19 +208,25 @@
 			edit_delete_modal = true;
 		}
 	}
+
+	function toggleModal() {
+		componentToolsBoxModal.update((value) => !value);
+	}
 </script>
 
 <ToolWindow
 	initialSize={{ width: 25 * 16, height: 500 }}
+	initialPosition={{ x: 23, y: 7 * 3 }}
 	boundsRef={get(mainAreaRef)}
 	headerIcon={modal_title_icon}
 	inScale={{ start: 0.9, duration: 200 }}
 	outFade={{ duration: 150 }}
 	headerText="Components Toolbox"
+	{toggleModal}
 >
 	<a
 		href="#component-toolbox-modal"
-		class="grow shrink min-h-0 flex flex-col h-full"
+		class="flex flex-col h-full min-h-0 grow shrink"
 		onclick={() => (edit_delete_modal = false)}
 	>
 		<!-- Search Modal Header -->
@@ -264,7 +270,7 @@
 
 		<!-- Add/Edit Folder Form -->
 		{#if showFolderForm}
-			<div class="grow shrink flex flex-col p-4 gap-y-4 bg-website-primary">
+			<div class="flex flex-col p-4 grow shrink gap-y-4 bg-website-primary">
 				<input
 					type="text"
 					bind:this={nameInput}
@@ -290,7 +296,7 @@
 				<Spinner />
 			</div>
 		{:else}
-			<div class="overflow-y-auto grow shrink py-3 bg-website-primary">
+			<div class="py-3 overflow-y-auto grow shrink bg-website-primary">
 				{#each filteredFolders as folder, i}
 					{#if folder.type === activeTab}
 						<div

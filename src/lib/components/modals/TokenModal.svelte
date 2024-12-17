@@ -12,6 +12,7 @@
 	import { get } from 'svelte/store';
 	import { mainAreaRef } from '$lib/stores/layoutRefs';
 	import ToolWindow from '$lib/components/ToolWindow.svelte';
+	import { tokenModal } from '$lib/stores/modals';
 
 	let apiUrl = PUBLIC_API_URL;
 	let authToken = getAuthToken();
@@ -180,20 +181,25 @@
 			edit_delete_modal = true;
 		}
 	}
+
+	function toggleModal() {
+		tokenModal.update((value) => !value);
+	}
 </script>
 
 <ToolWindow
 	initialSize={{ width: 26 * 16, height: 577 }}
-	initialPosition={{ x: 32, y: 7 * 16 }}
+	initialPosition={{ x: 23, y: 7 * 3 }}
 	boundsRef={get(mainAreaRef)}
 	headerIcon={modal_title_icon}
 	inScale={{ start: 0.9, duration: 200 }}
 	outFade={{ duration: 150 }}
 	headerText="API Tokens"
+	{toggleModal}
 >
 	<!-- Modal Header -->
 	<div
-		class="flex items-center relative w-full px-4 py-5 border-b gap-y-5 border-brand-primary-gray"
+		class="relative flex items-center w-full px-4 py-5 border-b gap-y-5 border-brand-primary-gray"
 	>
 		<input
 			id="search"
@@ -207,7 +213,7 @@
 
 	<!-- Add/Edit Token Form -->
 	{#if showTokenForm}
-		<div class="flex flex-col grow p-4 overflow-y-auto gap-y-4 bg-website-primary">
+		<div class="flex flex-col p-4 overflow-y-auto grow gap-y-4 bg-website-primary">
 			<input
 				type="text"
 				bind:this={nameInput}
@@ -229,7 +235,7 @@
 			/>
 		</div>
 	{:else if loading}
-		<div class="grow p-4 flex items-center justify-center">
+		<div class="flex items-center justify-center p-4 grow">
 			<Spinner />
 		</div>
 	{:else}

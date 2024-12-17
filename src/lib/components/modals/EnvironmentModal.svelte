@@ -12,6 +12,7 @@
 	import { get } from 'svelte/store';
 	import { mainAreaRef } from '$lib/stores/layoutRefs';
 	import ToolWindow from '$lib/components/ToolWindow.svelte';
+	import { environmentModal } from '$lib/stores/modals';
 
 	let apiUrl = PUBLIC_API_URL;
 	let authToken = getAuthToken();
@@ -170,21 +171,26 @@
 		}
 	}
 
+	function toggleModal() {
+		environmentModal.update((value) => !value);
+	}
+
 	let width = 382;
 	let height = 574;
 </script>
 
 <ToolWindow
 	initialSize={{ width: width, height: height }}
-	initialPosition={{ x: 32, y: 7 * 16 }}
+	initialPosition={{ x: 23, y: 7 * 3 }}
 	boundsRef={get(mainAreaRef)}
 	headerIcon={modal_title_icon}
 	inScale={{ start: 0.9, duration: 200 }}
 	outFade={{ duration: 150 }}
 	headerText="Environment Variables"
+	{toggleModal}
 >
 	<!-- Modal Header -->
-	<div class="px-4 py-4 border-b gap-y-5 border-brand-primary-gray flex items-center w-full">
+	<div class="flex items-center w-full px-4 py-4 border-b gap-y-5 border-brand-primary-gray">
 		<div class="relative w-full">
 			<input
 				id="search"
@@ -199,7 +205,7 @@
 
 	<!-- Add/Edit Variable Form -->
 	{#if showVariableForm}
-		<div class="flex flex-col h-[40vh] p-4 overflow-y-auto gap-y-4 bg-website-primary">
+		<div class="flex flex-col p-4 overflow-y-auto grow gap-y-4 bg-website-primary">
 			<input
 				type="text"
 				bind:this={nameInput}
@@ -227,12 +233,12 @@
 			/>
 		</div>
 	{:else if loading}
-		<div class="grow p-4 flex items-center justify-center">
+		<div class="flex items-center justify-center p-4 grow">
 			<Spinner />
 		</div>
 	{:else}
 		<!-- Collapsible Category List -->
-		<div class="py-3 overflow-y-auto h-[40vh] bg-website-primary">
+		<div class="py-3 overflow-y-auto grow bg-website-primary">
 			{#if filteredVariables.length === 0}
 				<div class="flex items-center justify-center h-full">
 					<p class="text-white">No Environment Variables Found.</p>

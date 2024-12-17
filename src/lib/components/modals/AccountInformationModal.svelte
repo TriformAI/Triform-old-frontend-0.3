@@ -181,12 +181,17 @@
 </script>
 
 <!-- Background Overlay -->
-<div class="fixed inset-0 z-40 bg-black bg-opacity-20 backdrop-blur-lg"></div>
+<button
+	class="fixed inset-0 z-40 bg-black bg-opacity-20 backdrop-blur-lg"
+	onclick={toggleAccountInfoModal}
+	aria-label="Close Account Information Modal"
+></button>
 
 <div class="flex items-center justify-center">
 	<div
 		class="w-[60rem] max-h-[70vh] overflow-y-auto bg-website-dark-primary text-brand-tertiary-gray border border-brand-primary-gray rounded-lg shadow-lg z-50"
 		in:scale={{ start: 0.9, duration: 200 }}
+		out:fade={{ duration: 150 }}
 	>
 		<!-- Modal Header -->
 		<div class="flex items-center justify-between p-4 border-b border-brand-primary-gray">
