@@ -1,18 +1,17 @@
-# create-svelte
+# Triform
 
-Everything you need to build a Svelte project, powered by [`create-svelte`](https://github.com/sveltejs/kit/tree/main/packages/create-svelte).
+This repository is the frontend part of the app, developed using SvelteKit. Everything is canvas-based, which is a dynamic and modular workspace designed for building, visualizing, and managing AI functionality. The platform prioritizes flexibility and scalability, providing an intuitive interface that supports the development of AI implementations at scale.
 
-## Creating a project
+![Canvas](./docs/Canvas.png)
 
-If you're seeing this, you've probably already done this step. Congrats!
+## Setup Instructions
 
-```bash
-# create a new project in the current directory
-npm create svelte@latest
-
-# create a new project in my-app
-npm create svelte@latest my-app
-```
+1. Run `npm install` to install the dependencies.
+2. Create an .env file using the contents of example.env as a template.
+3. Generate the authentication secret locally by running `openssl rand -hex 32`. Assign the generated secret appropriately in the .env file.
+4. Add the GitHub OAuth client ID and secret to your .env file by creating OAuth credentials in your [Github Developer Settings](https://github.com/settings/developers).
+5. Clone the backend repository [triform-api](https://github.com/TriformAI/triform-api) and set up the backend server according to the instructions provided in the README.md file.
+6. Ensure the backend is running in a separate terminal tab at the URL defined in the .env file.
 
 ## Developing
 
@@ -20,7 +19,6 @@ Once you've created a project and installed dependencies with `npm install` (or 
 
 ```bash
 npm run dev
-
 # or start the server and open the app in a new browser tab
 npm run dev -- --open
 ```
@@ -35,4 +33,4 @@ npm run build
 
 You can preview the production build with `npm run preview`.
 
-> To deploy your app, you may need to install an [adapter](https://kit.svelte.dev/docs/adapters) for your target environment.
+To deploy your app, you may need to install an [adapter](https://kit.svelte.dev/docs/adapters) for your target environment.
