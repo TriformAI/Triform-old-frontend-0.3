@@ -85,7 +85,7 @@
 			<button
 				type="button"
 				class="cursor-pointer w-9"
-				onclick={() => statusModal.update((value) => false)}
+				onclick={() => statusModal.update(() => false)}
 			>
 				<img src={modal_cross} alt="Close modal" class="w-6" />
 			</button>
@@ -165,7 +165,7 @@
 									<button
 										type="button"
 										class="flex items-center justify-center w-full"
-										onclick={() => thresholdModal.update((value) => true)}
+										onclick={() => thresholdModal.update(() => true)}
 									>
 										<img src={bell_icon} alt="bell_icon" class="w-5 mx-auto" />
 									</button>
@@ -181,7 +181,7 @@
 		<div
 			class="flex justify-end p-2 border-t rounded-b-lg border-brand-primary-gray bg-website-primary"
 		>
-			<Button content={{ text: 'Done' }} on:click={() => statusModal.update((value) => false)} />
+			<Button content={{ text: 'Done' }} on:click={() => statusModal.update(() => false)} />
 		</div>
 	</div>
 </div>

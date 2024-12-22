@@ -4,7 +4,6 @@
 	export let type: 'source' | 'target';
 	export let position: 'top' | 'bottom' | 'left' | 'right';
 	export let id: string | undefined;
-	export let style: string | undefined;
 </script>
 
 <div class="relative">

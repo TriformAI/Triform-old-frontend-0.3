@@ -1,6 +1,6 @@
 <script>
-	import { fade, scale } from 'svelte/transition';
-	import { onMount, onDestroy } from 'svelte';
+	import { scale } from 'svelte/transition';
+	import { onDestroy } from 'svelte';
 	import Button from '$lib/components/Button.svelte';
 	import modal_title_icon from '$lib/icons/Modal_Title_Icon.svg';
 	import modal_cross from '$lib/icons/modal_cross.svg';
@@ -19,6 +19,10 @@
 <div
 	class="fixed inset-0 z-40 bg-black bg-opacity-20 backdrop-blur-lg"
 	on:click={onModalClose}
+	on:keydown={() => {}}
+	role="button"
+	aria-label="Close modal"
+	tabindex="0"
 ></div>
 
 <div class="flex items-center justify-center">

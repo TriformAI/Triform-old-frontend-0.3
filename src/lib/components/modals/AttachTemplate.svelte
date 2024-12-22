@@ -1,11 +1,9 @@
-<script>
-	import { fade, scale } from 'svelte/transition';
+<script lang="ts">
+	import { scale } from 'svelte/transition';
 	import Button from '$lib/components/Button.svelte';
 	import modal_title_icon from '$lib/icons/Modal_Title_Icon.svg';
 	import modal_cross from '$lib/icons/modal_cross.svg';
 	import search_icon from '$lib/icons/search.svg';
-	import filter from '$lib/icons/filter.svg';
-	import { onMount } from 'svelte';
 
 	let searchTerm = $state('');
 
@@ -45,7 +43,12 @@
 	// Track selection for "Start with a Blank Action"
 	let isBlankActionSelected = $state(false);
 
-	function selectTemplate(selectedTemplate) {
+	function selectTemplate(selectedTemplate: {
+		name: string;
+		description: string;
+		tags: string[];
+		selected: boolean;
+	}) {
 		// Deselect all templates and the "Blank Action" option
 		templates = templates.map((template) => {
 			return { ...template, selected: template === selectedTemplate };

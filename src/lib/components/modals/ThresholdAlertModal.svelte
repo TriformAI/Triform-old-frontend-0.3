@@ -19,11 +19,11 @@
 	>
 		<!-- Modal Header -->
 		<div class="flex items-center justify-between p-6 border-b border-brand-primary-gray">
-			<h3 class="text-md font-semibold text-left text-white">Threshold Alerts for Metric Name</h3>
+			<h3 class="font-semibold text-left text-white text-md">Threshold Alerts for Metric Name</h3>
 			<button
 				type="button"
 				class="cursor-pointer w-9"
-				onclick={() => thresholdModal.update((value) => false)}
+				onclick={() => thresholdModal.update(() => false)}
 			>
 				<img src={modal_cross} alt="Close modal" class="w-6" />
 			</button>
@@ -163,7 +163,7 @@
 		<div
 			class="flex justify-end p-6 py-3 border-t rounded-b-lg border-brand-primary-gray bg-website-primary"
 		>
-			<Button content={{ text: 'Save' }} on:click={() => thresholdModal.update((value) => false)} />
+			<Button content={{ text: 'Save' }} on:click={() => thresholdModal.update(() => false)} />
 		</div>
 	</div>
 </div>

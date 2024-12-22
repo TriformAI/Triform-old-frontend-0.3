@@ -5,8 +5,8 @@ export const nextTabId = writable(2);
 export const activeTabId = writable(1);
 
 export function addTab() {
+	let newId;
 	tabs.update((currentTabs) => {
-		let newId;
 		nextTabId.update((id) => {
 			newId = id;
 			return id + 1;

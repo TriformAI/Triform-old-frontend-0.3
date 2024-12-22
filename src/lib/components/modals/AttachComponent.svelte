@@ -1,12 +1,8 @@
-<script>
-	import { fade, scale } from 'svelte/transition';
-	import Button from '$lib/components/Button.svelte';
+<script lang="ts">
+	import { scale } from 'svelte/transition';
 	import modal_title_icon from '$lib/icons/Modal_Title_Icon.svg';
 	import modal_cross from '$lib/icons/modal_cross.svg';
 	import search_icon from '$lib/icons/search.svg';
-	import filter from '$lib/icons/filter.svg';
-	import { onMount } from 'svelte';
-	import { attachComponentModal, toggleModal } from '$lib/stores/modals';
 
 	let searchTerm = $state('');
 

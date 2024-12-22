@@ -1,7 +1,5 @@
 <script>
 	import { fade, scale } from 'svelte/transition';
-	import { signOut } from '@auth/sveltekit/client';
-	import { removeCookie } from '$lib/stores/cookie';
 	import modal_title_icon from '$lib/icons/Modal_Title_Icon.svg';
 	import modal_cross from '$lib/icons/modal_cross.svg';
 	import { PUBLIC_API_URL } from '$env/static/public';
@@ -9,9 +7,7 @@
 	import profile_logo from '$lib/images/profile_logo.png';
 	import { getAuthToken } from '$lib/stores/cookie';
 	import { onMount } from 'svelte';
-	import { page } from '$app/stores';
 	import ConfirmationModal from '$lib/components/modals/ConfirmationModal.svelte';
-	import PasswordResetModal from './PasswordResetModal.svelte';
 	import Spinner from '$lib/components/Spinner.svelte';
 	import { toasts } from 'svelte-toasts';
 	import { profilePic } from '$lib/stores/profile';
@@ -333,7 +329,13 @@
 					<div class="mb-4">
 						<p class="block mb-1 text-sm font-medium">Role</p>
 						<div class="mt-4 border border-white divide-y rounded-lg divide-y-white">
-							<div class="p-4 cursor-pointer hover:bg-white/5" onclick={() => (role = 'admin')}>
+							<div
+								class="p-4 cursor-pointer hover:bg-white/5"
+								onclick={() => (role = 'admin')}
+								onkeydown={(e) => e.key === 'Enter' && (role = 'admin')}
+								role="button"
+								tabindex="0"
+							>
 								<div class="flex items-start w-full gap-x-4">
 									<h3 class="text-sm text-white">Administrator</h3>
 									{#if role === 'admin'}
@@ -359,7 +361,13 @@
 									Administrator users can perform any action.
 								</p>
 							</div>
-							<div class="p-4 cursor-pointer hover:bg-white/5" onclick={() => (role = 'editor')}>
+							<div
+								class="p-4 cursor-pointer hover:bg-white/5"
+								onclick={() => (role = 'editor')}
+								onkeydown={(e) => e.key === 'Enter' && (role = 'editor')}
+								role="button"
+								tabindex="0"
+							>
 								<div class="flex items-start w-full gap-x-4">
 									<h3 class="text-sm text-white">Editor</h3>
 									{#if role === 'editor'}

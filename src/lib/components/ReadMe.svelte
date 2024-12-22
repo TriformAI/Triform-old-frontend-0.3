@@ -1,8 +1,6 @@
 <script>
 	export let content = '';
 
-	console.log(content);
-
 	// Basic Markdown parser function
 	function parseMarkdown(md) {
 		// Split content by new lines
@@ -41,6 +39,6 @@
 </script>
 
 <div class="h-full p-6 overflow-y-auto text-white">
+	<!-- eslint-disable-next-line svelte/no-at-html-tags -->
 	{@html parsedContent}
-	<!-- Render parsed content as raw HTML -->
 </div>

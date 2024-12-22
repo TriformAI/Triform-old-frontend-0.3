@@ -1,13 +1,9 @@
 <script>
 	import logo from '$lib/images/Logo.svg';
-	import { page } from '$app/stores';
-	import { PUBLIC_API_URL } from '$env/static/public';
 
 	let email = '';
 	let password = '';
 	let confirmpassword = '';
-	let errorMessage = '';
-	let successMessage = '';
 </script>
 
 <section>

@@ -12,7 +12,7 @@ export const { handle, signIn, signOut } = SvelteKitAuth({
 	secret: AUTH_SECRET,
 	trustHost: true,
 	callbacks: {
-		async jwt({ token, account, user }) {
+		async jwt({ token, account }) {
 			// If the user signs in for the first time, add additional details to the token
 			if (account) {
 				token.accessToken = account.access_token;

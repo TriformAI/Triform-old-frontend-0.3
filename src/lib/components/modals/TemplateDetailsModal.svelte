@@ -9,8 +9,6 @@
 	import { get } from 'svelte/store';
 	import { templateStore, templateID } from '$lib/stores/template';
 
-	export let toggleModuleInfoModal;
-
 	export let toggleTemplateModal;
 
 	let TemplateDetails = [];

@@ -5,9 +5,6 @@
 
 	import { browser } from '$app/environment';
 	import green_check from '$lib/icons/green_check.svg';
-	import graph_1 from '$lib/images/Footer_Graph_1.svg';
-	import graph_2 from '$lib/images/Footer_Graph_2.svg';
-	import graph_3 from '$lib/images/Footer_Graph_3.svg';
 	import { footerPanel, statusModal } from '$lib/stores/modals';
 	import Chart from './Chart.svelte';
 
@@ -45,7 +42,10 @@
 {/if}
 
 <div
+	role="button"
+	tabindex="0"
 	onclick={() => (collapsed = true)}
+	onkeydown={() => {}}
 	class={`${$statusModal ? 'pt-3' : ''} z-50 w-full px-7 border-t border-t-brand-primary-gray text-brand-white bg-website-primary shadow-2xl duration-200 ease-linear transition-transform ${!collapsed ? 'group-hover:-translate-y-2 py-2 cursor-pointer ' : ' -translate-y-[70%] cursor-default pb-10 '}`}
 >
 	{#if collapsed}

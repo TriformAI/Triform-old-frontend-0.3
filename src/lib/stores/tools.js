@@ -6,7 +6,6 @@ import toolbar_icon_4 from '$lib/icons/toolbar_icon_4.svg';
 import toolbar_icon_5 from '$lib/icons/toolbar_icon_5.svg';
 import toolbar_icon_6 from '$lib/icons/toolbar_icon_6.svg';
 import toolbar_icon_7 from '$lib/icons/toolbar_icon_7.svg';
-import more_tools_1 from '$lib/icons/more_tools_1.svg';
 import more_tools_2 from '$lib/icons/more_tools_2.svg';
 
 import {

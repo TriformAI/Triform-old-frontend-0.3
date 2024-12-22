@@ -1,15 +1,11 @@
 <script>
 	import { fade, scale } from 'svelte/transition';
-	import { signOut } from '@auth/sveltekit/client';
-	import { removeCookie } from '$lib/stores/cookie';
 	import modal_title_icon from '$lib/icons/Modal_Title_Icon.svg';
 	import modal_cross from '$lib/icons/modal_cross.svg';
 	import { PUBLIC_API_URL } from '$env/static/public';
 	import { getAuthToken } from '$lib/stores/cookie';
 	import { onMount } from 'svelte';
-	import { page } from '$app/stores';
 	import ConfirmationModal from '$lib/components/modals/ConfirmationModal.svelte';
-	import PasswordResetModal from './PasswordResetModal.svelte';
 	import Spinner from '$lib/components/Spinner.svelte';
 	import { toasts } from 'svelte-toasts';
 	import Chart from '../Chart.svelte';

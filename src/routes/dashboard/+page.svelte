@@ -7,8 +7,6 @@
 	// 👇 this is important! You need to import the styles for Svelte Flow to work
 	import '@xyflow/svelte/dist/style.css';
 
-	import Button from '$lib/components/Button.svelte';
-	import Add from '$lib/icons/add.svg';
 	import CanvasToolsModal from '$lib/components/modals/CanvasToolsModal.svelte';
 	import CreateModuleModal from '$lib/components/modals/CreateModuleModal.svelte';
 	import {
@@ -39,34 +37,33 @@
 	import AccountInformationModal from '$lib/components/modals/AccountInformationModal.svelte';
 	import BillingInformationModal from '$lib/components/modals/BillingInformationModal.svelte';
 	import TeamInformationModal from '$lib/components/modals/TeamInformationModal.svelte';
-	import { PUBLIC_PRODUCTION } from '$env/static/public';
 
 	const toggleAttachComponentModal = () => {
-		createModuleModal.update((value) => false);
-		attachTemplateModal.update((value) => false);
+		createModuleModal.update(() => false);
+		attachTemplateModal.update(() => false);
 		attachComponentModal.update((value) => !value);
 	};
 
 	const toggleCreateModuleModal = () => {
-		attachComponentModal.update((value) => false);
-		attachTemplateModal.update((value) => false);
+		attachComponentModal.update(() => false);
+		attachTemplateModal.update(() => false);
 		createModuleModal.update((value) => !value);
 	};
 
 	const toggleAttachTemplateModal = () => {
-		attachComponentModal.update((value) => false);
-		createModuleModal.update((value) => false);
+		attachComponentModal.update(() => false);
+		createModuleModal.update(() => false);
 		attachTemplateModal.update((value) => !value);
 	};
 
 	const toggleModuleInfoModal = () => {
-		attachComponentModal.update((value) => false);
-		attachTemplateModal.update((value) => false);
+		attachComponentModal.update(() => false);
+		attachTemplateModal.update(() => false);
 		moduleInfoModal.update((value) => !value);
 	};
 
 	const toggleTemplateModal = () => {
-		templateLibraryModal.update((value) => false);
+		templateLibraryModal.update(() => false);
 		templateModal.update((value) => !value);
 	};
 

@@ -7,7 +7,6 @@
 	import { toggleIconVisibility } from '$lib/stores/tools';
 	import Button from '$lib/components/Button.svelte';
 	import { iconsStore } from '$lib/stores/tools';
-	import { onMount } from 'svelte';
 
 	/**
 	 * @type {{ id: number; icon: string; alt: string; visibleOnToolbar: boolean; }[]}
@@ -35,7 +34,7 @@
 			<button
 				type="button"
 				class="cursor-pointer w-9"
-				onclick={() => canvasToolsModal.update((value) => false)}
+				onclick={() => canvasToolsModal.update(() => false)}
 			>
 				<img src={modal_cross} alt="Close modal" class="w-6" />
 			</button>
@@ -58,10 +57,7 @@
 
 		<!-- Modal Footer -->
 		<div class="flex justify-end p-3 border-t border-brand-primary-gray bg-website-primary">
-			<Button
-				content={{ text: 'Done' }}
-				on:click={() => canvasToolsModal.update((value) => false)}
-			/>
+			<Button content={{ text: 'Done' }} on:click={() => canvasToolsModal.update(() => false)} />
 		</div>
 	</div>
 </div>

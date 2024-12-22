@@ -1,7 +1,6 @@
 <script>
-	import { fade, scale } from 'svelte/transition';
-	import { onMount, onDestroy } from 'svelte';
-	import Button from '$lib/components/Button.svelte';
+	import { scale } from 'svelte/transition';
+	import { onDestroy } from 'svelte';
 	import modal_title_icon from '$lib/icons/Modal_Title_Icon.svg';
 	import modal_cross from '$lib/icons/modal_cross.svg';
 	import { PUBLIC_API_URL } from '$env/static/public';
@@ -77,7 +76,11 @@
 <!-- Background Overlay -->
 <div
 	class="fixed inset-0 z-40 bg-black bg-opacity-20 backdrop-blur-lg"
-	on:click={togglePasswordResetModal}
+	onclick={togglePasswordResetModal}
+	onkeydown={() => {}}
+	role="button"
+	aria-label="Close modal"
+	tabindex="0"
 ></div>
 
 <div class="flex items-center justify-center">
@@ -92,7 +95,7 @@
 				<img src={modal_title_icon} alt="modal title icon" class="w-6" />
 				<h3 class="font-semibold text-left text-white text-md">Password Reset</h3>
 			</div>
-			<button type="button" class="cursor-pointer w-9" on:click={togglePasswordResetModal}>
+			<button type="button" class="cursor-pointer w-9" onclick={togglePasswordResetModal}>
 				<img src={modal_cross} alt="Close modal" class="w-6" />
 			</button>
 		</div>
@@ -135,7 +138,7 @@
 		<!-- Modal Footer -->
 		<div class="flex justify-end gap-4 p-3 border-t border-brand-primary-gray">
 			<button
-				on:click={changePassword}
+				onclick={changePassword}
 				class="px-4 py-2 text-white rounded-md bg-primary-green hover:brightness-90"
 				>{changePasswordStatus}</button
 			>

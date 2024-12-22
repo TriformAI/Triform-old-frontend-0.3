@@ -1,5 +1,5 @@
 <script>
-	import { fade, scale } from 'svelte/transition';
+	import { scale } from 'svelte/transition';
 	import Button from '$lib/components/Button.svelte';
 	import modal_title_icon from '$lib/icons/Modal_Title_Icon.svg';
 	import modal_cross from '$lib/icons/modal_cross.svg';

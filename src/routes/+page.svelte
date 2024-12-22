@@ -1,5 +1,4 @@
 <script>
-	import { onMount } from 'svelte';
 	import './welcome.css';
 	import logo from '$lib/images/Logo.svg';
 	import python_logo from '$lib/images/Python.svg';
@@ -131,7 +130,7 @@
 			>
 				<div class="flex items-center gap-2 text-sm">
 					<img src={serverless_logo} alt="serverless" />
-					<h3 class="text-md font-semibold text-white">Serverless architecture</h3>
+					<h3 class="font-semibold text-white text-md">Serverless architecture</h3>
 				</div>
 				<p class="font-thin text-brand-light-gray text-md">
 					Experience unmatched scalability and reduced overhead with our serverless architecture.
@@ -143,7 +142,7 @@
 			>
 				<div class="flex items-center gap-x-2">
 					<img src={python_logo} alt="python_integration" />
-					<h3 class="text-md font-semibold text-white">Python Integration</h3>
+					<h3 class="font-semibold text-white text-md">Python Integration</h3>
 				</div>
 				<p class="font-thin text-brand-light-gray text-md">
 					Utilize your favourite Python frameworks and libraries to enhance your applications,
@@ -153,7 +152,7 @@
 			<div class="w-full lg:p-10 p-7 py-10 space-y-4 lg:max-w-[350px]">
 				<div class="flex items-center gap-2">
 					<img src={security_logo} alt="security" />
-					<h3 class="text-md font-semibold text-white">Security</h3>
+					<h3 class="font-semibold text-white text-md">Security</h3>
 				</div>
 				<p class="font-thin text-brand-light-gray text-md">
 					Security is paramount. Our platform employs advanced encryption, authentication, and

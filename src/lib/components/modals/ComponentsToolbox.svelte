@@ -1,12 +1,9 @@
-<script>
+<script lang="ts">
 	import { get } from 'svelte/store';
 	import { mainAreaRef } from '$lib/stores/layoutRefs';
 	import ToolWindow from '$lib/components/ToolWindow.svelte';
 	import modal_title_icon from '$lib/icons/Modal_Title_Icon.svg';
 	import search_icon from '$lib/icons/search.svg';
-	import unpined from '$lib/icons/unpined.svg';
-	import pined from '$lib/icons/pined.svg';
-	import filter from '$lib/icons/filter.svg';
 	import Button from '$lib/components/Button.svelte';
 	import Add from '$lib/icons/add.svg';
 	import folder_icon from '$lib/icons/folder.svg';
@@ -25,14 +22,13 @@
 	let authToken = getAuthToken();
 
 	let searchTerm = $state('');
-	let pined_unpined = $state(false);
-	let folders = $state([]);
+	let folders = $state([] as { id: string; name: string; type: string; created_at: string }[]);
 
 	let showFolderForm = $state(false);
-	let isEditing = false;
-	let editFolderId = null;
-	let folderForm = { name: '' };
-	let nameInput; // For auto-focus
+	let isEditing = $state(false);
+	let editFolderId = $state(null);
+	let folderForm = $state({ name: '' });
+	let nameInput = $state(null); // For auto-focus
 	let error = $state('');
 	let loading = $state(false);
 
@@ -76,10 +72,6 @@
 	onMount(() => {
 		fetchFolders();
 	});
-
-	function togglePined() {
-		pined_unpined = !pined_unpined;
-	}
 
 	// Fetch all folders
 	async function fetchFolders() {
@@ -380,8 +372,8 @@
 				<Button
 					content={{ width: 'full', icon: Add, text: 'New Action' }}
 					on:click={() => {
-						componentToolsBoxModal.update((value) => false);
-						attachComponentModal.update((value) => true);
+						componentToolsBoxModal.update(() => false);
+						attachComponentModal.update(() => true);
 					}}
 				/>
 			{:else if activeTab === 'agent'}

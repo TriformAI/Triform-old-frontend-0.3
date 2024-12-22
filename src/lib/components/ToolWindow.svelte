@@ -1,13 +1,9 @@
 <script>
 	import { onMount, onDestroy } from 'svelte';
-	import iconUnpinned from '$lib/icons/unpined.svg';
-	import iconPinned from '$lib/icons/pined.svg';
-	import default_icon from '$lib/icons/Modal_Title_Icon.svg';
 	import { fade, scale } from 'svelte/transition';
 	import modal_cross from '$lib/icons/modal_cross.svg';
 
 	let {
-		snapMargin = 20,
 		initialPosition = { x: 50, y: 50 },
 		initialSize = { width: 300, height: 200 }, // Default size
 		boundsRef = null, // Reference to the bounding component
@@ -15,7 +11,8 @@
 		headerText = null,
 		inScale = { start: 0.9, duration: 200 },
 		outFade = { duration: 150 },
-		toggleModal
+		toggleModal,
+		children
 	} = $props();
 
 	let selfRef;
@@ -143,6 +140,9 @@
 	<div
 		class="flex flex-row justify-between px-4 py-4 header gap-y-3 border-brand-primary-gray"
 		onmousedown={handleMouseDown}
+		role="button"
+		aria-label="Drag"
+		tabindex="0"
 	>
 		<div class="flex items-center gap-x-3">
 			<img src={headerIcon} alt="modal_title_icon" class="w-6" />
@@ -153,18 +153,42 @@
 		</button>
 	</div>
 
-	<slot />
+	{@render children?.()}
 
 	<!-- Resize Handles -->
-	<div class="resize-handle right" onmousedown={(e) => handleResizeMouseDown(e, 'right')}></div>
-	<div class="resize-handle left" onmousedown={(e) => handleResizeMouseDown(e, 'left')}></div>
-	<div class="resize-handle bottom" onmousedown={(e) => handleResizeMouseDown(e, 'bottom')}></div>
+	<div
+		class="resize-handle right"
+		role="button"
+		aria-label="Resize right"
+		tabindex="0"
+		onmousedown={(e) => handleResizeMouseDown(e, 'right')}
+	></div>
+	<div
+		class="resize-handle left"
+		role="button"
+		aria-label="Resize left"
+		tabindex="0"
+		onmousedown={(e) => handleResizeMouseDown(e, 'left')}
+	></div>
+	<div
+		class="resize-handle bottom"
+		role="button"
+		aria-label="Resize bottom"
+		tabindex="0"
+		onmousedown={(e) => handleResizeMouseDown(e, 'bottom')}
+	></div>
 	<div
 		class="resize-handle bottom-right corner"
+		role="button"
+		aria-label="Resize bottom-right"
+		tabindex="0"
 		onmousedown={(e) => handleResizeMouseDown(e, 'bottom-right')}
 	></div>
 	<div
 		class="resize-handle bottom-left corner"
+		role="button"
+		aria-label="Resize bottom-left"
+		tabindex="0"
 		onmousedown={(e) => handleResizeMouseDown(e, 'bottom-left')}
 	></div>
 </div>

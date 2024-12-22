@@ -65,6 +65,7 @@
 				// 'SameSite=Strict' prevents it from being sent with cross-site requests.
 			}
 		} catch (error) {
+			console.log(error);
 			errorMessage = 'An error occurred. Please try again.';
 		} finally {
 			loading = false; // Hide loading state

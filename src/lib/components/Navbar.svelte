@@ -1,16 +1,14 @@
-<script context="module">
+<script module>
 	import { browser } from '$app/environment'; // Import to check if the code is running on the client
 </script>
 
 <script>
 	// @ts-nocheck
-
 	import logo from '$lib/images/Logo.svg';
 	import support_icon from '$lib/icons/support.svg';
 	import profile_logo from '$lib/images/profile_logo.png';
 	import modal_cross from '$lib/icons/modal_cross.svg';
 	import add from '$lib/icons/add.svg';
-	import { page } from '$app/stores';
 	import { PUBLIC_API_URL } from '$env/static/public';
 	import { PUBLIC_PRODUCTION } from '$env/static/public';
 	import { getAuthToken } from '$lib/stores/cookie';
@@ -26,18 +24,9 @@
 	} from '$lib/stores/modals';
 	import NotificationModal from './modals/NotificationModal.svelte';
 	import ProfileDropdown from './modals/ProfileDropdown.svelte';
-	import Button from './Button.svelte';
-	import {
-		tabs,
-		nextTabId,
-		activeTabId,
-		addTab,
-		removeTab,
-		setActiveTab
-	} from '$lib/stores/canvas';
+	import { tabs, activeTabId, addTab, removeTab, setActiveTab } from '$lib/stores/canvas';
 	import { onMount } from 'svelte';
 
-	// @ts-ignore
 	let draggedTab = null; // Track the dragged tab
 	const apiUrl = PUBLIC_API_URL;
 	const authToken = getAuthToken();
@@ -108,7 +97,7 @@
 {#if $renameMode}
 	<button
 		aria-label="Blur Div"
-		on:click={() => renameMode.update((value) => false)}
+		onclick={() => renameMode.update(() => false)}
 		class="fixed inset-0 z-40 bg-black top-14 bg-opacity-30 backdrop-blur-lg"
 	></button>
 {/if}
@@ -123,21 +112,23 @@
 			{#each $tabs as tab}
 				<div
 					class={`flex items-center flex-grow px-4 py-1.5 truncate duration-200 ease-in-out rounded-md cursor-pointer group gap-x-2 ${tab.id === $activeTabId && !$renameMode && 'bg-website-tertiary'} hover:bg-website-tertiary `}
-					on:click={() => setActiveTab(tab.id)}
+					role="tab"
+					tabindex="0"
+					onclick={() => setActiveTab(tab.id)}
+					onkeydown={(e) => e.key === 'Enter' && setActiveTab(tab.id)}
 					draggable="true"
-					on:dragstart={(event) => handleDragStart(event, tab)}
-					on:dragover={handleDragOver}
-					on:drop={(event) => handleDrop(event, tab)}
+					ondragstart={(event) => handleDragStart(event, tab)}
+					ondragover={handleDragOver}
+					ondrop={(event) => handleDrop(event, tab)}
 				>
 					{#if tab.id === $activeTabId}
 						<div class="p-1 mr-2 rounded-full animate-pulse bg-primary-red"></div>
 					{/if}
 					{#if $renameMode && tab.id === $activeTabId}
 						<input
-							type="text"
 							class="px-3 py-2 text-xs bg-transparent border rounded-lg border-brand-secondary-gray"
 							value={tab.label}
-							on:input={(e) => (tab.label = e.target.value)}
+							oninput={(e) => (tab.label = e.target.value)}
 						/>
 					{:else}
 						<h1
@@ -147,10 +138,9 @@
 						</h1>
 					{/if}
 					<button
-						type="button"
 						aria-label="Close Tab"
 						class="w-6 duration-200 ease-in-out opacity-0 cursor-pointer group-hover:opacity-100"
-						on:click={(e) => {
+						onclick={(e) => {
 							e.stopPropagation();
 							if ($tabs.length > 1) removeTab(tab.id);
 						}}
@@ -164,7 +154,7 @@
 		<button
 			type="button"
 			class="pl-5 border-l cursor-pointer border-l-brand-primary-gray"
-			on:click={addTab}
+			onclick={addTab}
 		>
 			<img src={add} alt="add" class="w-5" />
 		</button>
@@ -172,7 +162,7 @@
 
 	<div class="flex items-center gap-x-5">
 		<button
-			on:click={() => toggleModal(shareCanvaModal)}
+			onclick={() => toggleModal(shareCanvaModal)}
 			class={`w-fit flex items-center justify-center flex-shrink-0 gap-x-3 px-4 py-1.5 text-sm font-medium text-brand-tertiary-gray hover:text-white transition duration-200 ease-in-out border rounded-lg bg-white/5 border-brand-light-gray hover:border-brand-tertiary-gray`}
 		>
 			Share Canva
@@ -181,7 +171,7 @@
 		<!-- Notification Bell Icon -->
 		<button
 			class={`relative p-2 cursor-pointer hover: ${notificationOpen && 'bg-website-tertiary'} rounded-xl`}
-			on:click={() => toggleModal(notificationOpen)}
+			onclick={() => toggleModal(notificationOpen)}
 		>
 			<svg
 				xmlns="http://www.w3.org/2000/svg"
@@ -215,7 +205,7 @@
 					type="button"
 					class="w-8 cursor-pointer"
 					aria-label="Profile"
-					on:click={() => toggleModal(profileDropdown)}
+					onclick={() => toggleModal(profileDropdown)}
 				>
 					<img
 						alt="profile logo"

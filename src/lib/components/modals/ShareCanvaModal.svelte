@@ -1,12 +1,8 @@
 <script>
 	import { fade, scale } from 'svelte/transition';
-	import Button from '$lib/components/Button.svelte';
 	import modal_title_icon from '$lib/icons/Modal_Title_Icon.svg';
 	import modal_cross from '$lib/icons/modal_cross.svg';
 	import profile_logo from '$lib/images/profile_logo.png';
-	import { PUBLIC_API_URL } from '$env/static/public';
-	import { getAuthToken } from '$lib/stores/cookie';
-	import { onMount } from 'svelte';
 
 	export let toggleShareCanvaModal;
 </script>

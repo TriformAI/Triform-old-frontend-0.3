@@ -137,7 +137,9 @@
 				ondrop={$canvasToolsModal ? () => handleDrop(index) : null}
 				ondragover={$canvasToolsModal ? (e) => e.preventDefault() : null}
 				onclick={() => {
-					!$canvasToolsModal ? toggleModal(modalComponent) : null;
+					if (!$canvasToolsModal) {
+						toggleModal(modalComponent);
+					}
 				}}
 			>
 				<img {alt} src={icon} class="w-[1.15rem]" />

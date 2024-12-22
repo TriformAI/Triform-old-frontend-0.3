@@ -1,11 +1,9 @@
 <script>
-	import { onMount } from 'svelte';
 	import { signIn } from '@auth/sveltekit/client';
 	import { PUBLIC_API_URL } from '$env/static/public';
 	import Spinner from '$lib/components/Spinner.svelte';
 	import logo from '$lib/images/Logo.svg';
 	import github_mark_logo from '$lib/images/github-mark-white.svg';
-	import { page } from '$app/stores';
 
 	let showPassword = false;
 	let email = '';
@@ -45,6 +43,7 @@
 				// 'SameSite=Strict' prevents it from being sent with cross-site requests.
 			}
 		} catch (error) {
+			console.log(error);
 			errorMessage = 'An error occurred. Please try again.';
 		} finally {
 			loading = false; // Hide loading state

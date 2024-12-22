@@ -1,11 +1,11 @@
-<script context="module">
+<script module>
 	import { browser } from '$app/environment'; // Import to check if the code is running on the client
 </script>
 
 <script>
 	import '../app.css';
 	import Navbar from '$lib/components/Navbar.svelte';
-	import { toasts, ToastContainer, FlatToast, BootstrapToast } from 'svelte-toasts';
+	import { toasts, ToastContainer, FlatToast } from 'svelte-toasts';
 	import Pusher from 'pusher-js';
 	import { SvelteFlowProvider } from '@xyflow/svelte';
 	import Toolbar from '$lib/components/Toolbar.svelte';
@@ -94,18 +94,18 @@
 
 	// General toggle function for all dropdowns
 	function generalToggle() {
-		profileDropdown.update((value) => false);
-		notificationOpen.update((value) => false);
-		canvasDropdownOpen.update((value) => false);
-		freeFormAutoArrangeModal.update((value) => false);
-		searchModal.update((value) => false);
-		componentToolsBoxModal.update((value) => false);
-		environmentModal.update((value) => false);
-		tokenModal.update((value) => false);
-		storageModal.update((value) => false);
-		templateLibraryModal.update((value) => false);
-		propertyModal.update((value) => false);
-		consoleModal.update((value) => false);
+		profileDropdown.update(() => false);
+		notificationOpen.update(() => false);
+		canvasDropdownOpen.update(() => false);
+		freeFormAutoArrangeModal.update(() => false);
+		searchModal.update(() => false);
+		componentToolsBoxModal.update(() => false);
+		environmentModal.update(() => false);
+		tokenModal.update(() => false);
+		storageModal.update(() => false);
+		templateLibraryModal.update(() => false);
+		propertyModal.update(() => false);
+		consoleModal.update(() => false);
 	}
 
 	// Reactive statement to check if the route is protected and the user is authenticated
@@ -126,14 +126,18 @@
 				<FlatToast {data} />
 			</ToastContainer>
 
-			<main onclick={generalToggle}>
+			<!-- svelte-ignore a11y_no_noninteractive_element_interactions -->
+			<!-- svelte-ignore a11y_click_events_have_key_events -->
+			<div role="main" onclick={generalToggle}>
 				{@render children?.()}
-			</main>
+			</div>
 
 			<footer class=" group">
 				<Footer />
 			</footer>
 		{:else}
+			<!-- svelte-ignore a11y_no_noninteractive_element_interactions -->
+			<!-- svelte-ignore a11y_click_events_have_key_events -->
 			<main onclick={generalToggle}>
 				{@render children?.()}
 			</main>
