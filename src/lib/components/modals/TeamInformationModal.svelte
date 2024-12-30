@@ -1,4 +1,4 @@
-<script>
+<script lang="ts">
 	import { fade, scale } from 'svelte/transition';
 	import modal_title_icon from '$lib/icons/Modal_Title_Icon.svg';
 	import modal_cross from '$lib/icons/modal_cross.svg';
@@ -15,7 +15,7 @@
 	const apiUrl = PUBLIC_API_URL;
 	const production = PUBLIC_PRODUCTION === 'true' ? true : false;
 	const authToken = getAuthToken();
-	const profile = $state({});
+	const profile = $state<{ name: string; email: string }>({ name: '', email: '' });
 	let teamName = $state({});
 	let updateStatus = $state('Save');
 	let addingStatus = $state('Invite');
@@ -26,8 +26,8 @@
 	let role = $state('admin');
 
 	let { toggleTeamInfoModal } = $props();
-	let currentTeam = $state({});
-	let invitations = $state([]);
+	let currentTeam = $state<{ id: string; name: string }>({ id: '', name: '' });
+	let invitations = $state<{ id: string; email: string }[]>([]);
 
 	function toggleConfirmationModal() {
 		confirmationModal = !confirmationModal;
@@ -185,7 +185,7 @@
 		}
 	}
 
-	async function declineInvitation(id) {
+	async function declineInvitation(id: string) {
 		try {
 			const response = await fetch(`${apiUrl}/api/v1/invitations/${id}`, {
 				method: 'DELETE',

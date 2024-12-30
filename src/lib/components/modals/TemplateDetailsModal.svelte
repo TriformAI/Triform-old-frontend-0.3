@@ -1,4 +1,4 @@
-<script>
+<script lang="ts">
 	import { fade, scale } from 'svelte/transition';
 	import { onMount } from 'svelte';
 	import modal_title_icon from '$lib/icons/Modal_Title_Icon.svg';
@@ -11,7 +11,13 @@
 
 	export let toggleTemplateModal;
 
-	let TemplateDetails = [];
+	let TemplateDetails: {
+		id: number;
+		name: string;
+		code: string;
+		readme: string;
+		requirements: string;
+	}[] = [];
 	let loading = false;
 	let TemplateID = get(templateID);
 
@@ -19,7 +25,15 @@
 		const templates = get(templateStore);
 		if (templates.length > 0) {
 			// Find the specific template by ID
-			TemplateDetails = templates.filter((template) => template.id == TemplateID);
+			TemplateDetails = templates.filter(
+				(template: {
+					id: number;
+					name: string;
+					code: string;
+					readme: string;
+					requirements: string;
+				}) => template.id == TemplateID
+			);
 		} else {
 			// Fallback in case templates are not available (re-fetch if necessary)
 			console.warn('Templates not found in store; you may consider re-fetching if needed.');
@@ -35,7 +49,7 @@
 	let activeTab = 'Edit Action';
 
 	// Function to set the active tab
-	function setActiveTab(tab) {
+	function setActiveTab(tab: string) {
 		activeTab = tab;
 	}
 </script>

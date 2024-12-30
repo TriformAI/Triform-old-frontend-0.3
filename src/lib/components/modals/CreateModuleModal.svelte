@@ -1,4 +1,4 @@
-<script>
+<script lang="ts">
 	import { scale } from 'svelte/transition';
 	import Button from '$lib/components/Button.svelte';
 	import modal_title_icon from '$lib/icons/Modal_Title_Icon.svg';
@@ -23,7 +23,7 @@
 				}
 			});
 			const data = await response.json();
-			environmentVariables = data.data.map((item) => ({
+			environmentVariables = data.data.map((item: { id: string; name: string; value: string }) => ({
 				id: item.id,
 				key: item.name,
 				value: item.value,
@@ -102,7 +102,7 @@
 					<label for="env-search" class="block mb-2 text-sm font-medium">
 						Link Environment Variables (optional)
 					</label>
-					<div class="h-full rounded-md bg-website-primary">
+					<div class="rounded-md bg-website-primary">
 						<input
 							id="env-search"
 							type="text"

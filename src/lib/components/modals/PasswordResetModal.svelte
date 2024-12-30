@@ -1,4 +1,4 @@
-<script>
+<script lang="ts">
 	import { scale } from 'svelte/transition';
 	import { onDestroy } from 'svelte';
 	import modal_title_icon from '$lib/icons/Modal_Title_Icon.svg';
@@ -13,7 +13,7 @@
 	const apiUrl = PUBLIC_API_URL;
 	const authToken = getAuthToken();
 	let changePasswordStatus = $state('Change Password');
-	let error = $state([]);
+	let error: string[] = $state([]);
 
 	async function changePassword() {
 		if (!current_password || !new_password || !confirm_new_password) {

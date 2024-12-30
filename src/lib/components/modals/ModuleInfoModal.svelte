@@ -1,4 +1,4 @@
-<script>
+<script lang="ts">
 	import { scale } from 'svelte/transition';
 	import modal_title_icon from '$lib/icons/Modal_Title_Icon.svg';
 	import modal_cross from '$lib/icons/modal_cross.svg';
@@ -10,7 +10,7 @@
 	let activeTab = 'Edit Action';
 
 	// Function to set the active tab
-	function setActiveTab(tab) {
+	function setActiveTab(tab: string) {
 		activeTab = tab;
 	}
 </script>

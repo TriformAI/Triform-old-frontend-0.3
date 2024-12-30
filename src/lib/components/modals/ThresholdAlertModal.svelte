@@ -1,4 +1,4 @@
-<script>
+<script lang="ts">
 	import { fade, scale } from 'svelte/transition';
 	import modal_cross from '$lib/icons/modal_cross.svg';
 	import Button from '$lib/components/Button.svelte';

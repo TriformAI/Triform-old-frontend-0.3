@@ -1,4 +1,4 @@
-<script>
+<script lang="ts">
 	import { fade, scale } from 'svelte/transition';
 	import modal_title_icon from '$lib/icons/Modal_Title_Icon.svg';
 	import modal_cross from '$lib/icons/modal_cross.svg';
@@ -8,10 +8,7 @@
 	import Button from '$lib/components/Button.svelte';
 	import { iconsStore } from '$lib/stores/tools';
 
-	/**
-	 * @type {{ id: number; icon: string; alt: string; visibleOnToolbar: boolean; }[]}
-	 */
-	let moreIcons = $state();
+	let moreIcons: { id: number; icon: string; alt: string; visibleOnToolbar: boolean }[] = [];
 	iconsStore.subscribe((value) => {
 		moreIcons = value.filter((icon) => !icon.visibleOnToolbar);
 	});
