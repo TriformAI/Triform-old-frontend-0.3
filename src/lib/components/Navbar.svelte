@@ -2,7 +2,7 @@
 	import { browser } from '$app/environment'; // Import to check if the code is running on the client
 </script>
 
-<script>
+<script lang="ts">
 	// @ts-nocheck
 	import logo from '$lib/images/Logo.svg';
 	import support_icon from '$lib/icons/support.svg';

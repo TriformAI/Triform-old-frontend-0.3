@@ -1,4 +1,4 @@
-<script>
+<script lang="ts">
 	import { onMount, onDestroy } from 'svelte';
 	import { fade, scale } from 'svelte/transition';
 	import modal_cross from '$lib/icons/modal_cross.svg';
@@ -15,17 +15,21 @@
 		children
 	} = $props();
 
-	let selfRef;
+	let selfRef: HTMLDivElement;
 
 	let boundsRect = boundsRef.getBoundingClientRect();
 	let position = $state({
 		x: initialPosition.x + boundsRect.left,
 		y: initialPosition.y + boundsRect.top
 	});
-	let size = $state({ ...initialSize });
+	let size = $state<{ width: number; height: number }>({
+		width: initialSize.width,
+		height: initialSize.height
+	});
 	let isDragging = false;
 	let isResizing = false;
-	let resizeDirection = null;
+	let resizeDirection: 'right' | 'bottom' | 'left' | 'top' | 'bottom-right' | 'bottom-left' | null =
+		null;
 	let offset = { x: 0, y: 0 };
 	let resizeStartSize = { width: 0, height: 0 };
 	let resizeStartPosition = { x: 0, y: 0 };
@@ -53,7 +57,7 @@
 	};
 
 	// Dragging
-	const handleMouseDown = (event) => {
+	const handleMouseDown = (event: MouseEvent) => {
 		isDragging = true;
 		offset = {
 			x: event.clientX - position.x,
@@ -64,7 +68,7 @@
 		window.addEventListener('mouseup', handleMouseUp);
 	};
 
-	const handleMouseMove = (event) => {
+	const handleMouseMove = (event: MouseEvent) => {
 		if (isDragging) {
 			position = {
 				x: Math.min(Math.max(event.clientX - offset.x, bounds.left), bounds.right),
@@ -106,9 +110,15 @@
 	};
 
 	// Resizing
-	const handleResizeMouseDown = (event, direction) => {
+	const handleResizeMouseDown = (event: MouseEvent, direction: string) => {
 		isResizing = true;
-		resizeDirection = direction;
+		resizeDirection = direction as
+			| 'right'
+			| 'bottom'
+			| 'left'
+			| 'top'
+			| 'bottom-right'
+			| 'bottom-left';
 		resizeStartSize = { ...size };
 		resizeStartPosition = { ...position };
 		offset = {

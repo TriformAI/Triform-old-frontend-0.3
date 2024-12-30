@@ -2,7 +2,8 @@
 	import { Handle } from '@xyflow/svelte';
 
 	export let type: 'source' | 'target';
-	export let position: 'top' | 'bottom' | 'left' | 'right';
+	import type { Position } from '@xyflow/svelte';
+	export let position: Position;
 	export let id: string | undefined;
 </script>
 

@@ -1,4 +1,4 @@
-<script>
+<script lang="ts">
 	import { fade, scale } from 'svelte/transition';
 	import modal_title_icon from '$lib/icons/Modal_Title_Icon.svg';
 	import modal_cross from '$lib/icons/modal_cross.svg';
@@ -31,12 +31,15 @@
 	}
 
 	// Handle dropdown change
-	function handleRangeChange(event) {
-		selectedRange = event.target.value;
+	function handleRangeChange(event: Event) {
+		const target = event.target as HTMLSelectElement | null;
+		if (target) {
+			selectedRange = target.value;
+		}
 		FetchBillingUsage();
 	}
 
-	function setActiveTab(tab) {
+	function setActiveTab(tab: string) {
 		activeTab = tab;
 	}
 

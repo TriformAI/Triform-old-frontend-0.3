@@ -1,11 +1,11 @@
-<script>
+<script lang="ts">
 	import { onMount } from 'svelte';
 	import Chart from 'chart.js/auto';
 
 	let data = [20, 100, 50, 12, 20, 130, 45];
 	let labels = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
 	let ctx;
-	let canvas;
+	let canvas: HTMLCanvasElement;
 
 	export let lineColor;
 	export let width;

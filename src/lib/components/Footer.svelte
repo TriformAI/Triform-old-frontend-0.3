@@ -1,8 +1,6 @@
-<script>
+<script lang="ts">
 	// @ts-nocheck
-
 	import { run } from 'svelte/legacy';
-
 	import { browser } from '$app/environment';
 	import green_check from '$lib/icons/green_check.svg';
 	import { footerPanel, statusModal } from '$lib/stores/modals';

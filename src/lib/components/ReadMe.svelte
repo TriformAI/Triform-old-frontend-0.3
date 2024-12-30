@@ -1,8 +1,8 @@
-<script>
+<script lang="ts">
 	export let content = '';
 
 	// Basic Markdown parser function
-	function parseMarkdown(md) {
+	function parseMarkdown(md: string) {
 		// Split content by new lines
 		let lines = md.split('\n');
 

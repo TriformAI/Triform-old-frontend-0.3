@@ -1,18 +1,18 @@
-<script>
+<script lang="ts">
 	import { onMount } from 'svelte';
 	import Chart from 'chart.js/auto';
 	import { onDestroy } from 'svelte';
 
-	let canvas;
-	let chart; // Reference to the Chart.js instance
+	let canvas: HTMLCanvasElement;
+	let chart: Chart | undefined; // Reference to the Chart.js instance
 
 	export let lineColor;
 	export let width;
 	export let height;
-	export let data; // New data prop to be passed into the component
+	export let data: { overall: { categories: string[]; series: number[] } }; // New data prop to be passed into the component
 
-	let labels = [];
-	let dataset = [];
+	let labels: string[] = [];
+	let dataset: number[] = [];
 
 	// Function to update chart when data changes
 	function updateChart() {

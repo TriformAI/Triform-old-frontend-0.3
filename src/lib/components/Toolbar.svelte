@@ -1,4 +1,4 @@
-<script>
+<script lang="ts">
 	// @ts-nocheck
 	import { useSvelteFlow } from '@xyflow/svelte';
 
