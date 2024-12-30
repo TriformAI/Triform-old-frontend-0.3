@@ -1,39 +1,39 @@
 <script>
-	import { PUBLIC_API_URL } from '$env/static/public';
-	import logo from '$lib/images/Logo.svg';
-	import github_mark_logo from '$lib/images/github-mark-white.svg';
-	import { signIn } from '@auth/sveltekit/client';
+	import { PUBLIC_API_URL } from '$env/static/public'
+	import logo from '$lib/images/Logo.svg'
+	import github_mark_logo from '$lib/images/github-mark-white.svg'
+	import { signIn } from '@auth/sveltekit/client'
 
-	let showPassword = false;
-	let showConfirmPassword = false;
-	let name = '';
-	let email = '';
-	let password = '';
-	let passwordConfirmation = '';
-	let errorMessage = '';
-	let loading = false;
+	let showPassword = false
+	let showConfirmPassword = false
+	let name = ''
+	let email = ''
+	let password = ''
+	let passwordConfirmation = ''
+	let errorMessage = ''
+	let loading = false
 
 	// Function to handle signup form submission
 	async function handleSignup(event) {
-		event.preventDefault();
-		errorMessage = ''; // Reset error message
-		loading = true; // Show loading state
+		event.preventDefault()
+		errorMessage = '' // Reset error message
+		loading = true // Show loading state
 
 		if (password !== passwordConfirmation) {
-			errorMessage = 'Passwords do not match.';
-			loading = false; // Hide loading state
-			return;
+			errorMessage = 'Passwords do not match.'
+			loading = false // Hide loading state
+			return
 		}
 
 		//password validation
 		if (password.length < 8) {
-			errorMessage = 'Password must be at least 8 characters long.';
-			loading = false; // Hide loading state
-			return;
+			errorMessage = 'Password must be at least 8 characters long.'
+			loading = false // Hide loading state
+			return
 		}
 
 		try {
-			const apiUrl = PUBLIC_API_URL;
+			const apiUrl = PUBLIC_API_URL
 			const response = await fetch(`${apiUrl}/api/v1/register`, {
 				method: 'POST',
 				headers: {
@@ -45,36 +45,36 @@
 					password,
 					password_confirmation: passwordConfirmation
 				})
-			});
+			})
 
 			if (!response.ok) {
-				const errorData = await response.json();
-				console.log(errorData);
-				errorMessage = errorData.errors.email || 'Registration failed.';
+				const errorData = await response.json()
+				console.log(errorData)
+				errorMessage = errorData.errors.email || 'Registration failed.'
 			} else {
-				const data = await response.json();
-				console.log(data);
+				const data = await response.json()
+				console.log(data)
 				// Set the token in a cookie
-				document.cookie = `authToken=${data.token}; Path=/; Max-Age=86400; SameSite=Strict`;
+				document.cookie = `authToken=${data.token}; Path=/; Max-Age=86400; SameSite=Strict`
 
 				//redirect to the dashboard
-				window.location.href = '/dashboard';
+				window.location.href = '/dashboard'
 
 				// You can adjust 'Max-Age' to control the cookie expiration time.
 				// Max-Age=86400 (seconds) sets it to expire after 1 day.
 				// 'SameSite=Strict' prevents it from being sent with cross-site requests.
 			}
 		} catch (error) {
-			console.log(error);
-			errorMessage = 'An error occurred. Please try again.';
+			console.log(error)
+			errorMessage = 'An error occurred. Please try again.'
 		} finally {
-			loading = false; // Hide loading state
+			loading = false // Hide loading state
 		}
 	}
 
 	function handleRegisterWithGithub() {
-		document.cookie = 'authType=register; path=/';
-		signIn('github', { callbackUrl: '/dashboard' });
+		document.cookie = 'authType=register; path=/'
+		signIn('github', { callbackUrl: '/dashboard' })
 	}
 </script>
 

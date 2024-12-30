@@ -1,76 +1,76 @@
 <script>
-	import Button from '$lib/components/Button.svelte';
-	import modal_title_icon from '$lib/icons/Modal_Title_Icon.svg';
-	import Add from '$lib/icons/add.svg';
-	import dots from '$lib/icons/dots.svg';
-	import DeleteEditModal from './DeleteEditModal.svelte';
-	import { onMount } from 'svelte';
-	import { PUBLIC_API_URL } from '$env/static/public';
-	import { getAuthToken } from '$lib/stores/cookie';
-	import Spinner from '../Spinner.svelte';
-	import search_icon from '$lib/icons/search.svg';
-	import { get } from 'svelte/store';
-	import { mainAreaRef } from '$lib/stores/layoutRefs';
-	import ToolWindow from '$lib/components/ToolWindow.svelte';
-	import { environmentModal } from '$lib/stores/modals';
+	import Button from '$lib/components/Button.svelte'
+	import modal_title_icon from '$lib/icons/Modal_Title_Icon.svg'
+	import Add from '$lib/icons/add.svg'
+	import dots from '$lib/icons/dots.svg'
+	import DeleteEditModal from './DeleteEditModal.svelte'
+	import { onMount } from 'svelte'
+	import { PUBLIC_API_URL } from '$env/static/public'
+	import { getAuthToken } from '$lib/stores/cookie'
+	import Spinner from '../Spinner.svelte'
+	import search_icon from '$lib/icons/search.svg'
+	import { get } from 'svelte/store'
+	import { mainAreaRef } from '$lib/stores/layoutRefs'
+	import ToolWindow from '$lib/components/ToolWindow.svelte'
+	import { environmentModal } from '$lib/stores/modals'
 
-	let apiUrl = PUBLIC_API_URL;
-	let authToken = getAuthToken();
+	let apiUrl = PUBLIC_API_URL
+	let authToken = getAuthToken()
 
-	let edit_delete_modal = $state(false);
-	let activeIndex = $state(null);
-	let variables = $state([]);
-	let showVariableForm = $state(false);
-	let isEditing = $state(false);
-	let editVariableId = null;
-	let variableForm = $state({ name: '', value: '' });
-	let nameInput = $state(undefined); // Reference for auto-focus
-	let error = $state(''); // Error message
-	let loading = $state(false);
-	let searchTerm = $state('');
+	let edit_delete_modal = $state(false)
+	let activeIndex = $state(null)
+	let variables = $state([])
+	let showVariableForm = $state(false)
+	let isEditing = $state(false)
+	let editVariableId = null
+	let variableForm = $state({ name: '', value: '' })
+	let nameInput = $state(undefined) // Reference for auto-focus
+	let error = $state('') // Error message
+	let loading = $state(false)
+	let searchTerm = $state('')
 
 	//filter variables based on search term
 	let filteredVariables = $derived(
-		variables.filter((variable) => variable.key.toLowerCase().includes(searchTerm.toLowerCase()))
-	);
+		variables.filter(variable => variable.key.toLowerCase().includes(searchTerm.toLowerCase()))
+	)
 
 	onMount(() => {
-		fetchEnvironmentVariables();
-	});
+		fetchEnvironmentVariables()
+	})
 
 	// Fetch all environment variables from the server
 	async function fetchEnvironmentVariables() {
 		try {
-			loading = true;
+			loading = true
 			const response = await fetch(`${apiUrl}/api/v1/environment/variables`, {
 				method: 'GET',
 				headers: {
 					Authorization: `Bearer ${authToken}`
 				}
-			});
-			const data = await response.json();
-			loading = false;
-			variables = data.data.map((item) => ({
+			})
+			const data = await response.json()
+			loading = false
+			variables = data.data.map(item => ({
 				id: item.id,
 				key: item.name,
 				value: item.value,
 				visible: false
-			}));
+			}))
 		} catch (error) {
-			loading = false;
-			console.error('Error fetching variables:', error);
+			loading = false
+			console.error('Error fetching variables:', error)
 		}
 	}
 
 	// Add or edit an environment variable
 	async function saveVariable() {
-		const { name, value } = variableForm;
+		const { name, value } = variableForm
 
 		try {
 			const url = isEditing
 				? `${apiUrl}/api/v1/environment/variables/${editVariableId}`
-				: `${apiUrl}/api/v1/environment/variables`;
-			const method = isEditing ? 'PATCH' : 'POST';
+				: `${apiUrl}/api/v1/environment/variables`
+			const method = isEditing ? 'PATCH' : 'POST'
 
 			const response = await fetch(url, {
 				method,
@@ -79,20 +79,20 @@
 					Authorization: `Bearer ${authToken}`
 				},
 				body: JSON.stringify({ name, value })
-			});
+			})
 
-			const data = await response.json();
+			const data = await response.json()
 			if (response.ok) {
-				await fetchEnvironmentVariables(); // Refresh variables after saving
-				closeForm(); // Close form after saving
-				error = ''; // Clear any previous error
+				await fetchEnvironmentVariables() // Refresh variables after saving
+				closeForm() // Close form after saving
+				error = '' // Clear any previous error
 			} else {
-				error = data.errors.value || data.errors || '';
-				console.error('Error:', error);
+				error = data.errors.value || data.errors || ''
+				console.error('Error:', error)
 			}
 		} catch (err) {
-			error = 'An unexpected error occurred. Please try again.';
-			console.error('Error saving variable:', err);
+			error = 'An unexpected error occurred. Please try again.'
+			console.error('Error saving variable:', err)
 		}
 	}
 
@@ -104,79 +104,79 @@
 				headers: {
 					Authorization: `Bearer ${authToken}`
 				}
-			});
+			})
 
 			if (response.ok) {
-				variables = variables.filter((variable) => variable.id !== id); // Remove from local state
-				error = ''; // Clear any previous error
+				variables = variables.filter(variable => variable.id !== id) // Remove from local state
+				error = '' // Clear any previous error
 			} else {
-				console.error('Error:', error);
+				console.error('Error:', error)
 			}
 		} catch (err) {
-			error = 'An unexpected error occurred. Please try again.';
-			console.error('Error deleting variable:', err);
+			error = 'An unexpected error occurred. Please try again.'
+			console.error('Error deleting variable:', err)
 		}
 	}
 
 	// Function to handle editing a variable
 	function handleEdit(id) {
-		const variable = variables.find((v) => v.id === id);
+		const variable = variables.find(v => v.id === id)
 		if (variable) {
-			isEditing = true;
-			editVariableId = id;
-			variableForm = { name: variable.key, value: variable.value };
-			showVariableForm = true;
+			isEditing = true
+			editVariableId = id
+			variableForm = { name: variable.key, value: variable.value }
+			showVariableForm = true
 
 			// Auto-focus the name input
-			setTimeout(() => nameInput.focus(), 0);
+			setTimeout(() => nameInput.focus(), 0)
 		}
 	}
 
 	// Function to open the add variable form
 	function openAddVariableForm() {
-		isEditing = false;
-		editVariableId = null;
-		variableForm = { name: '', value: '' };
-		showVariableForm = true;
-		error = ''; // Clear any previous error
+		isEditing = false
+		editVariableId = null
+		variableForm = { name: '', value: '' }
+		showVariableForm = true
+		error = '' // Clear any previous error
 
 		// Auto-focus the name input
-		setTimeout(() => nameInput.focus(), 0);
+		setTimeout(() => nameInput.focus(), 0)
 	}
 
 	// Close the form and reset state
 	function closeForm() {
-		showVariableForm = false;
-		isEditing = false;
-		editVariableId = null;
-		variableForm = { name: '', value: '' };
-		error = ''; // Clear any error message
+		showVariableForm = false
+		isEditing = false
+		editVariableId = null
+		variableForm = { name: '', value: '' }
+		error = '' // Clear any error message
 	}
 
 	// Toggle visibility of a specific variable
 	function toggleVisibility(index) {
 		variables = variables.map((variable, i) =>
 			i === index ? { ...variable, visible: !variable.visible } : variable
-		);
+		)
 	}
 
 	// Toggle the Edit/Delete modal at the specific index
 	function toggleEditDeleteModal(index) {
 		if (activeIndex === index) {
-			activeIndex = null;
-			edit_delete_modal = false;
+			activeIndex = null
+			edit_delete_modal = false
 		} else {
-			activeIndex = index;
-			edit_delete_modal = true;
+			activeIndex = index
+			edit_delete_modal = true
 		}
 	}
 
 	function toggleModal() {
-		environmentModal.update((value) => !value);
+		environmentModal.update(value => !value)
 	}
 
-	let width = 382;
-	let height = 574;
+	let width = 382
+	let height = 574
 </script>
 
 <ToolWindow
@@ -262,7 +262,7 @@
 						<!-- Render the DeleteEditModal under the current item -->
 						{#if edit_delete_modal && activeIndex === i}
 							<DeleteEditModal
-								on:click={(e) => e.stopPropagation()}
+								on:click={e => e.stopPropagation()}
 								on:edit={() => handleEdit(category.id)}
 								on:delete={() => handleDelete(category.id)}
 							/>
@@ -290,9 +290,9 @@
 							<button
 								type="button"
 								class="w-5 cursor-pointer"
-								onclick={(e) => {
-									e.stopPropagation();
-									toggleEditDeleteModal(i);
+								onclick={e => {
+									e.stopPropagation()
+									toggleEditDeleteModal(i)
 								}}
 							>
 								<img src={dots} alt="dots" class="w-5" />

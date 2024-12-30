@@ -1,11 +1,11 @@
 <script lang="ts">
-	import AgentNode from '$lib/icons/Agent.svg';
-	import CustomHandle from './CustomHandle.svelte';
+	import AgentNode from '$lib/icons/Agent.svg'
+	import CustomHandle from './CustomHandle.svelte'
 
-	export let data: { name: string };
-	export let selected: boolean = false;
+	export let data: { name: string }
+	export let selected: boolean = false
 
-	const { mode } = data;
+	const { mode } = data
 </script>
 
 <div class="p-2">

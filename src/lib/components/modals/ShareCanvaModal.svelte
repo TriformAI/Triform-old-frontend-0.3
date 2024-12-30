@@ -1,10 +1,10 @@
 <script lang="ts">
-	import { fade, scale } from 'svelte/transition';
-	import modal_title_icon from '$lib/icons/Modal_Title_Icon.svg';
-	import modal_cross from '$lib/icons/modal_cross.svg';
-	import profile_logo from '$lib/images/profile_logo.png';
+	import { fade, scale } from 'svelte/transition'
+	import modal_title_icon from '$lib/icons/Modal_Title_Icon.svg'
+	import modal_cross from '$lib/icons/modal_cross.svg'
+	import profile_logo from '$lib/images/profile_logo.png'
 
-	export let toggleShareCanvaModal;
+	export let toggleShareCanvaModal
 </script>
 
 <!-- Background Overlay -->

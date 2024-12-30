@@ -1,25 +1,25 @@
 <script lang="ts">
 	// @ts-nocheck
-	import { run } from 'svelte/legacy';
-	import { browser } from '$app/environment';
-	import green_check from '$lib/icons/green_check.svg';
-	import { footerPanel, statusModal } from '$lib/stores/modals';
-	import Chart from './Chart.svelte';
+	import { run } from 'svelte/legacy'
+	import { browser } from '$app/environment'
+	import green_check from '$lib/icons/green_check.svg'
+	import { footerPanel, statusModal } from '$lib/stores/modals'
+	import Chart from './Chart.svelte'
 
-	let collapsed;
+	let collapsed
 	run(() => {
-		collapsed = $footerPanel || $statusModal;
-	});
+		collapsed = $footerPanel || $statusModal
+	})
 
 	run(() => {
 		if (browser) {
 			if (collapsed) {
-				document.body.style.overflow = 'hidden';
+				document.body.style.overflow = 'hidden'
 			} else {
-				document.body.style.overflow = '';
+				document.body.style.overflow = ''
 			}
 		}
-	});
+	})
 </script>
 
 {#if !collapsed}
@@ -50,9 +50,9 @@
 		<button
 			aria-label="Expand"
 			class={`${$statusModal ? 'hidden' : 'block'} p-3 px-10 mx-auto border-t border-b rounded-b-lg bg-website-dark-primary w-fit border-x border-b-brand-primary-gray border-x-brand-primary-gray border-t-brand-primary-gray`}
-			onclick={(e) => {
-				e.stopPropagation();
-				collapsed = false;
+			onclick={e => {
+				e.stopPropagation()
+				collapsed = false
 			}}
 		>
 			<svg

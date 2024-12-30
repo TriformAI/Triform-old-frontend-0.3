@@ -1,8 +1,8 @@
 <script>
-	import { fade, scale } from 'svelte/transition';
+	import { fade, scale } from 'svelte/transition'
 
-	import grid_icon from '$lib/icons/grid_4x4.svg';
-	import draw_icon from '$lib/icons/draw.svg';
+	import grid_icon from '$lib/icons/grid_4x4.svg'
+	import draw_icon from '$lib/icons/draw.svg'
 </script>
 
 <div

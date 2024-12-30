@@ -1,12 +1,12 @@
 <script>
-	import { fade, scale } from 'svelte/transition';
-	import modal_title_icon from '$lib/icons/Modal_Title_Icon.svg';
-	import search_icon from '$lib/icons/search.svg';
-	import unpined from '$lib/icons/unpined.svg';
-	import pined from '$lib/icons/pined.svg';
+	import { fade, scale } from 'svelte/transition'
+	import modal_title_icon from '$lib/icons/Modal_Title_Icon.svg'
+	import search_icon from '$lib/icons/search.svg'
+	import unpined from '$lib/icons/unpined.svg'
+	import pined from '$lib/icons/pined.svg'
 
-	let searchTerm = $state('');
-	let pined_unpined = $state(false);
+	let searchTerm = $state('')
+	let pined_unpined = $state(false)
 	let categories = $state([
 		{
 			name: 'Agents',
@@ -23,32 +23,32 @@
 			collapsed: false,
 			children: ['Variable A', 'Variable B', 'Variable C']
 		}
-	]);
+	])
 
 	function togglePined() {
-		pined_unpined = !pined_unpined;
+		pined_unpined = !pined_unpined
 	}
 
 	// Function to toggle the collapsed state
 	function toggleCategory(index) {
-		categories[index].collapsed = !categories[index].collapsed;
+		categories[index].collapsed = !categories[index].collapsed
 	}
 
 	// Filtered categories based on search term
 	let filteredCategories = $derived(
 		categories
-			.map((category) => {
-				const filteredChildren = category.children.filter((child) =>
+			.map(category => {
+				const filteredChildren = category.children.filter(child =>
 					child.toLowerCase().includes(searchTerm.toLowerCase())
-				);
+				)
 				return {
 					...category,
 					children: filteredChildren,
 					hasMatch: filteredChildren.length > 0
-				};
+				}
 			})
-			.filter((category) => category.hasMatch || searchTerm === '')
-	);
+			.filter(category => category.hasMatch || searchTerm === '')
+	)
 </script>
 
 <div

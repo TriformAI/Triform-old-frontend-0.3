@@ -1,56 +1,56 @@
 <script lang="ts">
-	import { fade, scale } from 'svelte/transition';
-	import { onMount } from 'svelte';
-	import modal_title_icon from '$lib/icons/Modal_Title_Icon.svg';
-	import modal_cross from '$lib/icons/modal_cross.svg';
-	import CodeEditor from '../CodeEditor.svelte';
-	import ReadMe from '../ReadMe.svelte';
-	import Requirement from '../Requirement.svelte';
-	import { get } from 'svelte/store';
-	import { templateStore, templateID } from '$lib/stores/template';
+	import { fade, scale } from 'svelte/transition'
+	import { onMount } from 'svelte'
+	import modal_title_icon from '$lib/icons/Modal_Title_Icon.svg'
+	import modal_cross from '$lib/icons/modal_cross.svg'
+	import CodeEditor from '../CodeEditor.svelte'
+	import ReadMe from '../ReadMe.svelte'
+	import Requirement from '../Requirement.svelte'
+	import { get } from 'svelte/store'
+	import { templateStore, templateID } from '$lib/stores/template'
 
-	export let toggleTemplateModal;
+	export let toggleTemplateModal
 
 	let TemplateDetails: {
-		id: number;
-		name: string;
-		code: string;
-		readme: string;
-		requirements: string;
-	}[] = [];
-	let loading = false;
-	let TemplateID = get(templateID);
+		id: number
+		name: string
+		code: string
+		readme: string
+		requirements: string
+	}[] = []
+	let loading = false
+	let TemplateID = get(templateID)
 
 	function loadTemplateDetails() {
-		const templates = get(templateStore);
+		const templates = get(templateStore)
 		if (templates.length > 0) {
 			// Find the specific template by ID
 			TemplateDetails = templates.filter(
 				(template: {
-					id: number;
-					name: string;
-					code: string;
-					readme: string;
-					requirements: string;
+					id: number
+					name: string
+					code: string
+					readme: string
+					requirements: string
 				}) => template.id == TemplateID
-			);
+			)
 		} else {
 			// Fallback in case templates are not available (re-fetch if necessary)
-			console.warn('Templates not found in store; you may consider re-fetching if needed.');
+			console.warn('Templates not found in store; you may consider re-fetching if needed.')
 		}
 	}
 
 	onMount(() => {
-		loadTemplateDetails();
-		document.body.style.overflow = 'hidden'; // Disable scrolling
-	});
+		loadTemplateDetails()
+		document.body.style.overflow = 'hidden' // Disable scrolling
+	})
 
 	// Variable to keep track of the active tab
-	let activeTab = 'Edit Action';
+	let activeTab = 'Edit Action'
 
 	// Function to set the active tab
 	function setActiveTab(tab: string) {
-		activeTab = tab;
+		activeTab = tab
 	}
 </script>
 

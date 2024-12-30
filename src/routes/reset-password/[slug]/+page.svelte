@@ -1,9 +1,9 @@
 <script>
-	import logo from '$lib/images/Logo.svg';
+	import logo from '$lib/images/Logo.svg'
 
-	let email = '';
-	let password = '';
-	let confirmpassword = '';
+	let email = ''
+	let password = ''
+	let confirmpassword = ''
 </script>
 
 <section>

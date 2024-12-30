@@ -1,96 +1,96 @@
 <script>
-	import modal_title_icon from '$lib/icons/Modal_Title_Icon.svg';
-	import search_icon from '$lib/icons/search.svg';
-	import Button from '$lib/components/Button.svelte';
-	import Add from '$lib/icons/add.svg';
-	import { onMount } from 'svelte';
-	import { PUBLIC_API_URL } from '$env/static/public';
-	import { getAuthToken } from '$lib/stores/cookie';
-	import Spinner from '../Spinner.svelte';
-	import { format } from 'date-fns/format';
-	import dots from '$lib/icons/dots.svg';
-	import DeleteEditModal from './DeleteEditModal.svelte';
-	import { toasts } from 'svelte-toasts';
-	import { get } from 'svelte/store';
-	import { mainAreaRef } from '$lib/stores/layoutRefs';
-	import ToolWindow from '$lib/components/ToolWindow.svelte';
-	import { storageModal } from '$lib/stores/modals';
+	import modal_title_icon from '$lib/icons/Modal_Title_Icon.svg'
+	import search_icon from '$lib/icons/search.svg'
+	import Button from '$lib/components/Button.svelte'
+	import Add from '$lib/icons/add.svg'
+	import { onMount } from 'svelte'
+	import { PUBLIC_API_URL } from '$env/static/public'
+	import { getAuthToken } from '$lib/stores/cookie'
+	import Spinner from '../Spinner.svelte'
+	import { format } from 'date-fns/format'
+	import dots from '$lib/icons/dots.svg'
+	import DeleteEditModal from './DeleteEditModal.svelte'
+	import { toasts } from 'svelte-toasts'
+	import { get } from 'svelte/store'
+	import { mainAreaRef } from '$lib/stores/layoutRefs'
+	import ToolWindow from '$lib/components/ToolWindow.svelte'
+	import { storageModal } from '$lib/stores/modals'
 
-	let apiUrl = PUBLIC_API_URL;
-	let authToken = getAuthToken();
+	let apiUrl = PUBLIC_API_URL
+	let authToken = getAuthToken()
 
-	let storageName = $state('');
-	let storageDescription = $state('');
-	let error = $state('');
-	let searchTerm = $state('');
-	let showForm = $state(false);
-	let loading = $state(false);
-	let isEditing = $state(false);
-	let edit_delete_modal = $state(false);
-	let activeIndex = $state(null);
-	let editingID = $state(null);
-	let modules = $state([]);
-	let selectedModuleIDs = $state({}); // For attach dropdowns
-	let selectedAttachedModuleIDs = {}; // For detach dropdowns
+	let storageName = $state('')
+	let storageDescription = $state('')
+	let error = $state('')
+	let searchTerm = $state('')
+	let showForm = $state(false)
+	let loading = $state(false)
+	let isEditing = $state(false)
+	let edit_delete_modal = $state(false)
+	let activeIndex = $state(null)
+	let editingID = $state(null)
+	let modules = $state([])
+	let selectedModuleIDs = $state({}) // For attach dropdowns
+	let selectedAttachedModuleIDs = {} // For detach dropdowns
 
 	// Close the form and reset state
 	function closeForm() {
-		showForm = false;
-		isEditing = false;
-		storageName = '';
-		storageDescription = '';
-		error = ''; // Clear any error message
+		showForm = false
+		isEditing = false
+		storageName = ''
+		storageDescription = ''
+		error = '' // Clear any error message
 	}
 
 	function ToggleForm() {
-		showForm = !showForm;
+		showForm = !showForm
 	}
 
-	let containers = $state([]);
+	let containers = $state([])
 
 	async function fetchModules() {
 		try {
-			loading = true;
+			loading = true
 			const response = await fetch(`${apiUrl}/api/v1/modules`, {
 				method: 'GET',
 				headers: {
 					Authorization: `Bearer ${authToken}`
 				}
-			});
-			const data = await response.json();
-			loading = false;
-			modules = data.data;
+			})
+			const data = await response.json()
+			loading = false
+			modules = data.data
 			selectedModuleIDs = modules.reduce((acc, module) => {
-				acc[module.id] = '';
-				return acc;
-			}, {});
+				acc[module.id] = ''
+				return acc
+			}, {})
 		} catch (error) {
-			loading = false;
-			console.error('Error fetching tokens:', error);
+			loading = false
+			console.error('Error fetching tokens:', error)
 		}
 	}
 
 	async function fetchStorage() {
 		try {
-			loading = true;
+			loading = true
 			const response = await fetch(`${apiUrl}/api/v1/storage/volumes`, {
 				method: 'GET',
 				headers: {
 					Authorization: `Bearer ${authToken}`
 				}
-			});
-			const data = await response.json();
-			loading = false;
-			containers = data.data;
+			})
+			const data = await response.json()
+			loading = false
+			containers = data.data
 		} catch (error) {
-			loading = false;
-			console.error('Error fetching tokens:', error);
+			loading = false
+			console.error('Error fetching tokens:', error)
 		}
 	}
 
 	async function createStorage() {
 		try {
-			loading = true;
+			loading = true
 			const response = await fetch(`${apiUrl}/api/v1/storage/volumes`, {
 				method: 'POST',
 				headers: {
@@ -101,48 +101,48 @@
 					name: storageName,
 					description: storageDescription
 				})
-			});
-			const data = await response.json();
-			console.log(data);
-			loading = false;
+			})
+			const data = await response.json()
+			console.log(data)
+			loading = false
 			if (response.ok && data) {
-				closeForm();
-				fetchStorage();
+				closeForm()
+				fetchStorage()
 			} else {
-				error = data.errors.name;
+				error = data.errors.name
 			}
 		} catch (error) {
-			loading = false;
-			console.error('Error creating storage:', error);
+			loading = false
+			console.error('Error creating storage:', error)
 		}
 	}
 
 	async function deleteStorage(id) {
-		if (!id) return;
+		if (!id) return
 		try {
-			loading = true;
+			loading = true
 			const response = await fetch(`${apiUrl}/api/v1/storage/volumes/${id}`, {
 				method: 'DELETE',
 				headers: {
 					Authorization: `Bearer ${authToken}`
 				}
-			});
-			const data = await response.json();
-			console.log(data);
-			loading = false;
+			})
+			const data = await response.json()
+			console.log(data)
+			loading = false
 			if (response.ok && data) {
-				fetchStorage();
+				fetchStorage()
 			}
 		} catch (error) {
-			loading = false;
-			console.error('Error deleting storage:', error);
+			loading = false
+			console.error('Error deleting storage:', error)
 		}
 	}
 
 	async function updateStorage() {
-		if (!editingID) return;
+		if (!editingID) return
 		try {
-			loading = true;
+			loading = true
 			const response = await fetch(`${apiUrl}/api/v1/storage/volumes/${editingID}`, {
 				method: 'PATCH',
 				headers: {
@@ -153,19 +153,19 @@
 					name: storageName,
 					description: storageDescription
 				})
-			});
-			const data = await response.json();
-			loading = false;
-			console.log(data);
+			})
+			const data = await response.json()
+			loading = false
+			console.log(data)
 			if (response.ok && data) {
-				closeForm();
-				fetchStorage();
+				closeForm()
+				fetchStorage()
 			} else {
-				error = data.errors.name;
+				error = data.errors.name
 			}
 		} catch (error) {
-			loading = false;
-			console.error('Error updating storage:', error);
+			loading = false
+			console.error('Error updating storage:', error)
 		}
 	}
 
@@ -178,10 +178,10 @@
 				placement: 'top-right',
 				type: 'error',
 				theme: 'dark'
-			});
+			})
 
 		try {
-			loading = true;
+			loading = true
 			const response = await fetch(
 				`${apiUrl}/api/v1/modules/${moduleId}/attach/storage/${storageId}`,
 				{
@@ -191,17 +191,17 @@
 						Authorization: `Bearer ${authToken}`
 					}
 				}
-			);
-			const data = await response.json();
-			loading = false;
+			)
+			const data = await response.json()
+			loading = false
 			if (response.ok && data) {
-				fetchStorage();
+				fetchStorage()
 			} else {
-				error = data.errors?.name || 'Error attaching storage.';
+				error = data.errors?.name || 'Error attaching storage.'
 			}
 		} catch (error) {
-			loading = false;
-			console.error('Error attaching storage:', error);
+			loading = false
+			console.error('Error attaching storage:', error)
 		}
 	}
 
@@ -214,10 +214,10 @@
 				placement: 'top-right',
 				type: 'error',
 				theme: 'dark'
-			});
+			})
 
 		try {
-			loading = true;
+			loading = true
 			const response = await fetch(
 				`${apiUrl}/api/v1/modules/${moduleId}/attach/storage/${storageId}`,
 				{
@@ -227,56 +227,56 @@
 						Authorization: `Bearer ${authToken}`
 					}
 				}
-			);
-			const data = await response.json();
-			loading = false;
+			)
+			const data = await response.json()
+			loading = false
 			if (response.ok && data) {
-				fetchModules();
-				fetchStorage();
+				fetchModules()
+				fetchStorage()
 			} else {
-				error = data.errors?.name || 'Error detaching storage.';
+				error = data.errors?.name || 'Error detaching storage.'
 			}
 		} catch (error) {
-			loading = false;
-			console.error('Error detaching storage:', error);
+			loading = false
+			console.error('Error detaching storage:', error)
 		}
 	}
 
 	function handleEdit(id) {
-		isEditing = true;
-		showForm = true;
-		editingID = id;
-		containers.map((container) => {
+		isEditing = true
+		showForm = true
+		editingID = id
+		containers.map(container => {
 			if (container.id === id) {
-				storageName = container.name;
-				storageDescription = container.description;
+				storageName = container.name
+				storageDescription = container.description
 			}
-		});
+		})
 	}
 
 	onMount(() => {
-		fetchModules();
-		fetchStorage();
-	});
+		fetchModules()
+		fetchStorage()
+	})
 
 	// Computed property to filter variables based on searchTerm
 	let filteredContainers = $derived(
-		containers.filter((variable) => variable.name.toLowerCase().includes(searchTerm.toLowerCase()))
-	);
+		containers.filter(variable => variable.name.toLowerCase().includes(searchTerm.toLowerCase()))
+	)
 
 	// Toggle the Edit/Delete modal at the specific index
 	function toggleEditDeleteModal(index) {
 		if (activeIndex === index) {
-			activeIndex = null;
-			edit_delete_modal = false;
+			activeIndex = null
+			edit_delete_modal = false
 		} else {
-			activeIndex = index;
-			edit_delete_modal = true;
+			activeIndex = index
+			edit_delete_modal = true
 		}
 	}
 
 	function toggleModal() {
-		storageModal.update((value) => !value);
+		storageModal.update(value => !value)
 	}
 </script>
 
@@ -359,7 +359,7 @@
 					</button>
 					{#if edit_delete_modal && activeIndex === i}
 						<DeleteEditModal
-							on:click={(e) => e.stopPropagation()}
+							on:click={e => e.stopPropagation()}
 							on:edit={() => handleEdit(category.id)}
 							on:delete={() => deleteStorage(category.id)}
 						/>
@@ -370,7 +370,7 @@
 								class="px-2 py-2 text-xs transition duration-200 ease-in-out bg-transparent border rounded-lg border-brand-primary-gray hover:border-brand-light-gray"
 								bind:value={selectedAttachedModuleIDs[category.id]}
 								onchange={() => {
-									selectedAttachedModuleIDs[category.id] = event.target.value;
+									selectedAttachedModuleIDs[category.id] = event.target.value
 								}}
 							>
 								<!-- <option value="">Select Module</option> -->
@@ -391,7 +391,7 @@
 								class="px-2 py-2 text-xs transition duration-200 ease-in-out bg-transparent border rounded-lg border-brand-primary-gray hover:border-brand-light-gray"
 								bind:value={selectedModuleIDs[category.id]}
 								onchange={() => {
-									selectedModuleIDs[category.id] = event.target.value;
+									selectedModuleIDs[category.id] = event.target.value
 								}}
 							>
 								<option value="">Select Module</option>
@@ -410,9 +410,9 @@
 					<button
 						type="button"
 						class="flex-shrink-0 w-5 cursor-pointer"
-						onclick={(e) => {
-							e.stopPropagation();
-							toggleEditDeleteModal(i);
+						onclick={e => {
+							e.stopPropagation()
+							toggleEditDeleteModal(i)
 						}}
 					>
 						<img src={dots} alt="dots" class="ml-2" />

@@ -1,9 +1,9 @@
 <script lang="ts">
-	import { fade, scale } from 'svelte/transition';
-	import modal_cross from '$lib/icons/modal_cross.svg';
-	import Button from '$lib/components/Button.svelte';
-	import { statusModal, thresholdModal } from '$lib/stores/modals';
-	import bell_icon from '$lib/icons/bell_icon.svg';
+	import { fade, scale } from 'svelte/transition'
+	import modal_cross from '$lib/icons/modal_cross.svg'
+	import Button from '$lib/components/Button.svelte'
+	import { statusModal, thresholdModal } from '$lib/stores/modals'
+	import bell_icon from '$lib/icons/bell_icon.svg'
 
 	let metrics = $state([
 		{
@@ -69,7 +69,7 @@
 			dataAggregation: 'Average',
 			group: 'None'
 		}
-	]);
+	])
 </script>
 
 <div class="fixed inset-0 bg-black bg-opacity-20 backdrop-blur-lg"></div>

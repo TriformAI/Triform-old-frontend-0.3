@@ -1,9 +1,9 @@
 <script>
-	import modal_title_icon from '$lib/icons/Modal_Title_Icon.svg';
-	import { get } from 'svelte/store';
-	import { mainAreaRef } from '$lib/stores/layoutRefs';
-	import ToolWindow from '$lib/components/ToolWindow.svelte';
-	import { propertyModal } from '$lib/stores/modals';
+	import modal_title_icon from '$lib/icons/Modal_Title_Icon.svg'
+	import { get } from 'svelte/store'
+	import { mainAreaRef } from '$lib/stores/layoutRefs'
+	import ToolWindow from '$lib/components/ToolWindow.svelte'
+	import { propertyModal } from '$lib/stores/modals'
 
 	let properties = $state([
 		{
@@ -14,15 +14,15 @@
 			name: 'Property Category B',
 			collapsed: false
 		}
-	]);
+	])
 
 	// Function to toggle the collapsed state
 	function toggleCategory(index) {
-		properties[index].collapsed = !properties[index].collapsed;
+		properties[index].collapsed = !properties[index].collapsed
 	}
 
 	function toggleModal() {
-		propertyModal.update((value) => !value);
+		propertyModal.update(value => !value)
 	}
 </script>
 

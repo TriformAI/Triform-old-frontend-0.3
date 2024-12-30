@@ -1,12 +1,12 @@
 <script lang="ts">
-	import { scale } from 'svelte/transition';
-	import modal_title_icon from '$lib/icons/Modal_Title_Icon.svg';
-	import modal_cross from '$lib/icons/modal_cross.svg';
-	import search_icon from '$lib/icons/search.svg';
+	import { scale } from 'svelte/transition'
+	import modal_title_icon from '$lib/icons/Modal_Title_Icon.svg'
+	import modal_cross from '$lib/icons/modal_cross.svg'
+	import search_icon from '$lib/icons/search.svg'
 
-	let searchTerm = $state('');
+	let searchTerm = $state('')
 
-	let { toggleAttachTemplateModal, toggleCreateModuleModal, toggleAttachComponentModal } = $props();
+	let { toggleAttachTemplateModal, toggleCreateModuleModal, toggleAttachComponentModal } = $props()
 
 	let components = $state([
 		{
@@ -65,15 +65,15 @@
 
 			selected: false
 		}
-	]);
+	])
 
 	// Track selection for "Start with a Blank Action"
-	let isBlankActionSelected = $state(false);
+	let isBlankActionSelected = $state(false)
 
 	// Computed property to filter variables based on searchTerm
 	let filteredComponent = $derived(
-		components.filter((template) => template.name.toLowerCase().includes(searchTerm.toLowerCase()))
-	);
+		components.filter(template => template.name.toLowerCase().includes(searchTerm.toLowerCase()))
+	)
 </script>
 
 <!-- Background Overlay -->

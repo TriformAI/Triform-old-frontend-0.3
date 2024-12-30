@@ -1,17 +1,17 @@
 <script lang="ts">
-	import { scale } from 'svelte/transition';
-	import modal_title_icon from '$lib/icons/Modal_Title_Icon.svg';
-	import modal_cross from '$lib/icons/modal_cross.svg';
-	import CodeEditor from '../CodeEditor.svelte';
+	import { scale } from 'svelte/transition'
+	import modal_title_icon from '$lib/icons/Modal_Title_Icon.svg'
+	import modal_cross from '$lib/icons/modal_cross.svg'
+	import CodeEditor from '../CodeEditor.svelte'
 
-	export let toggleModuleInfoModal;
+	export let toggleModuleInfoModal
 
 	// Variable to keep track of the active tab
-	let activeTab = 'Edit Action';
+	let activeTab = 'Edit Action'
 
 	// Function to set the active tab
 	function setActiveTab(tab: string) {
-		activeTab = tab;
+		activeTab = tab
 	}
 </script>
 

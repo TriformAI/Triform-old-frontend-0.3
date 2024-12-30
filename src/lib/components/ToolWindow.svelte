@@ -1,7 +1,7 @@
 <script lang="ts">
-	import { onMount, onDestroy } from 'svelte';
-	import { fade, scale } from 'svelte/transition';
-	import modal_cross from '$lib/icons/modal_cross.svg';
+	import { onMount, onDestroy } from 'svelte'
+	import { fade, scale } from 'svelte/transition'
+	import modal_cross from '$lib/icons/modal_cross.svg'
 
 	let {
 		initialPosition = { x: 50, y: 50 },
@@ -13,131 +13,131 @@
 		outFade = { duration: 150 },
 		toggleModal,
 		children
-	} = $props();
+	} = $props()
 
-	let selfRef: HTMLDivElement;
+	let selfRef: HTMLDivElement
 
-	let boundsRect = boundsRef.getBoundingClientRect();
+	let boundsRect = boundsRef.getBoundingClientRect()
 	let position = $state({
 		x: initialPosition.x + boundsRect.left,
 		y: initialPosition.y + boundsRect.top
-	});
+	})
 	let size = $state<{ width: number; height: number }>({
 		width: initialSize.width,
 		height: initialSize.height
-	});
-	let isDragging = false;
-	let isResizing = false;
+	})
+	let isDragging = false
+	let isResizing = false
 	let resizeDirection: 'right' | 'bottom' | 'left' | 'top' | 'bottom-right' | 'bottom-left' | null =
-		null;
-	let offset = { x: 0, y: 0 };
-	let resizeStartSize = { width: 0, height: 0 };
-	let resizeStartPosition = { x: 0, y: 0 };
+		null
+	let offset = { x: 0, y: 0 }
+	let resizeStartSize = { width: 0, height: 0 }
+	let resizeStartPosition = { x: 0, y: 0 }
 
-	let bounds = { left: 0, top: 0, right: window.innerWidth, bottom: window.innerHeight };
+	let bounds = { left: 0, top: 0, right: window.innerWidth, bottom: window.innerHeight }
 
 	const calculateBounds = () => {
-		const selfRect = selfRef.getBoundingClientRect();
+		const selfRect = selfRef.getBoundingClientRect()
 		if (boundsRef) {
-			const rect = boundsRef.getBoundingClientRect();
+			const rect = boundsRef.getBoundingClientRect()
 			bounds = {
 				left: rect.left,
 				top: rect.top,
 				right: rect.right - selfRect.width,
 				bottom: rect.bottom - selfRect.height
-			};
+			}
 		} else {
 			bounds = {
 				left: 0,
 				top: 0,
 				right: window.innerWidth - selfRect.width,
 				bottom: window.innerHeight - selfRect.height
-			};
+			}
 		}
-	};
+	}
 
 	// Dragging
 	const handleMouseDown = (event: MouseEvent) => {
-		isDragging = true;
+		isDragging = true
 		offset = {
 			x: event.clientX - position.x,
 			y: event.clientY - position.y
-		};
+		}
 
-		window.addEventListener('mousemove', handleMouseMove);
-		window.addEventListener('mouseup', handleMouseUp);
-	};
+		window.addEventListener('mousemove', handleMouseMove)
+		window.addEventListener('mouseup', handleMouseUp)
+	}
 
 	const handleMouseMove = (event: MouseEvent) => {
 		if (isDragging) {
 			position = {
 				x: Math.min(Math.max(event.clientX - offset.x, bounds.left), bounds.right),
 				y: Math.min(Math.max(event.clientY - offset.y, bounds.top), bounds.bottom)
-			};
+			}
 		} else if (isResizing && resizeDirection) {
-			const deltaX = event.clientX - offset.x;
-			const deltaY = event.clientY - offset.y;
+			const deltaX = event.clientX - offset.x
+			const deltaY = event.clientY - offset.y
 
 			if (resizeDirection.includes('right')) {
-				size.width = Math.max(100, resizeStartSize.width + deltaX);
+				size.width = Math.max(100, resizeStartSize.width + deltaX)
 			}
 			if (resizeDirection.includes('bottom')) {
-				size.height = Math.max(100, resizeStartSize.height + deltaY);
+				size.height = Math.max(100, resizeStartSize.height + deltaY)
 			}
 			if (resizeDirection.includes('left')) {
-				const newWidth = Math.max(100, resizeStartSize.width - deltaX);
+				const newWidth = Math.max(100, resizeStartSize.width - deltaX)
 				if (newWidth !== size.width) {
-					size.width = newWidth;
-					position.x = resizeStartPosition.x + deltaX;
+					size.width = newWidth
+					position.x = resizeStartPosition.x + deltaX
 				}
 			}
 			if (resizeDirection.includes('top')) {
-				const newHeight = Math.max(100, resizeStartSize.height - deltaY);
+				const newHeight = Math.max(100, resizeStartSize.height - deltaY)
 				if (newHeight !== size.height) {
-					size.height = newHeight;
-					position.y = resizeStartPosition.y + deltaY;
+					size.height = newHeight
+					position.y = resizeStartPosition.y + deltaY
 				}
 			}
 		}
-	};
+	}
 
 	const handleMouseUp = () => {
-		isDragging = false;
-		isResizing = false;
-		resizeDirection = null;
-		window.removeEventListener('mousemove', handleMouseMove);
-		window.removeEventListener('mouseup', handleMouseUp);
-	};
+		isDragging = false
+		isResizing = false
+		resizeDirection = null
+		window.removeEventListener('mousemove', handleMouseMove)
+		window.removeEventListener('mouseup', handleMouseUp)
+	}
 
 	// Resizing
 	const handleResizeMouseDown = (event: MouseEvent, direction: string) => {
-		isResizing = true;
+		isResizing = true
 		resizeDirection = direction as
 			| 'right'
 			| 'bottom'
 			| 'left'
 			| 'top'
 			| 'bottom-right'
-			| 'bottom-left';
-		resizeStartSize = { ...size };
-		resizeStartPosition = { ...position };
+			| 'bottom-left'
+		resizeStartSize = { ...size }
+		resizeStartPosition = { ...position }
 		offset = {
 			x: event.clientX,
 			y: event.clientY
-		};
+		}
 
-		window.addEventListener('mousemove', handleMouseMove);
-		window.addEventListener('mouseup', handleMouseUp);
-	};
+		window.addEventListener('mousemove', handleMouseMove)
+		window.addEventListener('mouseup', handleMouseUp)
+	}
 
 	onMount(() => {
-		calculateBounds();
-		window.addEventListener('resize', calculateBounds);
-	});
+		calculateBounds()
+		window.addEventListener('resize', calculateBounds)
+	})
 
 	onDestroy(() => {
-		window.removeEventListener('resize', calculateBounds);
-	});
+		window.removeEventListener('resize', calculateBounds)
+	})
 </script>
 
 <div
@@ -171,35 +171,35 @@
 		role="button"
 		aria-label="Resize right"
 		tabindex="0"
-		onmousedown={(e) => handleResizeMouseDown(e, 'right')}
+		onmousedown={e => handleResizeMouseDown(e, 'right')}
 	></div>
 	<div
 		class="resize-handle left"
 		role="button"
 		aria-label="Resize left"
 		tabindex="0"
-		onmousedown={(e) => handleResizeMouseDown(e, 'left')}
+		onmousedown={e => handleResizeMouseDown(e, 'left')}
 	></div>
 	<div
 		class="resize-handle bottom"
 		role="button"
 		aria-label="Resize bottom"
 		tabindex="0"
-		onmousedown={(e) => handleResizeMouseDown(e, 'bottom')}
+		onmousedown={e => handleResizeMouseDown(e, 'bottom')}
 	></div>
 	<div
 		class="resize-handle bottom-right corner"
 		role="button"
 		aria-label="Resize bottom-right"
 		tabindex="0"
-		onmousedown={(e) => handleResizeMouseDown(e, 'bottom-right')}
+		onmousedown={e => handleResizeMouseDown(e, 'bottom-right')}
 	></div>
 	<div
 		class="resize-handle bottom-left corner"
 		role="button"
 		aria-label="Resize bottom-left"
 		tabindex="0"
-		onmousedown={(e) => handleResizeMouseDown(e, 'bottom-left')}
+		onmousedown={e => handleResizeMouseDown(e, 'bottom-left')}
 	></div>
 </div>
 

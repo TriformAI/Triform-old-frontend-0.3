@@ -1,30 +1,30 @@
 <script>
-	import { onMount } from 'svelte';
-	import modal_title_icon from '$lib/icons/Modal_Title_Icon.svg';
-	import { get } from 'svelte/store';
-	import { mainAreaRef } from '$lib/stores/layoutRefs';
-	import ToolWindow from '$lib/components/ToolWindow.svelte';
-	import ConsoleLine from '$lib/components/atoms/ConsoleLine.svelte';
-	import { consoleModal } from '$lib/stores/modals';
+	import { onMount } from 'svelte'
+	import modal_title_icon from '$lib/icons/Modal_Title_Icon.svg'
+	import { get } from 'svelte/store'
+	import { mainAreaRef } from '$lib/stores/layoutRefs'
+	import ToolWindow from '$lib/components/ToolWindow.svelte'
+	import ConsoleLine from '$lib/components/atoms/ConsoleLine.svelte'
+	import { consoleModal } from '$lib/stores/modals'
 
-	let consoleDiv;
+	let consoleDiv
 	const scrollToBottom = () => {
 		if (consoleDiv) {
-			consoleDiv.scrollTop = consoleDiv.scrollHeight;
+			consoleDiv.scrollTop = consoleDiv.scrollHeight
 		}
-	};
-
-	onMount(() => {
-		scrollToBottom();
-	});
-
-	function toggleModal() {
-		consoleModal.update((value) => !value);
 	}
 
-	let mainAreaRect = get(mainAreaRef).getBoundingClientRect();
-	let mainAreaWidth = mainAreaRect?.width;
-	let mainAreaHeight = mainAreaRect?.height;
+	onMount(() => {
+		scrollToBottom()
+	})
+
+	function toggleModal() {
+		consoleModal.update(value => !value)
+	}
+
+	let mainAreaRect = get(mainAreaRef).getBoundingClientRect()
+	let mainAreaWidth = mainAreaRect?.width
+	let mainAreaHeight = mainAreaRect?.height
 </script>
 
 <ToolWindow

@@ -1,18 +1,18 @@
 <script>
-	import { fade, scale } from 'svelte/transition';
-	import edit from '$lib/icons/edit.svg';
-	import delete_icon from '$lib/icons/delete.svg';
-	import { createEventDispatcher } from 'svelte';
+	import { fade, scale } from 'svelte/transition'
+	import edit from '$lib/icons/edit.svg'
+	import delete_icon from '$lib/icons/delete.svg'
+	import { createEventDispatcher } from 'svelte'
 
-	const dispatch = createEventDispatcher();
+	const dispatch = createEventDispatcher()
 
 	// Emit events for edit and delete actions
 	function handleEdit() {
-		dispatch('edit');
+		dispatch('edit')
 	}
 
 	function handleDelete() {
-		dispatch('delete');
+		dispatch('delete')
 	}
 </script>
 

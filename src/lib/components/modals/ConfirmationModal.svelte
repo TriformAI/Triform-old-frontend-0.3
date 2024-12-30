@@ -1,18 +1,18 @@
 <script>
-	import { scale } from 'svelte/transition';
-	import { onDestroy } from 'svelte';
-	import Button from '$lib/components/Button.svelte';
-	import modal_title_icon from '$lib/icons/Modal_Title_Icon.svg';
-	import modal_cross from '$lib/icons/modal_cross.svg';
+	import { scale } from 'svelte/transition'
+	import { onDestroy } from 'svelte'
+	import Button from '$lib/components/Button.svelte'
+	import modal_title_icon from '$lib/icons/Modal_Title_Icon.svg'
+	import modal_cross from '$lib/icons/modal_cross.svg'
 
-	export let title = 'Confirmation';
-	export let body = '';
-	export let footer = [];
-	export let onModalClose;
+	export let title = 'Confirmation'
+	export let body = ''
+	export let footer = []
+	export let onModalClose
 
 	onDestroy(() => {
-		document.body.style.overflow = 'auto'; // Enable scrolling
-	});
+		document.body.style.overflow = 'auto' // Enable scrolling
+	})
 </script>
 
 <!-- Background Overlay -->

@@ -1,11 +1,11 @@
 <script lang="ts">
-	import APINode from '$lib/icons/APINode.svg';
-	import CustomHandle from './CustomHandle.svelte';
+	import APINode from '$lib/icons/APINode.svg'
+	import CustomHandle from './CustomHandle.svelte'
 
-	export let data: { name: string };
-	export let selected: boolean = false;
+	export let data: { name: string }
+	export let selected: boolean = false
 
-	const { mode } = data;
+	const { mode } = data
 </script>
 
 <div class="p-2 rounded-full">

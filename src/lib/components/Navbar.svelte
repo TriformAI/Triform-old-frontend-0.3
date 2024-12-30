@@ -1,19 +1,19 @@
 <script module>
-	import { browser } from '$app/environment'; // Import to check if the code is running on the client
+	import { browser } from '$app/environment' // Import to check if the code is running on the client
 </script>
 
 <script lang="ts">
 	// @ts-nocheck
-	import logo from '$lib/images/Logo.svg';
-	import support_icon from '$lib/icons/support.svg';
-	import profile_logo from '$lib/images/profile_logo.png';
-	import modal_cross from '$lib/icons/modal_cross.svg';
-	import add from '$lib/icons/add.svg';
-	import { PUBLIC_API_URL } from '$env/static/public';
-	import { PUBLIC_PRODUCTION } from '$env/static/public';
-	import { getAuthToken } from '$lib/stores/cookie';
-	import { profilePic } from '$lib/stores/profile';
-	import Spinner from './Spinner.svelte';
+	import logo from '$lib/images/Logo.svg'
+	import support_icon from '$lib/icons/support.svg'
+	import profile_logo from '$lib/images/profile_logo.png'
+	import modal_cross from '$lib/icons/modal_cross.svg'
+	import add from '$lib/icons/add.svg'
+	import { PUBLIC_API_URL } from '$env/static/public'
+	import { PUBLIC_PRODUCTION } from '$env/static/public'
+	import { getAuthToken } from '$lib/stores/cookie'
+	import { profilePic } from '$lib/stores/profile'
+	import Spinner from './Spinner.svelte'
 
 	import {
 		profileDropdown,
@@ -21,76 +21,76 @@
 		toggleModal,
 		renameMode,
 		shareCanvaModal
-	} from '$lib/stores/modals';
-	import NotificationModal from './modals/NotificationModal.svelte';
-	import ProfileDropdown from './modals/ProfileDropdown.svelte';
-	import { tabs, activeTabId, addTab, removeTab, setActiveTab } from '$lib/stores/canvas';
-	import { onMount } from 'svelte';
+	} from '$lib/stores/modals'
+	import NotificationModal from './modals/NotificationModal.svelte'
+	import ProfileDropdown from './modals/ProfileDropdown.svelte'
+	import { tabs, activeTabId, addTab, removeTab, setActiveTab } from '$lib/stores/canvas'
+	import { onMount } from 'svelte'
 
-	let draggedTab = null; // Track the dragged tab
-	const apiUrl = PUBLIC_API_URL;
-	const authToken = getAuthToken();
-	let loading = $state(false);
-	const production = PUBLIC_PRODUCTION === 'true' ? true : false;
+	let draggedTab = null // Track the dragged tab
+	const apiUrl = PUBLIC_API_URL
+	const authToken = getAuthToken()
+	let loading = $state(false)
+	const production = PUBLIC_PRODUCTION === 'true' ? true : false
 
 	async function fetchProfile() {
 		try {
-			loading = true;
+			loading = true
 			const response = await fetch(`${apiUrl}/api/v1/user/profile`, {
 				method: 'GET',
 				headers: {
 					Authorization: `Bearer ${authToken}`,
 					'Content-Type': 'application/json'
 				}
-			});
+			})
 
-			const data = await response.json();
-			loading = false;
+			const data = await response.json()
+			loading = false
 			if (response.ok && data.data) {
 				if (browser) {
-					profilePic.set(data.data.profile_photo_url);
+					profilePic.set(data.data.profile_photo_url)
 				}
 			}
 			if (!response.ok) {
-				console.error('Profile fetch failed:', data);
-				return;
+				console.error('Profile fetch failed:', data)
+				return
 			}
 		} catch (error) {
-			console.error('An error occurred during profile fetch:', error);
+			console.error('An error occurred during profile fetch:', error)
 		}
 	}
 
 	onMount(() => {
-		fetchProfile();
-	});
+		fetchProfile()
+	})
 
 	function handleDragStart(event, tab) {
-		draggedTab = tab;
-		event.dataTransfer.effectAllowed = 'move';
+		draggedTab = tab
+		event.dataTransfer.effectAllowed = 'move'
 	}
 
 	function handleDragOver(event) {
-		event.preventDefault();
-		event.dataTransfer.dropEffect = 'move';
+		event.preventDefault()
+		event.dataTransfer.dropEffect = 'move'
 	}
 
 	function handleDrop(event, targetTab) {
-		event.preventDefault();
+		event.preventDefault()
 		if (draggedTab && draggedTab.id !== targetTab.id) {
-			tabs.update((currentTabs) => {
-				const draggedIndex = currentTabs.findIndex((t) => t.id === draggedTab.id);
-				const targetIndex = currentTabs.findIndex((t) => t.id === targetTab.id);
+			tabs.update(currentTabs => {
+				const draggedIndex = currentTabs.findIndex(t => t.id === draggedTab.id)
+				const targetIndex = currentTabs.findIndex(t => t.id === targetTab.id)
 
 				// Swap the positions of the dragged and target tabs
-				[currentTabs[draggedIndex], currentTabs[targetIndex]] = [
+				;[currentTabs[draggedIndex], currentTabs[targetIndex]] = [
 					currentTabs[targetIndex],
 					currentTabs[draggedIndex]
-				];
+				]
 
-				return [...currentTabs]; // Trigger reactivity
-			});
+				return [...currentTabs] // Trigger reactivity
+			})
 		}
-		draggedTab = null; // Reset the dragged tab
+		draggedTab = null // Reset the dragged tab
 	}
 </script>
 
@@ -115,11 +115,11 @@
 					role="tab"
 					tabindex="0"
 					onclick={() => setActiveTab(tab.id)}
-					onkeydown={(e) => e.key === 'Enter' && setActiveTab(tab.id)}
+					onkeydown={e => e.key === 'Enter' && setActiveTab(tab.id)}
 					draggable="true"
-					ondragstart={(event) => handleDragStart(event, tab)}
+					ondragstart={event => handleDragStart(event, tab)}
 					ondragover={handleDragOver}
-					ondrop={(event) => handleDrop(event, tab)}
+					ondrop={event => handleDrop(event, tab)}
 				>
 					{#if tab.id === $activeTabId}
 						<div class="p-1 mr-2 rounded-full animate-pulse bg-primary-red"></div>
@@ -128,7 +128,7 @@
 						<input
 							class="px-3 py-2 text-xs bg-transparent border rounded-lg border-brand-secondary-gray"
 							value={tab.label}
-							oninput={(e) => (tab.label = e.target.value)}
+							oninput={e => (tab.label = e.target.value)}
 						/>
 					{:else}
 						<h1
@@ -140,9 +140,9 @@
 					<button
 						aria-label="Close Tab"
 						class="w-6 duration-200 ease-in-out opacity-0 cursor-pointer group-hover:opacity-100"
-						onclick={(e) => {
-							e.stopPropagation();
-							if ($tabs.length > 1) removeTab(tab.id);
+						onclick={e => {
+							e.stopPropagation()
+							if ($tabs.length > 1) removeTab(tab.id)
 						}}
 					>
 						<img src={modal_cross} alt="Close" class="w-5 ml-auto" />

@@ -1,8 +1,8 @@
 <script>
-	export let content = '';
+	export let content = ''
 
 	// Split the content by newline characters to create an array of library names
-	let libraries = content.split('\n');
+	let libraries = content.split('\n')
 </script>
 
 <div class="px-6 py-2 text-white">

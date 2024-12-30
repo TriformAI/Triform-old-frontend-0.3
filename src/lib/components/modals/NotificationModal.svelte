@@ -1,9 +1,9 @@
 <script>
-	import { fade, scale } from 'svelte/transition';
+	import { fade, scale } from 'svelte/transition'
 
-	import comment from '$lib/icons/comment.svg';
-	import cross from '$lib/icons/cross.svg';
-	import warning from '$lib/icons/warning.svg';
+	import comment from '$lib/icons/comment.svg'
+	import cross from '$lib/icons/cross.svg'
+	import warning from '$lib/icons/warning.svg'
 </script>
 
 <div

@@ -1,6 +1,6 @@
 <script>
-	import { goto } from '$app/navigation';
-	import Button from '$lib/components/Button.svelte';
+	import { goto } from '$app/navigation'
+	import Button from '$lib/components/Button.svelte'
 </script>
 
 <section

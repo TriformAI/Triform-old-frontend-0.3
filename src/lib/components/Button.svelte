@@ -1,10 +1,10 @@
 <script>
 	// @ts-nocheck
-	import { createBubbler } from 'svelte/legacy';
+	import { createBubbler } from 'svelte/legacy'
 
-	const bubble = createBubbler();
-	export let content = {}; // Ensure you have a default value to avoid undefined issues
-	export let type = 'default'; // New prop for type with a default value
+	const bubble = createBubbler()
+	export let content = {} // Ensure you have a default value to avoid undefined issues
+	export let type = 'default' // New prop for type with a default value
 </script>
 
 <button

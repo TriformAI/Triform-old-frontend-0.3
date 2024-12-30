@@ -1,17 +1,17 @@
 <script>
-	import { fade, scale } from 'svelte/transition';
-	import { canvasToolsModal, toggleModal, statusModal, renameMode } from '$lib/stores/modals';
-	import { addTab } from '$lib/stores/canvas';
-	import canvas_dropdown_1 from '$lib/icons/canvas_dropdown_1.svg';
-	import canvas_dropdown_2 from '$lib/icons/canvas_dropdown_2.svg';
-	import canvas_dropdown_3 from '$lib/icons/canvas_dropdown_3.svg';
-	import canvas_dropdown_4 from '$lib/icons/canvas_dropdown_4.svg';
-	import canvas_dropdown_5 from '$lib/icons/canvas_dropdown_5.svg';
-	import canvas_dropdown_6 from '$lib/icons/canvas_dropdown_6.svg';
-	import canvas_dropdown_7 from '$lib/icons/canvas_dropdown_7.svg';
-	import canvas_dropdown_8 from '$lib/icons/canvas_dropdown_8.svg';
-	import canvas_dropdown_9 from '$lib/icons/canvas_dropdown_9.svg';
-	import canvas_dropdown_10 from '$lib/icons/canvas_dropdown_10.svg';
+	import { fade, scale } from 'svelte/transition'
+	import { canvasToolsModal, toggleModal, statusModal, renameMode } from '$lib/stores/modals'
+	import { addTab } from '$lib/stores/canvas'
+	import canvas_dropdown_1 from '$lib/icons/canvas_dropdown_1.svg'
+	import canvas_dropdown_2 from '$lib/icons/canvas_dropdown_2.svg'
+	import canvas_dropdown_3 from '$lib/icons/canvas_dropdown_3.svg'
+	import canvas_dropdown_4 from '$lib/icons/canvas_dropdown_4.svg'
+	import canvas_dropdown_5 from '$lib/icons/canvas_dropdown_5.svg'
+	import canvas_dropdown_6 from '$lib/icons/canvas_dropdown_6.svg'
+	import canvas_dropdown_7 from '$lib/icons/canvas_dropdown_7.svg'
+	import canvas_dropdown_8 from '$lib/icons/canvas_dropdown_8.svg'
+	import canvas_dropdown_9 from '$lib/icons/canvas_dropdown_9.svg'
+	import canvas_dropdown_10 from '$lib/icons/canvas_dropdown_10.svg'
 </script>
 
 <div
@@ -41,7 +41,7 @@
 
 	<button
 		onclick={() => {
-			addTab();
+			addTab()
 		}}
 		class="flex items-center w-full py-4 text-sm px-7 gap-x-4 hover:bg-website-tertiary"
 	>
@@ -72,7 +72,7 @@
 
 	<button
 		onclick={() => {
-			toggleModal(canvasToolsModal);
+			toggleModal(canvasToolsModal)
 		}}
 		class="flex items-center w-full py-4 text-sm px-7 gap-x-4 hover:bg-website-tertiary"
 	>
@@ -81,7 +81,7 @@
 	</button>
 	<button
 		onclick={() => {
-			toggleModal(statusModal);
+			toggleModal(statusModal)
 		}}
 		class="flex items-center w-full py-4 text-sm rounded-b-lg px-7 gap-x-4 hover:bg-website-tertiary"
 	>

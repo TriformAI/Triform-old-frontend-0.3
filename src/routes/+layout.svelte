@@ -1,17 +1,17 @@
 <script module>
-	import { browser } from '$app/environment'; // Import to check if the code is running on the client
+	import { browser } from '$app/environment' // Import to check if the code is running on the client
 </script>
 
 <script>
-	import '../app.css';
-	import Navbar from '$lib/components/Navbar.svelte';
-	import { toasts, ToastContainer, FlatToast } from 'svelte-toasts';
-	import Pusher from 'pusher-js';
-	import { SvelteFlowProvider } from '@xyflow/svelte';
-	import Toolbar from '$lib/components/Toolbar.svelte';
-	import Footer from '$lib/components/Footer.svelte';
-	import { page } from '$app/stores';
-	import { onMount } from 'svelte';
+	import '../app.css'
+	import Navbar from '$lib/components/Navbar.svelte'
+	import { toasts, ToastContainer, FlatToast } from 'svelte-toasts'
+	import Pusher from 'pusher-js'
+	import { SvelteFlowProvider } from '@xyflow/svelte'
+	import Toolbar from '$lib/components/Toolbar.svelte'
+	import Footer from '$lib/components/Footer.svelte'
+	import { page } from '$app/stores'
+	import { onMount } from 'svelte'
 	import {
 		profileDropdown,
 		notificationOpen,
@@ -25,55 +25,55 @@
 		templateLibraryModal,
 		propertyModal,
 		consoleModal
-	} from '$lib/stores/modals';
+	} from '$lib/stores/modals'
 
 	// Check if the authToken cookie exists (only in the browser)
 	function checkAuthToken() {
-		if (!browser) return null; // Ensure this code only runs in the browser
-		const cookieString = document.cookie;
+		if (!browser) return null // Ensure this code only runs in the browser
+		const cookieString = document.cookie
 		const cookies = cookieString.split('; ').reduce((acc, cookie) => {
-			const [name, value] = cookie.split('=');
-			acc[name] = value;
-			return acc;
-		}, {});
-		let authToken = cookies['authToken'];
+			const [name, value] = cookie.split('=')
+			acc[name] = value
+			return acc
+		}, {})
+		let authToken = cookies['authToken']
 		if (authToken) {
-			return authToken;
+			return authToken
 		} else if ($page.data.GithubAuthToken) {
-			authToken = $page.data.GithubAuthToken;
+			authToken = $page.data.GithubAuthToken
 			if (authToken && browser) {
-				document.cookie = `authToken=${authToken}; Path=/; Max-Age=86400; SameSite=Strict`;
-				return authToken;
+				document.cookie = `authToken=${authToken}; Path=/; Max-Age=86400; SameSite=Strict`
+				return authToken
 			}
 		}
 	}
 
 	// Function to check if the user is authenticated either by authToken or GitHub session
 	function isAuthenticated() {
-		let authToken = checkAuthToken();
-		if (authToken) return true;
-		else return false;
+		let authToken = checkAuthToken()
+		if (authToken) return true
+		else return false
 	}
 
 	onMount(() => {
 		if (browser) {
-			const session = $page.data.session;
+			const session = $page.data.session
 			if (!isAuthenticated(session) && $page.url.pathname === '/dashboard') {
-				window.location.href = '/login';
+				window.location.href = '/login'
 			}
 		}
-	});
+	})
 
 	onMount(() => {
 		// Pusher.logToConsole = true;
 
 		let pusher = new Pusher('8845603c589a39579e79', {
 			cluster: 'ap2'
-		});
+		})
 
-		let channel = pusher.subscribe('my-channel');
+		let channel = pusher.subscribe('my-channel')
 		channel.bind('my-event', function (data) {
-			console.log('Pusher Event:', data);
+			console.log('Pusher Event:', data)
 			toasts.add({
 				title: 'Pusher Event',
 				description: JSON.stringify(data),
@@ -81,37 +81,37 @@
 				placement: 'top-right',
 				type: 'success',
 				theme: 'dark'
-			});
-		});
-	});
+			})
+		})
+	})
 	/**
 	 * @typedef {Object} Props
 	 * @property {import('svelte').Snippet} [children]
 	 */
 
 	/** @type {Props} */
-	let { children } = $props();
+	let { children } = $props()
 
 	// General toggle function for all dropdowns
 	function generalToggle() {
-		profileDropdown.update(() => false);
-		notificationOpen.update(() => false);
-		canvasDropdownOpen.update(() => false);
-		freeFormAutoArrangeModal.update(() => false);
-		searchModal.update(() => false);
-		componentToolsBoxModal.update(() => false);
-		environmentModal.update(() => false);
-		tokenModal.update(() => false);
-		storageModal.update(() => false);
-		templateLibraryModal.update(() => false);
-		propertyModal.update(() => false);
-		consoleModal.update(() => false);
+		profileDropdown.update(() => false)
+		notificationOpen.update(() => false)
+		canvasDropdownOpen.update(() => false)
+		freeFormAutoArrangeModal.update(() => false)
+		searchModal.update(() => false)
+		componentToolsBoxModal.update(() => false)
+		environmentModal.update(() => false)
+		tokenModal.update(() => false)
+		storageModal.update(() => false)
+		templateLibraryModal.update(() => false)
+		propertyModal.update(() => false)
+		consoleModal.update(() => false)
 	}
 
 	// Reactive statement to check if the route is protected and the user is authenticated
-	let isProtectedRoute = $page.url.pathname === '/dashboard'; // Strict match for /dashboard
-	let session = $page.data.session;
-	let isAuthenticatedUser = isAuthenticated(session);
+	let isProtectedRoute = $page.url.pathname === '/dashboard' // Strict match for /dashboard
+	let session = $page.data.session
+	let isAuthenticatedUser = isAuthenticated(session)
 </script>
 
 <section class={`bg-website-dark-primary`}>

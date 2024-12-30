@@ -1,53 +1,53 @@
 <script lang="ts">
-	import { fade, scale } from 'svelte/transition';
-	import modal_title_icon from '$lib/icons/Modal_Title_Icon.svg';
-	import modal_cross from '$lib/icons/modal_cross.svg';
-	import { PUBLIC_API_URL } from '$env/static/public';
-	import { getAuthToken } from '$lib/stores/cookie';
-	import { onMount } from 'svelte';
-	import ConfirmationModal from '$lib/components/modals/ConfirmationModal.svelte';
-	import Spinner from '$lib/components/Spinner.svelte';
-	import { toasts } from 'svelte-toasts';
-	import Chart from '../Chart.svelte';
-	import CreditUsageChart from '../CreditUsageChart.svelte';
+	import { fade, scale } from 'svelte/transition'
+	import modal_title_icon from '$lib/icons/Modal_Title_Icon.svg'
+	import modal_cross from '$lib/icons/modal_cross.svg'
+	import { PUBLIC_API_URL } from '$env/static/public'
+	import { getAuthToken } from '$lib/stores/cookie'
+	import { onMount } from 'svelte'
+	import ConfirmationModal from '$lib/components/modals/ConfirmationModal.svelte'
+	import Spinner from '$lib/components/Spinner.svelte'
+	import { toasts } from 'svelte-toasts'
+	import Chart from '../Chart.svelte'
+	import CreditUsageChart from '../CreditUsageChart.svelte'
 
-	const authToken = getAuthToken();
-	const apiUrl = PUBLIC_API_URL;
-	let loading = $state(false);
-	let currentTeam = $state({});
-	let paymentMethodAdded = $state(false);
-	let { toggleBillingInfoModal } = $props();
-	let activeTab = $state('credit-management');
-	let topupThreshold = $state('$0');
-	let topupAmount = $state('$0');
-	let monthlyBudget = $state('$0');
-	let billingUsage = $state();
-	let selectedRange = $state('last_7_days');
-	let confirmationModal = $state(false);
-	let credit_balance = $state(0);
+	const authToken = getAuthToken()
+	const apiUrl = PUBLIC_API_URL
+	let loading = $state(false)
+	let currentTeam = $state({})
+	let paymentMethodAdded = $state(false)
+	let { toggleBillingInfoModal } = $props()
+	let activeTab = $state('credit-management')
+	let topupThreshold = $state('$0')
+	let topupAmount = $state('$0')
+	let monthlyBudget = $state('$0')
+	let billingUsage = $state()
+	let selectedRange = $state('last_7_days')
+	let confirmationModal = $state(false)
+	let credit_balance = $state(0)
 
 	function toggleConfirmationModal() {
-		confirmationModal = !confirmationModal;
+		confirmationModal = !confirmationModal
 	}
 
 	// Handle dropdown change
 	function handleRangeChange(event: Event) {
-		const target = event.target as HTMLSelectElement | null;
+		const target = event.target as HTMLSelectElement | null
 		if (target) {
-			selectedRange = target.value;
+			selectedRange = target.value
 		}
-		FetchBillingUsage();
+		FetchBillingUsage()
 	}
 
 	function setActiveTab(tab: string) {
-		activeTab = tab;
+		activeTab = tab
 	}
 
 	function checkPaymentMethodAdded(currentTeam) {
 		if (currentTeam && (currentTeam.pm_last_four === null || currentTeam.pm_type === null)) {
-			paymentMethodAdded = false;
+			paymentMethodAdded = false
 		} else {
-			paymentMethodAdded = true;
+			paymentMethodAdded = true
 		}
 	}
 
@@ -59,38 +59,38 @@
 					Authorization: `Bearer ${authToken}`,
 					'Content-Type': 'application/json'
 				}
-			});
+			})
 
-			const data = await response.json();
+			const data = await response.json()
 			if (response.ok && data) {
-				toasts.success('Credits added successfully');
-				credit_balance = credit_balance + parseInt(topupAmount.replace('$', ''), 10);
+				toasts.success('Credits added successfully')
+				credit_balance = credit_balance + parseInt(topupAmount.replace('$', ''), 10)
 			} else {
-				console.error('Credits update failed:', data);
+				console.error('Credits update failed:', data)
 			}
 		} catch (error) {
-			console.error('An error occurred during credits update:', error);
+			console.error('An error occurred during credits update:', error)
 		}
 	}
 
 	async function BillingPortal() {
 		try {
-			loading = true;
+			loading = true
 			const response = await fetch(`${apiUrl}/api/v1/billing/portal`, {
 				method: 'GET',
 				headers: {
 					Authorization: `Bearer ${authToken}`,
 					'Content-Type': 'application/json'
 				}
-			});
+			})
 
-			const data = await response.json();
-			loading = false;
+			const data = await response.json()
+			loading = false
 			if (response.ok && data) {
-				window.location.href = data.portal_link;
+				window.location.href = data.portal_link
 			}
 		} catch (error) {
-			console.error('An error occurred during profile fetch:', error);
+			console.error('An error occurred during profile fetch:', error)
 		}
 	}
 
@@ -102,24 +102,24 @@
 					Authorization: `Bearer ${authToken}`,
 					'Content-Type': 'application/json'
 				}
-			});
+			})
 
-			const data = await response.json();
-			console.log(data.data);
+			const data = await response.json()
+			console.log(data.data)
 			if (response.ok && data) {
-				currentTeam = data.data;
-				checkPaymentMethodAdded(currentTeam);
+				currentTeam = data.data
+				checkPaymentMethodAdded(currentTeam)
 				if (currentTeam) {
-					topupThreshold = `$${currentTeam.credit_threshold}`;
-					topupAmount = `$${currentTeam.credit_topup}`;
-					monthlyBudget = `$${currentTeam.monthly_limit}`;
-					credit_balance = currentTeam.credit_balance;
+					topupThreshold = `$${currentTeam.credit_threshold}`
+					topupAmount = `$${currentTeam.credit_topup}`
+					monthlyBudget = `$${currentTeam.monthly_limit}`
+					credit_balance = currentTeam.credit_balance
 				}
 			} else {
-				console.error('Current Team fetch failed:', data);
+				console.error('Current Team fetch failed:', data)
 			}
 		} catch (error) {
-			console.error('An error occurred during team fetch:', error);
+			console.error('An error occurred during team fetch:', error)
 		}
 	}
 
@@ -135,23 +135,23 @@
 				body: JSON.stringify({
 					range: selectedRange
 				})
-			});
+			})
 
-			const data = await response.json();
+			const data = await response.json()
 			if (response.ok && data) {
-				billingUsage = data.data;
-				console.log(billingUsage);
+				billingUsage = data.data
+				console.log(billingUsage)
 			} else {
-				console.error('Current Team fetch failed:', data);
+				console.error('Current Team fetch failed:', data)
 			}
 		} catch (error) {
-			console.error('An error occurred during team fetch:', error);
+			console.error('An error occurred during team fetch:', error)
 		}
 	}
 
 	async function UpdateBillingSettings() {
 		try {
-			loading = true;
+			loading = true
 			const response = await fetch(`${apiUrl}/api/v1/billing/preferences`, {
 				method: 'POST',
 				headers: {
@@ -163,26 +163,26 @@
 					credit_threshold: topupThreshold === '$0' ? 0 : topupThreshold.replace('$', ''),
 					monthly_limit: monthlyBudget === '$0' ? 0 : monthlyBudget.replace('$', '')
 				})
-			});
+			})
 
-			const data = await response.json();
-			console.log(data);
-			loading = false;
+			const data = await response.json()
+			console.log(data)
+			loading = false
 			if (response.ok && data) {
-				toasts.success('Billing settings updated successfully');
+				toasts.success('Billing settings updated successfully')
 			} else {
-				console.error('Billing settings update failed:', data);
+				console.error('Billing settings update failed:', data)
 			}
 		} catch (error) {
-			console.error('An error occurred during billing settings update:', error);
+			console.error('An error occurred during billing settings update:', error)
 		}
 	}
 
 	onMount(() => {
-		document.body.style.overflow = 'hidden';
-		FetchCurrentTeam();
-		FetchBillingUsage();
-	});
+		document.body.style.overflow = 'hidden'
+		FetchCurrentTeam()
+		FetchBillingUsage()
+	})
 </script>
 
 <!-- Background Overlay -->
@@ -222,8 +222,8 @@
 						{
 							text: 'Confirm',
 							onClick: () => {
-								UpdateCredits();
-								toggleConfirmationModal();
+								UpdateCredits()
+								toggleConfirmationModal()
 							},
 							type: 'info'
 						}

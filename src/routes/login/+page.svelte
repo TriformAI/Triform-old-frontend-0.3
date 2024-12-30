@@ -1,21 +1,21 @@
 <script>
-	import { signIn } from '@auth/sveltekit/client';
-	import { PUBLIC_API_URL } from '$env/static/public';
-	import Spinner from '$lib/components/Spinner.svelte';
-	import logo from '$lib/images/Logo.svg';
-	import github_mark_logo from '$lib/images/github-mark-white.svg';
+	import { signIn } from '@auth/sveltekit/client'
+	import { PUBLIC_API_URL } from '$env/static/public'
+	import Spinner from '$lib/components/Spinner.svelte'
+	import logo from '$lib/images/Logo.svg'
+	import github_mark_logo from '$lib/images/github-mark-white.svg'
 
-	let showPassword = false;
-	let email = '';
-	let password = '';
-	let errorMessage = '';
-	let loading = false;
-	const apiUrl = PUBLIC_API_URL;
+	let showPassword = false
+	let email = ''
+	let password = ''
+	let errorMessage = ''
+	let loading = false
+	const apiUrl = PUBLIC_API_URL
 
 	async function handleLogin(event) {
-		event.preventDefault();
-		errorMessage = ''; // Reset error message
-		loading = true; // Show loading state
+		event.preventDefault()
+		errorMessage = '' // Reset error message
+		loading = true // Show loading state
 		try {
 			const response = await fetch(`${apiUrl}/api/v1/login`, {
 				method: 'POST',
@@ -23,36 +23,36 @@
 					'Content-Type': 'application/json'
 				},
 				body: JSON.stringify({ email, password })
-			});
+			})
 
 			if (!response.ok) {
-				const errorData = await response.json();
-				console.log(errorData);
-				errorMessage = errorData.errors || 'Login failed.';
+				const errorData = await response.json()
+				console.log(errorData)
+				errorMessage = errorData.errors || 'Login failed.'
 			} else {
-				const data = await response.json();
+				const data = await response.json()
 
 				// Set the token in a cookie
-				document.cookie = `authToken=${data.token}; Path=/; Max-Age=86400; SameSite=Strict`;
+				document.cookie = `authToken=${data.token}; Path=/; Max-Age=86400; SameSite=Strict`
 
 				//redirect to the dashboard
-				window.location.href = '/dashboard';
+				window.location.href = '/dashboard'
 
 				// You can adjust 'Max-Age' to control the cookie expiration time.
 				// Max-Age=86400 (seconds) sets it to expire after 1 day.
 				// 'SameSite=Strict' prevents it from being sent with cross-site requests.
 			}
 		} catch (error) {
-			console.log(error);
-			errorMessage = 'An error occurred. Please try again.';
+			console.log(error)
+			errorMessage = 'An error occurred. Please try again.'
 		} finally {
-			loading = false; // Hide loading state
+			loading = false // Hide loading state
 		}
 	}
 
 	function handleLoginWithGithub() {
-		document.cookie = 'authType=login; path=/';
-		signIn('github', { callbackUrl: '/dashboard' });
+		document.cookie = 'authType=login; path=/'
+		signIn('github', { callbackUrl: '/dashboard' })
 	}
 </script>
 

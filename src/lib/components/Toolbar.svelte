@@ -1,17 +1,17 @@
 <script lang="ts">
 	// @ts-nocheck
-	import { useSvelteFlow } from '@xyflow/svelte';
+	import { useSvelteFlow } from '@xyflow/svelte'
 
-	import undo_logo from '$lib/icons/undo.svg';
-	import redo_logo from '$lib/icons/redo.svg';
+	import undo_logo from '$lib/icons/undo.svg'
+	import redo_logo from '$lib/icons/redo.svg'
 
-	import zoom_in from '$lib/icons/zoom_in.svg';
-	import zoom_out from '$lib/icons/zoom_out.svg';
-	import fit_screen from '$lib/icons/fit_screen.svg';
-	import grid_icon from '$lib/icons/grid_4x4.svg';
-	import draw_icon from '$lib/icons/draw.svg';
-	import search_icon from '$lib/icons/search.svg';
-	import red_remove from '$lib/icons/red_remove.svg';
+	import zoom_in from '$lib/icons/zoom_in.svg'
+	import zoom_out from '$lib/icons/zoom_out.svg'
+	import fit_screen from '$lib/icons/fit_screen.svg'
+	import grid_icon from '$lib/icons/grid_4x4.svg'
+	import draw_icon from '$lib/icons/draw.svg'
+	import search_icon from '$lib/icons/search.svg'
+	import red_remove from '$lib/icons/red_remove.svg'
 	import {
 		canvasDropdownOpen,
 		canvasToolsModal,
@@ -25,53 +25,53 @@
 		templateLibraryModal,
 		propertyModal,
 		consoleModal
-	} from '$lib/stores/modals';
+	} from '$lib/stores/modals'
 
-	import { iconsStore, toggleIconVisibility } from '../stores/tools';
-	import SearchModals from './modals/SearchModals.svelte';
-	import CanvasDropDownModal from './modals/CanvasDropDownModal.svelte';
-	import FreeFormAutoArrangeModal from './modals/FreeFormAutoArrangeModal.svelte';
-	import ComponentsToolbox from './modals/ComponentsToolbox.svelte';
-	import EnvironmentModal from './modals/EnvironmentModal.svelte';
-	import TokenModal from './modals/TokenModal.svelte';
-	import StorageModal from './modals/StorageModal.svelte';
-	import TemplateLibaryModal from './modals/TemplateLibaryModal.svelte';
-	import PropertyModal from './modals/PropertyModal.svelte';
-	import ConsoleModal from './modals/ConsoleModal.svelte';
-	import { tabs, activeTabId } from '$lib/stores/canvas';
+	import { iconsStore, toggleIconVisibility } from '../stores/tools'
+	import SearchModals from './modals/SearchModals.svelte'
+	import CanvasDropDownModal from './modals/CanvasDropDownModal.svelte'
+	import FreeFormAutoArrangeModal from './modals/FreeFormAutoArrangeModal.svelte'
+	import ComponentsToolbox from './modals/ComponentsToolbox.svelte'
+	import EnvironmentModal from './modals/EnvironmentModal.svelte'
+	import TokenModal from './modals/TokenModal.svelte'
+	import StorageModal from './modals/StorageModal.svelte'
+	import TemplateLibaryModal from './modals/TemplateLibaryModal.svelte'
+	import PropertyModal from './modals/PropertyModal.svelte'
+	import ConsoleModal from './modals/ConsoleModal.svelte'
+	import { tabs, activeTabId } from '$lib/stores/canvas'
 
-	const { zoomOut, zoomIn, fitView } = useSvelteFlow();
+	const { zoomOut, zoomIn, fitView } = useSvelteFlow()
 
-	let icons = $state();
-	iconsStore.subscribe((value) => {
-		icons = value;
-	});
+	let icons = $state()
+	iconsStore.subscribe(value => {
+		icons = value
+	})
 
-	let draggedItemIndex = null;
+	let draggedItemIndex = null
 
-	const handleDragStart = (index) => {
-		draggedItemIndex = index;
-	};
+	const handleDragStart = index => {
+		draggedItemIndex = index
+	}
 
-	const handleDrop = (index) => {
+	const handleDrop = index => {
 		if (draggedItemIndex !== null && draggedItemIndex !== index) {
-			iconsStore.update((iconList) => {
+			iconsStore.update(iconList => {
 				// Filter only toolbar icons and get their actual index in the original store
-				let toolbarIcons = iconList.filter((icon) => icon.visibleOnToolbar);
-				let actualDraggedIndex = iconList.indexOf(toolbarIcons[draggedItemIndex]);
-				let actualDropIndex = iconList.indexOf(toolbarIcons[index]);
+				let toolbarIcons = iconList.filter(icon => icon.visibleOnToolbar)
+				let actualDraggedIndex = iconList.indexOf(toolbarIcons[draggedItemIndex])
+				let actualDropIndex = iconList.indexOf(toolbarIcons[index])
 
 				// Swap the icons in the store
-				[iconList[actualDraggedIndex], iconList[actualDropIndex]] = [
+				;[iconList[actualDraggedIndex], iconList[actualDropIndex]] = [
 					iconList[actualDropIndex],
 					iconList[actualDraggedIndex]
-				];
+				]
 
-				return [...iconList];
-			});
-			draggedItemIndex = null;
+				return [...iconList]
+			})
+			draggedItemIndex = null
 		}
-	};
+	}
 </script>
 
 <div
@@ -127,7 +127,7 @@
 
 	<!-- Central Tools  -->
 	<div class="relative flex items-center gap-x-3 left-10">
-		{#each icons.filter((icon) => icon.visibleOnToolbar) as { id, icon, alt, modalComponent }, index}
+		{#each icons.filter(icon => icon.visibleOnToolbar) as { id, icon, alt, modalComponent }, index}
 			<a
 				href=" "
 				title={alt}
@@ -135,10 +135,10 @@
 				draggable={$canvasToolsModal ? 'true' : 'false'}
 				ondragstart={$canvasToolsModal ? () => handleDragStart(index) : null}
 				ondrop={$canvasToolsModal ? () => handleDrop(index) : null}
-				ondragover={$canvasToolsModal ? (e) => e.preventDefault() : null}
+				ondragover={$canvasToolsModal ? e => e.preventDefault() : null}
 				onclick={() => {
 					if (!$canvasToolsModal) {
-						toggleModal(modalComponent);
+						toggleModal(modalComponent)
 					}
 				}}
 			>

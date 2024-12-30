@@ -1,11 +1,11 @@
 <script lang="ts">
-	import CustomHandle from './CustomHandle.svelte';
-	import Actions from '$lib/icons/Actions.svg';
+	import CustomHandle from './CustomHandle.svelte'
+	import Actions from '$lib/icons/Actions.svg'
 
-	export let data: { name: string };
-	export let selected: boolean = false;
+	export let data: { name: string }
+	export let selected: boolean = false
 
-	const { mode } = data;
+	const { mode } = data
 </script>
 
 <div class="p-2 rounded-full">

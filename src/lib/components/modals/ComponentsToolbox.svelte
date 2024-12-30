@@ -1,39 +1,39 @@
 <script lang="ts">
-	import { get } from 'svelte/store';
-	import { mainAreaRef } from '$lib/stores/layoutRefs';
-	import ToolWindow from '$lib/components/ToolWindow.svelte';
-	import modal_title_icon from '$lib/icons/Modal_Title_Icon.svg';
-	import search_icon from '$lib/icons/search.svg';
-	import Button from '$lib/components/Button.svelte';
-	import Add from '$lib/icons/add.svg';
-	import folder_icon from '$lib/icons/folder.svg';
-	import new_folder from '$lib/icons/new_folder.svg';
-	import dots from '$lib/icons/dots.svg';
-	import DeleteEditModal from './DeleteEditModal.svelte';
-	import { onMount } from 'svelte';
-	import { PUBLIC_API_URL } from '$env/static/public';
-	import { getAuthToken } from '$lib/stores/cookie';
-	import Spinner from '../Spinner.svelte';
-	import Agents from '$lib/icons/Actions.svg';
-	import Actions from '$lib/icons/Agent.svg';
-	import { attachComponentModal, componentToolsBoxModal } from '$lib/stores/modals';
+	import { get } from 'svelte/store'
+	import { mainAreaRef } from '$lib/stores/layoutRefs'
+	import ToolWindow from '$lib/components/ToolWindow.svelte'
+	import modal_title_icon from '$lib/icons/Modal_Title_Icon.svg'
+	import search_icon from '$lib/icons/search.svg'
+	import Button from '$lib/components/Button.svelte'
+	import Add from '$lib/icons/add.svg'
+	import folder_icon from '$lib/icons/folder.svg'
+	import new_folder from '$lib/icons/new_folder.svg'
+	import dots from '$lib/icons/dots.svg'
+	import DeleteEditModal from './DeleteEditModal.svelte'
+	import { onMount } from 'svelte'
+	import { PUBLIC_API_URL } from '$env/static/public'
+	import { getAuthToken } from '$lib/stores/cookie'
+	import Spinner from '../Spinner.svelte'
+	import Agents from '$lib/icons/Actions.svg'
+	import Actions from '$lib/icons/Agent.svg'
+	import { attachComponentModal, componentToolsBoxModal } from '$lib/stores/modals'
 
-	let apiUrl = PUBLIC_API_URL;
-	let authToken = getAuthToken();
+	let apiUrl = PUBLIC_API_URL
+	let authToken = getAuthToken()
 
-	let searchTerm = $state('');
-	let folders = $state([] as { id: string; name: string; type: string; created_at: string }[]);
+	let searchTerm = $state('')
+	let folders = $state([] as { id: string; name: string; type: string; created_at: string }[])
 
-	let showFolderForm = $state(false);
-	let isEditing = $state(false);
-	let editFolderId = $state(null);
-	let folderForm = $state({ name: '' });
-	let nameInput = $state(null); // For auto-focus
-	let error = $state('');
-	let loading = $state(false);
+	let showFolderForm = $state(false)
+	let isEditing = $state(false)
+	let editFolderId = $state(null)
+	let folderForm = $state({ name: '' })
+	let nameInput = $state(null) // For auto-focus
+	let error = $state('')
+	let loading = $state(false)
 
-	let edit_delete_modal = $state(false);
-	let activeIndex = $state(null);
+	let edit_delete_modal = $state(false)
+	let activeIndex = $state(null)
 
 	let actions = $state([
 		{
@@ -44,7 +44,7 @@
 			name: 'Action B',
 			tags: ['Tag A', 'Tag B', 'Tag C']
 		}
-	]);
+	])
 
 	let agents = $state([
 		{
@@ -55,57 +55,57 @@
 			name: 'Agent B',
 			tags: ['Tag A', 'Tag B', 'Tag C']
 		}
-	]);
+	])
 
 	// Variable to keep track of the active tab
-	let activeTab = $state('action');
+	let activeTab = $state('action')
 
 	let filteredFolders = $derived(
-		folders.filter((folder) => folder.name.toLowerCase().includes(searchTerm.toLowerCase()))
-	);
+		folders.filter(folder => folder.name.toLowerCase().includes(searchTerm.toLowerCase()))
+	)
 
 	// Function to set the active tab
 	function setActiveTab(tab) {
-		activeTab = tab;
+		activeTab = tab
 	}
 
 	onMount(() => {
-		fetchFolders();
-	});
+		fetchFolders()
+	})
 
 	// Fetch all folders
 	async function fetchFolders() {
 		try {
-			loading = true;
+			loading = true
 			const response = await fetch(`${apiUrl}/api/v1/folders`, {
 				method: 'GET',
 				headers: {
 					Authorization: `Bearer ${authToken}`
 				}
-			});
-			const data = await response.json();
-			loading = false;
-			folders = data.data.map((item) => ({
+			})
+			const data = await response.json()
+			loading = false
+			folders = data.data.map(item => ({
 				id: item.id,
 				name: item.name,
 				type: item.type,
 				created_at: item.created_at
-			}));
+			}))
 		} catch (error) {
-			loading = false;
-			console.error('Error fetching folders:', error);
+			loading = false
+			console.error('Error fetching folders:', error)
 		}
 	}
 
 	// Save (Create or Update) folder
 	async function saveFolder() {
-		const { name } = folderForm;
+		const { name } = folderForm
 
 		try {
 			const url = isEditing
 				? `${apiUrl}/api/v1/folders/${editFolderId}`
-				: `${apiUrl}/api/v1/folders`;
-			const method = isEditing ? 'PATCH' : 'POST';
+				: `${apiUrl}/api/v1/folders`
+			const method = isEditing ? 'PATCH' : 'POST'
 
 			const response = await fetch(url, {
 				method,
@@ -114,20 +114,20 @@
 					Authorization: `Bearer ${authToken}`
 				},
 				body: JSON.stringify({ name, type: activeTab })
-			});
+			})
 
-			const data = await response.json();
+			const data = await response.json()
 			if (response.ok) {
-				await fetchFolders(); // Refresh folders after saving
-				closeForm();
-				error = ''; // Clear any previous error
+				await fetchFolders() // Refresh folders after saving
+				closeForm()
+				error = '' // Clear any previous error
 			} else {
-				error = data.errors.name || data.errors || '';
-				console.error('Error:', error);
+				error = data.errors.name || data.errors || ''
+				console.error('Error:', error)
 			}
 		} catch (err) {
-			error = 'An unexpected error occurred. Please try again.';
-			console.error('Error saving folder:', err);
+			error = 'An unexpected error occurred. Please try again.'
+			console.error('Error saving folder:', err)
 		}
 	}
 
@@ -139,70 +139,70 @@
 				headers: {
 					Authorization: `Bearer ${authToken}`
 				}
-			});
+			})
 
-			const data = await response.json();
+			const data = await response.json()
 
-			console.log(data);
+			console.log(data)
 
 			if (response.ok) {
-				folders = folders.filter((folder) => folder.id !== id); // Remove from local state
-				error = ''; // Clear any previous error
+				folders = folders.filter(folder => folder.id !== id) // Remove from local state
+				error = '' // Clear any previous error
 			} else {
-				console.error('Error deleting folder');
+				console.error('Error deleting folder')
 			}
 		} catch (err) {
-			error = 'An unexpected error occurred. Please try again.';
-			console.error('Error deleting folder:', err);
+			error = 'An unexpected error occurred. Please try again.'
+			console.error('Error deleting folder:', err)
 		}
 	}
 
 	// Edit a folder
 	function handleEdit(id) {
-		const folder = folders.find((f) => f.id === id);
+		const folder = folders.find(f => f.id === id)
 		if (folder) {
-			isEditing = true;
-			editFolderId = id;
-			folderForm = { name: folder.name };
-			showFolderForm = true;
+			isEditing = true
+			editFolderId = id
+			folderForm = { name: folder.name }
+			showFolderForm = true
 
-			setTimeout(() => nameInput.focus(), 0);
+			setTimeout(() => nameInput.focus(), 0)
 		}
 	}
 
 	// Open form for creating a new folder
 	function openAddFolderForm() {
-		isEditing = false;
-		editFolderId = null;
-		folderForm = { name: '' };
-		showFolderForm = true;
-		error = '';
+		isEditing = false
+		editFolderId = null
+		folderForm = { name: '' }
+		showFolderForm = true
+		error = ''
 
-		setTimeout(() => nameInput.focus(), 0);
+		setTimeout(() => nameInput.focus(), 0)
 	}
 
 	// Close the form and reset state
 	function closeForm() {
-		showFolderForm = false;
-		isEditing = false;
-		editFolderId = null;
-		folderForm = { name: '' };
-		error = '';
+		showFolderForm = false
+		isEditing = false
+		editFolderId = null
+		folderForm = { name: '' }
+		error = ''
 	}
 
 	// Toggle the Edit/Delete modal at the specific index
 	function toggleEditDeleteModal(index) {
 		if (activeIndex === index) {
-			activeIndex = null;
-			edit_delete_modal = false;
+			activeIndex = null
+			edit_delete_modal = false
 		} else {
-			activeIndex = index;
-			edit_delete_modal = true;
+			activeIndex = index
+			edit_delete_modal = true
 		}
 	}
 
 	function toggleModal() {
-		componentToolsBoxModal.update((value) => !value);
+		componentToolsBoxModal.update(value => !value)
 	}
 </script>
 
@@ -300,7 +300,7 @@
 							</button>
 							{#if edit_delete_modal && activeIndex === i}
 								<DeleteEditModal
-									on:click={(e) => e.stopPropagation()}
+									on:click={e => e.stopPropagation()}
 									on:edit={() => handleEdit(folder.id)}
 									on:delete={() => handleDelete(folder.id)}
 								/>
@@ -309,9 +309,9 @@
 								<button
 									type="button"
 									class="w-5 cursor-pointer"
-									onclick={(e) => {
-										e.stopPropagation();
-										toggleEditDeleteModal(i);
+									onclick={e => {
+										e.stopPropagation()
+										toggleEditDeleteModal(i)
 									}}
 								>
 									<img src={dots} alt="dots" class="w-6" />
@@ -372,8 +372,8 @@
 				<Button
 					content={{ width: 'full', icon: Add, text: 'New Action' }}
 					on:click={() => {
-						componentToolsBoxModal.update(() => false);
-						attachComponentModal.update(() => true);
+						componentToolsBoxModal.update(() => false)
+						attachComponentModal.update(() => true)
 					}}
 				/>
 			{:else if activeTab === 'agent'}

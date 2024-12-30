@@ -1,41 +1,41 @@
 <script lang="ts">
-	import { scale } from 'svelte/transition';
-	import { onDestroy } from 'svelte';
-	import modal_title_icon from '$lib/icons/Modal_Title_Icon.svg';
-	import modal_cross from '$lib/icons/modal_cross.svg';
-	import { PUBLIC_API_URL } from '$env/static/public';
-	import { getAuthToken } from '$lib/stores/cookie';
+	import { scale } from 'svelte/transition'
+	import { onDestroy } from 'svelte'
+	import modal_title_icon from '$lib/icons/Modal_Title_Icon.svg'
+	import modal_cross from '$lib/icons/modal_cross.svg'
+	import { PUBLIC_API_URL } from '$env/static/public'
+	import { getAuthToken } from '$lib/stores/cookie'
 
-	let { togglePasswordResetModal } = $props();
-	let current_password = $state('');
-	let new_password = $state('');
-	let confirm_new_password = $state('');
-	const apiUrl = PUBLIC_API_URL;
-	const authToken = getAuthToken();
-	let changePasswordStatus = $state('Change Password');
-	let error: string[] = $state([]);
+	let { togglePasswordResetModal } = $props()
+	let current_password = $state('')
+	let new_password = $state('')
+	let confirm_new_password = $state('')
+	const apiUrl = PUBLIC_API_URL
+	const authToken = getAuthToken()
+	let changePasswordStatus = $state('Change Password')
+	let error: string[] = $state([])
 
 	async function changePassword() {
 		if (!current_password || !new_password || !confirm_new_password) {
 			// push error message to error array
-			error.push('All fields are required');
+			error.push('All fields are required')
 			setTimeout(() => {
-				error = [];
-			}, 3000);
-			return;
+				error = []
+			}, 3000)
+			return
 		}
 
 		if (new_password !== confirm_new_password) {
 			// push error message to error array
-			error.push('Passwords do not match');
+			error.push('Passwords do not match')
 			setTimeout(() => {
-				error = [];
-			}, 3000);
-			return;
+				error = []
+			}, 3000)
+			return
 		}
 		// API call to change password
 		try {
-			changePasswordStatus = 'Changing...';
+			changePasswordStatus = 'Changing...'
 			const response = await fetch(`${apiUrl}/api/v1/user/password`, {
 				method: 'PATCH',
 				headers: {
@@ -47,30 +47,30 @@
 					password: new_password,
 					password_confirmation: confirm_new_password
 				})
-			});
+			})
 
-			const data = await response.json();
-			console.log(data);
+			const data = await response.json()
+			console.log(data)
 			if (response.ok) {
-				changePasswordStatus = 'Changed';
+				changePasswordStatus = 'Changed'
 				setTimeout(() => {
-					togglePasswordResetModal();
-				}, 1000);
+					togglePasswordResetModal()
+				}, 1000)
 			} else {
-				changePasswordStatus = 'Change Password';
-				error.push(data.errors.current_password[0]);
+				changePasswordStatus = 'Change Password'
+				error.push(data.errors.current_password[0])
 				setTimeout(() => {
-					error = [];
-				}, 3000);
+					error = []
+				}, 3000)
 			}
 		} catch (error) {
-			console.error(error);
+			console.error(error)
 		}
 	}
 
 	onDestroy(() => {
-		document.body.style.overflow = 'auto'; // Enable scrolling
-	});
+		document.body.style.overflow = 'auto' // Enable scrolling
+	})
 </script>
 
 <!-- Background Overlay -->

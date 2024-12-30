@@ -1,14 +1,14 @@
 <script>
-	import { onMount } from 'svelte';
-	import { writable } from 'svelte/store';
-	import { SvelteFlow, Background } from '@xyflow/svelte';
+	import { onMount } from 'svelte'
+	import { writable } from 'svelte/store'
+	import { SvelteFlow, Background } from '@xyflow/svelte'
 
-	import { mainAreaRef } from '$lib/stores/layoutRefs';
+	import { mainAreaRef } from '$lib/stores/layoutRefs'
 	// 👇 this is important! You need to import the styles for Svelte Flow to work
-	import '@xyflow/svelte/dist/style.css';
+	import '@xyflow/svelte/dist/style.css'
 
-	import CanvasToolsModal from '$lib/components/modals/CanvasToolsModal.svelte';
-	import CreateModuleModal from '$lib/components/modals/CreateModuleModal.svelte';
+	import CanvasToolsModal from '$lib/components/modals/CanvasToolsModal.svelte'
+	import CreateModuleModal from '$lib/components/modals/CreateModuleModal.svelte'
 	import {
 		canvasToolsModal,
 		moduleInfoModal,
@@ -23,71 +23,71 @@
 		accountInformationModal,
 		billingInformationModal,
 		teamInformationModal
-	} from '$lib/stores/modals';
-	import StatusModal from '$lib/components/modals/StatusModal.svelte';
-	import ThresholdAlertModal from '$lib/components/modals/ThresholdAlertModal.svelte';
-	import AttachTemplate from '$lib/components/modals/AttachTemplate.svelte';
-	import ModuleInfoModal from '$lib/components/modals/ModuleInfoModal.svelte';
-	import ActionNode from '$lib/components/custom-nodes/ActionNode.svelte';
-	import AgentNode from '$lib/components/custom-nodes/AgentNode.svelte';
-	import ApiNode from '$lib/components/custom-nodes/ApiNode.svelte';
-	import TemplateDetailsModal from '$lib/components/modals/TemplateDetailsModal.svelte';
-	import ShareCanvaModal from '$lib/components/modals/ShareCanvaModal.svelte';
-	import AttachComponent from '$lib/components/modals/AttachComponent.svelte';
-	import AccountInformationModal from '$lib/components/modals/AccountInformationModal.svelte';
-	import BillingInformationModal from '$lib/components/modals/BillingInformationModal.svelte';
-	import TeamInformationModal from '$lib/components/modals/TeamInformationModal.svelte';
+	} from '$lib/stores/modals'
+	import StatusModal from '$lib/components/modals/StatusModal.svelte'
+	import ThresholdAlertModal from '$lib/components/modals/ThresholdAlertModal.svelte'
+	import AttachTemplate from '$lib/components/modals/AttachTemplate.svelte'
+	import ModuleInfoModal from '$lib/components/modals/ModuleInfoModal.svelte'
+	import ActionNode from '$lib/components/custom-nodes/ActionNode.svelte'
+	import AgentNode from '$lib/components/custom-nodes/AgentNode.svelte'
+	import ApiNode from '$lib/components/custom-nodes/ApiNode.svelte'
+	import TemplateDetailsModal from '$lib/components/modals/TemplateDetailsModal.svelte'
+	import ShareCanvaModal from '$lib/components/modals/ShareCanvaModal.svelte'
+	import AttachComponent from '$lib/components/modals/AttachComponent.svelte'
+	import AccountInformationModal from '$lib/components/modals/AccountInformationModal.svelte'
+	import BillingInformationModal from '$lib/components/modals/BillingInformationModal.svelte'
+	import TeamInformationModal from '$lib/components/modals/TeamInformationModal.svelte'
 
 	const toggleAttachComponentModal = () => {
-		createModuleModal.update(() => false);
-		attachTemplateModal.update(() => false);
-		attachComponentModal.update((value) => !value);
-	};
+		createModuleModal.update(() => false)
+		attachTemplateModal.update(() => false)
+		attachComponentModal.update(value => !value)
+	}
 
 	const toggleCreateModuleModal = () => {
-		attachComponentModal.update(() => false);
-		attachTemplateModal.update(() => false);
-		createModuleModal.update((value) => !value);
-	};
+		attachComponentModal.update(() => false)
+		attachTemplateModal.update(() => false)
+		createModuleModal.update(value => !value)
+	}
 
 	const toggleAttachTemplateModal = () => {
-		attachComponentModal.update(() => false);
-		createModuleModal.update(() => false);
-		attachTemplateModal.update((value) => !value);
-	};
+		attachComponentModal.update(() => false)
+		createModuleModal.update(() => false)
+		attachTemplateModal.update(value => !value)
+	}
 
 	const toggleModuleInfoModal = () => {
-		attachComponentModal.update(() => false);
-		attachTemplateModal.update(() => false);
-		moduleInfoModal.update((value) => !value);
-	};
+		attachComponentModal.update(() => false)
+		attachTemplateModal.update(() => false)
+		moduleInfoModal.update(value => !value)
+	}
 
 	const toggleTemplateModal = () => {
-		templateLibraryModal.update(() => false);
-		templateModal.update((value) => !value);
-	};
+		templateLibraryModal.update(() => false)
+		templateModal.update(value => !value)
+	}
 
 	const toggleShareCanvaModal = () => {
-		shareCanvaModal.update((value) => !value);
-	};
+		shareCanvaModal.update(value => !value)
+	}
 
 	const toggleAccountInfoModal = () => {
-		accountInformationModal.update((value) => !value);
-	};
+		accountInformationModal.update(value => !value)
+	}
 
 	const toggleBillingInfoModal = () => {
-		billingInformationModal.update((value) => !value);
-	};
+		billingInformationModal.update(value => !value)
+	}
 
 	const toggleTeamInfoModal = () => {
-		teamInformationModal.update((value) => !value);
-	};
+		teamInformationModal.update(value => !value)
+	}
 
 	const nodeTypes = {
 		'action-node': ActionNode,
 		'agent-node': AgentNode,
 		'api-node': ApiNode
-	};
+	}
 
 	// We are using writables for the nodes and edges to sync them easily. When a user drags a node for example, Svelte Flow updates its position.
 	const nodes = writable([
@@ -145,7 +145,7 @@
 				mode: 'error'
 			}
 		}
-	]);
+	])
 
 	// same for edges
 	const edges = writable([
@@ -185,19 +185,19 @@
 			target: '3',
 			animated: true
 		}
-	]);
+	])
 
-	const snapGrid = [1, 1];
+	const snapGrid = [1, 1]
 
-	const proOptions = { hideAttribution: true };
+	const proOptions = { hideAttribution: true }
 
 	const defaultEdgeOptions = {
 		animated: true // Ensures all edges are animated
-	};
-	let instance;
+	}
+	let instance
 	onMount(() => {
-		mainAreaRef.set(instance);
-	});
+		mainAreaRef.set(instance)
+	})
 </script>
 
 <section class="h-[calc(100vh-156.1px)]" bind:this={instance}>

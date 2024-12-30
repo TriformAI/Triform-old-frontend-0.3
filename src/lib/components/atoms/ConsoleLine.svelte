@@ -1,6 +1,6 @@
 <script>
-	import cn from 'classnames';
-	var { type = 'normal', children } = $props();
+	import cn from 'classnames'
+	var { type = 'normal', children } = $props()
 </script>
 
 <pre

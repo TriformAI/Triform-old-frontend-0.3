@@ -1,10 +1,10 @@
 <script lang="ts">
-	import { Handle } from '@xyflow/svelte';
+	import { Handle } from '@xyflow/svelte'
 
-	export let type: 'source' | 'target';
-	import type { Position } from '@xyflow/svelte';
-	export let position: Position;
-	export let id: string | undefined;
+	export let type: 'source' | 'target'
+	import type { Position } from '@xyflow/svelte'
+	export let position: Position
+	export let id: string | undefined
 </script>
 
 <div class="relative">

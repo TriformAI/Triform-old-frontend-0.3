@@ -1,24 +1,24 @@
 <script>
-	import { fade, scale } from 'svelte/transition';
-	import { PUBLIC_API_URL } from '$env/static/public';
+	import { fade, scale } from 'svelte/transition'
+	import { PUBLIC_API_URL } from '$env/static/public'
 
-	import account from '$lib/icons/account.svg';
-	import billing from '$lib/icons/billings.svg';
-	import team_settings from '$lib/icons/team.svg';
-	import settings from '$lib/icons/settings.svg';
-	import logout from '$lib/icons/logout.svg';
-	import { getAuthToken, removeCookie } from '$lib/stores/cookie';
-	import { page } from '$app/stores';
-	import { signOut } from '@auth/sveltekit/client';
+	import account from '$lib/icons/account.svg'
+	import billing from '$lib/icons/billings.svg'
+	import team_settings from '$lib/icons/team.svg'
+	import settings from '$lib/icons/settings.svg'
+	import logout from '$lib/icons/logout.svg'
+	import { getAuthToken, removeCookie } from '$lib/stores/cookie'
+	import { page } from '$app/stores'
+	import { signOut } from '@auth/sveltekit/client'
 	import {
 		accountInformationModal,
 		profileDropdown,
 		billingInformationModal,
 		teamInformationModal
-	} from '$lib/stores/modals';
+	} from '$lib/stores/modals'
 
-	const apiUrl = PUBLIC_API_URL;
-	const authToken = getAuthToken();
+	const apiUrl = PUBLIC_API_URL
+	const authToken = getAuthToken()
 
 	// Function to handle logout
 	async function handleLogout() {
@@ -31,27 +31,27 @@
 						Authorization: `Bearer ${authToken}`,
 						'Content-Type': 'application/json'
 					}
-				});
+				})
 
-				const data = await response.json();
-				console.log(data);
+				const data = await response.json()
+				console.log(data)
 				if (response.ok) {
-					removeCookie('authToken');
+					removeCookie('authToken')
 					if ($page.data.session) {
-						signOut();
+						signOut()
 					}
-					window.location.href = '/login';
+					window.location.href = '/login'
 				} else {
-					console.error('Logout failed:', data);
-					return;
+					console.error('Logout failed:', data)
+					return
 				}
 			} else {
-				console.log('No auth token found.');
-				window.location.href = '/login';
-				return;
+				console.log('No auth token found.')
+				window.location.href = '/login'
+				return
 			}
 		} catch (error) {
-			console.error('An error occurred during logout:', error);
+			console.error('An error occurred during logout:', error)
 		}
 	}
 </script>
@@ -63,8 +63,8 @@
 >
 	<button
 		on:click={() => {
-			profileDropdown.set(false);
-			accountInformationModal.set(true);
+			profileDropdown.set(false)
+			accountInformationModal.set(true)
 		}}
 		class="flex items-center w-full px-10 py-4 text-md gap-x-4 hover:bg-website-tertiary rounded-t-2xl"
 	>
@@ -73,8 +73,8 @@
 	</button>
 	<button
 		on:click={() => {
-			profileDropdown.set(false);
-			billingInformationModal.set(true);
+			profileDropdown.set(false)
+			billingInformationModal.set(true)
 		}}
 		class="flex items-center w-full px-10 py-4 text-md gap-x-4 hover:bg-website-tertiary"
 	>
@@ -83,8 +83,8 @@
 	</button>
 	<button
 		on:click={() => {
-			profileDropdown.set(false);
-			teamInformationModal.set(true);
+			profileDropdown.set(false)
+			teamInformationModal.set(true)
 		}}
 		class="flex items-center w-full px-10 py-4 text-md gap-x-4 hover:bg-website-tertiary"
 	>

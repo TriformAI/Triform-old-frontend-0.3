@@ -1,18 +1,18 @@
 <script lang="ts">
-	import { scale } from 'svelte/transition';
-	import Button from '$lib/components/Button.svelte';
-	import modal_title_icon from '$lib/icons/Modal_Title_Icon.svg';
-	import modal_cross from '$lib/icons/modal_cross.svg';
-	import { PUBLIC_API_URL } from '$env/static/public';
-	import { getAuthToken } from '$lib/stores/cookie';
-	import { onMount } from 'svelte';
+	import { scale } from 'svelte/transition'
+	import Button from '$lib/components/Button.svelte'
+	import modal_title_icon from '$lib/icons/Modal_Title_Icon.svg'
+	import modal_cross from '$lib/icons/modal_cross.svg'
+	import { PUBLIC_API_URL } from '$env/static/public'
+	import { getAuthToken } from '$lib/stores/cookie'
+	import { onMount } from 'svelte'
 
-	let { toggleCreateModuleModal, toggleAttachTemplateModal, toggleAttachComponentModal } = $props();
+	let { toggleCreateModuleModal, toggleAttachTemplateModal, toggleAttachComponentModal } = $props()
 
-	let environmentVariables = $state([]);
+	let environmentVariables = $state([])
 
-	let apiUrl = PUBLIC_API_URL;
-	let authToken = getAuthToken();
+	let apiUrl = PUBLIC_API_URL
+	let authToken = getAuthToken()
 
 	async function fetchEnvironmentVariables() {
 		try {
@@ -21,23 +21,23 @@
 				headers: {
 					Authorization: `Bearer ${authToken}`
 				}
-			});
-			const data = await response.json();
+			})
+			const data = await response.json()
 			environmentVariables = data.data.map((item: { id: string; name: string; value: string }) => ({
 				id: item.id,
 				key: item.name,
 				value: item.value,
 				visible: false
-			}));
+			}))
 		} catch (error) {
-			console.error('Error fetching variables:', error);
+			console.error('Error fetching variables:', error)
 		}
 	}
 
 	onMount(() => {
-		fetchEnvironmentVariables();
-		document.body.style.overflow = 'hidden'; // Disable scrolling
-	});
+		fetchEnvironmentVariables()
+		document.body.style.overflow = 'hidden' // Disable scrolling
+	})
 </script>
 
 <!-- Background Overlay -->

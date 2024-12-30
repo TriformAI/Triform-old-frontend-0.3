@@ -1,17 +1,17 @@
 <script lang="ts">
-	import { fade, scale } from 'svelte/transition';
-	import modal_title_icon from '$lib/icons/Modal_Title_Icon.svg';
-	import modal_cross from '$lib/icons/modal_cross.svg';
-	import green_plus from '$lib/icons/green_add.svg';
-	import { canvasToolsModal } from '$lib/stores/modals';
-	import { toggleIconVisibility } from '$lib/stores/tools';
-	import Button from '$lib/components/Button.svelte';
-	import { iconsStore } from '$lib/stores/tools';
+	import { fade, scale } from 'svelte/transition'
+	import modal_title_icon from '$lib/icons/Modal_Title_Icon.svg'
+	import modal_cross from '$lib/icons/modal_cross.svg'
+	import green_plus from '$lib/icons/green_add.svg'
+	import { canvasToolsModal } from '$lib/stores/modals'
+	import { toggleIconVisibility } from '$lib/stores/tools'
+	import Button from '$lib/components/Button.svelte'
+	import { iconsStore } from '$lib/stores/tools'
 
-	let moreIcons: { id: number; icon: string; alt: string; visibleOnToolbar: boolean }[] = [];
-	iconsStore.subscribe((value) => {
-		moreIcons = value.filter((icon) => !icon.visibleOnToolbar);
-	});
+	let moreIcons: { id: number; icon: string; alt: string; visibleOnToolbar: boolean }[] = []
+	iconsStore.subscribe(value => {
+		moreIcons = value.filter(icon => !icon.visibleOnToolbar)
+	})
 </script>
 
 <div class="fixed inset-0 z-40 bg-black top-[6.5rem] bg-opacity-20 backdrop-blur-lg"></div>

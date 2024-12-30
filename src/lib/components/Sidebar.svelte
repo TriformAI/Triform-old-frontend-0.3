@@ -1,10 +1,10 @@
 <script>
-	import logo from '../images/Logo.svg';
-	import { page } from '$app/stores';
+	import logo from '../images/Logo.svg'
+	import { page } from '$app/stores'
 
-	let currentPath = $derived($page.url.pathname);
+	let currentPath = $derived($page.url.pathname)
 
-	let menu = true; // Example state to control sidebar open/close
+	let menu = true // Example state to control sidebar open/close
 </script>
 
 <div

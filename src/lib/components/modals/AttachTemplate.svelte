@@ -1,13 +1,13 @@
 <script lang="ts">
-	import { scale } from 'svelte/transition';
-	import Button from '$lib/components/Button.svelte';
-	import modal_title_icon from '$lib/icons/Modal_Title_Icon.svg';
-	import modal_cross from '$lib/icons/modal_cross.svg';
-	import search_icon from '$lib/icons/search.svg';
+	import { scale } from 'svelte/transition'
+	import Button from '$lib/components/Button.svelte'
+	import modal_title_icon from '$lib/icons/Modal_Title_Icon.svg'
+	import modal_cross from '$lib/icons/modal_cross.svg'
+	import search_icon from '$lib/icons/search.svg'
 
-	let searchTerm = $state('');
+	let searchTerm = $state('')
 
-	let { toggleAttachTemplateModal, toggleCreateModuleModal, toggleModuleInfoModal } = $props();
+	let { toggleAttachTemplateModal, toggleCreateModuleModal, toggleModuleInfoModal } = $props()
 
 	let templates = $state([
 		{
@@ -38,38 +38,38 @@
 			tags: ['tag1', 'tag2', 'tag3'],
 			selected: false
 		}
-	]);
+	])
 
 	// Track selection for "Start with a Blank Action"
-	let isBlankActionSelected = $state(false);
+	let isBlankActionSelected = $state(false)
 
 	function selectTemplate(selectedTemplate: {
-		name: string;
-		description: string;
-		tags: string[];
-		selected: boolean;
+		name: string
+		description: string
+		tags: string[]
+		selected: boolean
 	}) {
 		// Deselect all templates and the "Blank Action" option
-		templates = templates.map((template) => {
-			return { ...template, selected: template === selectedTemplate };
-		});
-		isBlankActionSelected = false;
+		templates = templates.map(template => {
+			return { ...template, selected: template === selectedTemplate }
+		})
+		isBlankActionSelected = false
 	}
 
 	function selectBlankAction() {
 		// Deselect all templates
-		templates.forEach((template) => (template.selected = false));
-		templates = templates.map((template) => {
-			return { ...template, selected: false };
-		});
+		templates.forEach(template => (template.selected = false))
+		templates = templates.map(template => {
+			return { ...template, selected: false }
+		})
 		// Select the "Blank Action" option
-		isBlankActionSelected = true;
+		isBlankActionSelected = true
 	}
 
 	// Computed property to filter variables based on searchTerm
 	let filteredTemplates = $derived(
-		templates.filter((template) => template.name.toLowerCase().includes(searchTerm.toLowerCase()))
-	);
+		templates.filter(template => template.name.toLowerCase().includes(searchTerm.toLowerCase()))
+	)
 </script>
 
 <!-- Background Overlay -->

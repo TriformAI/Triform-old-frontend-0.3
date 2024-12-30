@@ -1,11 +1,11 @@
 <script>
-	import './welcome.css';
-	import logo from '$lib/images/Logo.svg';
-	import python_logo from '$lib/images/Python.svg';
-	import serverless_logo from '$lib/images/Serverless.svg';
-	import security_logo from '$lib/images/Security.svg';
-	import homepage_vid from '$lib/videos/Homepage.mp4';
-	import firstblockgradient from '$lib/images/firstblockgradientbelow.svg';
+	import './welcome.css'
+	import logo from '$lib/images/Logo.svg'
+	import python_logo from '$lib/images/Python.svg'
+	import serverless_logo from '$lib/images/Serverless.svg'
+	import security_logo from '$lib/images/Security.svg'
+	import homepage_vid from '$lib/videos/Homepage.mp4'
+	import firstblockgradient from '$lib/images/firstblockgradientbelow.svg'
 </script>
 
 <section class="bg-[#030712] welcome z-[-1]">

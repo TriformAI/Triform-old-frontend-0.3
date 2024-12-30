@@ -1,36 +1,36 @@
 <script lang="ts">
-	import { fade, scale } from 'svelte/transition';
-	import modal_title_icon from '$lib/icons/Modal_Title_Icon.svg';
-	import modal_cross from '$lib/icons/modal_cross.svg';
-	import { PUBLIC_API_URL } from '$env/static/public';
-	import { PUBLIC_PRODUCTION } from '$env/static/public';
-	import profile_logo from '$lib/images/profile_logo.png';
-	import { getAuthToken } from '$lib/stores/cookie';
-	import { onMount } from 'svelte';
-	import ConfirmationModal from '$lib/components/modals/ConfirmationModal.svelte';
-	import Spinner from '$lib/components/Spinner.svelte';
-	import { toasts } from 'svelte-toasts';
-	import { profilePic } from '$lib/stores/profile';
+	import { fade, scale } from 'svelte/transition'
+	import modal_title_icon from '$lib/icons/Modal_Title_Icon.svg'
+	import modal_cross from '$lib/icons/modal_cross.svg'
+	import { PUBLIC_API_URL } from '$env/static/public'
+	import { PUBLIC_PRODUCTION } from '$env/static/public'
+	import profile_logo from '$lib/images/profile_logo.png'
+	import { getAuthToken } from '$lib/stores/cookie'
+	import { onMount } from 'svelte'
+	import ConfirmationModal from '$lib/components/modals/ConfirmationModal.svelte'
+	import Spinner from '$lib/components/Spinner.svelte'
+	import { toasts } from 'svelte-toasts'
+	import { profilePic } from '$lib/stores/profile'
 
-	const apiUrl = PUBLIC_API_URL;
-	const production = PUBLIC_PRODUCTION === 'true' ? true : false;
-	const authToken = getAuthToken();
-	const profile = $state<{ name: string; email: string }>({ name: '', email: '' });
-	let teamName = $state({});
-	let updateStatus = $state('Save');
-	let addingStatus = $state('Invite');
+	const apiUrl = PUBLIC_API_URL
+	const production = PUBLIC_PRODUCTION === 'true' ? true : false
+	const authToken = getAuthToken()
+	const profile = $state<{ name: string; email: string }>({ name: '', email: '' })
+	let teamName = $state({})
+	let updateStatus = $state('Save')
+	let addingStatus = $state('Invite')
 
-	let confirmationModal = $state(false);
-	let profilePicLoading = $state(false);
-	let email = $state('');
-	let role = $state('admin');
+	let confirmationModal = $state(false)
+	let profilePicLoading = $state(false)
+	let email = $state('')
+	let role = $state('admin')
 
-	let { toggleTeamInfoModal } = $props();
-	let currentTeam = $state<{ id: string; name: string }>({ id: '', name: '' });
-	let invitations = $state<{ id: string; email: string }[]>([]);
+	let { toggleTeamInfoModal } = $props()
+	let currentTeam = $state<{ id: string; name: string }>({ id: '', name: '' })
+	let invitations = $state<{ id: string; email: string }[]>([])
 
 	function toggleConfirmationModal() {
-		confirmationModal = !confirmationModal;
+		confirmationModal = !confirmationModal
 	}
 
 	async function fetchProfile() {
@@ -41,18 +41,18 @@
 					Authorization: `Bearer ${authToken}`,
 					'Content-Type': 'application/json'
 				}
-			});
+			})
 
-			const data = await response.json();
+			const data = await response.json()
 			if (response.ok && data.data) {
-				Object.assign(profile, data.data);
+				Object.assign(profile, data.data)
 			}
 			if (!response.ok) {
-				console.error('Profile fetch failed:', data);
-				return;
+				console.error('Profile fetch failed:', data)
+				return
 			}
 		} catch (error) {
-			console.error('An error occurred during profile fetch:', error);
+			console.error('An error occurred during profile fetch:', error)
 		}
 	}
 
@@ -64,23 +64,23 @@
 					Authorization: `Bearer ${authToken}`,
 					'Content-Type': 'application/json'
 				}
-			});
+			})
 
-			const data = await response.json();
+			const data = await response.json()
 			if (response.ok && data) {
-				currentTeam = data.data;
-				teamName = data.data.name;
+				currentTeam = data.data
+				teamName = data.data.name
 			} else {
-				console.error('Current Team fetch failed:', data);
+				console.error('Current Team fetch failed:', data)
 			}
 		} catch (error) {
-			console.error('An error occurred during team fetch:', error);
+			console.error('An error occurred during team fetch:', error)
 		}
 	}
 
 	async function updateTeamName() {
 		try {
-			updateStatus = 'Saving...';
+			updateStatus = 'Saving...'
 			const response = await fetch(`${apiUrl}/api/v1/teams/${currentTeam.id}`, {
 				method: 'PATCH',
 				headers: {
@@ -90,23 +90,23 @@
 				body: JSON.stringify({
 					name: teamName
 				})
-			});
+			})
 
-			const data = await response.json();
+			const data = await response.json()
 
 			if (response.ok && data) {
-				toasts.success(`Team name updated to ${teamName}`);
-				updateStatus = 'Saved!';
+				toasts.success(`Team name updated to ${teamName}`)
+				updateStatus = 'Saved!'
 				setTimeout(() => {
-					updateStatus = 'Save';
-				}, 2000);
+					updateStatus = 'Save'
+				}, 2000)
 			} else {
-				updateStatus = 'Save';
-				console.error('Team name update failed:', data);
+				updateStatus = 'Save'
+				console.error('Team name update failed:', data)
 			}
 		} catch (error) {
-			updateStatus = 'Save';
-			console.error('An error occurred during team name update:', error);
+			updateStatus = 'Save'
+			console.error('An error occurred during team name update:', error)
 		}
 	}
 
@@ -118,40 +118,40 @@
 					Authorization: `Bearer ${authToken}`,
 					'Content-Type': 'application/json'
 				}
-			});
+			})
 
-			const data = await response.json();
+			const data = await response.json()
 			if (response.ok && data.data) {
-				invitations = data.data;
+				invitations = data.data
 			}
 			if (!response.ok) {
-				console.error('Invitations fetch failed:', data);
-				return;
+				console.error('Invitations fetch failed:', data)
+				return
 			}
 		} catch (error) {
-			console.error('An error occurred during invitations fetch:', error);
+			console.error('An error occurred during invitations fetch:', error)
 		}
 	}
 
 	async function createInvitation() {
 		if (!email) {
-			toasts.error('Please enter an email address');
-			return;
+			toasts.error('Please enter an email address')
+			return
 		}
 
 		if (!role && !currentTeam) {
-			return;
+			return
 		}
 
 		//validate email
-		const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+		const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
 		if (!emailRegex.test(email)) {
-			toasts.error('Please enter a valid email address');
-			return;
+			toasts.error('Please enter a valid email address')
+			return
 		}
 
 		try {
-			addingStatus = 'Sending...';
+			addingStatus = 'Sending...'
 			const response = await fetch(`${apiUrl}/api/v1/teams/${currentTeam.id}/invite`, {
 				method: 'POST',
 				headers: {
@@ -162,26 +162,26 @@
 					email,
 					role
 				})
-			});
+			})
 
-			const data = await response.json();
+			const data = await response.json()
 
 			if (response.ok && data.type === 'success') {
-				fetchInvitations();
-				toasts.success(`Team invitation sent to ${email}`);
-				addingStatus = 'Sent!';
+				fetchInvitations()
+				toasts.success(`Team invitation sent to ${email}`)
+				addingStatus = 'Sent!'
 				setTimeout(() => {
-					addingStatus = 'Add';
-				}, 2000);
+					addingStatus = 'Add'
+				}, 2000)
 			}
 			if (!response.ok) {
-				addingStatus = 'Add';
-				console.error('Invitation creation failed:', data);
-				return;
+				addingStatus = 'Add'
+				console.error('Invitation creation failed:', data)
+				return
 			}
 		} catch (error) {
-			addingStatus = 'Add';
-			console.error('An error occurred during invitation creation:', error);
+			addingStatus = 'Add'
+			console.error('An error occurred during invitation creation:', error)
 		}
 	}
 
@@ -193,27 +193,27 @@
 					Authorization: `Bearer ${authToken}`,
 					'Content-Type': 'application/json'
 				}
-			});
+			})
 
-			const data = await response.json();
+			const data = await response.json()
 			if (response.ok && data) {
-				fetchInvitations();
+				fetchInvitations()
 			}
 			if (!response.ok) {
-				console.error('Invitation decline failed:', data);
-				return;
+				console.error('Invitation decline failed:', data)
+				return
 			}
 		} catch (error) {
-			console.error('An error occurred during invitation decline:', error);
+			console.error('An error occurred during invitation decline:', error)
 		}
 	}
 
 	onMount(() => {
-		document.body.style.overflow = 'hidden';
-		fetchProfile();
-		FetchCurrentTeam();
-		fetchInvitations();
-	});
+		document.body.style.overflow = 'hidden'
+		fetchProfile()
+		FetchCurrentTeam()
+		fetchInvitations()
+	})
 </script>
 
 <!-- Background Overlay -->
@@ -253,7 +253,7 @@
 						{
 							text: 'Delete',
 							onClick: () => {
-								console.log('delete');
+								console.log('delete')
 							},
 							type: 'error'
 						}
@@ -332,7 +332,7 @@
 							<div
 								class="p-4 cursor-pointer hover:bg-white/5"
 								onclick={() => (role = 'admin')}
-								onkeydown={(e) => e.key === 'Enter' && (role = 'admin')}
+								onkeydown={e => e.key === 'Enter' && (role = 'admin')}
 								role="button"
 								tabindex="0"
 							>
@@ -364,7 +364,7 @@
 							<div
 								class="p-4 cursor-pointer hover:bg-white/5"
 								onclick={() => (role = 'editor')}
-								onkeydown={(e) => e.key === 'Enter' && (role = 'editor')}
+								onkeydown={e => e.key === 'Enter' && (role = 'editor')}
 								role="button"
 								tabindex="0"
 							>

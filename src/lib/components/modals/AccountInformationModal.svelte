@@ -1,38 +1,38 @@
 <script>
-	import { fade, scale } from 'svelte/transition';
-	import { signOut } from '@auth/sveltekit/client';
-	import { removeCookie } from '$lib/stores/cookie';
-	import modal_title_icon from '$lib/icons/Modal_Title_Icon.svg';
-	import modal_cross from '$lib/icons/modal_cross.svg';
-	import { PUBLIC_API_URL } from '$env/static/public';
-	import profile_logo from '$lib/images/profile_logo.png';
-	import { PUBLIC_PRODUCTION } from '$env/static/public';
-	import { getAuthToken } from '$lib/stores/cookie';
-	import { onMount } from 'svelte';
-	import { page } from '$app/stores';
-	import ConfirmationModal from '$lib/components/modals/ConfirmationModal.svelte';
-	import PasswordResetModal from './PasswordResetModal.svelte';
-	import Spinner from '$lib/components/Spinner.svelte';
-	import { toasts } from 'svelte-toasts';
-	import { profilePic } from '$lib/stores/profile';
+	import { fade, scale } from 'svelte/transition'
+	import { signOut } from '@auth/sveltekit/client'
+	import { removeCookie } from '$lib/stores/cookie'
+	import modal_title_icon from '$lib/icons/Modal_Title_Icon.svg'
+	import modal_cross from '$lib/icons/modal_cross.svg'
+	import { PUBLIC_API_URL } from '$env/static/public'
+	import profile_logo from '$lib/images/profile_logo.png'
+	import { PUBLIC_PRODUCTION } from '$env/static/public'
+	import { getAuthToken } from '$lib/stores/cookie'
+	import { onMount } from 'svelte'
+	import { page } from '$app/stores'
+	import ConfirmationModal from '$lib/components/modals/ConfirmationModal.svelte'
+	import PasswordResetModal from './PasswordResetModal.svelte'
+	import Spinner from '$lib/components/Spinner.svelte'
+	import { toasts } from 'svelte-toasts'
+	import { profilePic } from '$lib/stores/profile'
 
-	const apiUrl = PUBLIC_API_URL;
-	const production = PUBLIC_PRODUCTION === 'true' ? true : false;
-	const authToken = getAuthToken();
-	const profile = {};
-	let name = $state('');
-	let email = $state('');
-	let updateStatus = $state('Save');
-	let confirmationModal = $state(false);
-	let passwordResetModal = $state(false);
-	let profilePicLoading = $state(false);
-	let uploadStatus = $state('');
-	let linkedToGithub = $state(false);
+	const apiUrl = PUBLIC_API_URL
+	const production = PUBLIC_PRODUCTION === 'true' ? true : false
+	const authToken = getAuthToken()
+	const profile = {}
+	let name = $state('')
+	let email = $state('')
+	let updateStatus = $state('Save')
+	let confirmationModal = $state(false)
+	let passwordResetModal = $state(false)
+	let profilePicLoading = $state(false)
+	let uploadStatus = $state('')
+	let linkedToGithub = $state(false)
 
-	let { toggleAccountInfoModal } = $props();
+	let { toggleAccountInfoModal } = $props()
 
 	function toggleConfirmationModal() {
-		confirmationModal = !confirmationModal;
+		confirmationModal = !confirmationModal
 	}
 
 	function togglePasswordResetModal() {
@@ -44,10 +44,10 @@
 				placement: 'top-right',
 				type: 'info',
 				theme: 'dark'
-			});
-			return;
+			})
+			return
 		}
-		passwordResetModal = !passwordResetModal;
+		passwordResetModal = !passwordResetModal
 	}
 
 	async function fetchProfile() {
@@ -58,23 +58,23 @@
 					Authorization: `Bearer ${authToken}`,
 					'Content-Type': 'application/json'
 				}
-			});
+			})
 
-			const data = await response.json();
-			console.log(data);
+			const data = await response.json()
+			console.log(data)
 			if (response.ok && data.data) {
-				Object.assign(profile, data.data);
-				name = profile.name;
-				email = profile.email;
-				linkedToGithub = profile.github_token ? true : false;
-				profilePic.set(profile.profile_photo_url);
+				Object.assign(profile, data.data)
+				name = profile.name
+				email = profile.email
+				linkedToGithub = profile.github_token ? true : false
+				profilePic.set(profile.profile_photo_url)
 			}
 			if (!response.ok) {
-				console.error('Profile fetch failed:', data);
-				return;
+				console.error('Profile fetch failed:', data)
+				return
 			}
 		} catch (error) {
-			console.error('An error occurred during profile fetch:', error);
+			console.error('An error occurred during profile fetch:', error)
 		}
 	}
 
@@ -86,37 +86,37 @@
 					Authorization: `Bearer ${authToken}`,
 					'Content-Type': 'application/json'
 				}
-			});
+			})
 
-			const data = await response.json();
+			const data = await response.json()
 			if (response.ok) {
-				console.log(data);
-				removeCookie('authToken');
+				console.log(data)
+				removeCookie('authToken')
 
 				if ($page.data.session) {
 					//user signed in with github
-					signOut();
-					window.location.href = '/login';
+					signOut()
+					window.location.href = '/login'
 				}
-				window.location.href = '/login';
+				window.location.href = '/login'
 			}
 			if (!response.ok) {
-				console.error('Account deletion failed:', data);
-				return;
+				console.error('Account deletion failed:', data)
+				return
 			}
 		} catch (error) {
-			console.error('An error occurred during account deletion:', error);
+			console.error('An error occurred during account deletion:', error)
 		}
 	}
 
 	async function updateProfilePic(file) {
 		try {
-			profilePicLoading = true;
-			const formData = new FormData();
+			profilePicLoading = true
+			const formData = new FormData()
 			if (file instanceof File) {
-				formData.append('name', name);
-				formData.append('email', email);
-				formData.append('photo', file);
+				formData.append('name', name)
+				formData.append('email', email)
+				formData.append('photo', file)
 			}
 			const response = await fetch(`${apiUrl}/api/v1/user/profile`, {
 				method: 'POST',
@@ -124,32 +124,32 @@
 					Authorization: `Bearer ${authToken}`
 				},
 				body: formData
-			});
+			})
 
-			const data = await response.json();
-			console.log(data);
-			profilePicLoading = false;
+			const data = await response.json()
+			console.log(data)
+			profilePicLoading = false
 			if (response.ok && data.data && data.data.profile_photo_url) {
-				profilePic.set(data.data.profile_photo_url);
+				profilePic.set(data.data.profile_photo_url)
 			}
 			if (!response.ok) {
-				uploadStatus = data.errors;
-				console.error('Profile picture update failed:', data);
-				return;
+				uploadStatus = data.errors
+				console.error('Profile picture update failed:', data)
+				return
 			}
 		} catch (error) {
-			console.error('An error occurred during profile picture update:', error);
+			console.error('An error occurred during profile picture update:', error)
 		}
 	}
 
 	async function updateAccount() {
 		try {
-			updateStatus = 'Saving...';
+			updateStatus = 'Saving...'
 
 			// Prepare multipart form data
-			const formData = new FormData();
-			formData.append('name', name);
-			formData.append('email', email);
+			const formData = new FormData()
+			formData.append('name', name)
+			formData.append('email', email)
 
 			const response = await fetch(`${apiUrl}/api/v1/user/profile`, {
 				method: 'POST',
@@ -157,27 +157,27 @@
 					Authorization: `Bearer ${authToken}`
 				},
 				body: formData
-			});
+			})
 
-			const data = await response.json();
+			const data = await response.json()
 			if (response.ok) {
-				updateStatus = 'Saved!';
+				updateStatus = 'Saved!'
 				setTimeout(() => {
-					updateStatus = 'Save';
-				}, 2000);
+					updateStatus = 'Save'
+				}, 2000)
 			} else {
-				updateStatus = 'Save';
-				console.error('Account update failed:', data);
+				updateStatus = 'Save'
+				console.error('Account update failed:', data)
 			}
 		} catch (error) {
-			updateStatus = 'Save';
-			console.error('An error occurred during account update:', error);
+			updateStatus = 'Save'
+			console.error('An error occurred during account update:', error)
 		}
 	}
 
 	onMount(() => {
-		fetchProfile();
-	});
+		fetchProfile()
+	})
 </script>
 
 <!-- Background Overlay -->
@@ -220,7 +220,7 @@
 							{
 								text: 'Delete',
 								onClick: () => {
-									deleteAccount();
+									deleteAccount()
 								},
 								type: 'error'
 							}
@@ -264,8 +264,8 @@
 								type="file"
 								class="hidden"
 								accept="image/*"
-								onchange={(e) => {
-									updateProfilePic(e.target.files[0]);
+								onchange={e => {
+									updateProfilePic(e.target.files[0])
 								}}
 							/>
 						</label>

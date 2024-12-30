@@ -1,55 +1,55 @@
 <script>
-	import modal_title_icon from '$lib/icons/Modal_Title_Icon.svg';
-	import search_icon from '$lib/icons/search.svg';
-	import Button from '$lib/components/Button.svelte';
-	import Add from '$lib/icons/add.svg';
-	import dots from '$lib/icons/dots.svg';
-	import DeleteEditModal from './DeleteEditModal.svelte';
-	import { onMount } from 'svelte';
-	import { PUBLIC_API_URL } from '$env/static/public';
-	import { getAuthToken } from '$lib/stores/cookie';
-	import Spinner from '../Spinner.svelte';
-	import { get } from 'svelte/store';
-	import { mainAreaRef } from '$lib/stores/layoutRefs';
-	import ToolWindow from '$lib/components/ToolWindow.svelte';
-	import { tokenModal } from '$lib/stores/modals';
+	import modal_title_icon from '$lib/icons/Modal_Title_Icon.svg'
+	import search_icon from '$lib/icons/search.svg'
+	import Button from '$lib/components/Button.svelte'
+	import Add from '$lib/icons/add.svg'
+	import dots from '$lib/icons/dots.svg'
+	import DeleteEditModal from './DeleteEditModal.svelte'
+	import { onMount } from 'svelte'
+	import { PUBLIC_API_URL } from '$env/static/public'
+	import { getAuthToken } from '$lib/stores/cookie'
+	import Spinner from '../Spinner.svelte'
+	import { get } from 'svelte/store'
+	import { mainAreaRef } from '$lib/stores/layoutRefs'
+	import ToolWindow from '$lib/components/ToolWindow.svelte'
+	import { tokenModal } from '$lib/stores/modals'
 
-	let apiUrl = PUBLIC_API_URL;
-	let authToken = getAuthToken();
+	let apiUrl = PUBLIC_API_URL
+	let authToken = getAuthToken()
 
-	let searchTerm = $state('');
-	let edit_delete_modal = $state(false);
-	let activeIndex = $state(null);
-	let tokens = $state([]);
+	let searchTerm = $state('')
+	let edit_delete_modal = $state(false)
+	let activeIndex = $state(null)
+	let tokens = $state([])
 	let filteredTokens = $derived(
-		tokens.filter((token) => token.name.toLowerCase().includes(searchTerm.toLowerCase()))
-	);
+		tokens.filter(token => token.name.toLowerCase().includes(searchTerm.toLowerCase()))
+	)
 
-	let showTokenForm = $state(false);
-	let isEditing = $state(false);
-	let editTokenId = null;
-	let tokenForm = $state({ name: '' });
-	let nameInput = $state(undefined);
-	let error = $state('');
-	let loading = $state(false);
+	let showTokenForm = $state(false)
+	let isEditing = $state(false)
+	let editTokenId = null
+	let tokenForm = $state({ name: '' })
+	let nameInput = $state(undefined)
+	let error = $state('')
+	let loading = $state(false)
 
 	onMount(() => {
-		fetchTokens();
-	});
+		fetchTokens()
+	})
 
 	// Fetch API tokens
 	async function fetchTokens() {
 		try {
-			loading = true;
+			loading = true
 			const response = await fetch(`${apiUrl}/api/v1/tokens`, {
 				method: 'GET',
 				headers: {
 					Authorization: `Bearer ${authToken}`
 				}
-			});
-			const data = await response.json();
-			loading = false;
-			tokens = data.data.map((item) => ({
+			})
+			const data = await response.json()
+			loading = false
+			tokens = data.data.map(item => ({
 				id: item.id,
 				name: item.name,
 				token: item.token,
@@ -58,20 +58,20 @@
 				created_at: item.created_at,
 				visible: false,
 				copied: false
-			}));
+			}))
 		} catch (error) {
-			loading = false;
-			console.error('Error fetching tokens:', error);
+			loading = false
+			console.error('Error fetching tokens:', error)
 		}
 	}
 
 	// Save (Create or Update) API token
 	async function saveToken() {
-		const { name } = tokenForm;
+		const { name } = tokenForm
 
 		try {
-			const url = isEditing ? `${apiUrl}/api/v1/tokens/${editTokenId}` : `${apiUrl}/api/v1/tokens`;
-			const method = isEditing ? 'PATCH' : 'POST';
+			const url = isEditing ? `${apiUrl}/api/v1/tokens/${editTokenId}` : `${apiUrl}/api/v1/tokens`
+			const method = isEditing ? 'PATCH' : 'POST'
 
 			const response = await fetch(url, {
 				method,
@@ -80,20 +80,20 @@
 					Authorization: `Bearer ${authToken}`
 				},
 				body: JSON.stringify({ name })
-			});
+			})
 
-			const data = await response.json();
+			const data = await response.json()
 			if (response.ok) {
-				await fetchTokens(); // Refresh tokens after saving
-				closeForm();
-				error = ''; // Clear any previous error
+				await fetchTokens() // Refresh tokens after saving
+				closeForm()
+				error = '' // Clear any previous error
 			} else {
-				error = data.errors.name || data.errors || '';
-				console.error('Error:', error);
+				error = data.errors.name || data.errors || ''
+				console.error('Error:', error)
 			}
 		} catch (err) {
-			error = 'An unexpected error occurred. Please try again.';
-			console.error('Error saving token:', err);
+			error = 'An unexpected error occurred. Please try again.'
+			console.error('Error saving token:', err)
 		}
 	}
 
@@ -105,85 +105,83 @@
 				headers: {
 					Authorization: `Bearer ${authToken}`
 				}
-			});
+			})
 
 			if (response.ok) {
-				tokens = tokens.filter((token) => token.id !== id); // Remove from local state
-				error = ''; // Clear any previous error
+				tokens = tokens.filter(token => token.id !== id) // Remove from local state
+				error = '' // Clear any previous error
 			} else {
-				console.error('Error deleting token');
+				console.error('Error deleting token')
 			}
 		} catch (err) {
-			error = 'An unexpected error occurred. Please try again.';
-			console.error('Error deleting token:', err);
+			error = 'An unexpected error occurred. Please try again.'
+			console.error('Error deleting token:', err)
 		}
 	}
 
 	// Edit an API token
 	function handleEdit(id) {
-		const token = tokens.find((t) => t.id === id);
+		const token = tokens.find(t => t.id === id)
 		if (token) {
-			isEditing = true;
-			editTokenId = id;
-			tokenForm = { name: token.name };
-			showTokenForm = true;
+			isEditing = true
+			editTokenId = id
+			tokenForm = { name: token.name }
+			showTokenForm = true
 
-			setTimeout(() => nameInput.focus(), 0);
+			setTimeout(() => nameInput.focus(), 0)
 		}
 	}
 
 	// Open form for creating a new token
 	function openAddTokenForm() {
-		isEditing = false;
-		editTokenId = null;
-		tokenForm = { name: '' };
-		showTokenForm = true;
-		error = '';
+		isEditing = false
+		editTokenId = null
+		tokenForm = { name: '' }
+		showTokenForm = true
+		error = ''
 
-		setTimeout(() => nameInput.focus(), 0);
+		setTimeout(() => nameInput.focus(), 0)
 	}
 
 	// Close the form and reset state
 	function closeForm() {
-		showTokenForm = false;
-		isEditing = false;
-		editTokenId = null;
-		tokenForm = { name: '' };
-		error = '';
+		showTokenForm = false
+		isEditing = false
+		editTokenId = null
+		tokenForm = { name: '' }
+		error = ''
 	}
 
 	// Copy token to clipboard and display check icon
 	function copyToken(token) {
 		navigator.clipboard.writeText(token.token).then(() => {
-			token.copied = true;
+			token.copied = true
 
 			// Reset `copied` state after a delay
 			setTimeout(() => {
-				token.copied = false;
-			}, 2000);
-		});
+				token.copied = false
+			}, 2000)
+		})
 	}
 
 	// Toggle visibility of a specific token
 	function toggleVisibility(index) {
-		tokens = tokens.map((token, i) =>
-			i === index ? { ...token, visible: !token.visible } : token
-		);
+		tokens = tokens.map((token, i) => (i === index ? { ...token, visible: !token.visible } : token))
 	}
 
 	// Toggle the Edit/Delete modal at the specific index
 	function toggleEditDeleteModal(index) {
 		if (activeIndex === index) {
-			activeIndex = null;
-			edit_delete_modal = false;
+			activeIndex = null
+			edit_delete_modal = false
 		} else {
-			activeIndex = index;
-			edit_delete_modal = true;
+			activeIndex = index
+			edit_delete_modal = true
 		}
 	}
 
 	function toggleModal() {
-		tokenModal.update((value) => !value);
+		tokenModal.update(value => !value)
 	}
 </script>
 
@@ -263,7 +261,7 @@
 						</button>
 						{#if edit_delete_modal && activeIndex === i}
 							<DeleteEditModal
-								on:click={(e) => e.stopPropagation()}
+								on:click={e => e.stopPropagation()}
 								on:edit={() => handleEdit(token.id)}
 								on:delete={() => handleDelete(token.id)}
 							/>
@@ -327,9 +325,9 @@
 							<button
 								type="button"
 								class="w-5 cursor-pointer"
-								onclick={(e) => {
-									e.stopPropagation();
-									toggleEditDeleteModal(i);
+								onclick={e => {
+									e.stopPropagation()
+									toggleEditDeleteModal(i)
 								}}
 							>
 								<img src={dots} alt="dots" class="w-5" />

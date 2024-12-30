@@ -1,38 +1,38 @@
 <script>
-	import logo from '$lib/images/Logo.svg';
-	import { PUBLIC_API_URL } from '$env/static/public';
+	import logo from '$lib/images/Logo.svg'
+	import { PUBLIC_API_URL } from '$env/static/public'
 
-	let email = '';
-	let errorMessage = '';
-	let successMessage = '';
+	let email = ''
+	let errorMessage = ''
+	let successMessage = ''
 
 	async function handlePasswordReset(event) {
-		event.preventDefault(); // Prevent default form submission
+		event.preventDefault() // Prevent default form submission
 
-		errorMessage = '';
-		successMessage = '';
+		errorMessage = ''
+		successMessage = ''
 
 		try {
-			const apiUrl = PUBLIC_API_URL;
+			const apiUrl = PUBLIC_API_URL
 			const response = await fetch(`${apiUrl}/api/v1/forgot-password`, {
 				method: 'POST',
 				headers: {
 					'Content-Type': 'application/json'
 				},
 				body: JSON.stringify({ email })
-			});
-			const data = await response.json();
-			console.log('Response data', data);
+			})
+			const data = await response.json()
+			console.log('Response data', data)
 			if (response.ok) {
-				successMessage = 'Password reset link has been sent to your email.';
-				email = '';
+				successMessage = 'Password reset link has been sent to your email.'
+				email = ''
 			} else {
-				const errorData = await response.json();
-				errorMessage = errorData.errors.email || 'Failed to send password reset link.';
+				const errorData = await response.json()
+				errorMessage = errorData.errors.email || 'Failed to send password reset link.'
 			}
 		} catch (error) {
-			errorMessage = 'An error occurred. Please try again later.';
-			console.error('Error:', error);
+			errorMessage = 'An error occurred. Please try again later.'
+			console.error('Error:', error)
 		}
 	}
 </script>

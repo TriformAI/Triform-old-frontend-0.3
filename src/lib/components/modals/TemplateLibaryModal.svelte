@@ -1,28 +1,28 @@
 <!-- @migration-task Error while migrating Svelte code: `<button>` is invalid inside `<button>` -->
 <script>
-	import modal_title_icon from '$lib/icons/Modal_Title_Icon.svg';
-	import search_icon from '$lib/icons/search.svg';
-	import Add from '$lib/icons/add.svg';
-	import { templateLibraryModal, templateModal } from '$lib/stores/modals';
-	import { PUBLIC_API_URL } from '$env/static/public';
-	import { getAuthToken } from '$lib/stores/cookie';
-	import { onMount } from 'svelte';
-	import { templateStore, templateLoaded, templateID } from '$lib/stores/template';
-	import { get } from 'svelte/store';
-	import { mainAreaRef } from '$lib/stores/layoutRefs';
-	import ToolWindow from '$lib/components/ToolWindow.svelte';
+	import modal_title_icon from '$lib/icons/Modal_Title_Icon.svg'
+	import search_icon from '$lib/icons/search.svg'
+	import Add from '$lib/icons/add.svg'
+	import { templateLibraryModal, templateModal } from '$lib/stores/modals'
+	import { PUBLIC_API_URL } from '$env/static/public'
+	import { getAuthToken } from '$lib/stores/cookie'
+	import { onMount } from 'svelte'
+	import { templateStore, templateLoaded, templateID } from '$lib/stores/template'
+	import { get } from 'svelte/store'
+	import { mainAreaRef } from '$lib/stores/layoutRefs'
+	import ToolWindow from '$lib/components/ToolWindow.svelte'
 
-	let apiUrl = PUBLIC_API_URL;
-	let authToken = getAuthToken();
+	let apiUrl = PUBLIC_API_URL
+	let authToken = getAuthToken()
 
-	let searchTerm = '';
+	let searchTerm = ''
 
 	onMount(() => {
-		fetchTemplates();
-	});
+		fetchTemplates()
+	})
 
 	async function fetchTemplates() {
-		if (get(templateLoaded)) return; // Skip fetching if templates are already loaded
+		if (get(templateLoaded)) return // Skip fetching if templates are already loaded
 
 		try {
 			const response = await fetch(`${apiUrl}/api/v1/templates`, {
@@ -30,28 +30,28 @@
 				headers: {
 					Authorization: `Bearer ${authToken}`
 				}
-			});
-			const data = await response.json();
-			templateStore.set(data.data); // Save data to the store
-			templateLoaded.set(true); // Mark templates as loaded
+			})
+			const data = await response.json()
+			templateStore.set(data.data) // Save data to the store
+			templateLoaded.set(true) // Mark templates as loaded
 		} catch (error) {
-			console.error('Error fetching templates:', error);
+			console.error('Error fetching templates:', error)
 		}
 	}
 
 	// Computed property to filter variables based on searchTerm
-	$: filteredTemplates = $templateStore.filter((template) =>
+	$: filteredTemplates = $templateStore.filter(template =>
 		template.name.toLowerCase().includes(searchTerm.toLowerCase())
-	);
+	)
 
 	const toggleTemplateModal = () => {
 		// set the template id
-		templateLibraryModal.update(() => false);
-		templateModal.update((value) => !value);
-	};
+		templateLibraryModal.update(() => false)
+		templateModal.update(value => !value)
+	}
 
 	function toggleModal() {
-		templateLibraryModal.update((value) => !value);
+		templateLibraryModal.update(value => !value)
 	}
 </script>
 
@@ -115,8 +115,8 @@
 								<a
 									href={`?TID=${category.id}`}
 									onclick={() => {
-										templateID.set(category.id);
-										toggleTemplateModal();
+										templateID.set(category.id)
+										toggleTemplateModal()
 									}}
 									class="text-xs hover:text-white">View Details</a
 								>
