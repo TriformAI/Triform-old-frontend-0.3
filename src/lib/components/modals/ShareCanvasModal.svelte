@@ -6,7 +6,7 @@
   import Modal from '../common/Modal.svelte'
   import { ModalId } from '$lib/stores/modals.svelte'
 
-  const id = ModalId.ShareCanvasModal
+  const id = ModalId.ShareCanvas
 </script>
 
 {#snippet header()}

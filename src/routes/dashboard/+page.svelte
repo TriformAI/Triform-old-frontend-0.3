@@ -206,9 +206,7 @@
 </script>
 
 <section class="h-[calc(100vh-156.1px)]" bind:this={instance}>
-	<ShareCanvasModal
-		bind:isOpen={shareModalOpen}
-	/>
+	<ShareCanvasModal />
 
 	{#if $canvasToolsModal}
 		<CanvasToolsModal />

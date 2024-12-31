@@ -164,7 +164,7 @@
 
 	<div class="flex items-center gap-x-5">
 		<button
-			onclick={() => openModal(ModalId.ShareCanvasModal)}
+			onclick={() => openModal(ModalId.ShareCanvas)}
 			class={`w-fit flex items-center justify-center flex-shrink-0 gap-x-3 px-4 py-1.5 text-sm font-medium text-brand-tertiary-gray hover:text-white transition duration-200 ease-in-out border rounded-lg bg-white/5 border-brand-light-gray hover:border-brand-tertiary-gray`}
 		>
 			Share Canvas

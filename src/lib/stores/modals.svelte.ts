@@ -1,7 +1,7 @@
 import { SvelteSet } from "svelte/reactivity"
 
 export enum ModalId {
-  ShareCanvasModal = 'shareCanvas'
+  ShareCanvas = 'shareCanvas'
 }
 
 export const activeModals = $state<SvelteSet<ModalId>>(new SvelteSet())
