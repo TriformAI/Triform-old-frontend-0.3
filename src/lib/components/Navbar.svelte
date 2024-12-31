@@ -15,6 +15,8 @@
 	import { profilePic } from '$lib/stores/profile'
 	import Spinner from './Spinner.svelte'
 
+	import { openModal, ModalId } from '$lib/stores/modals.svelte'
+
 	import {
 		profileDropdown,
 		notificationOpen,
@@ -162,10 +164,10 @@
 
 	<div class="flex items-center gap-x-5">
 		<button
-			onclick={() => toggleModal(shareCanvaModal)}
+			onclick={() => openModal(ModalId.ShareCanvasModal)}
 			class={`w-fit flex items-center justify-center flex-shrink-0 gap-x-3 px-4 py-1.5 text-sm font-medium text-brand-tertiary-gray hover:text-white transition duration-200 ease-in-out border rounded-lg bg-white/5 border-brand-light-gray hover:border-brand-tertiary-gray`}
 		>
-			Share Canva
+			Share Canvas
 		</button>
 
 		<!-- Notification Bell Icon -->

@@ -109,7 +109,7 @@
 	}
 
 	// Reactive statement to check if the route is protected and the user is authenticated
-	let isProtectedRoute = $page.url.pathname === '/dashboard' // Strict match for /dashboard
+	let isProtectedRoute = $page?.url?.pathname === '/dashboard' // Strict match for /dashboard
 	let session = $page.data.session
 	let isAuthenticatedUser = isAuthenticated(session)
 </script>

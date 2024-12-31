@@ -38,6 +38,8 @@
 	import BillingInformationModal from '$lib/components/modals/BillingInformationModal.svelte'
 	import TeamInformationModal from '$lib/components/modals/TeamInformationModal.svelte'
 
+	import ShareCanvasModal from '$lib/components/modals/ShareCanvasModal.svelte'
+
 	const toggleAttachComponentModal = () => {
 		createModuleModal.update(() => false)
 		attachTemplateModal.update(() => false)
@@ -198,9 +200,16 @@
 	onMount(() => {
 		mainAreaRef.set(instance)
 	})
+
+	let shareModalOpen = $state(false)
+
 </script>
 
 <section class="h-[calc(100vh-156.1px)]" bind:this={instance}>
+	<ShareCanvasModal
+		bind:isOpen={shareModalOpen}
+	/>
+
 	{#if $canvasToolsModal}
 		<CanvasToolsModal />
 	{/if}
