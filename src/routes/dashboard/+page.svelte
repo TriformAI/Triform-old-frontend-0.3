@@ -3,6 +3,8 @@
 	import { writable } from 'svelte/store'
 	import { SvelteFlow, Background } from '@xyflow/svelte'
 
+	import { openWindow, openWindows } from '$lib/stores/windows.svelte'
+
 	import { mainAreaRef } from '$lib/stores/layoutRefs'
 	// 👇 this is important! You need to import the styles for Svelte Flow to work
 	import '@xyflow/svelte/dist/style.css'
@@ -201,11 +203,39 @@
 		mainAreaRef.set(instance)
 	})
 
-	let shareModalOpen = $state(false)
-
+	import ComponentsToolbox from '$lib/components/windows/ComponentsToolbox.svelte'
+	const openTestWindow = () => {
+		const id = crypto.randomUUID()
+		openWindow({
+			component: ComponentsToolbox,
+			id,
+			customProps: {},
+			posX: Math.random() * 100,
+			posY: Math.random() * 100,
+			width: 500,
+			height: 500,
+			zIndex: 10
+		})
+	}
 </script>
 
-<section class="h-[calc(100vh-156.1px)]" bind:this={instance}>
+<section class="h-[calc(100vh-156.1px)] relative" bind:this={instance}>
+	<button class="text-white active:text-purple-700 transition" onclick={openTestWindow}>
+		open test window
+	</button>
+
+	{#each openWindows() as window}
+		{@const {
+			component: Component,
+			customProps,
+			...defaultProps
+		} = window}
+		<Component
+			{...defaultProps}
+			{customProps}
+		/>
+	{/each}
+
 	<ShareCanvasModal />
 
 	{#if $canvasToolsModal}
