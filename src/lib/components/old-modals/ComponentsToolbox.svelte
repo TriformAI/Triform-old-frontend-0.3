@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { get } from 'svelte/store'
-	import { mainAreaRef } from '$lib/stores/layoutRefs'
+	import { mainAreaRef } from '$lib/stores/layoutRefs.svelte'
 	import ToolWindow from '$lib/components/ToolWindow.svelte'
 	import modal_title_icon from '$lib/icons/Modal_Title_Icon.svg'
 	import search_icon from '$lib/icons/search.svg'
@@ -209,7 +209,7 @@
 <ToolWindow
 	initialSize={{ width: 25 * 16, height: 500 }}
 	initialPosition={{ x: 23, y: 7 * 3 }}
-	boundsRef={get(mainAreaRef)}
+	boundsRef={mainAreaRef()}
 	headerIcon={modal_title_icon}
 	inScale={{ start: 0.9, duration: 200 }}
 	outFade={{ duration: 150 }}

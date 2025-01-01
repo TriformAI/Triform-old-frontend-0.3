@@ -2,7 +2,7 @@
 	import { onMount } from 'svelte'
 	import modal_title_icon from '$lib/icons/Modal_Title_Icon.svg'
 	import { get } from 'svelte/store'
-	import { mainAreaRef } from '$lib/stores/layoutRefs'
+	import { mainAreaRef } from '$lib/stores/layoutRefs.svelte'
 	import ToolWindow from '$lib/components/ToolWindow.svelte'
 	import ConsoleLine from '$lib/components/atoms/ConsoleLine.svelte'
 	import { consoleModal } from '$lib/stores/modals'
@@ -22,7 +22,7 @@
 		consoleModal.update(value => !value)
 	}
 
-	let mainAreaRect = get(mainAreaRef).getBoundingClientRect()
+	let mainAreaRect = mainAreaRef().getBoundingClientRect()
 	let mainAreaWidth = mainAreaRect?.width
 	let mainAreaHeight = mainAreaRect?.height
 </script>
@@ -30,7 +30,7 @@
 <ToolWindow
 	initialSize={{ width: 900, height: 200 }}
 	initialPosition={{ x: mainAreaWidth / 2 - 900 / 2, y: mainAreaHeight - 200 }}
-	boundsRef={get(mainAreaRef)}
+	boundsRef={mainAreaRef()}
 	headerIcon={modal_title_icon}
 	inScale={{ start: 0.9, duration: 200 }}
 	outFade={{ duration: 150 }}

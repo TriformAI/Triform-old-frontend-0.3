@@ -9,7 +9,7 @@
 	import { onMount } from 'svelte'
 	import { templateStore, templateLoaded, templateID } from '$lib/stores/template'
 	import { get } from 'svelte/store'
-	import { mainAreaRef } from '$lib/stores/layoutRefs'
+	import { mainAreaRef } from '$lib/stores/layoutRefs.svelte'
 	import ToolWindow from '$lib/components/ToolWindow.svelte'
 
 	let apiUrl = PUBLIC_API_URL
@@ -58,7 +58,7 @@
 <ToolWindow
 	initialSize={{ width: 377, height: 38 * 16 }}
 	initialPosition={{ x: 23, y: 7 * 3 }}
-	boundsRef={get(mainAreaRef)}
+	boundsRef={mainAreaRef()}
 	headerIcon={modal_title_icon}
 	headerText="Templates Library"
 	{toggleModal}

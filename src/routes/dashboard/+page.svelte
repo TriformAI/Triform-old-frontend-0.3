@@ -1,11 +1,11 @@
-<script>
+<script lang="ts">
 	import { onMount } from 'svelte'
 	import { writable } from 'svelte/store'
 	import { SvelteFlow, Background } from '@xyflow/svelte'
 
 	import { openWindow, openWindows } from '$lib/stores/windows.svelte'
 
-	import { mainAreaRef } from '$lib/stores/layoutRefs'
+	import { mainAreaRef, setMainAreaRef } from '$lib/stores/layoutRefs.svelte'
 	// 👇 this is important! You need to import the styles for Svelte Flow to work
 	import '@xyflow/svelte/dist/style.css'
 
@@ -191,16 +191,16 @@
 		}
 	])
 
-	const snapGrid = [1, 1]
+	const snapGrid: [number, number] = [1, 1]
 
 	const proOptions = { hideAttribution: true }
 
 	const defaultEdgeOptions = {
 		animated: true // Ensures all edges are animated
 	}
-	let instance
+	let instance: HTMLDivElement
 	onMount(() => {
-		mainAreaRef.set(instance)
+		setMainAreaRef(instance)
 	})
 
 	import ComponentsToolbox from '$lib/components/windows/ComponentsToolbox.svelte'
@@ -265,7 +265,7 @@
 		<AttachTemplate {toggleAttachTemplateModal} {toggleCreateModuleModal} {toggleModuleInfoModal} />
 	{/if}
 	{#if $moduleInfoModal}
-		<ModuleInfoModal {toggleAttachTemplateModal} {toggleModuleInfoModal} />
+		<ModuleInfoModal {toggleModuleInfoModal} />
 	{/if}
 	{#if $templateModal}
 		<TemplateDetailsModal {toggleTemplateModal} />

@@ -10,7 +10,7 @@
 	import Spinner from '../Spinner.svelte'
 	import search_icon from '$lib/icons/search.svg'
 	import { get } from 'svelte/store'
-	import { mainAreaRef } from '$lib/stores/layoutRefs'
+	import { mainAreaRef } from '$lib/stores/layoutRefs.svelte'
 	import ToolWindow from '$lib/components/ToolWindow.svelte'
 	import { environmentModal } from '$lib/stores/modals'
 
@@ -182,7 +182,7 @@
 <ToolWindow
 	initialSize={{ width: width, height: height }}
 	initialPosition={{ x: 23, y: 7 * 3 }}
-	boundsRef={get(mainAreaRef)}
+	boundsRef={mainAreaRef()}
 	headerIcon={modal_title_icon}
 	inScale={{ start: 0.9, duration: 200 }}
 	outFade={{ duration: 150 }}
