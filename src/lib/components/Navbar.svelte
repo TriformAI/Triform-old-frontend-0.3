@@ -24,8 +24,8 @@
 		renameMode,
 		shareCanvaModal
 	} from '$lib/stores/modals'
-	import NotificationModal from './modals/NotificationModal.svelte'
-	import ProfileDropdown from './modals/ProfileDropdown.svelte'
+	import NotificationModal from './old-modals/NotificationModal.svelte'
+	import ProfileDropdown from './old-modals/ProfileDropdown.svelte'
 	import { tabs, activeTabId, addTab, removeTab, setActiveTab } from '$lib/stores/canvas'
 	import { onMount } from 'svelte'
 

@@ -9,8 +9,8 @@
 	// 👇 this is important! You need to import the styles for Svelte Flow to work
 	import '@xyflow/svelte/dist/style.css'
 
-	import CanvasToolsModal from '$lib/components/modals/CanvasToolsModal.svelte'
-	import CreateModuleModal from '$lib/components/modals/CreateModuleModal.svelte'
+	import CanvasToolsModal from '$lib/components/old-modals/CanvasToolsModal.svelte'
+	import CreateModuleModal from '$lib/components/old-modals/CreateModuleModal.svelte'
 	import {
 		canvasToolsModal,
 		moduleInfoModal,
@@ -26,21 +26,21 @@
 		billingInformationModal,
 		teamInformationModal
 	} from '$lib/stores/modals'
-	import StatusModal from '$lib/components/modals/StatusModal.svelte'
-	import ThresholdAlertModal from '$lib/components/modals/ThresholdAlertModal.svelte'
-	import AttachTemplate from '$lib/components/modals/AttachTemplate.svelte'
-	import ModuleInfoModal from '$lib/components/modals/ModuleInfoModal.svelte'
+	import StatusModal from '$lib/components/old-modals/StatusModal.svelte'
+	import ThresholdAlertModal from '$lib/components/old-modals/ThresholdAlertModal.svelte'
+	import AttachTemplate from '$lib/components/old-modals/AttachTemplate.svelte'
+	import ModuleInfoModal from '$lib/components/old-modals/ModuleInfoModal.svelte'
 	import ActionNode from '$lib/components/custom-nodes/ActionNode.svelte'
 	import AgentNode from '$lib/components/custom-nodes/AgentNode.svelte'
 	import ApiNode from '$lib/components/custom-nodes/ApiNode.svelte'
-	import TemplateDetailsModal from '$lib/components/modals/TemplateDetailsModal.svelte'
-	import ShareCanvaModal from '$lib/components/modals/ShareCanvaModal.svelte'
-	import AttachComponent from '$lib/components/modals/AttachComponent.svelte'
-	import AccountInformationModal from '$lib/components/modals/AccountInformationModal.svelte'
-	import BillingInformationModal from '$lib/components/modals/BillingInformationModal.svelte'
-	import TeamInformationModal from '$lib/components/modals/TeamInformationModal.svelte'
+	import TemplateDetailsModal from '$lib/components/old-modals/TemplateDetailsModal.svelte'
+	import ShareCanvaModal from '$lib/components/old-modals/ShareCanvaModal.svelte'
+	import AttachComponent from '$lib/components/old-modals/AttachComponent.svelte'
+	import AccountInformationModal from '$lib/components/old-modals/AccountInformationModal.svelte'
+	import BillingInformationModal from '$lib/components/old-modals/BillingInformationModal.svelte'
+	import TeamInformationModal from '$lib/components/old-modals/TeamInformationModal.svelte'
 
-	import ShareCanvasModal from '$lib/components/modals/ShareCanvasModal.svelte'
+	import ShareCanvasModal from '$lib/components/modals/ShareCanvas.svelte'
 
 	const toggleAttachComponentModal = () => {
 		createModuleModal.update(() => false)

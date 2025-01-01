@@ -5,7 +5,7 @@
 	import { PUBLIC_API_URL } from '$env/static/public'
 	import { getAuthToken } from '$lib/stores/cookie'
 	import { onMount } from 'svelte'
-	import ConfirmationModal from '$lib/components/modals/ConfirmationModal.svelte'
+	import ConfirmationModal from '$lib/components/old-modals/ConfirmationModal.svelte'
 	import Spinner from '$lib/components/Spinner.svelte'
 	import { toasts } from 'svelte-toasts'
 	import Chart from '../Chart.svelte'

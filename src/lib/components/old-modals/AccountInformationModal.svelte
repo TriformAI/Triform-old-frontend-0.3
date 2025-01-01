@@ -10,7 +10,7 @@
 	import { getAuthToken } from '$lib/stores/cookie'
 	import { onMount } from 'svelte'
 	import { page } from '$app/stores'
-	import ConfirmationModal from '$lib/components/modals/ConfirmationModal.svelte'
+	import ConfirmationModal from '$lib/components/old-modals/ConfirmationModal.svelte'
 	import PasswordResetModal from './PasswordResetModal.svelte'
 	import Spinner from '$lib/components/Spinner.svelte'
 	import { toasts } from 'svelte-toasts'
