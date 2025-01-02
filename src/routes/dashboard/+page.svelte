@@ -202,28 +202,9 @@
 	onMount(() => {
 		setMainAreaRef(instance)
 	})
-
-	import ComponentsToolbox from '$lib/components/windows/ComponentsToolbox.svelte'
-	const openTestWindow = () => {
-		const id = crypto.randomUUID()
-		openWindow({
-			component: ComponentsToolbox,
-			id,
-			customProps: {},
-			posX: Math.random() * 100,
-			posY: Math.random() * 100,
-			width: 500,
-			height: 500,
-			zIndex: 10
-		})
-	}
 </script>
 
 <section class="h-[calc(100vh-156.1px)] relative" bind:this={instance}>
-	<button class="text-white active:text-purple-700 transition" onclick={openTestWindow}>
-		open test window
-	</button>
-
 	{#each openWindows() as window}
 		{@const {
 			component: Component,
