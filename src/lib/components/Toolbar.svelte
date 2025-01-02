@@ -46,7 +46,7 @@
 </script>
 
 <div
-	class="flex items-center justify-between w-full py-0 border-b px-7 border-b-zinc-700 text-zinc-100 bg-zinc-900"
+	class="flex items-center justify-between w-full py-0 border-b px-7 border-b-zinc-700 text-zinc-100 bg-zinc-850"
 >
 	<!-- Canvas 1 dropdown -->
 	<div class="flex items-center gap-x-5">

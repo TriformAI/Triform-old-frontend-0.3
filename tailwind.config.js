@@ -22,7 +22,11 @@ export default {
 				'brand-light-gray': '#9CA3AF',
 				'primary-red': '#F44336',
 				'primary-green': '#22C55E',
-				'primary-yellow': '#FFC107'
+				'primary-yellow': '#FFC107',
+				'zinc': {
+					...defaultTheme.colors.zinc,
+					850: '#1D1D20'
+				}
 			},
 			borderRadius: {
 				'4xl': '13px'
