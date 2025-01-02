@@ -1,6 +1,6 @@
 <script>
 	import { goto } from '$app/navigation'
-	import Button from '$lib/components/Button.svelte'
+	import Button from '$lib/components/atoms/Button.svelte'
 </script>
 
 <section
@@ -16,7 +16,14 @@
 				Sorry, we can't find that page. You'll find lots to explore on the home page.
 			</p>
 			<div class="flex items-center justify-center">
-				<Button content={{ text: 'Go To Homepage' }} on:click={() => goto('/')} />
+				<Button
+					variation="primary"
+					onClick={() => goto('/')}
+				>
+					{#snippet body()}
+						Go To Homepage
+					{/snippet}
+				</Button>
 			</div>
 		</div>
 	</div>
