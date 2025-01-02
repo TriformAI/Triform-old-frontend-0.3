@@ -10,7 +10,8 @@
     body,
     onClick: onClickProp,
     disableAutoLoad = false,
-    icon
+    icon,
+    class: classProp
   }: {
     // Will have secondary, muted, link etc as we need them
     variation?: 'primary' | 'link',
@@ -22,7 +23,8 @@
     // Optionally disable the automatic loading indicator
     disableAutoLoad?: boolean,
     // If it returns a promise, show loading indicator until it resolves
-    onClick?: () => void | Promise<void>
+    onClick?: () => void | Promise<void>,
+    class?: string
   } = $props()
 
   let isLoading = $state(false)
@@ -62,6 +64,7 @@
     rounded-md text-zinc-200
     active:scale-95 active:border-zinc-500
     transition transform
+    {classProp}
   "
   onclick={onClick}
 >

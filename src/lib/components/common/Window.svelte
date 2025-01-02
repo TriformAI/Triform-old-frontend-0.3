@@ -2,7 +2,11 @@
 	import type { Snippet } from 'svelte'
   import type { Window } from '$lib/stores/windows.svelte'
 
-  import { closeWindowById, updateWindowById, bringWindowToFront } from '$lib/stores/windows.svelte'
+  import {
+    closeWindowById,
+    updateWindowById,
+    bringWindowToFront
+  } from '$lib/stores/windows.svelte'
 	import Card from './Card.svelte'
 
 	let {
@@ -97,7 +101,7 @@
 </script>
 
 <div
-  class="absolute {isDragging ? 'shadow-lg scale-105' : 'scale-100'} transform transition"
+  class="absolute {isDragging ? 'shadow-lg scale-[1.025]' : 'scale-100'} transform transition"
   style={`
     top: ${posY}%;
     left: ${posX}%;
