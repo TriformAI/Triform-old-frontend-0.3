@@ -60,7 +60,7 @@
     {variation === 'link'
     ? 'hover:bg-zinc-500/10'
     : ''}
-    p-3 flex items-center justify-center gap-x-2 flex-row
+    p-3 {!icon && !!body ? 'px-5' : ''} flex items-center justify-center gap-x-2 flex-row
     rounded-md text-zinc-200
     active:scale-95 active:border-zinc-500
     transition transform
