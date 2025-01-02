@@ -198,7 +198,7 @@
 	const defaultEdgeOptions = {
 		animated: true // Ensures all edges are animated
 	}
-	let instance: HTMLDivElement
+	let instance: HTMLElement
 	onMount(() => {
 		setMainAreaRef(instance)
 	})
