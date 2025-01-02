@@ -3,21 +3,24 @@
 
   import { fly, scale } from 'svelte/transition'
 
-  import AutorenewIcon from '~icons/ic/baseline-autorenew'
+  import AutorenewIcon from '~icons/material-symbols/autorenew-rounded'
 
   const {
-    // variation = 'primary',
+    variation = 'primary',
     body,
     onClick: onClickProp,
+    disableAutoLoad = false,
     icon
   }: {
     // Will have secondary, muted, link etc as we need them
-    // variation?: 'primary',
+    variation?: 'primary' | 'link',
     // disabled
     // href
     // etc...
     body?: Snippet,
     icon?: Snippet,
+    // Optionally disable the automatic loading indicator
+    disableAutoLoad?: boolean,
     // If it returns a promise, show loading indicator until it resolves
     onClick?: () => void | Promise<void>
   } = $props()
@@ -28,15 +31,19 @@
       try {
         // If it wasn't a promise this will just resolve immediately
         Promise.resolve(onClickProp()).then(() => {
+          if (disableAutoLoad) return
           isLoading = false
           // hack, in case the promise is resolved too fast
           // (basically never happens but its pretty catastrophic if it does
           // so better to just fix it like this)
           setTimeout(() => isLoading = false, 50)
         })
-        isLoading = true
+        if (!disableAutoLoad) {
+          console.log('loading')
+          isLoading = true
+        }
       } catch (e) {
-        isLoading = false
+        if (!disableAutoLoad) isLoading = false
         throw e
       }
     }
@@ -45,9 +52,14 @@
 
 <button
   class="
+    {variation === 'primary'
+    ? 'border-zinc-700 border bg-zinc-800 hover:border-zinc-600 hover:bg-zinc-700'
+    : ''}
+    {variation === 'link'
+    ? 'hover:bg-zinc-500/10'
+    : ''}
     p-3 flex items-center justify-center gap-x-2 flex-row
-    border-zinc-700 border rounded-md text-zinc-200 bg-zinc-800
-    hover:border-zinc-600 hover:bg-zinc-700
+    rounded-md text-zinc-200
     active:scale-95 active:border-zinc-500
     transition transform
   "
