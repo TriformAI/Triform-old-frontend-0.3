@@ -1,9 +1,8 @@
-import type { Component } from "svelte"
-import type { UUID } from 'crypto'
+import type { Component } from 'svelte'
 
 export interface Window {
   // Some id that's unique to the window
-  id: UUID,
+  id: string,
   // The actual component instance that'll be rendered
   component: Component,
   // You can have multiple windows open of the same type
@@ -28,17 +27,23 @@ let openWindowsState = $state<Window[]>([])
 export const openWindows = () => openWindowsState
 
 export const openWindow = (window: Window) => {
+  // Some windows should only have one instance, and for those
+  // we just select a specific id to ensure that only one instance
+  // exists at once
+  if (openWindowsState.some(w => w.id === window.id)) return
   openWindowsState.push({
     ...window,
-    zIndex: openWindowsState.length + 1
+    zIndex: openWindowsState.length + 1,
+    posX: window.posX ?? 10,
+    posY: window.posY ?? 20,
   })
 }
 
-export const closeWindowById = (id: UUID) => {
+export const closeWindowById = (id: string) => {
   openWindowsState = openWindowsState.filter(window => window.id !== id)
 }
 
-export const updateWindowById = (id: UUID, update: Partial<Window>) => {
+export const updateWindowById = (id: string, update: Partial<Window>) => {
   openWindowsState = openWindowsState.map(window => {
     if (window.id === id) {
       return {
@@ -50,7 +55,7 @@ export const updateWindowById = (id: UUID, update: Partial<Window>) => {
   })
 }
 
-export const bringWindowToFront = (id: UUID) => {
+export const bringWindowToFront = (id: string) => {
   // Recalculate all z-indexes so the window is on top
   openWindowsState = openWindowsState.map((window: Window) => {
     if (window.id === id) {
