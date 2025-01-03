@@ -35,7 +35,7 @@
 <div class="border rounded-md shadow-lg bg-zinc-900 text-zinc-200 border-zinc-700">
   <div class="bg-zinc-800 border border-b border-t-0 border-x-0 border-inherit rounded-t-md flex justify-between items-center flex-row pr-4">
     <div
-      class="flex flex-row gap-3 font-semibold items-center text-left text-zinc-50 text-md p-5 {isDraggable ? 'cursor-move select-none' : ''}"
+      class="flex flex-row w-full gap-3 font-semibold items-center text-left text-zinc-50 text-md p-5 {isDraggable ? 'cursor-move select-none' : ''}"
       onmousedown={onDragStart}
       role={isDraggable ? 'dialog' : undefined}
       aria-label={isDraggable ? 'Drag' : ''}
