@@ -218,9 +218,6 @@
 
 	<ShareCanvasModal />
 
-	{#if $canvasToolsModal}
-		<CanvasToolsModal />
-	{/if}
 	{#if $statusModal}
 		<StatusModal />
 	{/if}
