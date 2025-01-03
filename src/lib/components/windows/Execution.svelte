@@ -9,31 +9,29 @@
   const props = $props()
 </script>
 
-{#snippet header()}
-  Execution
-{/snippet}
-
-{#snippet body()}
-  <div class="grid grid-cols-2 gap-x-2 w-full min-w-64">
-    <Button
-      class="w-full"
-    >
-      {#snippet body()}
-        <IconPlay />
-      {/snippet}
-    </Button>
-    <Button
-      class="w-full"
-    >
-      {#snippet body()}
-        Publish
-      {/snippet}
-    </Button>
-  </div>
-{/snippet}
-
 <Window
-  {header}
-  {body}
   {...props}
-/>
+>
+  {#snippet header()}
+    Execution
+  {/snippet}
+
+  {#snippet body()}
+    <div class="grid grid-cols-2 gap-x-2 w-full min-w-64">
+      <Button
+        class="w-full"
+      >
+        {#snippet body()}
+          <IconPlay />
+        {/snippet}
+      </Button>
+      <Button
+        class="w-full"
+      >
+        {#snippet body()}
+          Publish
+        {/snippet}
+      </Button>
+    </div>
+  {/snippet}
+</Window>

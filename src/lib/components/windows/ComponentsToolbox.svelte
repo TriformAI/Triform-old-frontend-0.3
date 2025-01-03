@@ -5,16 +5,14 @@
   const props = $props()
 </script>
 
-{#snippet header()}
-  Components Toolbox
-{/snippet}
-
-{#snippet body()}
-  Temporary body
-{/snippet}
-
 <Window
-  {header}
-  {body}
   {...props}
-/>
+>
+  {#snippet header()}
+    Components Toolbox
+  {/snippet}
+
+  {#snippet body()}
+    Temporary body
+  {/snippet}
+</Window>
