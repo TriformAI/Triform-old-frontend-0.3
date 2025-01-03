@@ -9,7 +9,6 @@
 	// 👇 this is important! You need to import the styles for Svelte Flow to work
 	import '@xyflow/svelte/dist/style.css'
 
-	import CanvasToolsModal from '$lib/components/old-modals/CanvasToolsModal.svelte'
 	import CreateModuleModal from '$lib/components/old-modals/CreateModuleModal.svelte'
 	import {
 		canvasToolsModal,
