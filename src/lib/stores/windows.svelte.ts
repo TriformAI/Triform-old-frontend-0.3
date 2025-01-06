@@ -16,10 +16,10 @@ export interface Window {
   // relative in % from the top & left edges
   posX: number,
   posY: number,
-  width: number,
-  height: number,
+  width?: number,
+  height?: number,
   // windows can overlap & stack
-  zIndex: number
+  zIndex?: number
 }
 
 let openWindowsState = $state<Window[]>([])
@@ -34,8 +34,8 @@ export const openWindow = (window: Window) => {
   openWindowsState.push({
     ...window,
     zIndex: openWindowsState.length + 1,
-    posX: window.posX ?? 10,
-    posY: window.posY ?? 20,
+    posX: window.posX,
+    posY: window.posY
   })
 }
 
