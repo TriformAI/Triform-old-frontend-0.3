@@ -1,17 +1,11 @@
 <script lang="ts">
 	import Window from '$lib/components/common/Window.svelte'
 	import Tabs from '$lib/components/atoms/Tabs.svelte'
-	import loader from '@monaco-editor/loader'
-	import { onDestroy } from 'svelte'
-	import type * as Monaco from 'monaco-editor/esm/vs/editor/editor.api'
+	import CodeEditor from '../CodeEditor.svelte'
 
 	// Props passed to the component
 	const props = $props()
 	const { customProps } = props
-
-	let editor: Monaco.editor.IStandaloneCodeEditor
-	let monaco: typeof Monaco
-	let editorContainer = $state<HTMLElement>()
 
 	// Get the keys from customProps as dynamic tabs
 	const tabs = Object.keys(customProps).map((key, index) => ({
@@ -21,12 +15,6 @@
 
 	// Variable to keep track of the active tab
 	let activeTab = $state(tabs[0]) // Default to the first tab
-
-	// Function to get the list of libraries for the "Requirements" tab
-	const getLibraries = () => {
-		const content = customProps[activeTab.label] || ''
-		return content.split('\n').filter((lib: string) => lib.trim() !== '')
-	}
 
 	// Function to parse Markdown content for the "ReadMe" tab
 	const parseMarkdown = (md: string) => {
@@ -53,41 +41,6 @@
 			})
 			.join('')
 	}
-
-	// Function to initialize the Monaco editor
-	const initializeEditor = async (code: string) => {
-		if (!editorContainer) return
-
-		if (!monaco) {
-			const monacoEditor = await import('monaco-editor')
-			loader.config({ monaco: monacoEditor.default })
-			monaco = await loader.init()
-		}
-
-		// Dispose of any existing editor before creating a new one
-		editor?.dispose()
-
-		editor = monaco.editor.create(editorContainer, {
-			value: code,
-			language: 'python',
-			theme: 'vs-dark',
-			automaticLayout: true
-		})
-	}
-
-	// Watch for changes to the active tab
-	$effect(() => {
-		if (activeTab?.key === '1' && editorContainer) {
-			const code = customProps[activeTab.label] || ''
-			initializeEditor(code)
-		}
-	})
-
-	// Cleanup on component destroy
-	onDestroy(() => {
-		editor?.dispose()
-		monaco?.editor.getModels().forEach(model => model.dispose())
-	})
 </script>
 
 <Window {...props}>
@@ -101,26 +54,14 @@
 		<div class="py-4">
 			<div class="container-size">
 				{#if activeTab?.key === '1'}
-					<div class="monaco-container" bind:this={editorContainer}></div>
+					<CodeEditor code={customProps[activeTab.label]} />
 				{:else if activeTab?.key === '2'}
 					<div class="h-full p-6 overflow-y-auto text-white">
 						<!-- eslint-disable-next-line svelte/no-at-html-tags -->
 						{@html parseMarkdown(customProps[activeTab.label] || '')}
 					</div>
 				{:else if activeTab?.key === '3'}
-					<div class="px-6 py-2 text-white">
-						<ul class="p-2">
-							{#if getLibraries().length > 0}
-								{#each getLibraries() as lib, index}
-									<li class="max-w-lg my-2 text-sm list-disc">
-										{lib}
-									</li>
-								{/each}
-							{:else}
-								<li class="max-w-lg my-2 text-sm">No Requirements</li>
-							{/if}
-						</ul>
-					</div>
+					<CodeEditor code={customProps[activeTab.label]} />
 				{:else if activeTab}
 					<div>{customProps[activeTab.label]}</div>
 				{/if}
@@ -132,11 +73,6 @@
 <style>
 	.container-size {
 		width: 1000px;
-		height: 500px;
-	}
-
-	.monaco-container {
-		width: 100%;
 		height: 500px;
 	}
 </style>

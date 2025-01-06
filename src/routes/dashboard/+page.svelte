@@ -132,15 +132,14 @@
 		setMainAreaRef(instance)
 	})
 
-	const code = `
-	import re
-	import json
- 	import html
- 	from bs4 import BeautifulSoup
+	const code = `import re
+import json
+import html
+from bs4 import BeautifulSoup
 
- 	def handler(event, context):
-     	# Extract the HTML content from the event object. This content is expected to be passed in 'output_0'.
-     	input_html = event.get("output_0")`
+def handler(event, context):
+    # Extract the HTML content from the event object. This content is expected to be passed in 'output_0'.
+    input_html = event.get("output_0")`
 
 	const readMe = `# Triform.ai Template: HTTP GET Request Handler
  
@@ -156,8 +155,8 @@
 `
 
 	const requirement = `beautifulsoup4
-	requests
-	json`
+requests
+json`
 </script>
 
 <section class="h-[calc(100vh-156.1px)] relative" bind:this={instance}>
@@ -183,7 +182,7 @@
 					'Edit Action': code,
 					'README.md': readMe,
 					"Requirements": requirement,
-					'Folder Structure': 'Something random'
+					'Folder Structure': 'Something random',
 				}
 			})}
 	>
