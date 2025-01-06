@@ -65,12 +65,12 @@
 
     // Don't allow the element to go out of bounds
     if (
-      x > 0 &&
-      x + element.clientWidth < width
+      x > (element.clientWidth / -4) &&
+      x + (element.clientWidth / 4) < width
     ) posX = (x / width) * 100
     if (
       y > 0 &&
-      y + element.clientHeight < height
+      y + (element.clientHeight / 4) < height
     ) posY = (y / height) * 100
 
     // Update state
