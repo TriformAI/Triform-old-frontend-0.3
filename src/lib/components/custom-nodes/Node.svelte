@@ -19,7 +19,7 @@
     handles: Position[]
 	} = $props()
 
-	const { name, state } = data
+	const { name, state, version } = data
 
   const getBorderClass = (state: string) => {
     switch (state) {
@@ -52,7 +52,10 @@
         {selected ? 'text-slate-200' : 'text-slate-300'}
       "
     >
-      {name} <span class="block transition {selected ? 'text-slate-300' : 'text-slate-400'}">v1</span>
+      {name}
+      <span class="block transition {selected ? 'text-slate-300' : 'text-slate-400'}">
+        v{version}
+      </span>
     </span>
       <div
         class="

@@ -1,10 +1,9 @@
 <script lang="ts">
 	import { onMount } from 'svelte'
-	import { writable } from 'svelte/store'
-	import { SvelteFlow, Background } from '@xyflow/svelte'
-	import { BackgroundVariant } from '@xyflow/svelte'
+	import Flow from '$lib/components/canvas/Flow.svelte'
 
 	import { openWindows, openWindow } from '$lib/stores/windows.svelte'
+	import { loadResource, canvasStore } from '$lib/stores/canvas.svelte'
 
 	import { mainAreaRef, setMainAreaRef } from '$lib/stores/layoutRefs.svelte'
 	// 👇 this is important! You need to import the styles for Svelte Flow to work
@@ -22,104 +21,6 @@
 		'agent-node': AgentNode,
 		'api-node': ApiNode
 	}
-
-	// We are using writables for the nodes and edges to sync them easily. When a user drags a node for example, Svelte Flow updates its position.
-	const nodes = writable([
-		{
-			id: '1',
-			type: 'api-node',
-			position: { x: 80, y: 0 },
-			data: {
-				name: 'API Node A',
-				state: 'running'
-			}
-		},
-		{
-			id: '2',
-			type: 'agent-node',
-			position: { x: 0, y: 120 },
-			data: {
-				name: 'Agent Node A',
-				state: 'error'
-			}
-		},
-		{
-			id: '3',
-			type: 'action-node',
-			position: { x: 80, y: 250 },
-			data: {
-				name: 'Action Node A',
-				state: 'success'
-			}
-		},
-		{
-			id: '4',
-			type: 'api-node',
-			position: { x: 300, y: 0 },
-			data: {
-				name: 'API Node B',
-				state: 'success'
-			}
-		},
-		{
-			id: '5',
-			type: 'agent-node',
-			position: { x: 230, y: 120 },
-			data: {
-				name: 'Agent Node B',
-				state: 'running'
-			}
-		},
-		{
-			id: '6',
-			type: 'action-node',
-			position: { x: 300, y: 250 },
-			data: {
-				name: 'Action Node B',
-				state: 'error'
-			}
-		}
-	])
-
-	// same for edges
-	const edges = writable([
-		{
-			id: '1-2',
-			type: 'default',
-			source: '1',
-			target: '2',
-			animated: true
-		},
-		{
-			id: '2-3',
-			type: 'default',
-			source: '2',
-			target: '3',
-			animated: true
-		},
-		{
-			id: '4-5',
-			type: 'default',
-			source: '4',
-			target: '5',
-			animated: true
-		},
-		{
-			id: '5-6',
-			type: 'default',
-			source: '5',
-			target: '6',
-			animated: true
-		},
-
-		{
-			id: '5-3',
-			type: 'default',
-			source: '5',
-			target: '3',
-			animated: true
-		}
-	])
 
 	const snapGrid: [number, number] = [1, 1]
 
@@ -155,9 +56,16 @@ def handler(event, context):
  
 `
 
-	const requirement = `beautifulsoup4
-requests
-json`
+	const requirement = 'beautifulsoup4\nrequests\njson'
+
+	import testInvocation from '$lib/dev/test-invocation.json'
+	const invocation = testInvocation
+	onMount(() => {
+		console.log('mount')
+		loadResource(invocation.spec)
+	})
+
+	const activeCanvas = $derived(canvasStore[0])
 </script>
 
 <section class="h-[calc(100vh-156.1px)] relative" bind:this={instance}>
@@ -189,21 +97,5 @@ json`
 	>
 		Code Editor Window
 	</button>
-	<SvelteFlow
-		{nodes}
-		{edges}
-		{nodeTypes}
-		fitView
-		{snapGrid}
-		{proOptions}
-		{defaultEdgeOptions}
-	>
-		<Background
-			bgColor="#181819"
-			patternColor="#1D1E20"
-			gap={20}
-			size={1}
-			variant={BackgroundVariant.Lines}
-		/>
-	</SvelteFlow>
+	<Flow canvas={activeCanvas} />
 </section>

@@ -8,7 +8,7 @@
 
 <Node
 	{...props}
-	handles={[Position.Top]}	
+	handles={[Position.Top, Position.Bottom]}	
 >
 	{#snippet icon()}
 		<IconSquare class="text-slate-300 transform rotate-45" />

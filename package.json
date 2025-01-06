@@ -44,6 +44,7 @@
 	"type": "module",
 	"dependencies": {
 		"@auth/sveltekit": "^1.7.3",
+		"@dagrejs/dagre": "^1.1.4",
 		"@monaco-editor/loader": "^1.4.0",
 		"@sveltejs/adapter-node": "^5.2.11",
 		"@xyflow/svelte": "^0.1.26",

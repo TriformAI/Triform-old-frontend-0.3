@@ -1,0 +1,141 @@
+{
+  "resource": "invocation",
+  "api_version": "v1",
+  "input": { "sum": 1 },
+  "turbo": true,
+  "spec": {
+    "resource": "agent",
+    "api_version": "v1",
+    "id": "f892d1b9-e211-48f2-baab-2c025bfbdc79",
+    "key": "test_agent",
+    "inputs": [],
+    "spec": {
+      "name": "Test agent",
+      "version": 1,
+      "agent": {
+        "sequence": [
+          {
+            "resource": "action",
+            "api_version": "v1",
+            "id": "1b0cf5aa-d64b-4efc-9589-c678f37a5692",
+            "key": "action1",
+            "inputs": [],
+            "spec": {
+              "name": "Plus one",
+              "version": 2,
+              "action": {
+                "source": "import json\n\ndef action(input):\n    return json.dumps({'sum': input['sum']+1})",
+                "readme": "This action adds one to the sum of the input",
+                "deps": "",
+                "layer": "",
+                "streaming": false
+              }
+            }
+          },
+          {
+            "parallel": [
+              {
+                "sequence": [
+                  {
+                    "resource": "action",
+                    "api_version": "v1",
+                    "id": "1b0cf5aa-d64b-4efc-9589-c678f37a5692",
+                    "key": "action2",
+                    "inputs": ["action1"],
+                    "spec": {
+                      "name": "Sum plus one",
+                      "version": 2,
+                      "action": {
+                        "source": "import json\n\ndef action(input):\n    return json.dumps({'sum': input['sum']+1})",
+                        "readme": "This action adds one to the sum of the input",
+                        "deps": "",
+                        "layer": "",
+                        "streaming": false
+                      }
+                    }
+                  },
+                  {
+                    "resource": "action",
+                    "api_version": "v1",
+                    "id": "ec8ccf99-a09e-4564-91ef-92c6d83ac6c1",
+                    "key": "action3",
+                    "inputs": ["action2"],
+                    "spec": {
+                      "name": "Sum1",
+                      "version": 1,
+                      "action": {
+                        "source": "import json\n\ndef action(input):\n    return json.dumps({'sum1': input['sum']+1})",
+                        "readme": "This action adds one to the sum of the input from action2",
+                        "deps": "",
+                        "layer": "",
+                        "streaming": false
+                      }
+                    }
+                  }
+                ]
+              },
+              {
+                "sequence": [
+                  {
+                    "resource": "action",
+                    "api_version": "v1",
+                    "id": "1b0cf5aa-d64b-4efc-9589-c678f37a5692",
+                    "key": "action4",
+                    "inputs": ["action1"],
+                    "spec": {
+                      "name": "Plus one",
+                      "version": 2,
+                      "action": {
+                        "source": "import json\n\ndef action(input):\n    return json.dumps({'sum': input['sum']+1})",
+                        "readme": "This action adds one to the sum of the input from action1",
+                        "deps": "",
+                        "layer": "",
+                        "streaming": false
+                      }
+                    }
+                  },
+                  {
+                    "resource": "action",
+                    "api_version": "v1",
+                    "id": "94acbe31-fde7-4b6d-b830-b9a6f8ece7e6",
+                    "key": "action5",
+                    "inputs": ["action4"],
+                    "spec": {
+                      "name": "Sum2",
+                      "version": 3,
+                      "action": {
+                        "source": "import json\n\ndef action(input):\n    return json.dumps({'sum2': input['sum']+1})",
+                        "readme": "This action adds one to the sum of the input from action4",
+                        "deps": "",
+                        "layer": "",
+                        "streaming": false
+                      }
+                    }
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "resource": "action",
+            "api_version": "v1",
+            "id": "99b65b1c-4b78-450d-8a8c-f7a93b16cadf",
+            "key": "action6",
+            "inputs": ["action3", "action5"],
+            "spec": {
+              "name": "Total",
+              "version": 2,
+              "action": {
+                "source": "import json\n\ndef action(input):\n    return json.dumps({'sum': input['sum1']+input['sum2']})",
+                "readme": "This action returns the total of action3 and action5",
+                "deps": "",
+                "layer": "",
+                "streaming": false
+              }
+            }
+          }
+        ]
+      }
+    }
+  }
+}
