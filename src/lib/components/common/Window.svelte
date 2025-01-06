@@ -101,7 +101,7 @@
 </script>
 
 <div
-  class="absolute {isDragging ? 'shadow-lg scale-[1.025]' : 'scale-100'} transform transition"
+  class="absolute {isDragging ? 'shadow-lg scale-[1.015]' : 'scale-100'} transform transition"
   style={`
     top: ${posY}%;
     left: ${posX}%;
