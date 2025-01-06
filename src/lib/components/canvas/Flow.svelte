@@ -10,6 +10,8 @@
 	import { untrack } from 'svelte'
 	import { SvelteFlow, Background, BackgroundVariant } from '@xyflow/svelte'
   import dagre from '@dagrejs/dagre'
+	import { openWindow } from '$lib/stores/windows.svelte'
+  import CodeEditorWindow from '$lib/components/windows/CodeEditorWindow.svelte'
 
   const {
     canvas
@@ -59,7 +61,18 @@
             position: { x: 0, y: 0 },
             data: {
               name: spec.spec.name,
-              version: spec.spec.version
+              version: spec.spec.version,
+              onOpen: () => openWindow({
+                id: `code-editor-action-${spec.key}`,
+                component: CodeEditorWindow,
+                posX: 20,
+                posY: 20,
+                customProps: {
+                  'Edit Action': spec.spec.action.source,
+                  'README.md': spec.spec.action.readme,
+                  "Requirements": spec.spec.action.deps
+                }
+              })
             }
           }
           const vertices = spec.inputs.map(input => ({

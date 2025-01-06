@@ -2,5 +2,6 @@
 export interface NodeData {
   name: string,
   version: number,
-  state?: 'success' | 'error' | 'running'
+  state?: 'success' | 'error' | 'running',
+  onOpen?: () => void
 }

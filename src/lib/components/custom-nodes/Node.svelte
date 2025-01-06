@@ -19,7 +19,7 @@
     handles: Position[]
 	} = $props()
 
-	const { name, state, version } = data
+	const { name, state, version, onOpen } = data
 
   const getBorderClass = (state: string) => {
     switch (state) {
@@ -34,6 +34,12 @@
           ? 'border-slate-200'
           : 'border-slate-300'
     }
+  }
+
+  const onclick = () => {
+    // Essentially acts as a double click (select and then click again to open)
+    // This should be probably be changed in the future to always be a double click, or something
+    if (selected && onOpen) onOpen()
   }
 </script>
 
@@ -63,6 +69,7 @@
           {selected ? 'border-2' : ''}
           {getBorderClass(state)}
         "
+        {onclick}
       >
         {@render icon()}
         <div
