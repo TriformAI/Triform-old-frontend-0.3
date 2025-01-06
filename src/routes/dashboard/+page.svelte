@@ -287,11 +287,16 @@
 			openWindow({
 				id: 'code-editor',
 				component: CodeEditorWindow,
+				posX: 20,
+				posY: 20,
+				width: 800,
+				height: 600,
+				zIndex: 100,
 				customProps: {
-					"Code": code,
+					'Edit Action': code,
 					'README.md': readMe,
 					"Requirements": requirement,
-					'Folder Structure': "Something random"
+					'Folder Structure': 'Something random'
 				}
 			})}
 	>
