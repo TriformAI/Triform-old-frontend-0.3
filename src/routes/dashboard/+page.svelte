@@ -2,6 +2,7 @@
 	import { onMount } from 'svelte'
 	import { writable } from 'svelte/store'
 	import { SvelteFlow, Background } from '@xyflow/svelte'
+	import { BackgroundVariant } from '@xyflow/svelte'
 
 	import { openWindows, openWindow } from '$lib/stores/windows.svelte'
 
@@ -30,7 +31,7 @@
 			position: { x: 80, y: 0 },
 			data: {
 				name: 'API Node A',
-				mode: 'running'
+				state: 'running'
 			}
 		},
 		{
@@ -39,7 +40,7 @@
 			position: { x: 0, y: 120 },
 			data: {
 				name: 'Agent Node A',
-				mode: 'error'
+				state: 'error'
 			}
 		},
 		{
@@ -48,7 +49,7 @@
 			position: { x: 80, y: 250 },
 			data: {
 				name: 'Action Node A',
-				mode: 'success'
+				state: 'success'
 			}
 		},
 		{
@@ -57,7 +58,7 @@
 			position: { x: 300, y: 0 },
 			data: {
 				name: 'API Node B',
-				mode: 'success'
+				state: 'success'
 			}
 		},
 		{
@@ -66,7 +67,7 @@
 			position: { x: 230, y: 120 },
 			data: {
 				name: 'Agent Node B',
-				mode: 'running'
+				state: 'running'
 			}
 		},
 		{
@@ -75,7 +76,7 @@
 			position: { x: 300, y: 250 },
 			data: {
 				name: 'Action Node B',
-				mode: 'error'
+				state: 'error'
 			}
 		}
 	])
@@ -188,7 +189,21 @@ json`
 	>
 		Code Editor Window
 	</button>
-	<SvelteFlow {nodes} {edges} {nodeTypes} fitView {snapGrid} {proOptions} {defaultEdgeOptions}>
-		<Background bgColor="#181819" patternColor="#1D1E20" variant="lines" gap={20} size={1} />
+	<SvelteFlow
+		{nodes}
+		{edges}
+		{nodeTypes}
+		fitView
+		{snapGrid}
+		{proOptions}
+		{defaultEdgeOptions}
+	>
+		<Background
+			bgColor="#181819"
+			patternColor="#1D1E20"
+			gap={20}
+			size={1}
+			variant={BackgroundVariant.Lines}
+		/>
 	</SvelteFlow>
 </section>

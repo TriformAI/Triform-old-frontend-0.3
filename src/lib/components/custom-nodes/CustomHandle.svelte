@@ -1,24 +1,27 @@
 <script lang="ts">
 	import { Handle } from '@xyflow/svelte'
 
-	export let type: 'source' | 'target'
 	import type { Position } from '@xyflow/svelte'
-	export let position: Position
-	export let id: string | undefined
+
+	const {
+		id,
+		position,
+		type
+	}: {
+		id: string,
+		position: Position,
+		type: 'source' | 'target'
+	} = $props()
 </script>
 
 <div class="relative">
-	<div
-		class="relative w-2 h-2 border border-white rounded-full left-[20px] bottom-0.25 bg-brand-primary-dark-gray"
-	>
-		<Handle
-			{type}
-			{position}
-			{id}
-			style="width: 30px; height: 20px"
-			class={`z-50 opacity-0 ${type === 'source' ? 'bottom-2' : 'top-2'}`}
-		/>
-	</div>
+	<Handle
+		{id}
+		{type}
+		{position}
+		style="width: 30px; height: 20px"
+		class="invisible"
+	/>
 </div>
 
 <style>
