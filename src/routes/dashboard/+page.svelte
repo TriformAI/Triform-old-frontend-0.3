@@ -75,27 +75,6 @@ def handler(event, context):
 	{/each}
 
 	<ShareCanvasModal />
-
-	<button
-		class="m-4 text-white"
-		onclick={() =>
-			openWindow({
-				id: 'code-editor',
-				component: CodeEditorWindow,
-				posX: 20,
-				posY: 20,
-				width: 800,
-				height: 600,
-				zIndex: 100,
-				customProps: {
-					'Edit Action': code,
-					'README.md': readMe,
-					"Requirements": requirement,
-					'Folder Structure': 'Something random',
-				}
-			})}
-	>
-		Code Editor Window
-	</button>
+	
 	<Flow canvas={activeCanvas} />
 </section>
