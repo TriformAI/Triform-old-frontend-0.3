@@ -44,7 +44,9 @@
 	tabindex="0"
 	onclick={() => (collapsed = true)}
 	onkeydown={() => {}}
-	class={`${$statusModal ? 'pt-3' : ''} z-50 w-full px-7 border-t border-t-brand-primary-gray text-brand-white bg-website-primary shadow-2xl duration-200 ease-linear transition-transform ${!collapsed ? 'group-hover:-translate-y-2 py-2 cursor-pointer ' : ' -translate-y-[70%] cursor-default pb-10 '}`}
+	class={`${$statusModal ? 'pt-3' : ''} z-50 w-full px-7 border-t border-t-brand-primary-gray text-brand-white bg-website-primary shadow-2xl duration-500 ease-out transition-transform ${
+		!collapsed ? 'group-hover:-translate-y-[10%] py-2 cursor-pointer' : ' cursor-default'
+	}`}
 >
 	{#if collapsed}
 		<button

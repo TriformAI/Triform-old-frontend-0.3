@@ -40,24 +40,22 @@
 
 <section class={`bg-website-dark-primary`}>
 	{#if $page.url.pathname === '/dashboard'}
-		<SvelteFlowProvider>
-			<div class="w-full">
-				<Navbar />
-				<Toolbar />
-			</div>
+		<section class="layout bg-website-dark-primary">
+			<SvelteFlowProvider>
+				<div class="flex flex-col h-screen">
+					<Navbar />
+					<Toolbar />
+					<div class="flex-grow">
+						{@render children?.()}
+					</div>
+					<Footer />
+				</div>
 
-			<ToastContainer placement="top-right" let:data>
-				<FlatToast {data} />
-			</ToastContainer>
-
-			<div role="main">
-				{@render children?.()}
-			</div>
-
-			<footer class=" group">
-				<Footer />
-			</footer>
-		</SvelteFlowProvider>
+				<ToastContainer placement="top-right" let:data>
+					<FlatToast {data} />
+				</ToastContainer>
+			</SvelteFlowProvider>
+		</section>
 	{:else}
 		<main>
 			{@render children?.()}

@@ -5,7 +5,9 @@
 	import { openWindows } from '$lib/stores/windows.svelte'
 	import { loadResource, canvasStore } from '$lib/stores/canvas.svelte'
 
-	import { mainAreaRef, setMainAreaRef } from '$lib/stores/layoutRefs.svelte'
+	import { setMainAreaRef } from '$lib/stores/layoutRefs.svelte'
+	// 👇 this is important! You need to import the styles for Svelte Flow to work
+	import '@xyflow/svelte/dist/style.css'
 
 	import ShareCanvasModal from '$lib/components/modals/ShareCanvas.svelte'
 
@@ -15,22 +17,23 @@
 	})
 
 	import testInvocation from '$lib/dev/test-invocation.json'
-	const invocation = testInvocation
+	import type { Invocation } from '$lib/types/test-invocation'
+
+	const invocation: Invocation = testInvocation as Invocation
 	onMount(() => {
-		console.log('mount')
 		loadResource(invocation.spec)
 	})
 
 	const activeCanvas = $derived(canvasStore[0])
 </script>
 
-<section class="h-[calc(100vh-156.1px)] relative" bind:this={instance}>
+<section class="flex flex-col h-full" bind:this={instance}>
 	{#each openWindows() as window}
 		{@const { component: Component, customProps, ...defaultProps } = window}
 		<Component {...defaultProps} {customProps} />
 	{/each}
 
 	<ShareCanvasModal />
-	
+
 	<Flow canvas={activeCanvas} />
 </section>

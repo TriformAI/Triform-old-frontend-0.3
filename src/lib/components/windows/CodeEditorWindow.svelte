@@ -52,7 +52,7 @@
 		<Tabs {tabs} bind:activeTab />
 
 		<div class="py-4">
-			<div class="container-size">
+			<div class="w-full h-full min-w-[800px] min-h-[500px]">
 				{#if activeTab?.key === '1'}
 					<CodeEditor code={customProps[activeTab.label]} />
 				{:else if activeTab?.key === '2'}
@@ -69,10 +69,3 @@
 		</div>
 	{/snippet}
 </Window>
-
-<style>
-	.container-size {
-		width: 1000px;
-		height: 500px;
-	}
-</style>

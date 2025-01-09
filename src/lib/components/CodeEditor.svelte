@@ -36,7 +36,9 @@
 
 <style>
 	.container {
+		min-height: 500px;
+		min-width: 800px;
 		width: 100%;
-		height: 500px;
+		height: 100%;
 	}
 </style>
