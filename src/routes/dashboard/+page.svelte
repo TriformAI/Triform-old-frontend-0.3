@@ -29,7 +29,7 @@
 	const activeCanvas = $derived(canvasStore[0])
 </script>
 
-<section class="flex flex-col h-full" bind:this={instance}>
+<section class="flex flex-col h-screen" bind:this={instance}>
 	{#each openWindows() as window}
 		{@const { component: Component, customProps, ...defaultProps } = window}
 		<Component {...defaultProps} {customProps} />
