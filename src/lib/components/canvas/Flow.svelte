@@ -13,6 +13,8 @@
 	import { openWindow } from '$lib/stores/windows.svelte'
   import CodeEditorWindow from '$lib/components/windows/CodeEditorWindow.svelte'
 
+  import '@xyflow/svelte/dist/style.css'
+
   const {
     canvas
   }: {
