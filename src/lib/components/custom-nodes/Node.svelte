@@ -1,97 +1,87 @@
 <script lang="ts">
-  import type { NodeData } from "$lib/types/flow"
-  import type { Snippet } from 'svelte'
-  import { Position } from '@xyflow/svelte'
+	import type { NodeData } from '$lib/types/flow'
+	import type { Snippet } from 'svelte'
+	import { Position } from '@xyflow/svelte'
 
-  import CustomHandle from './CustomHandle.svelte'
+	import CustomHandle from './CustomHandle.svelte'
 
 	const {
 		id,
 		data,
 		selected,
-    icon,
-    handles = []
+		icon,
+		handles = []
 	}: {
-		id: string,
-		data: NodeData,
-		selected: boolean,
-    icon: Snippet,
-    handles: Position[]
+		id: string
+		data: NodeData
+		selected: boolean
+		icon: Snippet
+		handles: Position[]
 	} = $props()
 
 	const { name, state, version, onOpen } = data
 
-  const getBorderClass = (state: string) => {
-    switch (state) {
-      case 'success':
-        return 'border-emerald-500'
-      case 'error':
-        return 'border-red-500'
-      case 'running':
-        return 'border-indigo-500'
-      default:
-        return selected
-          ? 'border-slate-200'
-          : 'border-slate-300'
-    }
-  }
+	const getBorderClass = (state: string) => {
+		switch (state) {
+			case 'success':
+				return 'border-emerald-500'
+			case 'error':
+				return 'border-red-500'
+			case 'running':
+				return 'border-indigo-500'
+			default:
+				return selected ? 'border-slate-200' : 'border-slate-300'
+		}
+	}
 
-  const onclick = () => {
-    // Essentially acts as a double click (select and then click again to open)
-    // This should be probably be changed in the future to always be a double click, or something
-    if (selected && onOpen) onOpen()
-  }
+	const onclick = () => {
+		// Essentially acts as a double click (select and then click again to open)
+		// This should be probably be changed in the future to always be a double click, or something
+		if (selected && onOpen) onOpen()
+	}
 </script>
 
 <div>
-  {#if handles.includes(Position.Top)}
-    <CustomHandle
-      {id}
-      type="target"
-      position={Position.Top}
-    />
-  {/if}
+	{#if handles.includes(Position.Top)}
+		<CustomHandle {id} type="target" position={Position.Top} />
+	{/if}
 	<div>
-    <span
-      class="
+		<span
+			class="
         absolute flex-shrink-0 w-max text-[8px] font-bold right-14 top-5 float-right transition
         {selected ? 'text-slate-200' : 'text-slate-300'}
       "
-    >
-      {name}
-      <span class="block transition {selected ? 'text-slate-300' : 'text-slate-400'}">
-        v{version}
-      </span>
-    </span>
-      <div
-        class="
-          rounded-full w-11 h-11 p-2 border flex justify-center items-center relative transition-all
-          {selected ? 'border-2' : ''}
-          {getBorderClass(state)}
-        "
-        {onclick}
-      >
-        {@render icon()}
-        <div
-          class="custom-node-icon-shadow absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 transform"
-        >
-          {@render icon()}
-        </div>
-      </div>
-  </div>
-  {#if handles.includes(Position.Bottom)}
-    <CustomHandle
-      {id}
-      type="source"
-      position={Position.Bottom}
-    />
-  {/if}
+		>
+			{name}
+			<span class="block transition {selected ? 'text-slate-300' : 'text-slate-400'}">
+				v{version}
+			</span>
+		</span>
+		<div
+			class="
+        rounded-full w-11 h-11 p-2 border flex justify-center items-center relative transition-all
+        {selected ? 'border-[3.5px] ease-linear duration-200' : ''}
+        {getBorderClass(state)}
+      "
+			{onclick}
+		>
+			{@render icon()}
+			<div
+				class="absolute transform -translate-x-1/2 -translate-y-1/2 custom-node-icon-shadow top-1/2 left-1/2"
+			>
+				{@render icon()}
+			</div>
+		</div>
+	</div>
+	{#if handles.includes(Position.Bottom)}
+		<CustomHandle {id} type="source" position={Position.Bottom} />
+	{/if}
 </div>
 
 <style>
-  /* Bit of a hack to lower the opacity of the shadow (currentColor) */
-  :global(.custom-node-icon-shadow > *) {
-    opacity: 0.35;
-    filter: drop-shadow(0px 0px 10px currentColor);
-  }
+	/* Bit of a hack to lower the opacity of the shadow (currentColor) */
+	:global(.custom-node-icon-shadow > *) {
+		opacity: 0.35;
+		filter: drop-shadow(0px 0px 10px currentColor);
+	}
 </style>
