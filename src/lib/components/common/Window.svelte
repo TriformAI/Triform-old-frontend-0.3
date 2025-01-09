@@ -64,6 +64,7 @@
     y -= dragStart.y
 
     // Don't allow the element to go out of bounds
+    // 4 is how much we want to allow the element to go out of bounds
     if (
       x > (element.clientWidth / -4) &&
       x + (element.clientWidth / 4) < width
