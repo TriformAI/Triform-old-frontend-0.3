@@ -3,6 +3,12 @@
 	import logo from '$lib/images/Logo.svg'
 	import github_mark_logo from '$lib/images/github-mark-white.svg'
 	import { signIn } from '@auth/sveltekit/client'
+	import { onMount } from 'svelte'
+
+	onMount(() => {
+		// go to the dashboard for now (no auth)
+		window.location.href = '/dashboard'
+	})
 
 	let showPassword = false
 	let showConfirmPassword = false

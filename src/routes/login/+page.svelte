@@ -4,6 +4,7 @@
 	import Spinner from '$lib/components/Spinner.svelte'
 	import logo from '$lib/images/Logo.svg'
 	import github_mark_logo from '$lib/images/github-mark-white.svg'
+	import { onMount } from 'svelte'
 
 	let showPassword = false
 	let email = ''
@@ -54,6 +55,11 @@
 		document.cookie = 'authType=login; path=/'
 		signIn('github', { callbackUrl: '/dashboard' })
 	}
+
+	onMount(() => {
+		// go to the dashboard for now (no auth)
+		window.location.href = '/dashboard'
+	})
 </script>
 
 <section>

@@ -1,7 +1,3 @@
-<script module>
-	import { browser } from '$app/environment' // Import to check if the code is running on the client
-</script>
-
 <script>
 	import '../app.css'
 	import Navbar from '$lib/components/Navbar.svelte'
@@ -10,59 +6,8 @@
 	import { SvelteFlowProvider } from '@xyflow/svelte'
 	import Toolbar from '$lib/components/Toolbar.svelte'
 	import Footer from '$lib/components/Footer.svelte'
-	import { page } from '$app/stores'
 	import { onMount } from 'svelte'
-	import {
-		profileDropdown,
-		notificationOpen,
-		canvasDropdownOpen,
-		freeFormAutoArrangeModal,
-		searchModal,
-		componentToolsBoxModal,
-		environmentModal,
-		tokenModal,
-		storageModal,
-		templateLibraryModal,
-		propertyModal,
-		consoleModal
-	} from '$lib/stores/modals'
-
-	// Check if the authToken cookie exists (only in the browser)
-	function checkAuthToken() {
-		if (!browser) return null // Ensure this code only runs in the browser
-		const cookieString = document.cookie
-		const cookies = cookieString.split('; ').reduce((acc, cookie) => {
-			const [name, value] = cookie.split('=')
-			acc[name] = value
-			return acc
-		}, {})
-		let authToken = cookies['authToken']
-		if (authToken) {
-			return authToken
-		} else if ($page.data.GithubAuthToken) {
-			authToken = $page.data.GithubAuthToken
-			if (authToken && browser) {
-				document.cookie = `authToken=${authToken}; Path=/; Max-Age=86400; SameSite=Strict`
-				return authToken
-			}
-		}
-	}
-
-	// Function to check if the user is authenticated either by authToken or GitHub session
-	function isAuthenticated() {
-		let authToken = checkAuthToken()
-		if (authToken) return true
-		else return false
-	}
-
-	onMount(() => {
-		if (browser) {
-			const session = $page.data.session
-			if (!isAuthenticated(session) && $page.url.pathname === '/dashboard') {
-				window.location.href = '/login'
-			}
-		}
-	})
+	import { page } from '$app/stores'
 
 	onMount(() => {
 		// Pusher.logToConsole = true;
@@ -91,32 +36,11 @@
 
 	/** @type {Props} */
 	let { children } = $props()
-
-	// General toggle function for all dropdowns
-	function generalToggle() {
-		profileDropdown.update(() => false)
-		notificationOpen.update(() => false)
-		canvasDropdownOpen.update(() => false)
-		freeFormAutoArrangeModal.update(() => false)
-		searchModal.update(() => false)
-		componentToolsBoxModal.update(() => false)
-		environmentModal.update(() => false)
-		tokenModal.update(() => false)
-		storageModal.update(() => false)
-		templateLibraryModal.update(() => false)
-		propertyModal.update(() => false)
-		consoleModal.update(() => false)
-	}
-
-	// Reactive statement to check if the route is protected and the user is authenticated
-	let isProtectedRoute = $page?.url?.pathname === '/dashboard' // Strict match for /dashboard
-	let session = $page.data.session
-	let isAuthenticatedUser = isAuthenticated(session)
 </script>
 
 <section class={`bg-website-dark-primary`}>
-	<SvelteFlowProvider>
-		{#if isProtectedRoute && isAuthenticatedUser}
+	{#if $page.url.pathname === '/dashboard'}
+		<SvelteFlowProvider>
 			<div class="w-full">
 				<Navbar />
 				<Toolbar />
@@ -126,21 +50,17 @@
 				<FlatToast {data} />
 			</ToastContainer>
 
-			<!-- svelte-ignore a11y_no_noninteractive_element_interactions -->
-			<!-- svelte-ignore a11y_click_events_have_key_events -->
-			<div role="main" onclick={generalToggle}>
+			<div role="main">
 				{@render children?.()}
 			</div>
 
 			<footer class=" group">
 				<Footer />
 			</footer>
-		{:else}
-			<!-- svelte-ignore a11y_no_noninteractive_element_interactions -->
-			<!-- svelte-ignore a11y_click_events_have_key_events -->
-			<main onclick={generalToggle}>
-				{@render children?.()}
-			</main>
-		{/if}
-	</SvelteFlowProvider>
+		</SvelteFlowProvider>
+	{:else}
+		<main>
+			{@render children?.()}
+		</main>
+	{/if}
 </section>
