@@ -60,7 +60,7 @@
 		<div
 			class="
         rounded-full w-11 h-11 p-2 border flex justify-center items-center relative transition-all
-        {selected ? 'border-[3.5px] ease-linear duration-200' : ''}
+        {selected ? 'border-[2px] ease-in duration-100' : ''}
         {getBorderClass(state)}
       "
 			{onclick}
