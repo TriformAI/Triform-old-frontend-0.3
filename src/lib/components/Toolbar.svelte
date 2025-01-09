@@ -82,7 +82,6 @@
 			<Button
 				variation="link"
 				onClick={zoomIn}
-				disableAutoLoad={true}
 			>
 				{#snippet icon()}
 					<IconZoomIn />
@@ -91,7 +90,6 @@
 			<Button
 				variation="link"
 				onClick={zoomOut}
-				disableAutoLoad={true}
 			>
 				{#snippet icon()}
 					<IconZoomOut />
@@ -100,7 +98,6 @@
 			<Button
 				variation="link"
 				onClick={fitView}
-				disableAutoLoad={true}
 			>
 				{#snippet icon()}
 					<IconFitScreen />

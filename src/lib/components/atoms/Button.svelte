@@ -9,7 +9,7 @@
     variation = 'primary',
     body,
     onClick: onClickProp,
-    disableAutoLoad = false,
+    autoLoad,
     icon,
     class: classProp
   }: {
@@ -21,7 +21,7 @@
     body?: Snippet,
     icon?: Snippet,
     // Optionally disable the automatic loading indicator
-    disableAutoLoad?: boolean,
+    autoLoad?: boolean,
     // If it returns a promise, show loading indicator until it resolves
     onClick?: () => void | Promise<void>,
     class?: string
@@ -33,19 +33,19 @@
       try {
         // If it wasn't a promise this will just resolve immediately
         Promise.resolve(onClickProp()).then(() => {
-          if (disableAutoLoad) return
+          if (!autoLoad) return
           isLoading = false
           // hack, in case the promise is resolved too fast
           // (basically never happens but its pretty catastrophic if it does
           // so better to just fix it like this)
           setTimeout(() => isLoading = false, 50)
         })
-        if (!disableAutoLoad) {
+        if (autoLoad) {
           console.log('loading')
           isLoading = true
         }
       } catch (e) {
-        if (!disableAutoLoad) isLoading = false
+        if (autoLoad) isLoading = false
         throw e
       }
     }
