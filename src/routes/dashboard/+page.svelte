@@ -3,7 +3,7 @@
 	import Flow from '$lib/components/canvas/Flow.svelte'
 
 	import { openWindows } from '$lib/stores/windows.svelte'
-	import { loadResource, canvasStore } from '$lib/stores/canvas.svelte'
+	import { loadResource, canvasStore, updateAction, actionsStore } from '$lib/stores/canvas.svelte'
 
 	import { setMainAreaRef } from '$lib/stores/layoutRefs.svelte'
 	// 👇 this is important! You need to import the styles for Svelte Flow to work
@@ -16,12 +16,14 @@
 		setMainAreaRef(instance)
 	})
 
-	import testInvocation from '$lib/dev/test-invocation.json'
-	import type { Invocation } from '$lib/types/test-invocation'
-
-	const invocation: Invocation = testInvocation as Invocation
+	// import testInvocation from '$lib/dev/test-invocation.json'
+	// const invocation = testInvocation
+	import testAgent from '$lib/dev/test-agent.json'
 	onMount(() => {
-		loadResource(invocation.spec)
+		console.log('mount')
+		loadResource(testAgent)
+
+		console.log('actions', actionsStore())
 	})
 
 	const activeCanvas = $derived(canvasStore[0])

@@ -2,15 +2,26 @@
 	import Window from '$lib/components/common/Window.svelte'
 	import Tabs from '$lib/components/atoms/Tabs.svelte'
 	import CodeEditor from '../CodeEditor.svelte'
+	import Button from '$lib/components/atoms/Button.svelte'
+
+	import IconDatabaseUpload from '~icons/material-symbols/database-upload-rounded'
+
+	import { publishAction } from '$lib/actions/executor'
+	import { canvasStore, actionsStore } from '$lib/stores/canvas.svelte'
 
 	// Props passed to the component
 	const props = $props()
-	const { customProps } = props
+	const {
+		customProps: {
+			files,
+			actionKey
+		}
+	} = props
 
 	// Get the keys from customProps as dynamic tabs
-	const tabs = Object.keys(customProps).map((key, index) => ({
-		key: (index + 1).toString(),
-		label: key.charAt(0).toUpperCase() + key.slice(1) // Capitalize the tab labels
+	const tabs = Object.keys(files).map(key => ({
+		key,
+		label: key
 	}))
 
 	// Variable to keep track of the active tab
@@ -41,6 +52,13 @@
 			})
 			.join('')
 	}
+
+	const publish = async () => {
+		console.log('publishing')
+		const action = actionsStore().filter(a => a.key === actionKey)[0]
+		const newAction = await publishAction(action.spec)
+		console.log('new action', newAction)
+	}
 </script>
 
 <Window {...props}>
@@ -51,21 +69,27 @@
 	{#snippet body()}
 		<Tabs {tabs} bind:activeTab />
 
-		<div class="py-4">
-			<div class="w-full h-full min-w-[800px] min-h-[500px]">
-				{#if activeTab?.key === '1'}
-					<CodeEditor code={customProps[activeTab.label]} />
-				{:else if activeTab?.key === '2'}
-					<div class="h-full p-6 overflow-y-auto text-white">
-						<!-- eslint-disable-next-line svelte/no-at-html-tags -->
-						{@html parseMarkdown(customProps[activeTab.label] || '')}
-					</div>
-				{:else if activeTab?.key === '3'}
-					<CodeEditor code={customProps[activeTab.label]} />
-				{:else if activeTab}
-					<div>{customProps[activeTab.label]}</div>
-				{/if}
+		<div class="py-4 flex gap-y-4 flex-col">
+			<div class="container-size">
+				{#each tabs as tab}
+					{#if activeTab?.key === tab.key}
+						<CodeEditor code={files[tab.key]} />
+					{/if}
+				{/each}
 			</div>
+			<Button
+				variation="primary"
+				class="ml-auto"
+				autoLoad={true}
+				onClick={publish}
+			>
+				{#snippet icon()}
+					<IconDatabaseUpload />
+				{/snippet}
+				{#snippet body()}
+					Publish
+				{/snippet}
+			</Button>
 		</div>
 	{/snippet}
 </Window>

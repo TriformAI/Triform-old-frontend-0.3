@@ -21,7 +21,7 @@
 
 	const { name, state, version, onOpen } = data
 
-	const getBorderClass = (state: string) => {
+	const getBorderClass = (state?: string) => {
 		switch (state) {
 			case 'success':
 				return 'border-emerald-500'
@@ -56,8 +56,11 @@
 			<span class="block transition {selected ? 'text-slate-300' : 'text-slate-400'}">
 				v{version}
 			</span>
+			<span class="block transition text-[6px] font-normal italic {selected ? 'text-slate-400' : 'text-slate-500'}">
+				{data.id}
+			</span>
 		</span>
-		<div
+		<button
 			class="
         rounded-full w-11 h-11 p-2 border flex justify-center items-center relative transition-all
         {selected ? 'border-[2px] ease-in duration-100' : ''}
@@ -71,7 +74,7 @@
 			>
 				{@render icon()}
 			</div>
-		</div>
+		</button>
 	</div>
 	{#if handles.includes(Position.Bottom)}
 		<CustomHandle {id} type="source" position={Position.Bottom} />

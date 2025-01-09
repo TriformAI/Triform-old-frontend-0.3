@@ -1,0 +1,35 @@
+{
+  "resource": "agent",
+  "api_version": "v1",
+  "id": "f892d1b9-e211-48f2-baab-2c025bfbdc79",
+  "version": 1,
+  "key": "test_agent",
+  "inputs": [],
+  "spec": {
+    "name": "Test agent",
+    "version": 1,
+    "agent": {
+      "sequence": [
+        {
+          "resource": "action",
+          "api_version": "v1",
+          "version": 1,
+          "key": "action1",
+          "inputs": [],
+          "spec": {
+            "name": "Download & parse PDF",
+            "id": "fcdc05a4-9d97-42cc-9ffa-30ce07473d1b",
+            "version": 1,
+            "action": {
+              "source": "import requests\nimport io\nfrom pdfminer.high_level import extract_text_to_fp\nfrom pdfminer.layout import LAParams\n\n@triform.entrypoint\ndef action(input):\n    pdf_url = input.get(\"url\")\n    if not pdf_url:\n        return {\"error\": \"No pdf url provided\"}\n    try:\n        response = requests.get(pdf_url)\n        response.raise_for_status()\n    except requests.exceptions.RequestException as e:\n        return {\"error\": f\"Failed to fetch PDF from URL: {str(e)}\"}\n    pdf_file = io.BytesIO(response.content)\n    output_string = io.StringIO()\n    try:\n        laparams = LAParams()\n        extract_text_to_fp(pdf_file, output_string, laparams=laparams, output_type='text', codec='utf-8')\n    except Exception as e:\n        return {\"error\": \"Failed to extract text from PDF\"}\n    extracted_text = output_string.getvalue()\n    return {\"text\": extracted_text}\n",
+              "readme": "This action downloads and parses a PDF",
+              "deps": "requests\npdfminer.six",
+              "layer": "",
+              "streaming": false
+            }
+          }
+        }
+      ]
+    }
+  }
+}

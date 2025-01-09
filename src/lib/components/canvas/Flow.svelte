@@ -64,15 +64,19 @@
             data: {
               name: spec.spec.name,
               version: spec.spec.version,
+              id: spec.spec.id,
               onOpen: () => openWindow({
                 id: `code-editor-action-${spec.key}`,
                 component: CodeEditorWindow,
                 posX: 20,
                 posY: 20,
                 customProps: {
-                  'Edit Action': spec.spec.action.source,
-                  'README.md': spec.spec.action.readme,
-                  "Requirements": spec.spec.action.deps
+                  files: {
+                    'action.py': spec.spec.action.source,
+                    'README.md': spec.spec.action.readme,
+                    'requirements.txt': spec.spec.action.deps
+                  },
+                  actionKey: spec.key
                 }
               })
             }
