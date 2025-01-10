@@ -5,10 +5,10 @@ export interface Canvas {
   // label: string,
 }
 
-const processSpec = (
+export const processSpec = <T>(
   spec: any,
-  fn: (spec: any) => void,
-  callback?: () => void
+  fn: (spec: T) => void,
+  callback?: (spec: T) => void
 ) => {
   if (spec.sequence) for (const el of spec.sequence) processSpec(el, fn)
   if (spec.parallel) for (const el of spec.parallel) for (const seq of el.sequence) processSpec(seq, fn)
@@ -16,7 +16,7 @@ const processSpec = (
   // If we've done everything up until this point and we have a callback
   // we know that this is the top level of the recursion and that we're done
   // this might be pretty hacky though...
-  if (typeof callback === 'function') callback()
+  if (typeof callback === 'function') callback(spec)
 }
 
 export const canvasStore = $state<Canvas[]>([])

@@ -1,12 +1,23 @@
 <script lang="ts">
   import Window from '$lib/components/common/Window.svelte'
 
-  import Button from '../atoms/Button.svelte';
+  import { canvasStore } from '$lib/stores/canvas.svelte'
+  import { runAgent } from '$lib/actions/executor'
+
+  import Button from '../atoms/Button.svelte'
+  import InputField from '../atoms/InputField.svelte'
 
   import IconPlay from '~icons/material-symbols/play-arrow-outline-rounded'
 
   // Just pass through all props
   const props = $props()
+
+  let input = $state('{ "url": "https://pdfobject.com/pdf/sample.pdf" }')
+
+  const run = async () => {
+    const res = await runAgent(canvasStore[0].resource, JSON.parse(input))
+    console.log(res)
+  }
 </script>
 
 <Window
@@ -17,21 +28,31 @@
   {/snippet}
 
   {#snippet body()}
-    <div class="grid grid-cols-2 gap-x-2 w-full min-w-64">
-      <Button
-        class="w-full"
-      >
-        {#snippet body()}
-          <IconPlay />
-        {/snippet}
-      </Button>
-      <Button
-        class="w-full"
-      >
-        {#snippet body()}
-          Publish
-        {/snippet}
-      </Button>
+    <div class="flex flex-col gap-y-4">
+      <div class="grid grid-cols-2 gap-x-2 w-full min-w-64">
+        <Button
+          class="w-full"
+          onClick={run}
+          autoLoad={true}
+        >
+          {#snippet icon()}
+            <IconPlay />
+          {/snippet}
+        </Button>
+        <Button
+          class="w-full"
+        >
+          {#snippet body()}
+            Publish
+          {/snippet}
+        </Button>
+      </div>
+      <InputField
+        label="Test data"
+        placeholder="Temporary test data"
+        type="text"
+        bind:value={input}
+      />
     </div>
   {/snippet}
 </Window>
