@@ -34,3 +34,11 @@ npm run build
 You can preview the production build with `npm run preview`.
 
 To deploy your app, you may need to install an [adapter](https://kit.svelte.dev/docs/adapters) for your target environment.
+
+### Updating agent worker schema
+Assuming that you have cloned the [agent-worker repo](https://github.com/TriformAI/agent-worker/tree/master)
+and placed it in the same folder as triform-app repo, then you can simply run
+
+`npm run parse:schema`
+
+this will generate the ts types and put them in this file `src/lib/types/schema.ts`
