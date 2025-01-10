@@ -23,17 +23,19 @@ body {
 /* width */
 ::-webkit-scrollbar {
 	width: 4px;
+	height: 8px;
 }
 
 /* Handle */
 ::-webkit-scrollbar-thumb {
-	background: #ffffff;
-	border-radius: 10px;
+	background: theme('colors.zinc.500');
+	border-radius: 4px;
+	transition: background 0.2s ease-in-out;
 }
 
 /* Handle on hover */
 ::-webkit-scrollbar-thumb:hover {
-	background: #afafaf;
+	background: theme('colors.zinc.300');
 }
 
 .scroll_bar {
