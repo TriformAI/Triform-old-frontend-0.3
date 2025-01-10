@@ -17,32 +17,34 @@ export const publishAction = async (action: any) => {
 }
 
 export const runAgent = async (fullSpec: any, input: any) => {
-  console.log('full', fullSpec)
-  const spec = (JSON.parse(JSON.stringify(fullSpec))).spec.agent
+  const agentName = fullSpec.spec.name
+  const agentVersion = fullSpec.spec.version
+  const agentSpec = structuredClone(fullSpec.spec.agent)
 
-  // We need to construct the actual action spec
   const modifiedSpec = await new Promise<any>(resolve => processSpec(
-    spec,
+    agentSpec,
     (s: any) => {
-      console.log('spec', s)
       if (s.resource === 'action') {
+        // Move the id from the spec to the resource as that's what the api expects
         s.id = s.spec.id
-        console.log('s', s)
+        // Delete the rest of the spec as it's not needed for invocation
         delete s.spec
       }
     },
     resolve
   ))
-  console.log('modified', modifiedSpec)
-  const newSpec = Object.assign({}, fullSpec, {
+
+  // Use the new spec
+  const newSpec = {
+    ...fullSpec,
     spec: {
-      name: fullSpec.spec.name,
-      version: fullSpec.spec.version,
+      name: agentName,
+      version: agentVersion,
       agent: modifiedSpec
     }
-  })
-  console.log('new spec', newSpec)
+  }
 
+  // Construct the actual invocation request
   const invocation = {
     resource: 'invocation',
     api_version: 'v1',
