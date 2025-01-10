@@ -19,7 +19,7 @@ export const publishAction = async (action: any) => {
 export const runAgent = async (fullSpec: any, input: any) => {
   const agentName = fullSpec.spec.name
   const agentVersion = fullSpec.spec.version
-  const agentSpec = structuredClone(fullSpec.spec.agent)
+  const agentSpec = JSON.parse(JSON.stringify(fullSpec.spec.agent))
 
   const modifiedSpec = await new Promise<any>(resolve => processSpec(
     agentSpec,

@@ -6,6 +6,7 @@
 
   import Button from '../atoms/Button.svelte'
   import InputField from '../atoms/InputField.svelte'
+  import Code from '../atoms/Code.svelte'
 
   import IconPlay from '~icons/material-symbols/play-arrow-outline-rounded'
 
@@ -13,10 +14,12 @@
   const props = $props()
 
   let input = $state('{ "url": "https://pdfobject.com/pdf/sample.pdf" }')
+  let result = $state('')
 
   const run = async () => {
     const res = await runAgent(canvasStore[0].resource, JSON.parse(input))
     console.log(res)
+    result = res
   }
 </script>
 
@@ -53,6 +56,11 @@
         type="text"
         bind:value={input}
       />
+      {#if result}
+        <div class="max-w-lg">
+          <Code code={JSON.stringify(result, null, 2)} />
+        </div>
+      {/if}
     </div>
   {/snippet}
 </Window>
