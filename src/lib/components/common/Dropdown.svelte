@@ -5,12 +5,12 @@
 
 	// Destructure props with default values
 	const {
-		button,
-		body,
-		chevron = false // Default value for chevron
+		button, // Button is required, evoke for the dropdown
+		body, // Body is required, content of the dropdown
+		chevron = false // Default value for chevron, dropdown icon at the end of the button
 	}: {
 		button?: Snippet
-		body: Snippet // Body is required
+		body: Snippet
 		chevron?: boolean
 	} = $props()
 
