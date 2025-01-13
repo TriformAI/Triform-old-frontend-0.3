@@ -1,8 +1,14 @@
 <script lang="ts">
 	import { onMount } from 'svelte'
 	import Flow from '$lib/components/canvas/Flow.svelte'
+	import type { Window } from '$lib/stores/windows.svelte'
 
-	import { openWindows } from '$lib/stores/windows.svelte'
+	import {
+		openWindows,
+		createLocalStorageListener,
+		loadWindowsFromLocalStorage,
+		removeLocalStorageListener
+	} from '$lib/stores/windows.svelte'
 	import { loadResource, canvasStore, updateAction, actionsStore } from '$lib/stores/canvas.svelte'
 
 	import { setMainAreaRef } from '$lib/stores/layoutRefs.svelte'
@@ -27,6 +33,13 @@
 	})
 
 	const activeCanvas = $derived(canvasStore[0])
+	onMount(() => {
+		loadWindowsFromLocalStorage()
+		createLocalStorageListener()
+		;() => {
+			removeLocalStorageListener()
+		}
+	})
 </script>
 
 <section class="flex flex-col h-screen" bind:this={instance}>
