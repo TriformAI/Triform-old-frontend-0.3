@@ -16,6 +16,7 @@
 
 	import ComponentsToolbox from './windows/ComponentsToolbox.svelte'
 	import Execution from './windows/Execution.svelte'
+	import Dropdown from './common/Dropdown.svelte'
 
 	const { zoomOut, zoomIn, fitView } = useSvelteFlow()
 
@@ -66,7 +67,7 @@
 	</div>
 
 	<!-- Central Tools  -->
-	<div class="relative flex items-center gap-x-2 py-3">
+	<div class="relative flex items-center py-3 gap-x-2">
 		{#each tools as { icon: Icon, onClick }}
 			<Button {onClick}>
 				{#snippet icon()}
@@ -74,6 +75,36 @@
 				{/snippet}
 			</Button>
 		{/each}
+		<Dropdown>
+			{#snippet button()}
+				<span class="font-thin">Test</span>
+			{/snippet}
+
+			{#snippet body()}
+				<ul>
+					<li>
+						<IconPlay /> Item 1
+					</li>
+					<li>
+						<IconPlay /> Item 2
+					</li>
+					<li>
+						<IconPlay /> Item 3
+					</li>
+				</ul>
+				<ul>
+					<li>
+						<IconPlay /> Item 1
+					</li>
+					<li>
+						<IconPlay /> Item 2
+					</li>
+					<li>
+						<IconPlay /> Item 3
+					</li>
+				</ul>
+			{/snippet}
+		</Dropdown>
 	</div>
 
 	<!-- Zoom in Zoom out Fit screen -->

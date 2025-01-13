@@ -49,6 +49,7 @@
 	"dependencies": {
 		"@auth/sveltekit": "^1.7.3",
 		"@dagrejs/dagre": "^1.1.4",
+		"@iconify/svelte": "^4.2.0",
 		"@monaco-editor/loader": "^1.4.0",
 		"@sveltejs/adapter-node": "^5.2.11",
 		"@xyflow/svelte": "^0.1.26",
@@ -57,6 +58,7 @@
 		"date-fns": "^4.1.0",
 		"pusher-js": "^8.4.0-rc2",
 		"svelte-headlessui": "^0.0.45",
-		"svelte-toasts": "^1.1.2"
+		"svelte-toasts": "^1.1.2",
+		"svelte-transition": "^0.0.17"
 	}
 }
