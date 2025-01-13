@@ -1,48 +1,38 @@
-import { updateAction, processSpec } from '$lib/stores/canvas.svelte'
+import { updateAction, processResource } from '$lib/stores/canvas.svelte'
+import type { ActionResource, AgentResource } from '$lib/stores/canvas.svelte'
+import type { ResourceV1 } from '$lib/types/agent'
 
-export const publishAction = async (action: any) => {
+export const publishAction = async (action: ActionResource) => {
   console.log('publishing action', action)
   const res = await fetch('https://triform.arcticmarinesolutions.se/v1/action', {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json'
     },
-    body: JSON.stringify(action)
+    body: JSON.stringify(action.spec)
   })
-  const data = await res.json()
-  console.log(data)
+  const newSpec = await res.json()
+  console.log(newSpec)
   // The return value from the api doesn't include the key, so we
   // need to add the key from the current action
-  return await updateAction(Object.assign(action, data))
+  return await updateAction(Object.assign(action, {
+    id: newSpec.id,
+    spec: {
+      ...action.spec,
+      ...newSpec
+    }
+  }))
 }
 
-export const runAgent = async (fullSpec: any, input: any) => {
-  const agentName = fullSpec.spec.name
-  const agentVersion = fullSpec.spec.version
-  const agentSpec = JSON.parse(JSON.stringify(fullSpec.spec.agent))
+export const runAgent = async (fullAgent: AgentResource, input: unknown) => {
+  const agent = JSON.parse(JSON.stringify(fullAgent))
 
-  const modifiedSpec = await new Promise<any>(resolve => processSpec(
-    agentSpec,
-    (s: any) => {
-      if (s.resource === 'action') {
-        // Move the id from the spec to the resource as that's what the api expects
-        s.id = s.spec.id
-        // Delete the rest of the spec as it's not needed for invocation
-        delete s.spec
-      }
-    },
+  // Remove the spec of all actions
+  await new Promise<ResourceV1>(resolve => processResource(
+    agent,
+    (resource: ActionResource) => delete resource.spec,
     resolve
   ))
-
-  // Use the new spec
-  const newSpec = {
-    ...fullSpec,
-    spec: {
-      name: agentName,
-      version: agentVersion,
-      agent: modifiedSpec
-    }
-  }
 
   // Construct the actual invocation request
   const invocation = {
@@ -50,7 +40,7 @@ export const runAgent = async (fullSpec: any, input: any) => {
     api_version: 'v1',
     input,
     turbo: true,
-    spec: newSpec
+    spec: agent
   }
   console.log('running agent', invocation)
   const res = await fetch('https://triform.arcticmarinesolutions.se/v1/run', {

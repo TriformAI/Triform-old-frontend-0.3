@@ -56,7 +56,7 @@
 	const publish = async () => {
 		console.log('publishing')
 		const action = actionsStore().filter(a => a.key === actionKey)[0]
-		const newAction = await publishAction(action.spec)
+		const newAction = await publishAction(action)
 		console.log('new action', newAction)
 	}
 </script>

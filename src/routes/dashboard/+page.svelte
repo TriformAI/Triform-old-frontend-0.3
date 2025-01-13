@@ -11,6 +11,8 @@
 	} from '$lib/stores/windows.svelte'
 	import { loadResource, canvasStore, updateAction, actionsStore } from '$lib/stores/canvas.svelte'
 
+	import type { ResourceV1 } from '$lib/types/agent'
+
 	import { setMainAreaRef } from '$lib/stores/layoutRefs.svelte'
 	// 👇 this is important! You need to import the styles for Svelte Flow to work
 	import '@xyflow/svelte/dist/style.css'
@@ -27,7 +29,7 @@
 	import testAgent from '$lib/dev/test-agent.json'
 	onMount(() => {
 		console.log('mount')
-		loadResource(testAgent)
+		loadResource(testAgent as ResourceV1)
 
 		console.log('actions', actionsStore())
 	})

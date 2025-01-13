@@ -1,11 +1,11 @@
 /**
- * Types generated from repo agent-worker/schema.json on Fri Jan 10 14:17:52 UTC 2025
+ * Types generated from repo agent-worker/schema.json
  * based on the following commit:
  *
  * Repo: agent-worker
  * Branch: HEAD -> tri-231/refactoring, origin/tri-231/refactoring
- * Commit Hash: 8b86216601c9fc3f87927b66bee039b8733c9964
- * Date: Fri Jan 10 14:13:04 2025 +0100
+ * Commit Hash: 062ad6e73d52fa24efb001670b7a63727066d64f
+ * Date: Fri Jan 10 16:19:55 2025 +0200
  * */
 
 /* eslint-disable */
