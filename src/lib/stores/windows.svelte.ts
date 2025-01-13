@@ -44,6 +44,7 @@ export const openWindow = (window: Window) => {
 
 export const closeWindowById = (id: string) => {
 	openWindowsState = openWindowsState.filter(window => window.id !== id)
+	saveWindowsToLocalStorage()
 }
 
 export const updateWindowById = (id: string, update: Partial<Window>) => {
@@ -62,28 +63,25 @@ export const updateWindowById = (id: string, update: Partial<Window>) => {
 // TODO: Add all components that need to be saved to local storage here.
 // They need to be mapped to strings so that they can be saved and recreated
 // from local storage.
-const stringToComponentMap: { [key: string]: Component } = {
-	Execution: Execution,
-	ConponentsToolbox: ComponentsToolbox
+const stringToComponentMap: { str: string; cmp: Component }[] = [
+	{ str: 'Execution', cmp: Execution },
+	{ str: 'ConponentsToolbox', cmp: ComponentsToolbox }
+]
+const mapStringToComponent = (str: string): Component | undefined => {
+	return stringToComponentMap.find(pair => pair.str === str)?.cmp
 }
-
-const componentToStringMap = Object.entries(stringToComponentMap).reduce<{
-	[key: string]: string
-}>((ret, entry) => {
-	const [key, value] = entry
-	ret[value.name] = key
-	return ret
-}, {})
+const mapComponentToString = (cmp: Component): string | undefined => {
+	return stringToComponentMap.find(pair => pair.cmp === cmp)?.str
+}
 
 type StoredWindow = Omit<Window, 'component'> & { component: string }
 const LOCAL_STORAGE_KEY = 'open-windows-state'
 const saveWindowsToLocalStorage = () => {
 	const mappedState = openWindowsState.map((w: Window) => {
-		const componentName = w.component.name
-		const componentLocalStorageId = componentToStringMap[componentName]
+		const componentLocalStorageId = mapComponentToString(w.component)
 		if (componentLocalStorageId === undefined) {
 			throw new Error(
-				`Unable to store component with name ${componentName} because it isnt mapped to a local storage id`
+				`Unable to store component with name ${w.component.name} because it isnt mapped to a local storage id`
 			)
 		}
 		return {
@@ -99,7 +97,7 @@ export const loadWindowsFromLocalStorage = () => {
 
 	openWindowsState = [
 		...windowsState.map((w: StoredWindow) => {
-			const component = stringToComponentMap[w.component]
+			const component = mapStringToComponent(w.component)
 			if (typeof component === 'undefined') {
 				throw new Error(
 					`Unable to load window from local storage. Couldnt map component id "${w.component}" to a component.`
@@ -111,7 +109,6 @@ export const loadWindowsFromLocalStorage = () => {
 			}
 		})
 	]
-
 }
 
 const loadFromLocalStorageUpdateEvent = (event: StorageEvent) => {
@@ -141,7 +138,7 @@ export const bringWindowToFront = (id: string) => {
 			...window,
 			// Drop the z-index by 1 but make sure it doesn't change the current order
 			zIndex:
-				(window.zIndex > openWindowsState.find(w => w.id === id)!.zIndex
+				window.zIndex > openWindowsState.find(w => w.id === id)!.zIndex
 					? window.zIndex - 1
 					: window.zIndex
 		}
