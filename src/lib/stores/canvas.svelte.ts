@@ -104,29 +104,3 @@ export const updateAction = async (action: ActionResource) => {
   loadResource(store[0].resource)
   return newAction
 }
-
-
-// export const processSpec = (
-//   spec: Spec,
-//   fn: (spec: Spec) => void,
-//   callback?: (spec: Spec) => void
-// ) => {
-//   if (isAgent(spec)) {
-//     // Agents can have nested agents and actions, in sequence or parallel
-//     const parseAgent = (spec: Spec) => {
-//       if (isSequenceAgent(spec)) for (const el of spec.sequence) parseAgent(el)
-//     }
-//     if (isSequenceAgent(spec.agent)) for (const el of spec.agent.sequence as StatementV1[]) processSpec(el, fn)
-//     if (isParallelAgent(spec.agent)) for (const el of spec.agent.parallel as StatementV1[]) {
-//       for (const seq of el.sequence) processSpec(seq, fn)
-//     }
-//   }
-//   else if (isAction(spec)) {
-//     // An action can only have code, not any nested resources
-//     fn(spec)
-//   }
-//   // If we've done everything up until this point and we have a callback
-//   // we know that this is the top level of the recursion and that we're done
-//   // this might be pretty hacky though...
-//   if (typeof callback === 'function') callback(spec)
-// }
