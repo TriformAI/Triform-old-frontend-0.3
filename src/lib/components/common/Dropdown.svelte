@@ -1,15 +1,21 @@
 <script lang="ts">
-	import { createMenu } from 'svelte-headlessui'
 	import type { Snippet } from 'svelte'
+	import type { ButtonVariation } from '$lib/components/atoms/Button.svelte'
+	
+	import { createMenu } from 'svelte-headlessui'
 	import { fade } from 'svelte/transition'
+
+	import Button from '../atoms/Button.svelte'
 
 	// Destructure props with default values
 	const {
 		button, // Button is required, evoke for the dropdown
+		buttonVariation,
 		body, // Body is required, content of the dropdown
 		chevron = false // Default value for chevron, dropdown icon at the end of the button
 	}: {
 		button?: Snippet
+		buttonVariation?: ButtonVariation
 		body: Snippet
 		chevron?: boolean
 	} = $props()
@@ -21,27 +27,32 @@
 <div class="relative z-40 inline-block text-left">
 	<!-- Dropdown Trigger Button -->
 	{#if button}
-		<button
+		<div
 			use:menu.button
-			class="inline-flex items-center px-3 py-3 font-light border rounded-md border-zinc-700 hover:bg-zinc-700 bg-zinc-800 focus:outline-none"
 		>
-			<!-- Render the button snippet -->
-			{@render button()}
-			<!-- Chevron icon if enabled -->
-			{#if chevron}
-				<svg
-					xmlns="http://www.w3.org/2000/svg"
-					fill="none"
-					viewBox="0 0 24 24"
-					stroke-width="1.5"
-					stroke="currentColor"
-					class="w-5 h-5 ml-2 transform transition duration-200 ease-in-out
-			  {$menu.expanded ? '-rotate-180' : ''}"
-				>
-					<path stroke-linecap="round" stroke-linejoin="round" d="M19.5 9l-7.5 7.5L4.5 9" />
-				</svg>
-			{/if}
-		</button>
+			<Button
+				variation={buttonVariation}
+			>
+				{#snippet body()}
+					<!-- Render the button snippet -->
+					{@render button()}
+					<!-- Chevron icon if enabled -->
+					{#if chevron}
+						<svg
+							xmlns="http://www.w3.org/2000/svg"
+							fill="none"
+							viewBox="0 0 24 24"
+							stroke-width="1.5"
+							stroke="currentColor"
+							class="w-5 h-5 ml-2 transform transition duration-200 ease-in-out
+							{$menu.expanded ? '-rotate-180' : ''}"
+						>
+							<path stroke-linecap="round" stroke-linejoin="round" d="M19.5 9l-7.5 7.5L4.5 9" />
+						</svg>
+					{/if}
+				{/snippet}
+			</Button>
+		</div>
 	{/if}
 
 	<!-- Dropdown Menu -->

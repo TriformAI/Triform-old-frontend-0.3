@@ -34,7 +34,7 @@
 		</Button>
 
 		<div class="relative pl-5 border-l border-l-zinc-700">
-			<Dropdown>
+			<Dropdown buttonVariation="link">
 				{#snippet button()}
 					<img
 						alt="profile logo"

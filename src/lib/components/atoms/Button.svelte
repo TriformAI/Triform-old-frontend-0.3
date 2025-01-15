@@ -1,3 +1,7 @@
+<script module lang="ts">
+  export type ButtonVariation = 'primary' | 'link';
+</script>
+
 <script lang="ts">
   import type { Snippet } from 'svelte'
 
@@ -14,7 +18,7 @@
     class: classProp
   }: {
     // Will have secondary, muted, link etc as we need them
-    variation?: 'primary' | 'link',
+    variation?: ButtonVariation,
     // disabled
     // href
     // etc...
