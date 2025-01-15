@@ -1,6 +1,7 @@
 <script lang="ts">
-  import type { Canvas } from '$lib/stores/canvas.svelte'
+  import { processResource, type Canvas } from '$lib/stores/canvas.svelte'
   import type { Node, Edge, NodeTypes } from '@xyflow/svelte'
+  import type { ActionSpecV1 } from '$lib/types/agent'
 
 	import ActionNode from '$lib/components/custom-nodes/ActionNode.svelte'
 	import AgentNode from '$lib/components/custom-nodes/AgentNode.svelte'
@@ -43,7 +44,7 @@
 
     const ref = canvas.resource
 
-    untrack(() => {
+    untrack(async () => {
       const dagreGraph = new dagre.graphlib.Graph()
       dagreGraph.setDefaultEdgeLabel(() => ({}))
       dagreGraph.setGraph({ rankdir: 'TB' })
@@ -52,50 +53,48 @@
 
       const nodeSize = 60
 
-      const readSpec = spec => {
-        console.log(spec)
-        if (spec.sequence) for (const el of spec.sequence) readSpec(el)
-        if (spec.parallel) for (const el of spec.parallel) for (const seq of el.sequence) readSpec(seq)
-        else if (spec.resource === 'action') {
+      await new Promise<void>(resolve => processResource(
+        canvas.resource,
+        // Resource is an action, as this is only applied to actions
+        resource => {
+          const spec: ActionSpecV1 = resource.spec as ActionSpecV1
           const node = {
-            id: spec.key,
+            id: resource.key,
             type: 'action-node',
             position: { x: 0, y: 0 },
             data: {
-              name: spec.spec.name,
-              version: spec.spec.version,
-              id: spec.spec.id,
+              name: spec.name,
+              version: spec.version,
+              id: resource.id,
               onOpen: () => openWindow({
-                id: `code-editor-action-${spec.key}`,
+                id: `code-editor-action-${resource.key}`,
                 component: CodeEditorWindow,
                 posX: 20,
                 posY: 20,
                 customProps: {
                   files: {
-                    'action.py': spec.spec.action.source,
-                    'README.md': spec.spec.action.readme,
-                    'requirements.txt': spec.spec.action.deps
+                    'action.py': spec.action.source,
+                    'README.md': spec.action.readme,
+                    'requirements.txt': spec.action.deps
                   },
-                  actionKey: spec.key
+                  actionKey: resource.key
                 }
               })
             }
           }
-          const vertices = spec.inputs.map(input => ({
-            id: `${input}-${spec.key}`,
+          const vertices = (resource.inputs || []).map(input => ({
+            id: `${input}-${resource.key}`,
             source: input,
-            target: spec.key,
+            target: resource.key,
             type: 'default'
           }))
           layoutNodes.push(node)
           layoutEdges.push(...vertices)
-          dagreGraph.setNode(spec.key, {width: nodeSize + (spec.spec.name.length * 3), height: nodeSize})
+          dagreGraph.setNode(resource.key, {width: nodeSize + (spec.name.length * 3), height: nodeSize})
           vertices.forEach(v => dagreGraph.setEdge(v.source, v.target))
-        }
-      }
-      if (canvas.resource.resource === 'agent') readSpec(canvas.resource.spec.agent)
-      else if (canvas.resource.resource === 'action') readSpec(canvas.resource.spec.action)
-      else throw new Error('Invalid resource type')
+        },
+        () => resolve()
+      ))
 
       // Create all the handles on all the nodes
       // for (const edge of get(edges)) {

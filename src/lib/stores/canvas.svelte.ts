@@ -43,6 +43,7 @@ const isParallel = (val: StatementV1): val is ParallelStatementV1 => {
 }
 
 // Processes each action recursively one by one
+// Once the new schema is out we shouldn't need this function anymore
 export const processResource = (
   resource: ResourceV1,
   fn: (resource: ActionResource) => void,
