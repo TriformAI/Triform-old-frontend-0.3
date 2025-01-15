@@ -1,6 +1,7 @@
 import type { Component } from 'svelte'
 import ComponentsToolbox from '../components/windows/ComponentsToolbox.svelte'
 import Execution from '../components/windows/Execution.svelte'
+import CodeEditorWindow from '../components/windows/CodeEditorWindow.svelte'
 
 export interface Window {
 	// Some id that's unique to the window
@@ -65,7 +66,8 @@ export const updateWindowById = (id: string, update: Partial<Window>) => {
 // from local storage.
 const stringToComponentMap: { str: string; cmp: Component }[] = [
 	{ str: 'Execution', cmp: Execution },
-	{ str: 'ConponentsToolbox', cmp: ComponentsToolbox }
+	{ str: 'ConponentsToolbox', cmp: ComponentsToolbox },
+	{ str: 'CodeEditor', cmp: CodeEditorWindow }
 ]
 const mapStringToComponent = (str: string): Component | undefined => {
 	return stringToComponentMap.find(pair => pair.str === str)?.cmp
