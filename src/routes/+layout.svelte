@@ -1,13 +1,31 @@
 <script>
 	import '../app.css'
-	import Navbar from '$lib/components/Navbar.svelte'
 	import { toasts, ToastContainer, FlatToast } from 'svelte-toasts'
 	import Pusher from 'pusher-js'
 	import { SvelteFlowProvider } from '@xyflow/svelte'
+	import {
+		TolgeeProvider,
+		Tolgee,
+		DevTools,
+		FormatSimple
+	} from '@tolgee/svelte'
+	
+	import Navbar from '$lib/components/Navbar.svelte'
 	import Toolbar from '$lib/components/Toolbar.svelte'
 	import Footer from '$lib/components/Footer.svelte'
 	import { onMount } from 'svelte'
 	import { page } from '$app/stores'
+
+	const tolgee = new Tolgee()
+		.use(DevTools())
+		.use(FormatSimple())
+		.init({
+			language: 'en',
+			apiUrl: import.meta.env.VITE_TOLGEE_API_URL,
+			apiKey: import.meta.env.VITE_TOLGEE_API_KEY,
+			// For prod:
+			staticData: {}
+		})
 
 	onMount(() => {
 		// Pusher.logToConsole = true;
@@ -39,26 +57,27 @@
 </script>
 
 <section class={`bg-website-dark-primary`}>
-	{#if $page.url.pathname === '/dashboard'}
-		<section class="layout bg-website-dark-primary">
-			<SvelteFlowProvider>
-				<div class="flex flex-col h-screen">
-					<Navbar />
-					<Toolbar />
-					<div class="flex-grow">
-						{@render children?.()}
+	<TolgeeProvider {tolgee}>
+		{#if $page.url.pathname === '/dashboard'}
+			<section class="layout bg-website-dark-primary">
+				<SvelteFlowProvider>
+					<div class="flex flex-col h-screen">
+						<Navbar />
+						<Toolbar />
+						<div class="flex-grow">
+							{@render children?.()}
+						</div>
+						<Footer />
 					</div>
-					<Footer />
-				</div>
-
-				<ToastContainer placement="top-right" let:data>
-					<FlatToast {data} />
-				</ToastContainer>
-			</SvelteFlowProvider>
-		</section>
-	{:else}
-		<main>
-			{@render children?.()}
-		</main>
-	{/if}
+					<ToastContainer placement="top-right" let:data>
+						<FlatToast {data} />
+					</ToastContainer>
+				</SvelteFlowProvider>
+			</section>
+		{:else}
+			<main>
+				{@render children?.()}
+			</main>
+		{/if}
+	</TolgeeProvider>
 </section>

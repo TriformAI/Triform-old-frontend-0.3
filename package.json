@@ -52,6 +52,7 @@
 		"@iconify/svelte": "^4.2.0",
 		"@monaco-editor/loader": "^1.4.0",
 		"@sveltejs/adapter-node": "^5.2.11",
+		"@tolgee/svelte": "^6.0.0",
 		"@xyflow/svelte": "^0.1.26",
 		"chart.js": "^4.4.7",
 		"classnames": "^2.5.1",

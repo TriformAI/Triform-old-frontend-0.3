@@ -3,8 +3,18 @@
 	import logo from '$lib/images/Logo.svg'
 
 	import Button from '$lib/components/atoms/Button.svelte'
+	import Dropdown from './common/Dropdown.svelte'
 
 	import { openModal, ModalId } from '$lib/stores/modals.svelte'
+	import { getTolgee } from '@tolgee/svelte'
+
+	const tolgee = getTolgee(['language'])
+	const lang = $derived($tolgee.getLanguage())
+	// todo: add more languages and change the way this language selector works
+	const toggleLanguage = () => {
+		if (lang === 'en') $tolgee.changeLanguage('sv')
+		else $tolgee.changeLanguage('en')
+	}
 </script>
 
 <nav
@@ -24,18 +34,28 @@
 		</Button>
 
 		<div class="relative pl-5 border-l border-l-zinc-700">
-			<button
-				type="button"
-				class="w-8 cursor-pointer"
-				aria-label="Profile"
-				onclick={() => toggleModal(profileDropdown)}
-			>
-				<img
-					alt="profile logo"
-					src="https://picsum.photos/100"
-					class="w-8 rounded-full"
-				/>
-			</button>
+			<Dropdown>
+				{#snippet button()}
+					<img
+						alt="profile logo"
+						src="https://picsum.photos/100"
+						class="w-8 rounded-full"
+					/>
+				{/snippet}
+				{#snippet body()}
+				<ul>
+					<li>
+						<button
+							class="w-full"
+							onclick={toggleLanguage}
+						>
+							Language: {lang}
+						</button>
+					</li>
+				</ul>
+			{/snippet}
+			</Dropdown>
+
 		</div>
 	</div>
 </nav>

@@ -1,5 +1,6 @@
 <script lang="ts">
   import Window from '$lib/components/common/Window.svelte'
+  import { T } from '@tolgee/svelte'
 
   import { canvasStore } from '$lib/stores/canvas.svelte'
   import { runAgent } from '$lib/actions/executor'
@@ -27,7 +28,10 @@
   {...props}
 >
   {#snippet header()}
-    Execution
+    <T
+      keyName="window-execution-header"
+      defaultValue="Execution"
+    />
   {/snippet}
 
   {#snippet body()}
