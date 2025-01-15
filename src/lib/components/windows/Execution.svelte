@@ -1,6 +1,7 @@
 <script lang="ts">
   import Window from '$lib/components/common/Window.svelte'
-  import { T } from '@tolgee/svelte'
+  import { T, getTranslate } from '@tolgee/svelte'
+  const { t } = getTranslate()
 
   import { canvasStore } from '$lib/stores/canvas.svelte'
   import { runAgent } from '$lib/actions/executor'
@@ -50,13 +51,13 @@
           class="w-full"
         >
           {#snippet body()}
-            Publish
+            <T keyName="window-execution-publish" defaultValue="Publish" />
           {/snippet}
         </Button>
       </div>
       <InputField
-        label="Test data"
-        placeholder="Temporary test data"
+        label={$t('window-execution-input-label', 'Test data')}
+        placeholder={$t('window-execution-input-placeholder', 'Temporary test data')}
         type="text"
         bind:value={input}
       />
