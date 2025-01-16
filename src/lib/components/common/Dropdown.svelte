@@ -61,6 +61,7 @@
 		<div
 			use:menu.items
 			transition:fade={{ duration: 200 }}
+			class="absolute right-0 mt-2"
 		>
 			<List {body} />
 		</div>

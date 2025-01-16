@@ -1,9 +1,17 @@
 <script lang="ts">
 	import type { NodeData } from '$lib/types/flow'
-	import type { Snippet } from 'svelte'
-	import { Position } from '@xyflow/svelte'
+	import type { Node } from '@xyflow/svelte'
+	import type { NodeType } from '$lib/stores/contextMenu.svelte'
+	import { onMount, type Snippet } from 'svelte'
+	
+	import { Position, useNodes } from '@xyflow/svelte'
+	import { get } from 'svelte/store'
 
 	import CustomHandle from './CustomHandle.svelte'
+
+	import { contextMenus } from '$lib/stores/contextMenu.svelte'
+
+	const nodes = useNodes()
 
 	const {
 		id,
@@ -34,10 +42,17 @@
 		}
 	}
 
-	const onclick = () => {
-		// Essentially acts as a double click (select and then click again to open)
-		// This should be probably be changed in the future to always be a double click, or something
-		if (selected && onOpen) onOpen()
+	let node: Node
+	onMount(() => {
+		node = get(nodes).filter(n => n.id === id)[0]
+	})
+
+	const openFn = () => {
+		if (onOpen) return onOpen()
+		// If no open function was defined, use the first context menu action instead
+		if (!node) return
+		const items = contextMenus.get(node.type as NodeType)
+		items?.[0]?.onClick?.(node)
 	}
 </script>
 
@@ -66,7 +81,7 @@
         {selected ? 'border-[2px] ease-in duration-100' : ''}
         {getBorderClass(state)}
       "
-			{onclick}
+			ondblclick={openFn}
 		>
 			{@render icon()}
 			<div
