@@ -10,7 +10,7 @@
   import ContextMenu from '../custom-nodes/ContextMenu.svelte'
 
 	import { writable, get } from 'svelte/store'
-	import { untrack } from 'svelte'
+	import { onMount, untrack } from 'svelte'
 	import { SvelteFlow, Background, BackgroundVariant } from '@xyflow/svelte'
   import dagre from '@dagrejs/dagre'
 
@@ -128,6 +128,10 @@
   })
 
   let wrapper: HTMLElement
+
+  onMount(() => {
+    wrapper.querySelectorAll('.draggable').forEach(el => el.addEventListener('mousedown', () => toggleMenu(false), { capture: true }))
+  })
 
   const openContextMenu = (args: CustomEvent) => {
     const { detail: {
