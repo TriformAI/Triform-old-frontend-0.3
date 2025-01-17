@@ -17,6 +17,7 @@
 	import ComponentsToolbox from './windows/ComponentsToolbox.svelte'
 	import Execution from './windows/Execution.svelte'
 	import Dropdown from './common/Dropdown.svelte'
+	import Select from './atoms/Select.svelte'
 
 	const { zoomOut, zoomIn, fitView } = useSvelteFlow()
 
@@ -44,6 +45,23 @@
 			}
 		}
 	]
+
+	const options = [
+		{ id: 1, name: 'Wade Cooper' },
+		{ id: 2, name: 'Arlene Mccoy' },
+		{ id: 3, name: 'Devon Webb' },
+		{ id: 4, name: 'Tom Cook' },
+		{ id: 5, name: 'Tanya Fox' },
+		{ id: 6, name: 'Hellen Schmidt' },
+		{ id: 7, name: 'Caroline Schultz' },
+		{ id: 8, name: 'Mason Heaney' },
+		{ id: 9, name: 'Claudie Smitham' },
+		{ id: 10, name: 'Emil Schaefer' }
+	]
+
+	let selected = $state([])
+
+	$inspect(selected)
 </script>
 
 <div
@@ -75,7 +93,7 @@
 				{/snippet}
 			</Button>
 		{/each}
-		<Dropdown>
+		<!-- <Dropdown>
 			{#snippet button()}
 				<span class="font-thin">Test</span>
 			{/snippet}
@@ -104,7 +122,13 @@
 					</li>
 				</ul>
 			{/snippet}
-		</Dropdown>
+		</Dropdown> -->
+		<Select bind:selected {options} />
+		{#if selected && selected.length > 0}
+			{#each selected as { id, name }}
+				<div>{name}</div>
+			{/each}
+		{/if}
 	</div>
 
 	<!-- Zoom in Zoom out Fit screen -->
