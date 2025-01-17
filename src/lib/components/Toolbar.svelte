@@ -123,12 +123,7 @@
 				</ul>
 			{/snippet}
 		</Dropdown> -->
-		<Select bind:selected {options} />
-		{#if selected && selected.length > 0}
-			{#each selected as { id, name }}
-				<div>{name}</div>
-			{/each}
-		{/if}
+		<Select bind:selected {options} singleValue={false} />
 	</div>
 
 	<!-- Zoom in Zoom out Fit screen -->
