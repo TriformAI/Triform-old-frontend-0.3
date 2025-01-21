@@ -1,12 +1,15 @@
 <script lang="ts">
 	import type { Canvas } from '$lib/stores/canvas.svelte'
-	import type { Node, Edge, NodeTypes } from '@xyflow/svelte'
+	import type { Node, Edge, NodeTypes, EdgeTypes } from '@xyflow/svelte'
 
 	import ActionNode from '$lib/components/custom-nodes/ActionNode.svelte'
 	import AgentNode from '$lib/components/custom-nodes/AgentNode.svelte'
 	import OpenAgentNode from '$lib/components/custom-nodes/OpenAgentNode.svelte'
 	import ApiNode from '$lib/components/custom-nodes/ApiNode.svelte'
-	import ContextMenu from '../custom-nodes/ContextMenu.svelte'
+	import FloatingEdge from './FloatingEdge.svelte'
+	
+	import ContextMenu from './ContextMenu.svelte'
+
 
 	import { writable } from 'svelte/store'
 	import { onMount, untrack } from 'svelte'
@@ -29,6 +32,10 @@
 		'open-agent-node': OpenAgentNode,
 		// @ts-expect-error type issue, not crucial but should probs be fixed
 		'api-node': ApiNode
+	}
+	const edgeTypes: EdgeTypes = {
+		// @ts-expect-error type issue, not crucial but should probs be fixed
+		'floating': FloatingEdge
 	}
 
 	const nodes = writable<Node[]>([])
@@ -160,6 +167,7 @@
 		{nodes}
 		{edges}
 		{nodeTypes}
+		{edgeTypes}
 		fitView
 		snapGrid={[1, 1]}
 		proOptions={{ hideAttribution: true }}

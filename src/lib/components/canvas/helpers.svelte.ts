@@ -57,7 +57,7 @@ export const parseTree = (canvas: Canvas, openAgents: { [key: string]: boolean }
 			id: `${input}-${resource.key}`,
 			source: input,
 			target: resource.key,
-			type: 'default'
+			type: 'floating'
 		}))
 
 		const children = openAgents[resource.key]
@@ -90,7 +90,7 @@ export const parseTree = (canvas: Canvas, openAgents: { [key: string]: boolean }
 			id: `${input}-${resource.key}`,
 			source: input,
 			target: resource.key,
-			type: 'default'
+			type: 'floating'
 		}))
 		return { nodes: [node], edges }
 	}
