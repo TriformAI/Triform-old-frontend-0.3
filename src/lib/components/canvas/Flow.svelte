@@ -67,12 +67,10 @@
 					n.data.files = undefined
 				} else if (n.type === 'agent-node') {
 					n.data.onOpen = () => {
-						console.log('xxxx opening agent', n)
 						openAgents[n.id] = true
 					}
 				} else if (n.type === 'open-agent-node') {
 					n.data.onOpen = () => {
-						console.log('xxxx closing agent', n)
 						openAgents[n.id] = false
 					}
 					width = 0
@@ -101,7 +99,6 @@
 
 			layoutNodes = layoutNodes.map(n => {
 				const d = dagreGraph.node(n.id)
-				console.log('xxx d.x', d.x, 'd.y', d.y)
 				n.position = {
 					x: d.x - nodeSize / 2,
 					y: d.y - nodeSize / 2
@@ -109,7 +106,6 @@
 				return n
 			})
 			nodes.set(layoutNodes)
-			console.log('xxx nodes', layoutNodes)
 		})
 	})
 
