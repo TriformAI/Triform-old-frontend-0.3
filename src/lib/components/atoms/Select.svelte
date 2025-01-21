@@ -25,32 +25,32 @@
 	}
 </script>
 
-<div class="z-20 w-full px-2">
-	<div class="relative mt-1">
+<div class="px-2 min-w-80">
+	<div class="relative mt-1 max-w-80">
 		<span class="inline-block w-full rounded-md shadow-sm">
 			<!-- Button bound to the listbox -->
 			<button
 				use:listbox.button
 				onchange={event => handleChange(event as unknown as CustomEvent)}
-				class="relative w-full py-2 pl-2 pr-10 overflow-auto text-sm text-left transition duration-150 ease-in-out border rounded-md cursor-default max-w-96 border-zinc-700 bg-zinc-800 focus:shadow-outline-orange focus:outline-none sm:leading-5"
+				class="relative w-full py-2 pl-2 pr-4 overflow-auto text-sm text-left transition duration-150 ease-in-out border rounded-md border-zinc-700 bg-zinc-800 focus:shadow-outline-orange focus:outline-none sm:leading-5"
 			>
 				<div class="flex flex-wrap gap-2">
 					{#if singleValue}
 						<!-- Single select: Display selected item -->
-						<span class="flex items-center gap-1 rounded px-2 py-0.5">
+						<span class="flex items-center gap-1 px-2 py-0.5 rounded">
 							{$listbox.selected.name || 'Select'}
 						</span>
 					{:else}
 						<!-- Multi-select: Display selected items -->
 						{#each $listbox.selected as selectedItem (selectedItem.id)}
-							<span class="flex items-center gap-1 rounded bg-zinc-600 px-4 py-0.5">
+							<span class="flex items-center gap-1 px-2 py-1 text-xs rounded bg-zinc-600">
 								<span>{selectedItem.name}</span>
 								<div use:listbox.deselect={selectedItem} class="cursor-pointer">
 									<Cancel />
 								</div>
 							</span>
 						{:else}
-							<span class="flex items-center gap-1 px-2 py-1 rounded min-w-52">Select</span>
+							<span class="flex items-center gap-1 px-2 py-0.5 rounded">Select</span>
 						{/each}
 					{/if}
 				</div>
@@ -72,7 +72,7 @@
 					{#snippet body()}
 						<ul
 							use:listbox.items
-							class="absolute w-full bg-[#252627] border-none overflow-auto max-h-60 focus:outline-none"
+							class="fixed max-w-[19rem] w-full bg-[#252627] border-none overflow-auto max-h-60 focus:outline-none"
 						>
 							{#each options as option (option.id)}
 								{@const isSelected = singleValue
@@ -82,7 +82,7 @@
 									class="relative cursor-pointer select-none focus:outline-none"
 									use:listbox.item={{ value: option }}
 								>
-									<span class="block truncate {isSelected ? 'font-bold' : 'font-normal'}">
+									<span class="block truncate {isSelected ? 'font-bold' : 'font-thin text-gray-200'}">
 										{option.name}
 									</span>
 									{#if isSelected}

@@ -20,7 +20,7 @@
 		{type}
 		{position}
 		style="width: 30px; height: 20px"
-		class="invisible"
+		class="opacity-0"
 	/>
 </div>
 

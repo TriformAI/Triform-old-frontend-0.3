@@ -61,7 +61,7 @@
 
 	let selected = $state([])
 
-	$inspect(selected)
+	// $inspect(selected)
 </script>
 
 <div
