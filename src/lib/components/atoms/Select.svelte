@@ -64,7 +64,7 @@
 			<!-- Dropdown list -->
 			<Transition
 				show={$listbox.expanded}
-				leave="transition ease-in duration-100"
+				leave="transition ease-linear duration-100"
 				leaveFrom="opacity-100"
 				leaveTo="opacity-0"
 			>
@@ -82,7 +82,9 @@
 									class="relative cursor-pointer select-none focus:outline-none"
 									use:listbox.item={{ value: option }}
 								>
-									<span class="block truncate {isSelected ? 'font-bold' : 'font-thin text-gray-200'}">
+									<span
+										class="block truncate {isSelected ? 'font-bold' : 'font-thin text-gray-200'}"
+									>
 										{option.name}
 									</span>
 									{#if isSelected}
