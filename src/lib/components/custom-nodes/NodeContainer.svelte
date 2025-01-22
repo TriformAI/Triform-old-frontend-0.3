@@ -39,7 +39,7 @@
         position={Position.Left}
       />
     </div>
-    <div class="w-full h-full">
+    <div class="w-full h-full z-10">
       {@render body()}
     </div>
     <div>
