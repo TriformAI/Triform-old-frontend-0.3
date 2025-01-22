@@ -33,20 +33,14 @@
 				return selected ? 'border-slate-200' : 'border-slate-300'
 		}
 	}
-
-	const onclick = () => {
-		// Essentially acts as a double click (select and then click again to open)
-		// This should be probably be changed in the future to always be a double click, or something
-		if (selected && onOpen) onOpen()
-	}
 </script>
 
 <NodeContainer {id}>
 	{#snippet body()}
-		<div class="h-full w-full border border-slate-300/10 bg-zinc-900/40 rounded z-10">
+		<div class="h-full w-full flex flex-row justify-center text-center border border-slate-300/10 rounded">
 			<span
 				class="
-					absolute flex-shrink-0 w-max text-[8px] font-bold right-14 top-5 float-right transition
+					flex-shrink-0 w-max text-[8px] font-bold transition bg-zinc-900/50 backdrop-blur px-6 rounded h-fit -mt-4
 					{selected ? 'text-slate-200' : 'text-slate-300'}
 				"
 			>
@@ -54,19 +48,7 @@
 				<span class="block transition {selected ? 'text-slate-300' : 'text-slate-400'}">
 					v{version}
 				</span>
-				<span
-					class="block transition text-[6px] font-normal italic {selected
-						? 'text-slate-400'
-						: 'text-slate-500'}"
-				>
-					{data.id}
-				</span>
 			</span>
-			<div {onclick}>
-				<div
-					class="absolute transform -translate-x-1/2 -translate-y-1/2 custom-node-icon-shadow top-1/2 left-1/2"
-				/>
-			</div>
 		</div>
 	{/snippet}
 </NodeContainer>
