@@ -8,6 +8,8 @@ import type {
 } from '$lib/stores/canvas.svelte'
 import type { Edge, Node } from '@xyflow/svelte'
 
+import dagre from '@dagrejs/dagre'
+
 type ParsedGraph = { nodes: Node[]; edges: Edge[] }
 
 export const parseTree = (canvas: Canvas, openAgents: { [key: string]: boolean }): ParsedGraph => {
@@ -120,4 +122,33 @@ export const parseTree = (canvas: Canvas, openAgents: { [key: string]: boolean }
 	}
 
 	return parseStatement(canvas.resource)
+}
+
+export const getLayoutedNodes = (nodes: Node[], edges: Edge[]) => {
+	const graph = new dagre.graphlib.Graph()
+	graph.setDefaultEdgeLabel(() => ({}))
+	graph.setGraph({ rankdir: 'TB' })
+	const nodeSize = 60
+
+	for (const node of nodes) {
+		const width = nodeSize
+		const height = nodeSize + (node.data.name as string).length * 3
+		graph.setNode(node.id, {
+			width,
+			height
+		})
+	}
+
+	for (const edge of edges) graph.setEdge(edge.source, edge.target)
+
+	dagre.layout(graph)
+
+	return nodes.map(n => {
+		const d = graph.node(n.id)
+		n.position = {
+			x: d.x - nodeSize / 2,
+			y: d.y - nodeSize / 2
+		}
+		return n
+	})
 }

@@ -16,10 +16,9 @@
 	import { SvelteFlow, Background, BackgroundVariant } from '@xyflow/svelte'
 
 	import { menuIsOpen, toggleMenu } from '$lib/stores/contextMenu.svelte'
-	import dagre from '@dagrejs/dagre'
 
 	import '@xyflow/svelte/dist/style.css'
-	import { parseTree } from './helpers.svelte'
+	import { parseTree, getLayoutedNodes } from './helpers.svelte'
 
 	const { canvas }: { canvas: Canvas } = $props()
 
@@ -46,73 +45,29 @@
 		nodes.set([])
 		edges.set([])
 		if (!canvas) return
-		const dagreGraph = new dagre.graphlib.Graph()
-		dagreGraph.setDefaultEdgeLabel(() => ({}))
-		dagreGraph.setGraph({ rankdir: 'TB' })
-		const nodeSize = 60
 
-		const { nodes: nodesData, edges: edgesData } = parseTree(canvas, openAgents)
+		let { nodes: nodesData, edges: edgesData } = parseTree(canvas, openAgents)
 
 		// Used to get effect to trigger on canvas.resource change
 		const ref = canvas.resource
 		untrack(async () => {
-			var layoutNodes: Node[] = nodesData.map(n => {
-				var width = nodeSize
-				var height = nodeSize + (n.data.name as string).length * 3
-				if (n.type === 'action-node') {
-					/*n.data.onOpen = () =>
-					openWindow({
-						id: `code-editor-action-${n.id}`,
-						component: CodeEditorWindow,
-						posX: 20,
-						posY: 20,
-						customProps: {
-							files: n.data.files,
-							actionKey: n.id
-						}
-          })*/
-					n.data.files = undefined
-				} else if (n.type === 'agent-node') {
-					n.data.onOpen = () => {
-						openAgents[n.id] = true
-					}
-				} else if (n.type === 'open-agent-node') {
-					n.data.onOpen = () => {
-						openAgents[n.id] = false
-					}
-					width = 0
-					height = 0
-					n.width = 400
-					n.height = 400
-				} else {
-					throw new Error('unknown node type ' + n.type)
-				}
-
-				dagreGraph.setNode(n.id, {
-					width: width,
-					height: height
-				})
-				// we have added position and onClick stuff so I'd say we are safe
-				// to force it to finally become a true node.
-				return n as unknown as Node
+			nodesData = nodesData.map(node => {
+				if (node.type === 'action-node') {
+					node.data.files = undefined
+				} else if (node.type === 'agent-node') {
+					node.data.onOpen = () => openAgents[node.id] = true
+				} else if (node.type === 'open-agent-node') {
+					node.data.onOpen = () => openAgents[node.id] = false
+					node.width = 400
+					node.height = 400
+				} else throw new Error('unknown node type ' + node.type)
+				return node
 			})
 
-			edgesData.forEach(e => {
-				dagreGraph.setEdge(e.source, e.target)
-			})
+			const layoutedNodes = getLayoutedNodes(nodesData, edgesData)
 
-			dagre.layout(dagreGraph)
+			nodes.set(layoutedNodes)
 			edges.set(edgesData)
-
-			layoutNodes = layoutNodes.map(n => {
-				const d = dagreGraph.node(n.id)
-				n.position = {
-					x: d.x - nodeSize / 2,
-					y: d.y - nodeSize / 2
-				}
-				return n
-			})
-			nodes.set(layoutNodes)
 		})
 	})
 
