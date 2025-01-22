@@ -19,7 +19,7 @@
 		{id}
 		{type}
 		{position}
-		style="width: 20px; height: 20px"
+		style="width: 20px; height: 25px"
 		class="opacity-0"
 	/>
 </div>
