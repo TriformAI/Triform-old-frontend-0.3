@@ -1,8 +1,6 @@
 <script lang="ts">
 	import type { NodeData } from '$lib/types/flow'
-	import type { Snippet } from 'svelte'
-	import { Position, useNodes } from '@xyflow/svelte'
-	import { get } from 'svelte/store'
+	import { Position } from '@xyflow/svelte'
 
 	import NodeContainer from './NodeContainer.svelte'
 
@@ -37,10 +35,10 @@
 
 <NodeContainer {id}>
 	{#snippet body()}
-		<div class="h-full w-full flex flex-row justify-center text-center border border-slate-300/10 rounded">
+		<div class="h-full w-full flex flex-row justify-center text-center border border-slate-300/10 bg-zinc-900/30 rounded">
 			<span
 				class="
-					flex-shrink-0 w-max text-[8px] font-bold transition bg-zinc-900/50 backdrop-blur px-6 rounded h-fit -mt-4
+					flex-shrink-0 w-max text-[8px] font-bold transition bg-zinc-900/50 backdrop-blur-sm px-5 rounded h-fit -mt-4
 					{selected ? 'text-slate-200' : 'text-slate-300'}
 				"
 			>

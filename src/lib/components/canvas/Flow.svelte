@@ -62,7 +62,7 @@
 				return node
 			})
 
-			const layoutedNodes = getLayoutedNodes(nodesData, edgesData)
+			const layoutedNodes = await getLayoutedNodes(nodesData, edgesData)
 
 			nodes.set(layoutedNodes)
 			edges.set(edgesData)

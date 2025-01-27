@@ -6,9 +6,10 @@ import type {
 	Sequence,
 	Parallel
 } from '$lib/stores/canvas.svelte'
-import type { Edge, Node } from '@xyflow/svelte'
+import type { Edge, Node, Position, Rect } from '@xyflow/svelte'
+import type { ElkNode } from 'elkjs'
 
-import dagre from '@dagrejs/dagre'
+import ELK from 'elkjs'
 
 type ParsedGraph = { nodes: Node[]; edges: Edge[] }
 
@@ -124,31 +125,103 @@ export const parseTree = (canvas: Canvas, openAgents: { [key: string]: boolean }
 	return parseStatement(canvas.resource)
 }
 
-export const getLayoutedNodes = (nodes: Node[], edges: Edge[]) => {
-	const graph = new dagre.graphlib.Graph()
-	graph.setDefaultEdgeLabel(() => ({}))
-	graph.setGraph({ rankdir: 'TB' })
-	const nodeSize = 60
+const elkSettings = {
+	'elk.direction': 'DOWN',
+	'elk.algorithm': 'layered'
+}
 
-	for (const node of nodes) {
-		const width = nodeSize
-		const height = nodeSize + (node.data.name as string).length * 3
-		graph.setNode(node.id, {
-			width,
-			height
-		})
+const buildElkTree = (nodes: Node[]): ElkNode[] => {
+	// All open agents have nested children, so we need to build the children recursively
+	const nodeSize = 80
+
+	return nodes.map(node => {
+		const children = nodes.filter(n => n.parentId === node.id)
+		return {
+			id: node.id,
+			width: nodeSize,
+			height: nodeSize,
+			layoutOptions: elkSettings,
+			children: buildElkTree(children)
+		}
+	})
+}
+
+export const getLayoutedNodes = async (nodes: Node[], edges: Edge[]) => {
+	const elk = new ELK()
+
+	const children = buildElkTree(nodes)
+
+	const graph = {
+		id: 'root',
+		layoutOptions: elkSettings,
+		children,
+		edges: edges.map(e => ({
+			id: e.id,
+			sources: [e.source],
+			targets: [e.target]
+		}))
 	}
 
-	for (const edge of edges) graph.setEdge(edge.source, edge.target)
+	const layout = await elk.layout(graph)
+	// For some reason the layout returns all children instead of just the first level
+	// No idea why but I guess you shouldn't look a gift horse in the mouth, or something
+	const layoutedNodes: Node[] = (layout.children ?? [])
+		.map(n => {
+			const node = nodes.find(node => node.id === n.id)
+			if (!node) throw new Error('Could not find node with id ' + n.id)
+			console.log('n', n, node)
 
-	dagre.layout(graph)
+			return {
+				...node,
+				position: {
+					x: n.x ?? 0,
+					y: n.y ?? 0
+				}
+			}
+		})
 
-	return nodes.map(n => {
-		const d = graph.node(n.id)
-		n.position = {
-			x: d.x - nodeSize / 2,
-			y: d.y - nodeSize / 2
+
+	return layoutedNodes.map(n => {
+		const children = layoutedNodes.filter(child => child.parentId === n.id)
+		if (!children.length) return n
+		console.log('children', children)
+		const nodeSize = 44
+		console.log('nodeSize', nodeSize)
+		const bounds = {
+			x: Math.max(...children.map(n => n.position.x)) - Math.min(...children.map(n => n.position.x)) + nodeSize,
+			y: Math.max(...children.map(n => n.position.y)) - Math.min(...children.map(n => n.position.y)) + nodeSize
 		}
+		n.width = bounds.x
+		n.height = bounds.y
 		return n
 	})
 }
+
+// export const getLayoutedNodes = (nodes: Node[], edges: Edge[]) => {
+// 	const graph = new dagre.graphlib.Graph()
+// 	graph.setDefaultEdgeLabel(() => ({}))
+// 	graph.setGraph({ rankdir: 'TB' })
+// 	const nodeSize = 60
+
+// 	for (const node of nodes) {
+// 		const width = nodeSize
+// 		const height = nodeSize + (node.data.name as string).length * 3
+// 		graph.setNode(node.id, {
+// 			width,
+// 			height
+// 		})
+// 	}
+
+// 	for (const edge of edges) graph.setEdge(edge.source, edge.target)
+
+// 	dagre.layout(graph)
+
+// 	return nodes.map(n => {
+// 		const d = graph.node(n.id)
+// 		n.position = {
+// 			x: d.x - nodeSize / 2,
+// 			y: d.y - nodeSize / 2
+// 		}
+// 		return n
+// 	})
+// }
