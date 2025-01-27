@@ -3,13 +3,8 @@
 	import { toasts, ToastContainer, FlatToast } from 'svelte-toasts'
 	import Pusher from 'pusher-js'
 	import { SvelteFlowProvider } from '@xyflow/svelte'
-	import {
-		TolgeeProvider,
-		Tolgee,
-		DevTools,
-		FormatSimple
-	} from '@tolgee/svelte'
-	
+	import { TolgeeProvider, Tolgee, DevTools, FormatSimple } from '@tolgee/svelte'
+
 	import Navbar from '$lib/components/Navbar.svelte'
 	import Toolbar from '$lib/components/Toolbar.svelte'
 	import Footer from '$lib/components/Footer.svelte'

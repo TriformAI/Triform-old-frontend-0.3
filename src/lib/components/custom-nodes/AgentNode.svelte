@@ -6,10 +6,7 @@
 	const props = $props()
 </script>
 
-<Node
-	{...props}
-	handles={[Position.Bottom, Position.Top]}
->
+<Node {...props} handles={[Position.Bottom, Position.Top]}>
 	{#snippet icon()}
 		<IconChangeHistory class="text-indigo-500 w-6 h-6 mb-1" />
 	{/snippet}

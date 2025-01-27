@@ -165,21 +165,19 @@ export const getLayoutedNodes = async (nodes: Node[], edges: Edge[]) => {
 	const layout = await elk.layout(graph)
 	// For some reason the layout returns all children instead of just the first level
 	// No idea why but I guess you shouldn't look a gift horse in the mouth, or something
-	const layoutedNodes: Node[] = (layout.children ?? [])
-		.map(n => {
-			const node = nodes.find(node => node.id === n.id)
-			if (!node) throw new Error('Could not find node with id ' + n.id)
-			console.log('n', n, node)
+	const layoutedNodes: Node[] = (layout.children ?? []).map(n => {
+		const node = nodes.find(node => node.id === n.id)
+		if (!node) throw new Error('Could not find node with id ' + n.id)
+		console.log('n', n, node)
 
-			return {
-				...node,
-				position: {
-					x: n.x ?? 0,
-					y: n.y ?? 0
-				}
+		return {
+			...node,
+			position: {
+				x: n.x ?? 0,
+				y: n.y ?? 0
 			}
-		})
-
+		}
+	})
 
 	return layoutedNodes.map(n => {
 		const children = layoutedNodes.filter(child => child.parentId === n.id)
@@ -188,8 +186,14 @@ export const getLayoutedNodes = async (nodes: Node[], edges: Edge[]) => {
 		const nodeSize = 44
 		console.log('nodeSize', nodeSize)
 		const bounds = {
-			x: Math.max(...children.map(n => n.position.x)) - Math.min(...children.map(n => n.position.x)) + nodeSize,
-			y: Math.max(...children.map(n => n.position.y)) - Math.min(...children.map(n => n.position.y)) + nodeSize
+			x:
+				Math.max(...children.map(n => n.position.x)) -
+				Math.min(...children.map(n => n.position.x)) +
+				nodeSize,
+			y:
+				Math.max(...children.map(n => n.position.y)) -
+				Math.min(...children.map(n => n.position.y)) +
+				nodeSize
 		}
 		n.width = bounds.x
 		n.height = bounds.y

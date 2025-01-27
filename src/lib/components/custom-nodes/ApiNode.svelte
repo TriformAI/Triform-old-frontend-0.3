@@ -6,10 +6,7 @@
 	const props = $props()
 </script>
 
-<Node
-	{...props}
-	handles={[Position.Bottom]}
->
+<Node {...props} handles={[Position.Bottom]}>
 	{#snippet icon()}
 		<IconCircle class="text-blue-400" />
 	{/snippet}

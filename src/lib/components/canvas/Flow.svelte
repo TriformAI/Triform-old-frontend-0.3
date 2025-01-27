@@ -9,7 +9,6 @@
 	import FloatingEdge from './FloatingEdge.svelte'
 	import ContextMenu from './ContextMenu.svelte'
 
-
 	import { writable } from 'svelte/store'
 	import { onMount, untrack } from 'svelte'
 	import { SvelteFlow, Background, BackgroundVariant } from '@xyflow/svelte'

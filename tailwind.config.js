@@ -23,7 +23,7 @@ export default {
 				'primary-red': '#F44336',
 				'primary-green': '#22C55E',
 				'primary-yellow': '#FFC107',
-				'zinc': {
+				zinc: {
 					...defaultTheme.colors.zinc,
 					850: '#1D1D20'
 				}

@@ -1,154 +1,154 @@
 {
-  "resource": "invocation",
-  "api_version": "v1",
-  "input": { "sum": 1 },
-  "turbo": true,
-  "spec": {
-    "resource": "agent",
-    "api_version": "v1",
-    "id": "f892d1b9-e211-48f2-baab-2c025bfbdc79",
-    "version": 1,
-    "key": "test_agent",
-    "inputs": [],
-    "spec": {
-      "name": "Test agent",
-      "version": 1,
-      "agent": {
-        "sequence": [
-          {
-            "resource": "action",
-            "api_version": "v1",
-            "id": "1b0cf5aa-d64b-4efc-9589-c678f37a5692",
-            "version": 2,
-            "key": "action1",
-            "inputs": [],
-            "spec": {
-              "name": "Plus one",
-              "id": "1b0cf5aa-d64b-4efc-9589-c678f37a5692",
-              "version": 2,
-              "action": {
-                "source": "@triform.entrypoint\ndef action(input):\n    return {'sum': input['sum']+1}",
-                "readme": "This action returns {'sum': input['sum']+1}",
-                "deps": "",
-                "layer": "",
-                "streaming": false
-              }
-            }
-          },
-          {
-            "parallel": [
-              {
-                "sequence": [
-                  {
-                    "resource": "action",
-                    "api_version": "v1",
-                    "id": "1b0cf5aa-d64b-4efc-9589-c678f37a5692",
-                    "version": 2,
-                    "key": "action2",
-                    "inputs": ["action1"],
-                    "spec": {
-                      "name": "Plus one",
-                      "id": "1b0cf5aa-d64b-4efc-9589-c678f37a5692",
-                      "version": 2,
-                      "action": {
-                        "source": "@triform.entrypoint\ndef action(input):\n    return {'sum': input['sum']+1}",
-                        "readme": "This action returns {'sum': input['sum']+1}",
-                        "deps": "",
-                        "layer": "",
-                        "streaming": false
-                      }
-                    }
-                  },
-                  {
-                    "resource": "action",
-                    "api_version": "v1",
-                    "id": "ec8ccf99-a09e-4564-91ef-92c6d83ac6c1",
-                    "version": 1,
-                    "key": "action3",
-                    "inputs": ["action2"],
-                    "spec": {
-                      "name": "Sum1",
-                      "id": "ec8ccf99-a09e-4564-91ef-92c6d83ac6c1",
-                      "version": 1,
-                      "action": {
-                        "source": "@triform.entrypoint\ndef action(input):\n    return {'sum1': input['sum']+1}",
-                        "readme": "This action returns {'sum1': input['sum']+1}",
-                        "deps": "",
-                        "layer": "",
-                        "streaming": false
-                      }
-                    }
-                  }
-                ]
-              },
-              {
-                "sequence": [
-                  {
-                    "resource": "action",
-                    "api_version": "v1",
-                    "id": "1b0cf5aa-d64b-4efc-9589-c678f37a5692",
-                    "version": 2,
-                    "key": "action4",
-                    "inputs": ["action1"],
-                    "spec": {
-                      "name": "Plus one",
-                      "id": "1b0cf5aa-d64b-4efc-9589-c678f37a5692",
-                      "version": 2,
-                      "action": {
-                        "source": "@triform.entrypoint\ndef action(input):\n    return {'sum': input['sum']+1}",
-                        "readme": "This action returns {'sum': input['sum']+1}",
-                        "deps": "",
-                        "layer": "",
-                        "streaming": false
-                      }
-                    }
-                  },
-                  {
-                    "resource": "action",
-                    "api_version": "v1",
-                    "id": "94acbe31-fde7-4b6d-b830-b9a6f8ece7e6",
-                    "version": 3,
-                    "key": "action5",
-                    "inputs": ["action4"],
-                    "spec": {
-                      "name": "Sum2",
-                      "id": "94acbe31-fde7-4b6d-b830-b9a6f8ece7e6",
-                      "version": 3,
-                      "action": {
-                        "source": "@triform.entrypoint\ndef action(input):\n    return {'sum2': input['sum']+1}",
-                        "readme": "This action returns {'sum2': input['sum']+1}",
-                        "deps": "",
-                        "layer": "",
-                        "streaming": false
-                      }
-                    }
-                  }
-                ]
-              }
-            ]
-          },
-          {
-            "resource": "action",
-            "api_version": "v1",
-            "id": "99b65b1c-4b78-450d-8a8c-f7a93b16cadf",
-            "version": 2,
-            "key": "action6",
-            "inputs": ["action3", "action5"],
-            "spec": {
-              "name": "Sum1 + Sum2",
-              "id": "99b65b1c-4b78-450d-8a8c-f7a93b16cadf",
-              "version": 2,
-              "action": {
-                "source": "@triform.entrypoint\ndef action(input):\n    return {'sum': input['sum1']+input['sum2']}",
-                "readme": "This action returns {'sum': input['sum1']+input['sum2']}",
-                "deps": "",
-                "layer": "",
-                "streaming": false
-              }
-            }
-          }
-        ]
-      }
-    }
-  }
+	"resource": "invocation",
+	"api_version": "v1",
+	"input": { "sum": 1 },
+	"turbo": true,
+	"spec": {
+		"resource": "agent",
+		"api_version": "v1",
+		"id": "f892d1b9-e211-48f2-baab-2c025bfbdc79",
+		"version": 1,
+		"key": "test_agent",
+		"inputs": [],
+		"spec": {
+			"name": "Test agent",
+			"version": 1,
+			"agent": {
+				"sequence": [
+					{
+						"resource": "action",
+						"api_version": "v1",
+						"id": "1b0cf5aa-d64b-4efc-9589-c678f37a5692",
+						"version": 2,
+						"key": "action1",
+						"inputs": [],
+						"spec": {
+							"name": "Plus one",
+							"id": "1b0cf5aa-d64b-4efc-9589-c678f37a5692",
+							"version": 2,
+							"action": {
+								"source": "@triform.entrypoint\ndef action(input):\n    return {'sum': input['sum']+1}",
+								"readme": "This action returns {'sum': input['sum']+1}",
+								"deps": "",
+								"layer": "",
+								"streaming": false
+							}
+						}
+					},
+					{
+						"parallel": [
+							{
+								"sequence": [
+									{
+										"resource": "action",
+										"api_version": "v1",
+										"id": "1b0cf5aa-d64b-4efc-9589-c678f37a5692",
+										"version": 2,
+										"key": "action2",
+										"inputs": ["action1"],
+										"spec": {
+											"name": "Plus one",
+											"id": "1b0cf5aa-d64b-4efc-9589-c678f37a5692",
+											"version": 2,
+											"action": {
+												"source": "@triform.entrypoint\ndef action(input):\n    return {'sum': input['sum']+1}",
+												"readme": "This action returns {'sum': input['sum']+1}",
+												"deps": "",
+												"layer": "",
+												"streaming": false
+											}
+										}
+									},
+									{
+										"resource": "action",
+										"api_version": "v1",
+										"id": "ec8ccf99-a09e-4564-91ef-92c6d83ac6c1",
+										"version": 1,
+										"key": "action3",
+										"inputs": ["action2"],
+										"spec": {
+											"name": "Sum1",
+											"id": "ec8ccf99-a09e-4564-91ef-92c6d83ac6c1",
+											"version": 1,
+											"action": {
+												"source": "@triform.entrypoint\ndef action(input):\n    return {'sum1': input['sum']+1}",
+												"readme": "This action returns {'sum1': input['sum']+1}",
+												"deps": "",
+												"layer": "",
+												"streaming": false
+											}
+										}
+									}
+								]
+							},
+							{
+								"sequence": [
+									{
+										"resource": "action",
+										"api_version": "v1",
+										"id": "1b0cf5aa-d64b-4efc-9589-c678f37a5692",
+										"version": 2,
+										"key": "action4",
+										"inputs": ["action1"],
+										"spec": {
+											"name": "Plus one",
+											"id": "1b0cf5aa-d64b-4efc-9589-c678f37a5692",
+											"version": 2,
+											"action": {
+												"source": "@triform.entrypoint\ndef action(input):\n    return {'sum': input['sum']+1}",
+												"readme": "This action returns {'sum': input['sum']+1}",
+												"deps": "",
+												"layer": "",
+												"streaming": false
+											}
+										}
+									},
+									{
+										"resource": "action",
+										"api_version": "v1",
+										"id": "94acbe31-fde7-4b6d-b830-b9a6f8ece7e6",
+										"version": 3,
+										"key": "action5",
+										"inputs": ["action4"],
+										"spec": {
+											"name": "Sum2",
+											"id": "94acbe31-fde7-4b6d-b830-b9a6f8ece7e6",
+											"version": 3,
+											"action": {
+												"source": "@triform.entrypoint\ndef action(input):\n    return {'sum2': input['sum']+1}",
+												"readme": "This action returns {'sum2': input['sum']+1}",
+												"deps": "",
+												"layer": "",
+												"streaming": false
+											}
+										}
+									}
+								]
+							}
+						]
+					},
+					{
+						"resource": "action",
+						"api_version": "v1",
+						"id": "99b65b1c-4b78-450d-8a8c-f7a93b16cadf",
+						"version": 2,
+						"key": "action6",
+						"inputs": ["action3", "action5"],
+						"spec": {
+							"name": "Sum1 + Sum2",
+							"id": "99b65b1c-4b78-450d-8a8c-f7a93b16cadf",
+							"version": 2,
+							"action": {
+								"source": "@triform.entrypoint\ndef action(input):\n    return {'sum': input['sum1']+input['sum2']}",
+								"readme": "This action returns {'sum': input['sum1']+input['sum2']}",
+								"deps": "",
+								"layer": "",
+								"streaming": false
+							}
+						}
+					}
+				]
+			}
+		}
+	}
 }

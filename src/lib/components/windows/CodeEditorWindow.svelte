@@ -12,10 +12,7 @@
 	// Props passed to the component
 	const props = $props()
 	const {
-		customProps: {
-			files,
-			actionKey
-		}
+		customProps: { files, actionKey }
 	} = props
 
 	// Get the keys from customProps as dynamic tabs
@@ -77,12 +74,7 @@
 					{/if}
 				{/each}
 			</div>
-			<Button
-				variation="primary"
-				class="ml-auto"
-				autoLoad={true}
-				onClick={publish}
-			>
+			<Button variation="primary" class="ml-auto" autoLoad={true} onClick={publish}>
 				{#snippet icon()}
 					<IconDatabaseUpload />
 				{/snippet}

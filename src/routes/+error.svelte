@@ -16,10 +16,7 @@
 				Sorry, we can't find that page. You'll find lots to explore on the home page.
 			</p>
 			<div class="flex items-center justify-center">
-				<Button
-					variation="primary"
-					onClick={() => goto('/')}
-				>
+				<Button variation="primary" onClick={() => goto('/')}>
 					{#snippet body()}
 						Go To Homepage
 					{/snippet}

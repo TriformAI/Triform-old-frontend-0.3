@@ -3,7 +3,7 @@
 	import type { Node } from '@xyflow/svelte'
 	import type { NodeType } from '$lib/stores/contextMenu.svelte'
 	import { onMount, type Snippet } from 'svelte'
-	
+
 	import { Position, useNodes } from '@xyflow/svelte'
 	import { get } from 'svelte/store'
 
@@ -70,7 +70,11 @@
 				<span class="block transition {selected ? 'text-slate-300' : 'text-slate-400'}">
 					v{version}
 				</span>
-				<span class="block transition text-[6px] font-normal italic {selected ? 'text-slate-400' : 'text-slate-500'}">
+				<span
+					class="block transition text-[6px] font-normal italic {selected
+						? 'text-slate-400'
+						: 'text-slate-500'}"
+				>
 					{data.id}
 				</span>
 			</span>

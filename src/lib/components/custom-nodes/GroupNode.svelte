@@ -35,7 +35,9 @@
 
 <NodeContainer {id}>
 	{#snippet body()}
-		<div class="h-full w-full flex flex-row justify-center text-center border border-slate-300/10 bg-zinc-900/30 rounded">
+		<div
+			class="h-full w-full flex flex-row justify-center text-center border border-slate-300/10 bg-zinc-900/30 rounded"
+		>
 			<span
 				class="
 					flex-shrink-0 w-max text-[8px] font-bold transition bg-zinc-900/50 backdrop-blur-sm px-5 rounded h-fit -mt-4

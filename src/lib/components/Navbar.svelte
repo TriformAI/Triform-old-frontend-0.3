@@ -25,9 +25,7 @@
 	</div>
 
 	<div class="flex items-center gap-x-5 justify-center">
-		<Button
-			onClick={() => openModal(ModalId.ShareCanvas)}
-		>
+		<Button onClick={() => openModal(ModalId.ShareCanvas)}>
 			{#snippet body()}
 				Share canvas
 			{/snippet}
@@ -36,26 +34,18 @@
 		<div class="relative pl-5 border-l border-l-zinc-700">
 			<Dropdown buttonVariation="link">
 				{#snippet button()}
-					<img
-						alt="profile logo"
-						src="https://picsum.photos/100"
-						class="w-8 rounded-full"
-					/>
+					<img alt="profile logo" src="https://picsum.photos/100" class="w-8 rounded-full" />
 				{/snippet}
 				{#snippet body()}
-				<ul>
-					<li>
-						<button
-							class="w-full"
-							onclick={toggleLanguage}
-						>
-							Language: {lang}
-						</button>
-					</li>
-				</ul>
-			{/snippet}
+					<ul>
+						<li>
+							<button class="w-full" onclick={toggleLanguage}>
+								Language: {lang}
+							</button>
+						</li>
+					</ul>
+				{/snippet}
 			</Dropdown>
-
 		</div>
 	</div>
 </nav>

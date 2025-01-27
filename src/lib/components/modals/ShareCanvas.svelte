@@ -82,7 +82,7 @@
 				</div>
 				<Select {options} bind:selected singleValue={true} />
 			</div>
-      <div class="flex items-center justify-between pt-8">
+			<div class="flex items-center justify-between pt-8">
 				<div class="flex items-center gap-x-4">
 					<img alt="profile logo" src="https://picsum.photos/100" class="w-8 mr-3 rounded-full" />
 					<h4 class="text-sm text-white">Iggy</h4>

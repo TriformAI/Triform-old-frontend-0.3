@@ -1,7 +1,7 @@
 <script lang="ts">
 	import type { Snippet } from 'svelte'
 	import type { ButtonVariation } from '$lib/components/atoms/Button.svelte'
-	
+
 	import { createMenu } from 'svelte-headlessui'
 	import { fade } from 'svelte/transition'
 
@@ -28,12 +28,8 @@
 <div class="relative z-40 inline-block text-left">
 	<!-- Dropdown Trigger Button -->
 	{#if button}
-		<div
-			use:menu.button
-		>
-			<Button
-				variation={buttonVariation}
-			>
+		<div use:menu.button>
+			<Button variation={buttonVariation}>
 				{#snippet body()}
 					<!-- Render the button snippet -->
 					{@render button()}
@@ -58,11 +54,7 @@
 
 	<!-- Dropdown Menu -->
 	{#if $menu.expanded}
-		<div
-			use:menu.items
-			transition:fade={{ duration: 200 }}
-			class="absolute right-0 mt-2"
-		>
+		<div use:menu.items transition:fade={{ duration: 200 }} class="absolute right-0 mt-2">
 			<List {body} />
 		</div>
 	{/if}

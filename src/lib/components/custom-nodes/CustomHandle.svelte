@@ -8,20 +8,14 @@
 		position,
 		type
 	}: {
-		id: string,
-		position: Position,
+		id: string
+		position: Position
 		type: 'source' | 'target'
 	} = $props()
 </script>
 
 <div class="relative">
-	<Handle
-		{id}
-		{type}
-		{position}
-		style="width: 20px; height: 25px"
-		class="opacity-0"
-	/>
+	<Handle {id} {type} {position} style="width: 20px; height: 25px" class="opacity-0" />
 </div>
 
 <style>
