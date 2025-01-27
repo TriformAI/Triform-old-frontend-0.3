@@ -1,5 +1,5 @@
 <script lang="ts">
-	import type { Canvas } from '$lib/stores/canvas.svelte'
+	import type { Canvas, OpenAgents } from '$lib/stores/canvas.svelte'
 	import type { Node, Edge, NodeTypes, EdgeTypes } from '@xyflow/svelte'
 
 	import ActionNode from '$lib/components/custom-nodes/ActionNode.svelte'
@@ -7,7 +7,6 @@
 	import OpenAgentNode from '$lib/components/custom-nodes/OpenAgentNode.svelte'
 	import ApiNode from '$lib/components/custom-nodes/ApiNode.svelte'
 	import FloatingEdge from './FloatingEdge.svelte'
-	
 	import ContextMenu from './ContextMenu.svelte'
 
 
@@ -19,8 +18,6 @@
 
 	import '@xyflow/svelte/dist/style.css'
 	import { parseTree, getLayoutedNodes } from './helpers.svelte'
-
-	const { canvas }: { canvas: Canvas } = $props()
 
 	const nodeTypes: NodeTypes = {
 		// @ts-expect-error type issue, not crucial but should probs be fixed
@@ -34,13 +31,14 @@
 	}
 	const edgeTypes: EdgeTypes = {
 		// @ts-expect-error type issue, not crucial but should probs be fixed
-		'floating': FloatingEdge
+		floating: FloatingEdge
 	}
 
 	const nodes = writable<Node[]>([])
 	const edges = writable<Edge[]>([])
 
-	const openAgents: { [key: string]: boolean } = $state({ test_agent: false })
+	const { canvas, openAgents }: { canvas: Canvas; openAgents: OpenAgents } = $props()
+
 	$effect(() => {
 		nodes.set([])
 		edges.set([])
@@ -55,9 +53,9 @@
 				if (node.type === 'action-node') {
 					node.data.files = undefined
 				} else if (node.type === 'agent-node') {
-					node.data.onOpen = () => openAgents[node.id] = true
+					node.data.onOpen = () => (openAgents[node.id] = true)
 				} else if (node.type === 'open-agent-node') {
-					node.data.onOpen = () => openAgents[node.id] = false
+					node.data.onOpen = () => (openAgents[node.id] = false)
 					node.width = 400
 					node.height = 400
 				} else throw new Error('unknown node type ' + node.type)
@@ -117,7 +115,7 @@
 	}
 </script>
 
-<div class="h-full w-full relative" bind:this={wrapper}>
+<div class="relative w-full h-full" bind:this={wrapper}>
 	<SvelteFlow
 		{nodes}
 		{edges}

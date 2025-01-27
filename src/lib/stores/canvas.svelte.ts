@@ -36,6 +36,10 @@ export interface Canvas {
 	// label: string,
 }
 
+export interface OpenAgents {
+	[key: string]: boolean
+}
+
 export const isResource = (resource: ResourceV1): resource is ResourceV1 => {
 	if (typeof resource !== 'object' || resource === null) return false
 	return 'resource' in resource
@@ -81,6 +85,8 @@ export const processResource = (
 }
 
 export const canvasStore = $state<Canvas[]>([])
+
+export const openAgents = $state<OpenAgents>({ test_agent: false })
 
 // Extract all actions from the resource
 const actionsStoreState = $derived.by<ActionResource[]>(() => {
