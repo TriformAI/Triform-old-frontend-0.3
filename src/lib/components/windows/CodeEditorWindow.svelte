@@ -7,7 +7,7 @@
 	import IconDatabaseUpload from '~icons/material-symbols/database-upload-rounded'
 
 	import { publishAction } from '$lib/actions/executor'
-	import { canvasStore, actionsStore } from '$lib/stores/canvas.svelte'
+	import { canvasStore } from '$lib/stores/canvas.svelte'
 
 	// Props passed to the component
 	const props = $props()
@@ -52,9 +52,9 @@
 
 	const publish = async () => {
 		console.log('publishing')
-		const action = actionsStore().filter(a => a.key === actionKey)[0]
-		const newAction = await publishAction(action)
-		console.log('new action', newAction)
+		// const action = actionsStore().filter(a => a.key === actionKey)[0]
+		// const newAction = await publishAction(action)
+		// console.log('new action', newAction)
 	}
 </script>
 

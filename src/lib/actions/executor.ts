@@ -1,8 +1,7 @@
-import { updateAction, processResource } from '$lib/stores/canvas.svelte'
-import type { ActionResource, AgentResource } from '$lib/stores/canvas.svelte'
-import type { ResourceV1 } from '$lib/types/agent'
+import { updateAction } from '$lib/stores/canvas.svelte'
+import type { Action, Agent } from '$lib/types/agent'
 
-export const publishAction = async (action: ActionResource) => {
+export const publishAction = async (action: Action) => {
 	console.log('publishing action', action)
 	const res = await fetch('https://triform.arcticmarinesolutions.se/v1/action', {
 		method: 'POST',
@@ -26,30 +25,30 @@ export const publishAction = async (action: ActionResource) => {
 	)
 }
 
-export const runAgent = async (fullAgent: AgentResource, input: unknown) => {
-	const agent = JSON.parse(JSON.stringify(fullAgent))
+export const runAgent = async (fullAgent: Agent, input: unknown) => {
+	// const agent = JSON.parse(JSON.stringify(fullAgent))
 
-	// Remove the spec of all actions
-	await new Promise<ResourceV1>(resolve =>
-		processResource(agent, (resource: ActionResource) => delete resource.spec, resolve)
-	)
+	// // Remove the spec of all actions
+	// await new Promise<ResourceV1>(resolve =>
+	// 	processResource(agent, (resource: ActionResource) => delete resource.spec, resolve)
+	// )
 
-	// Construct the actual invocation request
-	const invocation = {
-		resource: 'invocation',
-		api_version: 'v1',
-		input,
-		turbo: true,
-		spec: agent
-	}
-	console.log('running agent', invocation)
-	const res = await fetch('https://triform.arcticmarinesolutions.se/v1/run', {
-		method: 'POST',
-		headers: {
-			'Content-Type': 'application/json'
-		},
-		body: JSON.stringify(invocation)
-	})
+	// // Construct the actual invocation request
+	// const invocation = {
+	// 	resource: 'invocation',
+	// 	api_version: 'v1',
+	// 	input,
+	// 	turbo: true,
+	// 	spec: agent
+	// }
+	// console.log('running agent', invocation)
+	// const res = await fetch('https://triform.arcticmarinesolutions.se/v1/run', {
+	// 	method: 'POST',
+	// 	headers: {
+	// 		'Content-Type': 'application/json'
+	// 	},
+	// 	body: JSON.stringify(invocation)
+	// })
 
-	return await res.json()
+	// return await res.json()
 }

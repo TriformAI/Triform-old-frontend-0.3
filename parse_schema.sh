@@ -4,7 +4,7 @@ set -f  # Disable globbing
 SCRIPT_DIR="$(dirname "$0")"
 
 AGENT_WORKER_REPO="${AGENT_WORKER_DIR:-../agent-worker}"
-SCHEMA_LOCATION="$AGENT_WORKER_REPO/schema.json"
+SCHEMA_LOCATION="$AGENT_WORKER_REPO/schema/execution.json"
 TYPES_OUTPUT="src/lib/types/agent.ts"
 
 # Get git repo information to be stored together with the
@@ -26,11 +26,19 @@ echo -e "$COMMIT_INFO" > "$SCRIPT_DIR/$TYPES_OUTPUT"
 
 echo "reading from file $SCHEMA_LOCATION"
 echo
-# It seems like the current schema doesnt export all of the definions. So to make sure that it does
-# I add them to an "allOf" statement before converting it into typescript.
+
 cat "$SCRIPT_DIR/$SCHEMA_LOCATION" |
-  bunx json -e 'this.allOf = Object.keys(this.definitions).map((k) => ({"$ref": "#/definitions/"+k})); this["$ref"] = undefined' |
+  # exports the meta type as well
+  # bunx json -e 'var dk=this.definitions?"definitions":"$defs"; this.allOf=Object.keys(this[dk]).map(k=>({"$ref":"#/"+dk+"/"+k})); this["$ref"]=undefined' |
+  # add --unreachableDefinitions if needed
   bunx json2ts >> "$SCRIPT_DIR/$TYPES_OUTPUT"
+
+# Inject the UUID type after the last comment block (*/)
+sed -i '/\/\*/ a\import type { UUID as Uuid } from "crypto" \
+export type { Uuid } \
+' "$SCRIPT_DIR/$TYPES_OUTPUT"
+# Remove the old export type Uuid line
+sed -i '/export type Uuid/d' "$SCRIPT_DIR/$TYPES_OUTPUT"
 
 bun run prettier --write "$SCRIPT_DIR/$TYPES_OUTPUT"
 

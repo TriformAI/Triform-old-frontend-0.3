@@ -6,7 +6,7 @@ services:
     volumes:
       - .:/app
       - /app/node_modules
-      - ../agent-worker/schema.json:/app/agent-worker/schema.json
+      - ../agent-worker/schema/execution.json:/app/agent-worker/schema/execution.json
     environment:
       AGENT_WORKER_DIR: agent-worker
     ports:

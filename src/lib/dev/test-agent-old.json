@@ -1,0 +1,112 @@
+{
+	"resource": "agent",
+	"api_version": "v1",
+	"id": "f892d1b9-e211-48f2-baab-2c025bfbdc79",
+	"version": 1,
+	"key": "test_agent",
+	"inputs": [],
+	"spec": {
+		"name": "Test agent",
+		"version": 1,
+		"id": "1b0cf5aa-d64b-4efc-9589-c678f37a5692",
+		"agent": {
+			"sequence": [
+				{
+					"resource": "action",
+					"api_version": "v1",
+					"id": "1b0cf5aa-d64b-4efc-9589-c678f37a5692",
+					"version": 1,
+					"key": "action-download",
+					"inputs": [],
+					"spec": {
+						"name": "Download & parse PDF",
+						"id": "723ad366-5e84-4df9-8d2e-69ebbac0e4f8",
+						"version": 1,
+						"action": {
+							"source": "import requests\nimport io\nfrom pdfminer.high_level import extract_text_to_fp\nfrom pdfminer.layout import LAParams\n\n@triform.entrypoint\ndef action(input):\n    pdf_url = input.get(\"url\")\n    if not pdf_url:\n        return {\"error\": \"No pdf url provided\"}\n    try:\n        response = requests.get(pdf_url)\n        response.raise_for_status()\n    except requests.exceptions.RequestException as e:\n        return {\"error\": f\"Failed to fetch PDF from URL: {str(e)}\"}\n    pdf_file = io.BytesIO(response.content)\n    output_string = io.StringIO()\n    try:\n        laparams = LAParams()\n        extract_text_to_fp(pdf_file, output_string, laparams=laparams, output_type='text', codec='utf-8')\n    except Exception as e:\n        return {\"error\": \"Failed to extract text from PDF\"}\n    extracted_text = output_string.getvalue()\n    return {\"text\": extracted_text}\n",
+							"readme": "This action downloads and parses a random book from Amazon",
+							"deps": "requests\npdfminer.six",
+							"layer": "",
+							"streaming": false
+						}
+					}
+				},
+				{
+					"resource": "agent",
+					"id": "f892d1b9-e211-48f2-baab-2c025bfbdc79",
+					"version": 1,
+					"key": "agent-rewrite",
+					"inputs": ["action-download"],
+					"spec": {
+						"name": "Rewrite text as me ",
+						"version": 1,
+						"agent": {
+							"sequence": [
+								{
+									"resource": "action",
+									"api_version": "v1",
+									"id": "1b0cf5aa-d64b-4efc-9589-c678f37a5692",
+									"version": 1,
+									"key": "action-rewrite",
+									"inputs": [],
+									"spec": {
+										"name": "Rewrite with as me",
+										"id": "723ad366-5e84-4df9-8d2e-69ebbac0e4f8",
+										"version": 1,
+										"action": {
+											"source": "import requests\nimport io\nfrom pdfminer.high_level import extract_text_to_fp\nfrom pdfminer.layout import LAParams\n\n@triform.entrypoint\ndef action(input):\n    pdf_url = input.get(\"url\")\n    if not pdf_url:\n        return {\"error\": \"No pdf url provided\"}\n    try:\n        response = requests.get(pdf_url)\n        response.raise_for_status()\n    except requests.exceptions.RequestException as e:\n        return {\"error\": f\"Failed to fetch PDF from URL: {str(e)}\"}\n    pdf_file = io.BytesIO(response.content)\n    output_string = io.StringIO()\n    try:\n        laparams = LAParams()\n        extract_text_to_fp(pdf_file, output_string, laparams=laparams, output_type='text', codec='utf-8')\n    except Exception as e:\n        return {\"error\": \"Failed to extract text from PDF\"}\n    extracted_text = output_string.getvalue()\n    return {\"text\": extracted_text}\n",
+											"readme": "Reads through a text and rewrites it in the way that I would have written it. With my mannerisms.",
+											"deps": "requests\npdfminer.six",
+											"layer": "",
+											"streaming": false
+										}
+									}
+								},
+								{
+									"resource": "action",
+									"api_version": "v1",
+									"id": "1b0cf5aa-d64b-4efc-9589-c678f37a5692",
+									"version": 1,
+									"key": "action-change-author",
+									"inputs": ["action-rewrite"],
+									"spec": {
+										"name": "Change author to me",
+										"id": "723ad366-5e84-4df9-8d2e-69ebbac0e4f8",
+										"version": 1,
+										"action": {
+											"source": "import requests\nimport io\nfrom pdfminer.high_level import extract_text_to_fp\nfrom pdfminer.layout import LAParams\n\n@triform.entrypoint\ndef action(input):\n    pdf_url = input.get(\"url\")\n    if not pdf_url:\n        return {\"error\": \"No pdf url provided\"}\n    try:\n        response = requests.get(pdf_url)\n        response.raise_for_status()\n    except requests.exceptions.RequestException as e:\n        return {\"error\": f\"Failed to fetch PDF from URL: {str(e)}\"}\n    pdf_file = io.BytesIO(response.content)\n    output_string = io.StringIO()\n    try:\n        laparams = LAParams()\n        extract_text_to_fp(pdf_file, output_string, laparams=laparams, output_type='text', codec='utf-8')\n    except Exception as e:\n        return {\"error\": \"Failed to extract text from PDF\"}\n    extracted_text = output_string.getvalue()\n    return {\"text\": extracted_text}\n",
+											"readme": "Read through the text and find any references to old author and replace it with me, giving me all credit.",
+											"deps": "requests\npdfminer.six",
+											"layer": "",
+											"streaming": false
+										}
+									}
+								}
+							]
+						}
+					}
+				},
+				{
+					"resource": "action",
+					"api_version": "v1",
+					"id": "1b0cf5aa-d64b-4efc-9589-c678f37a5692",
+					"version": 1,
+					"key": "action-print",
+					"inputs": ["agent-rewrite"],
+					"spec": {
+						"name": "Print & Sell",
+						"id": "723ad366-5e84-4df9-8d2e-69ebbac0e4f8",
+						"version": 1,
+						"action": {
+							"source": "import requests\nimport io\nfrom pdfminer.high_level import extract_text_to_fp\nfrom pdfminer.layout import LAParams\n\n@triform.entrypoint\ndef action(input):\n    pdf_url = input.get(\"url\")\n    if not pdf_url:\n        return {\"error\": \"No pdf url provided\"}\n    try:\n        response = requests.get(pdf_url)\n        response.raise_for_status()\n    except requests.exceptions.RequestException as e:\n        return {\"error\": f\"Failed to fetch PDF from URL: {str(e)}\"}\n    pdf_file = io.BytesIO(response.content)\n    output_string = io.StringIO()\n    try:\n        laparams = LAParams()\n        extract_text_to_fp(pdf_file, output_string, laparams=laparams, output_type='text', codec='utf-8')\n    except Exception as e:\n        return {\"error\": \"Failed to extract text from PDF\"}\n    extracted_text = output_string.getvalue()\n    return {\"text\": extracted_text}\n",
+							"readme": "Pru",
+							"deps": "requests\npdfminer.six",
+							"layer": "",
+							"streaming": false
+						}
+					}
+				}
+			]
+		}
+	}
+}

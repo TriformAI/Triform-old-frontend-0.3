@@ -1,7 +1,6 @@
 <script lang="ts">
 	import { onMount } from 'svelte'
 	import Flow from '$lib/components/canvas/Flow.svelte'
-	import type { Window } from '$lib/stores/windows.svelte'
 
 	import {
 		openWindows,
@@ -10,14 +9,12 @@
 		removeLocalStorageListener
 	} from '$lib/stores/windows.svelte'
 	import {
-		loadResource,
+		loadAgent,
 		canvasStore,
-		updateAction,
-		actionsStore,
 		openAgents
 	} from '$lib/stores/canvas.svelte'
 
-	import type { ResourceV1 } from '$lib/types/agent'
+	import type { Agent } from '$lib/types/agent'
 
 	import { setMainAreaRef } from '$lib/stores/layoutRefs.svelte'
 	// 👇 this is important! You need to import the styles for Svelte Flow to work
@@ -35,9 +32,9 @@
 	import testAgent from '$lib/dev/test-agent.json'
 	onMount(() => {
 		console.log('mount')
-		loadResource(testAgent as ResourceV1)
+		loadAgent(testAgent as Agent)
 
-		console.log('actions', actionsStore())
+		// console.log('actions', actionsStore())
 	})
 
 	const activeCanvas = $derived(canvasStore[0])

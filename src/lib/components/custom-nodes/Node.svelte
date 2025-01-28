@@ -28,7 +28,7 @@
 		handles: Position[]
 	} = $props()
 
-	const { name, state, version, onOpen } = data
+	const { name, state, component_id, component_version, onOpen } = data
 
 	const getBorderClass = (state?: string) => {
 		switch (state) {
@@ -68,14 +68,14 @@
 			>
 				{name}
 				<span class="block transition {selected ? 'text-slate-300' : 'text-slate-400'}">
-					v{version}
+					v{component_version}
 				</span>
 				<span
 					class="block transition text-[6px] font-normal italic {selected
 						? 'text-slate-400'
 						: 'text-slate-500'}"
 				>
-					{data.id}
+					{component_id}
 				</span>
 			</span>
 			<button

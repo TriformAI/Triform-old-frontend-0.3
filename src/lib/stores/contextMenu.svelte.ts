@@ -3,7 +3,7 @@ import { SvelteMap } from 'svelte/reactivity'
 import type { Node } from '@xyflow/svelte'
 
 import { openWindow } from './windows.svelte'
-import { actionsStore, openAgents } from './canvas.svelte'
+import { openAgents } from './canvas.svelte'
 
 import CodeEditorWindow from '$lib/components/windows/CodeEditorWindow.svelte'
 
@@ -29,22 +29,22 @@ contextMenus.set('action-node', [
 		label: 'Edit',
 		onClick: (node?: Node) => {
 			if (!node) return
-			const action = actionsStore().filter(a => a.key === node.id)[0]
-			if (!action) return console.error('Could not find action with key', node.id)
-			openWindow({
-				id: `code-editor-action-${action.key}`,
-				component: CodeEditorWindow,
-				posX: 20,
-				posY: 20,
-				customProps: {
-					files: {
-						'action.py': action.spec?.action?.source,
-						'README.md': action.spec?.action?.readme,
-						'requirements.txt': action.spec?.action?.deps
-					},
-					actionKey: action.key
-				}
-			})
+			// const action = actionsStore().filter(a => a.key === node.id)[0]
+			// if (!action) return console.error('Could not find action with key', node.id)
+			// openWindow({
+			// 	id: `code-editor-action-${action.key}`,
+			// 	component: CodeEditorWindow,
+			// 	posX: 20,
+			// 	posY: 20,
+			// 	customProps: {
+			// 		files: {
+			// 			'action.py': action.spec?.action?.source,
+			// 			'README.md': action.spec?.action?.readme,
+			// 			'requirements.txt': action.spec?.action?.deps
+			// 		},
+			// 		actionKey: action.key
+			// 	}
+			// })
 		}
 	},
 	{

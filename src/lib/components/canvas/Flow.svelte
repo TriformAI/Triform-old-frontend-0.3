@@ -16,7 +16,8 @@
 	import { menuIsOpen, toggleMenu } from '$lib/stores/contextMenu.svelte'
 
 	import '@xyflow/svelte/dist/style.css'
-	import { parseTree, getLayoutedNodes } from './helpers.svelte'
+	import { parseAgent } from '$lib/stores/canvas.svelte'
+	import { getLayoutedNodes } from './layout.svelte'
 
 	const nodeTypes: NodeTypes = {
 		// @ts-expect-error type issue, not crucial but should probs be fixed
@@ -43,7 +44,7 @@
 		edges.set([])
 		if (!canvas) return
 
-		let { nodes: nodesData, edges: edgesData } = parseTree(canvas, openAgents)
+		let { nodes: nodesData, edges: edgesData } = parseAgent(canvas.resource)
 
 		// Used to get effect to trigger on canvas.resource change
 		const ref = canvas.resource
