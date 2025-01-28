@@ -11,7 +11,9 @@
       "20238c14-764b-4172-9692-b9b34be984c5": {
         "component_id": "2c63901f-3f4e-431d-a1e8-ea2abbf6b8b4",
         "component_version": 1,
-        "inputs": ["parent"],
+        "inputs": [
+          "parent"
+        ],
         "spec": {
           "resource": "action/v1",
           "meta": {
@@ -28,27 +30,32 @@
           }
         }
       },
-      "2d5c7df8-f458-4c49-80a9-7e4c5f80d8db": {
-        "component_id": "a11eefc2-a8fd-4501-86ee-2e804bca60a4",
+      "e5e8d6bf-7076-4e09-8cc5-8cc4a27f84ed": {
+        "component_id": "2770d0a5-a4de-48b6-8982-edfdb712764b",
         "component_version": 1,
-        "inputs": ["20238c14-764b-4172-9692-b9b34be984c5"],
+        "inputs": [
+          "20238c14-764b-4172-9692-b9b34be984c5"
+        ],
         "spec": {
           "resource": "agent/v1",
           "meta": {
-            "name": "Nested agent",
-            "id": "a11eefc2-a8fd-4501-86ee-2e804bca60a4",
+            "name": "Nested agent 1",
+            "id": "2770d0a5-a4de-48b6-8982-edfdb712764b",
             "version": 1
           },
           "spec": {
-            "readme": "Nested agent",
+            "readme": "Nested agent 1",
             "nodes": {
-              "fb7c9545-4ef0-4dec-a4dd-385be042a3c7": {
+              "2af4ce8e-916c-48f1-8fd5-da08c5f0f09b": {
                 "component_id": "2c63901f-3f4e-431d-a1e8-ea2abbf6b8b4",
-                "inputs": ["parent"],
+                "component_version": 1,
+                "inputs": [
+                  "parent"
+                ],
                 "spec": {
                   "resource": "action/v1",
                   "meta": {
-                    "name": "Nested Plus one",
+                    "name": "Plus one",
                     "id": "2c63901f-3f4e-431d-a1e8-ea2abbf6b8b4",
                     "version": 1
                   },
@@ -61,50 +68,79 @@
                   }
                 }
               },
-              "7add1063-35d0-44fc-b31e-91c59fd43769": {
-                "component_id": "2c63901f-3f4e-431d-a1e8-ea2abbf6b8b4",
-                "inputs": ["fb7c9545-4ef0-4dec-a4dd-385be042a3c7"],
+              "1cc14653-dac4-41f1-8277-69b596713455": {
+                "component_id": "2770d0a5-a4de-48b6-8982-edfdb712764b",
+                "component_version": 1,
+                "inputs": [
+                  "2af4ce8e-916c-48f1-8fd5-da08c5f0f09b"
+                ],
                 "spec": {
-                  "resource": "action/v1",
+                  "resource": "agent/v1",
                   "meta": {
-                    "name": "Nested Plus one",
-                    "id": "2c63901f-3f4e-431d-a1e8-ea2abbf6b8b4",
+                    "name": "Nested agent 2",
+                    "id": "2770d0a5-a4de-48b6-8982-edfdb712764b",
                     "version": 1
                   },
                   "spec": {
-                    "source": "@triform.entrypoint\ndef action(input):\n    return {'sum': input['sum']+1}",
-                    "readme": "This action adds one to the sum of the input",
-                    "deps": "",
-                    "checksum": "",
-                    "streaming": false
-                  }
-                }
-              },
-              "84ac0cd6-ec7e-4052-b5c5-115f68e7d1b9": {
-                "component_id": "2c63901f-3f4e-431d-a1e8-ea2abbf6b8b4",
-                "inputs": ["7add1063-35d0-44fc-b31e-91c59fd43769"],
-                "spec": {
-                  "resource": "action/v1",
-                  "meta": {
-                    "name": "Nested Plus one",
-                    "id": "2c63901f-3f4e-431d-a1e8-ea2abbf6b8b4",
-                    "version": 1
-                  },
-                  "spec": {
-                    "source": "@triform.entrypoint\ndef action(input):\n    return {'sum': input['sum']+1}",
-                    "readme": "This action adds one to the sum of the input",
-                    "deps": "",
-                    "checksum": "",
-                    "streaming": false
+                    "readme": "Nested agent 2",
+                    "nodes": {
+                      "8f3ad634-182c-4a37-81ef-5665acae1e4f": {
+                        "component_id": "2c63901f-3f4e-431d-a1e8-ea2abbf6b8b4",
+                        "component_version": 1,
+                        "inputs": [
+                          "parent"
+                        ],
+                        "spec": {
+                          "resource": "action/v1",
+                          "meta": {
+                            "name": "Plus one",
+                            "id": "2c63901f-3f4e-431d-a1e8-ea2abbf6b8b4",
+                            "version": 1
+                          },
+                          "spec": {
+                            "source": "@triform.entrypoint\ndef action(input):\n    return {'sum': input['sum']+1}",
+                            "readme": "This action adds one to the sum of the input",
+                            "deps": "",
+                            "checksum": "",
+                            "streaming": false
+                          }
+                        }
+                      },
+                      "cf1e801a-df9c-44cf-b832-6cdcb220f69c": {
+                        "component_id": "2c63901f-3f4e-431d-a1e8-ea2abbf6b8b4",
+                        "component_version": 1,
+                        "inputs": [
+                          "8f3ad634-182c-4a37-81ef-5665acae1e4f"
+                        ],
+                        "spec": {
+                          "resource": "action/v1",
+                          "meta": {
+                            "name": "Plus one",
+                            "id": "2c63901f-3f4e-431d-a1e8-ea2abbf6b8b4",
+                            "version": 1
+                          },
+                          "spec": {
+                            "source": "@triform.entrypoint\ndef action(input):\n    return {'sum': input['sum']+1}",
+                            "readme": "This action adds one to the sum of the input",
+                            "deps": "",
+                            "checksum": "",
+                            "streaming": false
+                          }
+                        }
+                      }
+                    },
+                    "outputs": ["8f3ad634-182c-4a37-81ef-5665acae1e4f"]
                   }
                 }
               }
             },
-            "outputs": ["84ac0cd6-ec7e-4052-b5c5-115f68e7d1b9"]
+            "outputs": ["1cc14653-dac4-41f1-8277-69b596713455"]
           }
         }
       }
     },
-    "outputs": ["2d5c7df8-f458-4c49-80a9-7e4c5f80d8db"]
+    "outputs": [
+      "2d5c7df8-f458-4c49-80a9-7e4c5f80d8db"
+    ]
   }
 }
