@@ -60,9 +60,47 @@
                     "streaming": false
                   }
                 }
+              },
+              "7add1063-35d0-44fc-b31e-91c59fd43769": {
+                "component_id": "2c63901f-3f4e-431d-a1e8-ea2abbf6b8b4",
+                "inputs": ["fb7c9545-4ef0-4dec-a4dd-385be042a3c7"],
+                "spec": {
+                  "resource": "action/v1",
+                  "meta": {
+                    "name": "Nested Plus one",
+                    "id": "2c63901f-3f4e-431d-a1e8-ea2abbf6b8b4",
+                    "version": 1
+                  },
+                  "spec": {
+                    "source": "@triform.entrypoint\ndef action(input):\n    return {'sum': input['sum']+1}",
+                    "readme": "This action adds one to the sum of the input",
+                    "deps": "",
+                    "checksum": "",
+                    "streaming": false
+                  }
+                }
+              },
+              "84ac0cd6-ec7e-4052-b5c5-115f68e7d1b9": {
+                "component_id": "2c63901f-3f4e-431d-a1e8-ea2abbf6b8b4",
+                "inputs": ["7add1063-35d0-44fc-b31e-91c59fd43769"],
+                "spec": {
+                  "resource": "action/v1",
+                  "meta": {
+                    "name": "Nested Plus one",
+                    "id": "2c63901f-3f4e-431d-a1e8-ea2abbf6b8b4",
+                    "version": 1
+                  },
+                  "spec": {
+                    "source": "@triform.entrypoint\ndef action(input):\n    return {'sum': input['sum']+1}",
+                    "readme": "This action adds one to the sum of the input",
+                    "deps": "",
+                    "checksum": "",
+                    "streaming": false
+                  }
+                }
               }
             },
-            "outputs": ["fb7c9545-4ef0-4dec-a4dd-385be042a3c7"]
+            "outputs": ["84ac0cd6-ec7e-4052-b5c5-115f68e7d1b9"]
           }
         }
       }

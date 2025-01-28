@@ -10,10 +10,9 @@ const elkSettings = {
 
 const buildElkTree = (nodes: Node[]): ElkNode[] => {
 	// All open agents have nested children, so we need to build the children recursively
-	const nodeSize = 80
-
 	return nodes.map(node => {
 		const children = nodes.filter(n => n.parentId === node.id)
+		const nodeSize = (node.type === 'open-agent-node' ? 200 : 44) + 20
 		return {
 			id: node.id,
 			width: nodeSize,
@@ -40,6 +39,9 @@ export const getLayoutedNodes = async (nodes: Node[], edges: Edge[]) => {
 		}))
 	}
 
+	// Place the nodes a bit from the edges of the agent groups so it doesn't feel so cramped
+	const groupPadding = 60
+
 	const layout = await elk.layout(graph)
 	// For some reason the layout returns all children instead of just the first level
 	// No idea why but I guess you shouldn't look a gift horse in the mouth, or something
@@ -51,27 +53,43 @@ export const getLayoutedNodes = async (nodes: Node[], edges: Edge[]) => {
 		return {
 			...node,
 			position: {
-				x: n.x ?? 0,
+				x: (n.x ?? 0) + (groupPadding / 4),
 				// Add some padding to the top if it's a child because the container label
 				// takes up a bit of space
-				y: (n.y ?? 0) + (node.parentId ? 5 : 0)
+				y: (n.y ?? 0) + (node.parentId ? 5 : 0) + (groupPadding / 4)
 			}
 		}
 	})
 
+	// Fit the groups
 	return layoutedNodes.map(n => {
 		const children = layoutedNodes.filter(child => child.parentId === n.id)
 		if (!children.length) return n
-		console.log('children', children)
+		console.log('children', children, children.map(c => c.position.y))
 		const nodeSize = 44
-		console.log('nodeSize', nodeSize)
+		const getPos = (child: Node): { x: number; y: number }[] => {
+			const res = [{
+				x: child.position.x,
+				y: child.position.y
+			}]
+			// If it's an open agent, check all its children too
+			if (child.type === 'open-agent-node') {
+				const agentChildren = layoutedNodes.filter(n => n.parentId === child.id)
+				res.push(...agentChildren.flatMap(getPos).map(p => ({ x: p.x + groupPadding, y: p.y + groupPadding })))
+			}
+
+			return res
+		}
+		// TODO: benchmark this, with a few nodes it's <0.1ms but it might
+		// grow pretty badly due to the recursion
+		const childrenPos = children.flatMap(getPos)
+		const minX = Math.min(...childrenPos.map(p => p.x))
+		const maxX = Math.max(...childrenPos.map(p => p.x))
+		const minY = Math.min(...childrenPos.map(p => p.y))
+		const maxY = Math.max(...childrenPos.map(p => p.y))
 		const bounds = {
-			x:
-				(Math.max(...children.map(n => n.position.x)) - Math.min(...children.map(n => n.position.x)))
-				+ nodeSize,
-			y:
-				(Math.max(...children.map(n => n.position.y)) - Math.min(...children.map(n => n.position.y)))
-				+ nodeSize
+			x: (maxX - minX) + nodeSize + groupPadding,
+			y: (maxY - minY) + nodeSize + groupPadding
 		}
 		n.width = bounds.x
 		n.height = bounds.y

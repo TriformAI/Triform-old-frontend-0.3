@@ -71,7 +71,7 @@ export const parseAgent = (agent: Agent, parentId?: Uuid, nodeId?: Uuid): Parsed
 		}
 
 		if (isAction(node)) {
-			console.log('action', id, node.spec)
+			console.log('action', id, node.spec.meta.name, node.spec.meta.version)
 			nodes.push({
 				id,
 				type: 'action-node',

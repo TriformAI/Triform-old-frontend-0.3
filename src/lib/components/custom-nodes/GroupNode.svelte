@@ -41,6 +41,7 @@
 			<span
 				class="
 					flex-shrink-0 w-max text-[8px] font-bold transition bg-zinc-900/50 backdrop-blur-sm px-5 rounded h-fit -mt-4
+					border border-zinc-600/10
 					{selected ? 'text-slate-200' : 'text-slate-300'}
 				"
 			>
