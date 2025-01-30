@@ -6,9 +6,9 @@ export type { Uuid }
  * based on the following commit:
  *
  * Repo: agent-worker
- * Branch: HEAD -> tri-231/refactoring, origin/tri-231/refactoring
- * Commit Hash: 6c20c0e0b179daf10906dd8a652084dcd865d551
- * Date: Mon Jan 27 18:09:38 2025 +0200
+ * Branch: HEAD -> new-schema
+ * Commit Hash: 1ef2f3200f126e1ebad38031b7683d4718db0b0c
+ * Date: Fri Jan 24 09:13:38 2025 +0100
  * */
 
 /* eslint-disable */
