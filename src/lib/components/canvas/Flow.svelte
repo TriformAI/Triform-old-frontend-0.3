@@ -11,7 +11,7 @@
 
 	import { writable } from 'svelte/store'
 	import { onMount, untrack } from 'svelte'
-	import { SvelteFlow, Background, BackgroundVariant } from '@xyflow/svelte'
+	import { SvelteFlow, Background, BackgroundVariant, useUpdateNodeInternals } from '@xyflow/svelte'
 
 	import { menuIsOpen, toggleMenu } from '$lib/stores/contextMenu.svelte'
 
@@ -39,16 +39,21 @@
 
 	const { canvas, openAgents }: { canvas: Canvas; openAgents: OpenAgents } = $props()
 
+	const updateNodeInternals = useUpdateNodeInternals()
+
 	$effect(() => {
-		nodes.set([])
-		edges.set([])
 		if (!canvas) return
 
+		console.time('parse agent')
 		let { nodes: nodesData, edges: edgesData } = parseAgent(canvas.resource)
+		console.timeEnd('parse agent')
+
+		console.log('edges', edgesData)
 
 		// Used to get effect to trigger on canvas.resource change
 		const ref = canvas.resource
 		untrack(async () => {
+			
 			nodesData = nodesData.map(node => {
 				if (node.type === 'action-node') {
 					node.data.files = undefined
@@ -62,10 +67,15 @@
 				return node
 			})
 
+			console.time('layout')
 			const layoutedNodes = await getLayoutedNodes(nodesData, edgesData)
+			console.timeEnd('layout')
 
 			nodes.set(layoutedNodes)
 			edges.set(edgesData)
+
+			// TODO: smartly update only the modified nodes
+			updateNodeInternals(nodesData.map(n => n.id))
 		})
 	})
 
