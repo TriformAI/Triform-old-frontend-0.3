@@ -16,28 +16,32 @@ let elk: ELKType
 
 const buildElkTree = (allNodes: Node[]): ElkNode[] => {
 	// First get all root nodes (nodes without a parent)
-	const rootNodes = allNodes.filter(node => !node.parentId);
-	
+	const rootNodes = allNodes.filter(node => !node.parentId)
+
 	// Then build the tree recursively starting from root nodes
 	const buildTree = (nodes: Node[]): ElkNode[] => {
-			return nodes.map(node => {
-					const children = allNodes.filter(n => n.parentId === node.id);
-					const nodeSize = 44;
-					return {
-							id: node.id,
-							width: nodeSize,
-							height: nodeSize,
-							layoutOptions: elkSettings,
-							children: buildTree(children)
-					}
-			});
-	};
+		return nodes.map(node => {
+			const children = allNodes.filter(n => n.parentId === node.id)
+			const nodeSize = 44
+			return {
+				id: node.id,
+				width: nodeSize,
+				height: nodeSize,
+				layoutOptions: elkSettings,
+				children: buildTree(children)
+			}
+		})
+	}
 
-	return buildTree(rootNodes);
-};
+	return buildTree(rootNodes)
+}
 
 // Calculate the group dimensions by laying out all children
-const calculateGroupDimensions = async (node: ElkNode, childNodes: ElkNode[], edges: Edge[]): Promise<{
+const calculateGroupDimensions = async (
+	node: ElkNode,
+	childNodes: ElkNode[],
+	edges: Edge[]
+): Promise<{
 	width: number
 	height: number
 }> => {
@@ -67,7 +71,9 @@ const updateGroupSizes = async (node: ElkNode, edges: Edge[]): Promise<ElkNode> 
 	if (!node.children?.length) return node
 
 	// Process children first
-	const processedChildren = await Promise.all(node.children.map(async n => await updateGroupSizes(n, edges)))
+	const processedChildren = await Promise.all(
+		node.children.map(async n => await updateGroupSizes(n, edges))
+	)
 
 	// Calculate the new dimensions once the children have been processed
 	const { width, height } = await calculateGroupDimensions(node, processedChildren, edges)
@@ -80,9 +86,8 @@ const updateGroupSizes = async (node: ElkNode, edges: Edge[]): Promise<ElkNode> 
 	}
 }
 
-const flattenElkTree = (node: ElkNode): ElkNode[] => node.children?.length
-	? [node, ...node.children.flatMap(flattenElkTree)]
-	: [node]
+const flattenElkTree = (node: ElkNode): ElkNode[] =>
+	node.children?.length ? [node, ...node.children.flatMap(flattenElkTree)] : [node]
 
 export const getLayoutedNodes = async (nodes: Node[], edges: Edge[]) => {
 	// Elk instance needs to be created on the client
@@ -113,11 +118,9 @@ export const getLayoutedNodes = async (nodes: Node[], edges: Edge[]) => {
 	const layout = await elk.layout(graph)
 	console.timeEnd('layout elk')
 	console.time('flatten elk tree')
-	const flattenedTree = flattenElkTree(layout).filter(n => n.id !== 'root')
+	const flattenedTree = flattenElkTree(layout).filter(n => n.id !== 'root') ?? []
 	console.timeEnd('flatten elk tree')
-	// For some reason the layout returns all children instead of just the first level
-	// No idea why but I guess you shouldn't look a gift horse in the mouth, or something
-	const layoutedNodes: Node[] = (flattenedTree ?? []).map(n => {
+	const layoutedNodes: Node[] = flattenedTree.map(n => {
 		const node = nodes.find(node => node.id === n.id)
 		if (!node) throw new Error('Could not find node with id ' + n.id)
 

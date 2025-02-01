@@ -8,11 +8,7 @@
 		loadWindowsFromLocalStorage,
 		removeLocalStorageListener
 	} from '$lib/stores/windows.svelte'
-	import {
-		loadAgent,
-		canvasStore,
-		openAgents
-	} from '$lib/stores/canvas.svelte'
+	import { loadAgent, canvasStore, openAgents } from '$lib/stores/canvas.svelte'
 
 	import type { Agent } from '$lib/types/agent'
 

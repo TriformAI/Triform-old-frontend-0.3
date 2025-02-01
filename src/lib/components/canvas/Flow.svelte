@@ -53,7 +53,6 @@
 		// Used to get effect to trigger on canvas.resource change
 		const ref = canvas.resource
 		untrack(async () => {
-			
 			nodesData = nodesData.map(node => {
 				if (node.type === 'action-node') {
 					node.data.files = undefined

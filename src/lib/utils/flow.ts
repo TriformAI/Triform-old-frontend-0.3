@@ -14,9 +14,9 @@ function getParams(nodeA: InternalNode, nodeB: InternalNode): [number, number, P
 
 	// By multiplying the horizontalDiff we prefer vertical edges over horizontal oens
 	if (horizontalDiff * 0.6 > verticalDiff) {
-			position = centerA.x > centerB.x ? Position.Left : Position.Right
+		position = centerA.x > centerB.x ? Position.Left : Position.Right
 	} else {
-			position = centerA.y > centerB.y ? Position.Top : Position.Bottom
+		position = centerA.y > centerB.y ? Position.Top : Position.Bottom
 	}
 
 	const [x, y] = getHandleCoordsByPosition(nodeA, position)

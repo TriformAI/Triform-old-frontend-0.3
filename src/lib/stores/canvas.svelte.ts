@@ -1,5 +1,5 @@
 import type {
-	Node as TriNode, // as to not conflict with @xyflow/svelte 
+	Node as TriNode, // as to not conflict with @xyflow/svelte
 	Agent,
 	Action,
 	Uuid
@@ -23,8 +23,10 @@ export interface OpenAgents {
 	[key: string]: boolean
 }
 
-const isAction = (node: TriNode): node is TriNode & { spec: Action } => node.spec.resource === 'action/v1'
-const isAgent = (node: TriNode): node is TriNode & { spec: Agent } => node.spec.resource === 'agent/v1'
+const isAction = (node: TriNode): node is TriNode & { spec: Action } =>
+	node.spec.resource === 'action/v1'
+const isAgent = (node: TriNode): node is TriNode & { spec: Agent } =>
+	node.spec.resource === 'agent/v1'
 
 export const parseAgent = (agent: Agent, parentId?: Uuid, nodeId?: Uuid): ParsedGraph => {
 	const nodes: Node[] = []
@@ -63,7 +65,7 @@ export const parseAgent = (agent: Agent, parentId?: Uuid, nodeId?: Uuid): Parsed
 		for (const input of node.inputs ?? []) {
 			if (input === 'parent') continue
 			edges.push({
-				id: `${id}-${input}`,
+				id: `${id}:${input}`,
 				source: input,
 				target: id,
 				type: 'floating'

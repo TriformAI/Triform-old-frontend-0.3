@@ -27,12 +27,10 @@ export const publishAction = async (action: Action) => {
 
 export const runAgent = async (fullAgent: Agent, input: unknown) => {
 	// const agent = JSON.parse(JSON.stringify(fullAgent))
-
 	// // Remove the spec of all actions
 	// await new Promise<ResourceV1>(resolve =>
 	// 	processResource(agent, (resource: ActionResource) => delete resource.spec, resolve)
 	// )
-
 	// // Construct the actual invocation request
 	// const invocation = {
 	// 	resource: 'invocation',
@@ -49,6 +47,5 @@ export const runAgent = async (fullAgent: Agent, input: unknown) => {
 	// 	},
 	// 	body: JSON.stringify(invocation)
 	// })
-
 	// return await res.json()
 }
