@@ -12,12 +12,11 @@ function getParams(nodeA: InternalNode, nodeB: InternalNode): [number, number, P
 
 	let position: Position
 
-	// when the horizontal difference between the nodes is bigger, we use Position.Left or Position.Right for the handle
-	if (horizontalDiff > verticalDiff) {
-		position = centerA.x > centerB.x ? Position.Left : Position.Right
+	// By multiplying the horizontalDiff we prefer vertical edges over horizontal oens
+	if (horizontalDiff * 0.6 > verticalDiff) {
+			position = centerA.x > centerB.x ? Position.Left : Position.Right
 	} else {
-		// here the vertical difference between the nodes is bigger, so we use Position.Top or Position.Bottom for the handle
-		position = centerA.y > centerB.y ? Position.Top : Position.Bottom
+			position = centerA.y > centerB.y ? Position.Top : Position.Bottom
 	}
 
 	const [x, y] = getHandleCoordsByPosition(nodeA, position)
