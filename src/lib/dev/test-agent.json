@@ -137,6 +137,71 @@
             "outputs": ["1cc14653-dac4-41f1-8277-69b596713455"]
           }
         }
+      },
+      "7bf95543-9ba5-486c-9312-9ace669cc047": {
+        "component_id": "2770d0a5-a4de-48b6-8982-edfdb712764b",
+        "component_version": 1,
+        "inputs": [
+          "20238c14-764b-4172-9692-b9b34be984c5"
+        ],
+        "spec": {
+          "resource": "agent/v1",
+          "meta": {
+            "name": "Nested agent 1.1",
+            "id": "3eb08c7f-04b9-443f-8e83-e6ff0f239eb3",
+            "version": 1
+          },
+          "spec": {
+            "readme": "Nested agent 1.1",
+            "nodes": {
+              "7cc57cb7-4c86-4037-9e92-7482b0fc33f8": {
+                "component_id": "2c63901f-3f4e-431d-a1e8-ea2abbf6b8b4",
+                "component_version": 1,
+                "inputs": [
+                  "parent"
+                ],
+                "spec": {
+                  "resource": "action/v1",
+                  "meta": {
+                    "name": "Plus one",
+                    "id": "2c63901f-3f4e-431d-a1e8-ea2abbf6b8b4",
+                    "version": 1
+                  },
+                  "spec": {
+                    "source": "@triform.entrypoint\ndef action(input):\n    return {'sum': input['sum']+1}",
+                    "readme": "This action adds one to the sum of the input",
+                    "deps": "",
+                    "checksum": "",
+                    "streaming": false
+                  }
+                }
+              },
+              "d1560637-7a97-4329-a1bd-803127dbe226": {
+                "component_id": "2c63901f-3f4e-431d-a1e8-ea2abbf6b8b4",
+                "component_version": 1,
+                "inputs": [
+                  "7cc57cb7-4c86-4037-9e92-7482b0fc33f8"
+                ],
+                "spec": {
+                  "resource": "action/v1",
+                  "meta": {
+                    "name": "Plus one",
+                    "id": "2c63901f-3f4e-431d-a1e8-ea2abbf6b8b4",
+                    "version": 1
+                  },
+                  "spec": {
+                    "source": "@triform.entrypoint\ndef action(input):\n    return {'sum': input['sum']+1}",
+                    "readme": "This action adds one to the sum of the input",
+                    "deps": "",
+                    "checksum": "",
+                    "streaming": false
+                  }
+                }
+              }
+            },
+            "outputs": ["1cc14653-dac4-41f1-8277-69b596713455"]
+          }
+        }
       }
     },
     "outputs": [
