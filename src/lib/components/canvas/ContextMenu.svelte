@@ -1,6 +1,5 @@
 <script lang="ts">
-	import type { Node } from '@xyflow/svelte'
-	import type { NodeType } from '$lib/stores/contextMenu.svelte'
+	import type { Node, NodeType } from '$lib/types/flow'
 
 	import { contextMenus, menuIsOpen, toggleMenu } from '$lib/stores/contextMenu.svelte'
 
@@ -20,7 +19,7 @@
 		bottom: number
 	} = $props()
 
-	const items = contextMenus.get(node?.type as NodeType) || []
+	const items = contextMenus.get(node?.type as NodeType) ?? []
 
 	let element: HTMLElement
 

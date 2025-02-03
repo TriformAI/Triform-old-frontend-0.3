@@ -1,13 +1,12 @@
 import { SvelteMap } from 'svelte/reactivity'
 
-import type { Node } from '@xyflow/svelte'
+import type { Node, NodeType } from '$lib/types/flow'
 
 import { openWindow } from './windows.svelte'
 import { openAgents } from './canvas.svelte'
 
 import CodeEditorWindow from '$lib/components/windows/CodeEditorWindow.svelte'
 
-export type NodeType = 'action-node' | 'agent-node' | 'api-node'
 export interface ContextMenuItem {
 	label: string
 	onClick: (node?: Node) => void

@@ -1,7 +1,5 @@
 <script lang="ts">
-	import type { NodeData } from '$lib/types/flow'
-	import type { Node } from '@xyflow/svelte'
-	import type { NodeType } from '$lib/stores/contextMenu.svelte'
+	import type { NodeData, Node, NodeType } from '$lib/types/flow'
 	import { onMount, type Snippet } from 'svelte'
 
 	import { Position, useNodes } from '@xyflow/svelte'

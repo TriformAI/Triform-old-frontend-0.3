@@ -4,7 +4,8 @@ import type {
 	Action,
 	Uuid
 } from '$lib/types/agent'
-import type { Edge, Node } from '@xyflow/svelte'
+import type { Node } from '$lib/types/flow'
+import type { Edge } from '@xyflow/svelte'
 export type ParsedGraph = {
 	nodes: Node[]
 	edges: Edge[]
@@ -46,10 +47,8 @@ export const parseAgent = (agent: Agent, parentId?: Uuid, nodeId?: Uuid): Parsed
 		parentId,
 		extent: parentId ? 'parent' : undefined,
 		data: {
-			name: agent.meta.name,
-			version: agent.meta.version,
-			id: agentId,
-			spec: agent.spec,
+			spec: agent,
+			component_name: agent.meta.name,
 			// TODO: these should be component-specific (I think)
 			component_id: agent.meta.id,
 			component_version: agent.meta.version
@@ -82,11 +81,10 @@ export const parseAgent = (agent: Agent, parentId?: Uuid, nodeId?: Uuid): Parsed
 				extent: isOpen ? 'parent' : undefined,
 				position: { x: 0, y: 0 },
 				data: {
-					name: node.spec.meta.name,
-					version: node.spec.meta.version,
 					spec: node.spec,
+					component_name: node.spec.meta.name,
 					component_id: node.component_id,
-					component_version: node.component_version
+					component_version: node.component_version ?? -1
 				}
 			})
 		} else if (isAgent(node)) {

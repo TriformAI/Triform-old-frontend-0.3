@@ -1,4 +1,5 @@
-import type { Edge, Node } from '@xyflow/svelte'
+import type { Node } from '$lib/types/flow'
+import type { Edge } from '@xyflow/svelte'
 import type { ElkNode, ELK as ELKType } from 'elkjs'
 
 import ELK from 'elkjs'

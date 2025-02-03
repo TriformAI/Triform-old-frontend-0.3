@@ -1,6 +1,7 @@
 <script lang="ts">
 	import type { Canvas, OpenAgents } from '$lib/stores/canvas.svelte'
-	import type { Node, Edge, NodeTypes, EdgeTypes } from '@xyflow/svelte'
+	import type { Node } from '$lib/types/flow'
+	import type { Edge, NodeTypes, EdgeTypes } from '@xyflow/svelte'
 
 	import ActionNode from '$lib/components/custom-nodes/ActionNode.svelte'
 	import AgentNode from '$lib/components/custom-nodes/AgentNode.svelte'
