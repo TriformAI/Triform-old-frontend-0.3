@@ -1,9 +1,10 @@
 import { SvelteMap } from 'svelte/reactivity'
 
 import type { Node, NodeType } from '$lib/types/flow'
+import type { Uuid } from '$lib/types/agent'
 
 import { openWindow } from './windows.svelte'
-import { openAgents } from './canvas.svelte'
+import { canvasStore } from './canvas.svelte'
 
 import CodeEditorWindow from '$lib/components/windows/CodeEditorWindow.svelte'
 
@@ -55,7 +56,7 @@ contextMenus.set('agent-node', [
 		label: 'Expand',
 		onClick: (node?: Node) => {
 			if (!node) return
-			openAgents[node.id] = true // Expand agent
+			canvasStore[0].openAgents.add(node.id as Uuid) // Expand agent
 		}
 	},
 	{

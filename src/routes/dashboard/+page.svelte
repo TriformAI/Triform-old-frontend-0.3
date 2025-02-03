@@ -8,7 +8,7 @@
 		loadWindowsFromLocalStorage,
 		removeLocalStorageListener
 	} from '$lib/stores/windows.svelte'
-	import { loadAgent, canvasStore, openAgents } from '$lib/stores/canvas.svelte'
+	import { loadAgent, canvasStore } from '$lib/stores/canvas.svelte'
 
 	import type { Agent } from '$lib/types/agent'
 
@@ -34,7 +34,6 @@
 	})
 
 	const activeCanvas = $derived(canvasStore[0])
-	const openCanvasAgents = $derived(openAgents)
 
 	onMount(() => {
 		loadWindowsFromLocalStorage()
@@ -53,5 +52,5 @@
 
 	<ShareCanvasModal />
 
-	<Flow canvas={activeCanvas} openAgents={openCanvasAgents} />
+	<Flow canvas={activeCanvas} />
 </section>

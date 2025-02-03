@@ -1,6 +1,6 @@
 <script lang="ts">
-	import type { Canvas, OpenAgents } from '$lib/stores/canvas.svelte'
-	import type { Node } from '$lib/types/flow'
+	import type { Canvas } from '$lib/stores/canvas.svelte'
+	import type { Node, Uuid } from '$lib/types/flow'
 	import type { Edge, NodeTypes, EdgeTypes } from '@xyflow/svelte'
 
 	import ActionNode from '$lib/components/custom-nodes/ActionNode.svelte'
@@ -43,7 +43,7 @@
 	const nodes = writable<Node[]>([])
 	const edges = writable<Edge[]>([])
 
-	const { canvas, openAgents }: { canvas: Canvas; openAgents: OpenAgents } = $props()
+	const { canvas }: { canvas: Canvas } = $props()
 
 	const updateNodeInternals = useUpdateNodeInternals()
 
@@ -63,9 +63,9 @@
 				if (node.type === 'action-node') {
 					node.data.files = undefined
 				} else if (node.type === 'agent-node') {
-					node.data.onOpen = () => (openAgents[node.id] = true)
+					node.data.onOpen = () => canvas.openAgents.add(node.id as Uuid)
 				} else if (node.type === 'open-agent-node') {
-					node.data.onOpen = () => (openAgents[node.id] = false)
+					node.data.onOpen = () => canvas.openAgents.delete(node.id as Uuid)
 					node.width = 400
 					node.height = 400
 				} else throw new Error('unknown node type ' + node.type)

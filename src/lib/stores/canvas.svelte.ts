@@ -7,6 +7,8 @@ import type {
 import type { Node } from '$lib/types/flow'
 import type { Edge } from '@xyflow/svelte'
 
+import { SvelteSet } from 'svelte/reactivity'
+
 export type ParsedGraph = {
 	nodes: Node[]
 	edges: Edge[]
@@ -16,13 +18,10 @@ export type ParsedGraph = {
 // The agent can have nested agents and actions, in sequence or parallel
 export interface Canvas {
 	resource: Agent
+	openAgents: SvelteSet<Uuid>
 	// For when we want multiple tabs:
 	// id: string,
 	// label: string,
-}
-
-export interface OpenAgents {
-	[key: string]: boolean
 }
 
 const isAction = (node: TriNode): node is TriNode & { spec: Action } =>
@@ -38,7 +37,7 @@ export const parseAgent = (agent: Agent, parentId?: Uuid, nodeId?: Uuid): Parsed
 
 	// Push the parent agent node
 	const agentId = nodeId ?? agent.meta.id
-	const isOpen = openAgents[agentId]
+	const isOpen = canvasStore[0].openAgents.has(agentId)
 	nodes.push({
 		// NodeId is the id of the actual node, it's onl specified for agents that are
 		// nested within another agent
@@ -102,14 +101,15 @@ export const parseAgent = (agent: Agent, parentId?: Uuid, nodeId?: Uuid): Parsed
 
 export const canvasStore = $state<Canvas[]>([])
 
-export const openAgents = $state<OpenAgents>({ test_agent: false })
-
 // TODO: type this properly
 export const loadAgent = (resource: Agent) => {
 	// Since we only support one tab for now, replace the entire store
 	canvasStore.length = 0
 
-	canvasStore.push({ resource })
+	canvasStore.push({
+		resource,
+		openAgents: new SvelteSet()
+	})
 
 	console.log('Loaded resource', resource)
 }
