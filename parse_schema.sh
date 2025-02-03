@@ -33,9 +33,10 @@ cat "$SCRIPT_DIR/$SCHEMA_LOCATION" |
   # add --unreachableDefinitions if needed
   bunx json2ts >> "$SCRIPT_DIR/$TYPES_OUTPUT"
 
-# Inject the UUID type after the last comment block (*/)
-sed -i '/\/\*/ a\import type { UUID as Uuid } from "crypto" \
+# Inject the UUID type and some other nice to have types after the eslint disable comment
+sed -i '/\/\* eslint-disable \*\// a\import type { UUID as Uuid } from "crypto" \
 export type { Uuid } \
+export type Component = Action | Agent \
 ' "$SCRIPT_DIR/$TYPES_OUTPUT"
 # Remove the old export type Uuid line
 sed -i '/export type Uuid/d' "$SCRIPT_DIR/$TYPES_OUTPUT"

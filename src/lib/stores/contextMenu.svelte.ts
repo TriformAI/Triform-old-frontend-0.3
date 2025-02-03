@@ -28,22 +28,20 @@ contextMenus.set('action-node', [
 		label: 'Edit',
 		onClick: (node?: Node) => {
 			if (!node) return
-			// const action = actionsStore().filter(a => a.key === node.id)[0]
-			// if (!action) return console.error('Could not find action with key', node.id)
-			// openWindow({
-			// 	id: `code-editor-action-${action.key}`,
-			// 	component: CodeEditorWindow,
-			// 	posX: 20,
-			// 	posY: 20,
-			// 	customProps: {
-			// 		files: {
-			// 			'action.py': action.spec?.action?.source,
-			// 			'README.md': action.spec?.action?.readme,
-			// 			'requirements.txt': action.spec?.action?.deps
-			// 		},
-			// 		actionKey: action.key
-			// 	}
-			// })
+			openWindow({
+				id: `code-editor-action-${node.id}`,
+				component: CodeEditorWindow,
+				posX: 20,
+				posY: 20,
+				customProps: {
+					files: {
+						'action.py': node.data.spec.spec.source,
+						'README.md': node.data.spec.spec.readme,
+						'requirements.txt': node.data.spec.spec.deps
+					},
+					node
+				}
+			})
 		}
 	},
 	{

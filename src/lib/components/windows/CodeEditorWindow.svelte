@@ -6,13 +6,27 @@
 
 	import IconDatabaseUpload from '~icons/material-symbols/database-upload-rounded'
 
-	import { publishAction } from '$lib/actions/executor'
-	import { canvasStore } from '$lib/stores/canvas.svelte'
+	import { publishComponent } from '$lib/actions/executor'
+
+	import type { Node } from '$lib/types/flow'
 
 	// Props passed to the component
 	const props = $props()
 	const {
-		customProps: { files, actionKey }
+		customProps: {
+			files,
+			node
+		}
+	}: {
+		customProps: {
+			files: {
+				'action.py': string
+				'README.md': string
+				'requirements.txt': string
+				[k: string]: string
+			}
+			node: Node
+		}
 	} = props
 
 	// Get the keys from customProps as dynamic tabs
@@ -52,9 +66,8 @@
 
 	const publish = async () => {
 		console.log('publishing')
-		// const action = actionsStore().filter(a => a.key === actionKey)[0]
-		// const newAction = await publishAction(action)
-		// console.log('new action', newAction)
+		const newComponent = await publishComponent(node.data.spec)
+		console.log('new component', newComponent)
 	}
 </script>
 

@@ -6,6 +6,7 @@ import type {
 } from '$lib/types/agent'
 import type { Node } from '$lib/types/flow'
 import type { Edge } from '@xyflow/svelte'
+
 export type ParsedGraph = {
 	nodes: Node[]
 	edges: Edge[]
@@ -99,41 +100,9 @@ export const parseAgent = (agent: Agent, parentId?: Uuid, nodeId?: Uuid): Parsed
 	return { nodes, edges }
 }
 
-// Processes each action recursively one by one
-// Once the new schema is out we shouldn't need this function anymore
-// export const processResource = (
-// 	resource: ResourceV1,
-// 	fn: (resource: ActionResource) => void,
-// 	callback?: (resource: ResourceV1) => void
-// ) => {
-// 	// The statements needs to be processed recursively indepedently
-// 	const processStatement = (statement: StatementV1) => {
-// 		if (isSequence(statement)) for (const el of statement.sequence) processStatement(el)
-// 		else if (isParallel(statement)) for (const el of statement.parallel) processStatement(el)
-// 		else if (isResource(statement)) processResource(statement, fn)
-// 	}
-// 	// Agents can have nested agents and actions, in sequence or parallel
-// 	if (isAgent(resource)) processStatement(resource.spec.agent)
-// 	// An action is the final base case, so it can only have code
-// 	// and no nested resources
-// 	if (isAction(resource)) fn(resource)
-// 	// Once we've done everything up until this point we're done
-// 	// (only the top call to processStatement will have a callback)
-// 	callback?.(resource)
-// }
-
 export const canvasStore = $state<Canvas[]>([])
 
 export const openAgents = $state<OpenAgents>({ test_agent: false })
-
-// Extract all actions from the resource
-// const actionsStoreState = $derived.by<Action[]>(() => {
-// 	const actions: Action[] = []
-// 	if (!canvasStore[0]) return actions
-// 	processResource(canvasStore[0].resource, resource => actions.push(resource))
-// 	return actions
-// })
-// export const actionsStore = () => actionsStoreState
 
 // TODO: type this properly
 export const loadAgent = (resource: Agent) => {
@@ -145,25 +114,33 @@ export const loadAgent = (resource: Agent) => {
 	console.log('Loaded resource', resource)
 }
 
-// TODO: implement
-export const updateAction = async (action: Action) => {
-	// const store = $state.snapshot(canvasStore)
-	// let newAction = action
-	// await new Promise<StatementV1>(resolve =>
-	// 	processResource(
-	// 		store[0].resource,
-	// 		(resource: ActionResource) => {
-	// 			if (resource.key === action.key) {
-	// 				Object.assign(resource, action)
-	// 				newAction = Object.assign({}, resource, action)
-	// 			}
-	// 		},
-	// 		resolve
-	// 	)
-	// )
-	// // Update the canvas store again
-	// // not perfect but good enough for the poc, we'll have
-	// // to change it when we add more canvases either way
-	// loadResource(store[0].resource)
-	return action
+// Generic function for applying a function to some node in the canvas
+const processNode = async (id: Uuid, fn: (node: TriNode) => Promise<TriNode | undefined>) => {
+	let updatedNode: TriNode | undefined = undefined
+	const process = async (node: TriNode, nodeId: Uuid) => {
+		if (nodeId === id) {
+			Object.assign(node, await fn(node))
+			updatedNode = node
+			return
+		}
+
+		if (isAgent(node)) {
+			if (!('spec' in node)) return
+			for (const [childId, child] of Object.entries(node.spec.spec.nodes)) await process(child, childId as Uuid)
+		}
+		// Currently we only support updating children of agents so don't do anything else here
+	}
+
+	// The top level node is always an agent
+	for (const [nodeId, node] of Object.entries(canvasStore[0].resource.spec.nodes)) {
+		await process(node, nodeId as Uuid)
+	}
+	return updatedNode
+}
+
+export const updateNode = async (id: Uuid, updatedNode: TriNode) => await processNode(id, async () => updatedNode)
+
+// Adds a child node to a specific parent node
+export const addChild = (parentId: Uuid, child: TriNode) => {
+
 }

@@ -1,28 +1,26 @@
-import { updateAction } from '$lib/stores/canvas.svelte'
-import type { Action, Agent } from '$lib/types/agent'
+import type {
+	Agent,
+	Component
+} from '$lib/types/agent'
 
-export const publishAction = async (action: Action) => {
-	console.log('publishing action', action)
-	const res = await fetch('https://triform.arcticmarinesolutions.se/v1/action', {
-		method: 'POST',
+const baseUrl = `${import.meta.env.VITE_TRICORE_URL}/v1`
+
+export const publishComponent = async (component: Component) => {
+	console.log('publishing component', component)
+	const res = await fetch(`${baseUrl}/component/publish/${component.meta.id}`, {
+		method: 'PUT',
 		headers: {
 			'Content-Type': 'application/json'
 		},
-		body: JSON.stringify(action.spec)
+		body: JSON.stringify(component)
 	})
-	const newSpec = await res.json()
-	console.log(newSpec)
-	// The return value from the api doesn't include the key, so we
-	// need to add the key from the current action
-	return await updateAction(
-		Object.assign(action, {
-			id: newSpec.id,
-			spec: {
-				...action.spec,
-				...newSpec
-			}
-		})
-	)
+	const updatedComponent = await res.json()
+	console.log('published component', updatedComponent)
+	return updatedComponent
+}
+
+export const saveComponent = async (component: Component) => {
+	
 }
 
 export const runAgent = async (fullAgent: Agent, input: unknown) => {
