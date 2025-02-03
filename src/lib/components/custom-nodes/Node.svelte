@@ -68,13 +68,13 @@
 				<span class="block transition {selected ? 'text-slate-300' : 'text-slate-400'}">
 					v{data.component_version}
 				</span>
-				<span
+				<!-- <span
 					class="block transition text-[6px] font-normal italic {selected
 						? 'text-slate-400'
 						: 'text-slate-500'}"
 				>
 					{data.component_id}
-				</span>
+				</span> -->
 			</span>
 			<button
 				class="
