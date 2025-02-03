@@ -9,10 +9,15 @@
 	import ApiNode from '$lib/components/custom-nodes/ApiNode.svelte'
 	import FloatingEdge from './FloatingEdge.svelte'
 	import ContextMenu from './ContextMenu.svelte'
-
 	import { writable } from 'svelte/store'
 	import { onMount, untrack } from 'svelte'
-	import { SvelteFlow, Background, BackgroundVariant, useUpdateNodeInternals } from '@xyflow/svelte'
+	import {
+		SvelteFlow,
+		Background,
+		BackgroundVariant,
+		useUpdateNodeInternals,
+		useSvelteFlow
+	} from '@xyflow/svelte'
 
 	import { menuIsOpen, toggleMenu } from '$lib/stores/contextMenu.svelte'
 
@@ -34,7 +39,7 @@
 		// @ts-expect-error type issue, not crucial but should probs be fixed
 		floating: FloatingEdge
 	}
-
+	const { screenToFlowPosition } = useSvelteFlow()
 	const nodes = writable<Node[]>([])
 	const edges = writable<Edge[]>([])
 
@@ -123,9 +128,50 @@
 		}
 		toggleMenu(true)
 	}
+
+	function handleDragOver(event: DragEvent) {
+		event.preventDefault() // Allows dropping
+	}
+
+	function handleDrop(event: DragEvent) {
+		event.preventDefault()
+		const data = event.dataTransfer?.getData('application/json')
+		const position = screenToFlowPosition({
+			x: event.clientX,
+			y: event.clientY
+		})
+
+		if (data) {
+			const { type, item } = JSON.parse(data)
+
+			//create node
+			const newNode = {
+				id: item.meta.id,
+				type: type,
+				position,
+				data: {
+					name: item.meta.name,
+					version: item.meta.version,
+					spec: item,
+					component_id: item.meta.id,
+					component_version: item.meta.version
+				},
+				origin: [0.5, 0.0]
+			} satisfies Node
+
+			$nodes.push(newNode)
+			$nodes = $nodes
+		}
+	}
 </script>
 
-<div class="relative w-full h-full" bind:this={wrapper}>
+<div
+	class="relative w-full h-full"
+	bind:this={wrapper}
+	ondragover={handleDragOver}
+	ondrop={handleDrop}
+	role="application"
+>
 	<SvelteFlow
 		{nodes}
 		{edges}

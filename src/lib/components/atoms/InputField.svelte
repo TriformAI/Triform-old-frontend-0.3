@@ -21,11 +21,6 @@
 		{type}
 		{placeholder}
 		bind:value
-		class="
-      w-full px-5 py-3 bg-transparent
-      text-slate-200 transition
-      outline-none
-      border rounded-md border-zinc-700 hover:border-zinc-600 focus:border-zinc-500
-    "
+		class="w-full px-5 py-3 transition bg-transparent border rounded-md outline-none text-slate-200 border-zinc-700 hover:border-zinc-600 focus:border-zinc-500"
 	/>
 </div>

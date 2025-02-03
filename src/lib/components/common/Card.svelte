@@ -57,7 +57,7 @@
 			</button>
 		{/if}
 	</div>
-	<div class="p-5">
+	<div class="p-3">
 		{@render body()}
 	</div>
 	{#if footer}
