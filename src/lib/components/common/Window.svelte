@@ -96,7 +96,12 @@
 			for (const entry of entries) {
 				const { width: newWidth, height: newHeight } = entry.contentRect
 
-				// Only update dimensions after the user resizes
+				// Ignore insignificant changes caused by the dropdown
+				if (Math.abs(newWidth - width) < 10 && Math.abs(newHeight - height) < 10) {
+					continue
+				}
+
+				// Update only if the window is actually being resized
 				if (!hasResized) {
 					hasResized = true
 				}
@@ -123,15 +128,16 @@
 </script>
 
 <div
-	class={`resize overflow-auto absolute ${
-		isDragging ? 'shadow-lg scale-[1.015]' : 'scale-100'
-	} transform transition`}
+	class="absolute overflow-auto resize"
 	style={`
-    top: ${posY}%;
-    left: ${posX}%;
-    z-index: ${zIndex};
-    ${hasResized ? `width: ${width}px; height: ${height}px; min-width: 18rem; min-height: 14em;` : 'width: auto; height: auto;'}
-  `}
+		top: ${posY}%;
+		left: ${posX}%;
+		z-index: ${zIndex};
+		width: ${hasResized ? `${width}px` : 'auto'};
+		height: ${hasResized ? `${height}px` : 'auto'};
+		min-width: 18rem;
+		min-height: 14em;
+	`}
 	bind:this={element}
 >
 	<Card {header} {body} {footer} {onClose} {onDragStart} {onDragEnd} />

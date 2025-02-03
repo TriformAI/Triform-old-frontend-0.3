@@ -6,6 +6,9 @@
 	import Modal from '../common/Modal.svelte'
 	import { ModalId } from '$lib/stores/modals.svelte'
 	import Select from '../atoms/Select.svelte'
+	import { T, getTranslate } from '@tolgee/svelte'
+	const { t } = getTranslate()
+	import InputField from '../atoms/InputField.svelte'
 
 	const id = ModalId.ShareCanvas
 
@@ -29,7 +32,7 @@
 
 <Modal {id}>
 	{#snippet header()}
-		Share Canvas
+		<T keyName="share-canvas-button" defaultValue="Share Canvas" />
 	{/snippet}
 
 	{#snippet body()}
@@ -51,19 +54,18 @@
 						d="M15.75 17.25v3.375c0 .621-.504 1.125-1.125 1.125h-9.75a1.125 1.125 0 0 1-1.125-1.125V7.875c0-.621.504-1.125 1.125-1.125H6.75a9.06 9.06 0 0 1 1.5.124m7.5 10.376h3.375c.621 0 1.125-.504 1.125-1.125V11.25c0-4.46-3.243-8.161-7.5-8.876a9.06 9.06 0 0 0-1.5-.124H9.375c-.621 0-1.125.504-1.125 1.125v3.5m7.5 10.375H9.375a1.125 1.125 0 0 1-1.125-1.125v-9.25m12 6.625v-1.875a3.375 3.375 0 0 0-3.375-3.375h-1.5a1.125 1.125 0 0 1-1.125-1.125v-1.5a3.375 3.375 0 0 0-3.375-3.375H9.75"
 					/>
 				</svg>
-				<span>Copy Link</span>
+				<T keyName="copy-link-button" defaultValue="Copy Link" />
 			</button>
-			<div class="relative w-full">
-				<input
-					id="invite-link"
+			<div class="relative w-full my-2">
+				<InputField
+					label={$t('invite-input-label', '')}
+					placeholder={$t('invite-input-placeholder', 'Invite users by name or email...')}
 					type="text"
-					placeholder="Invite users by name or email..."
-					class="w-full px-4 py-2.5 text-md bg-[#1D1E1F] border rounded-lg border-brand-primary-gray"
 				/>
 				<button
-					class={`w-fit absolute ml-auto inset-0 px-4 py-2.5 text-md font-medium text-brand-tertiary-gray hover:text-white transition duration-200 ease-in-out border rounded-y-lg rounded-r-lg bg-[#262728] hover:bg-white/10 border-brand-primary-gray`}
+					class={`w-fit absolute ml-auto inset-0 px-4 py-3 text-md font-medium text-brand-tertiary-gray hover:text-white transition duration-200 ease-in-out border rounded-y-lg rounded-r-lg bg-[#262728] hover:bg-white/10 border-brand-primary-gray`}
 				>
-					Invite
+					<T keyName="invite-link-button" defaultValue="Invite" />
 				</button>
 			</div>
 		</div>

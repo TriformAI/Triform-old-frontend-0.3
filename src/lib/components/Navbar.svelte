@@ -8,6 +8,8 @@
 	import { openModal, ModalId } from '$lib/stores/modals.svelte'
 	import { getTolgee } from '@tolgee/svelte'
 
+	import { T } from '@tolgee/svelte'
+
 	const tolgee = getTolgee(['language'])
 	const lang = $derived($tolgee.getLanguage())
 	// todo: add more languages and change the way this language selector works
@@ -18,16 +20,16 @@
 </script>
 
 <nav
-	class="flex items-center justify-between w-full px-8 py-2 bg-zinc-900 border-b border-b-zinc-700"
+	class="flex items-center justify-between w-full px-8 py-2 border-b bg-zinc-900 border-b-zinc-700"
 >
 	<div class="flex items-center overflow-auto gap-x-4">
 		<img alt="triform logo" src={logo} class="relative w-8 lg:w-12" />
 	</div>
 
-	<div class="flex items-center gap-x-5 justify-center">
+	<div class="flex items-center justify-center gap-x-5">
 		<Button onClick={() => openModal(ModalId.ShareCanvas)}>
 			{#snippet body()}
-				Share canvas
+				<T keyName="share-canvas-button" defaultValue="Share Canvas" />
 			{/snippet}
 		</Button>
 

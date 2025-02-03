@@ -9,14 +9,14 @@
 	import { publishComponent } from '$lib/actions/executor'
 
 	import type { Node } from '$lib/types/flow'
+	import Select from '../atoms/Select.svelte'
+
+	import { T } from '@tolgee/svelte'
 
 	// Props passed to the component
 	const props = $props()
 	const {
-		customProps: {
-			files,
-			node
-		}
+		customProps: { files, node }
 	}: {
 		customProps: {
 			files: {
@@ -69,17 +69,29 @@
 		const newComponent = await publishComponent(node.data.spec)
 		console.log('new component', newComponent)
 	}
+
+	//dummy data for testing
+	const options = [
+		{ id: 1, name: 'Wade Cooper' },
+		{ id: 2, name: 'Arlene Mccoy' },
+		{ id: 3, name: 'Devon Webb' },
+		{ id: 4, name: 'Tom Cook' },
+		{ id: 5, name: 'Tanya Fox' }
+	]
+
+	// Variable to keep track of the selected value
+	let selected = $state([])
 </script>
 
 <Window {...props}>
 	{#snippet header()}
-		Code Editor
+		<T keyName="code-editor-header" defaultValue="Code Editor" />
 	{/snippet}
 
 	{#snippet body()}
 		<Tabs {tabs} bind:activeTab />
 
-		<div class="py-4 flex gap-y-4 flex-col">
+		<div class="flex flex-col py-4 gap-y-4">
 			<div class="container-size">
 				{#each tabs as tab}
 					{#if activeTab?.key === tab.key}
@@ -87,14 +99,18 @@
 					{/if}
 				{/each}
 			</div>
-			<Button variation="primary" class="ml-auto" autoLoad={true} onClick={publish}>
-				{#snippet icon()}
-					<IconDatabaseUpload />
-				{/snippet}
-				{#snippet body()}
-					Publish
-				{/snippet}
-			</Button>
+			<div class="flex items-center justify-between">
+				<!-- for testing purpose -->
+				<!-- <Select bind:selected {options} singleValue={false} /> -->
+				<Button variation="primary" class="ml-auto" autoLoad={true} onClick={publish}>
+					{#snippet icon()}
+						<IconDatabaseUpload />
+					{/snippet}
+					{#snippet body()}
+						<T keyName="code-editor-publish-button" defaultValue="Publish" />
+					{/snippet}
+				</Button>
+			</div>
 		</div>
 	{/snippet}
 </Window>
