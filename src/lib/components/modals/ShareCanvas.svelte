@@ -1,16 +1,9 @@
 <script lang="ts">
-	/*
-    Example implementation of the modal component
-  */
-
-	import Modal from '../common/Modal.svelte'
-	import { ModalId } from '$lib/stores/modals.svelte'
 	import Select from '../atoms/Select.svelte'
+	import Card from '$lib/components/common/Card.svelte'
 	import { T, getTranslate } from '@tolgee/svelte'
 	const { t } = getTranslate()
 	import InputField from '../atoms/InputField.svelte'
-
-	const id = ModalId.ShareCanvas
 
 	const options = [
 		{ id: 1, name: 'Wade Cooper' },
@@ -30,7 +23,7 @@
 	$inspect(selected)
 </script>
 
-<Modal {id}>
+<Card>
 	{#snippet header()}
 		<T keyName="share-canvas-button" defaultValue="Share Canvas" />
 	{/snippet}
@@ -93,4 +86,4 @@
 			</div>
 		</div>
 	{/snippet}
-</Modal>
+</Card>

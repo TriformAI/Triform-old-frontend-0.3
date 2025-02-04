@@ -8,6 +8,7 @@
 		loadWindowsFromLocalStorage,
 		removeLocalStorageListener
 	} from '$lib/stores/windows.svelte'
+
 	import { loadAgent, canvasStore } from '$lib/stores/canvas.svelte'
 
 	import type { Agent } from '$lib/types/agent'
@@ -16,9 +17,8 @@
 	// 👇 this is important! You need to import the styles for Svelte Flow to work
 	import '@xyflow/svelte/dist/style.css'
 
-	import ShareCanvasModal from '$lib/components/modals/ShareCanvas.svelte'
-
 	let instance: HTMLElement
+
 	onMount(() => {
 		setMainAreaRef(instance)
 	})
@@ -26,11 +26,9 @@
 	// import testInvocation from '$lib/dev/test-invocation.json'
 	// const invocation = testInvocation
 	import testAgent from '$lib/dev/test-agent.json'
-	onMount(() => {
-		console.log('mount')
-		loadAgent(testAgent as Agent)
 
-		// console.log('actions', actionsStore())
+	onMount(() => {
+		loadAgent(testAgent as Agent)
 	})
 
 	const activeCanvas = $derived(canvasStore[0])
@@ -49,8 +47,6 @@
 		{@const { component: Component, customProps, ...defaultProps } = window}
 		<Component {...defaultProps} {customProps} />
 	{/each}
-
-	<ShareCanvasModal />
 
 	<Flow canvas={activeCanvas} />
 </section>

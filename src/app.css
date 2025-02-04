@@ -11,11 +11,10 @@
 	}
 
 	body {
-		@apply antialiased;
-		overflow: hidden;
+		@apply antialiased overflow-hidden;
 
 		&:has(dialog[open]) {
-			overflow: hidden;
+			@apply overflow-hidden;
 		}
 	}
 

@@ -1,17 +1,20 @@
 <script lang="ts">
-	// @ts-nocheck
 	import logo from '$lib/images/Logo.svg'
-
+	import ShareCanvas from '$lib/components/modals/ShareCanvas.svelte'
 	import Button from '$lib/components/atoms/Button.svelte'
 	import Dropdown from './common/Dropdown.svelte'
-
+	import Dialog from '$lib/components/common/Dialog.svelte'
 	import { openModal, ModalId } from '$lib/stores/modals.svelte'
 	import { getTolgee } from '@tolgee/svelte'
 
 	import { T } from '@tolgee/svelte'
+	import { onMount } from 'svelte'
 
 	const tolgee = getTolgee(['language'])
 	const lang = $derived($tolgee.getLanguage())
+
+	let shareModal = $state<HTMLDialogElement>()
+
 	// todo: add more languages and change the way this language selector works
 	const toggleLanguage = () => {
 		if (lang === 'en') $tolgee.changeLanguage('sv')
@@ -27,7 +30,11 @@
 	</div>
 
 	<div class="flex items-center justify-center gap-x-5">
-		<Button onClick={() => openModal(ModalId.ShareCanvas)}>
+		<Button
+			onClick={() => {
+				shareModal?.showModal()
+			}}
+		>
 			{#snippet body()}
 				<T keyName="share-canvas-button" defaultValue="Share Canvas" />
 			{/snippet}
@@ -38,6 +45,7 @@
 				{#snippet button()}
 					<img alt="profile logo" src="https://picsum.photos/100" class="w-8 rounded-full" />
 				{/snippet}
+
 				{#snippet body()}
 					<ul>
 						<li>
@@ -51,3 +59,7 @@
 		</div>
 	</div>
 </nav>
+
+<Dialog class="w-3xl" appearance="center" bind:dialog={shareModal}>
+	<ShareCanvas />
+</Dialog>

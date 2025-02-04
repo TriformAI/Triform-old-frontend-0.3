@@ -31,6 +31,6 @@
 	</button>
 </footer>
 
-<Dialog bind:dialog appearance="bottom">
+<Dialog bind:dialog appearance="bottom" class="bg-zinc-950  px-5 pb-5">
 	<SystemCharts data={stats} />
 </Dialog>
