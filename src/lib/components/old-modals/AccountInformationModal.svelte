@@ -9,7 +9,7 @@
 	import { PUBLIC_PRODUCTION } from '$env/static/public'
 	import { getAuthToken } from '$lib/stores/cookie'
 	import { onMount } from 'svelte'
-	import { page } from '$app/stores'
+	import { page } from '$app/state'
 	import ConfirmationModal from '$lib/components/old-modals/ConfirmationModal.svelte'
 	import PasswordResetModal from './PasswordResetModal.svelte'
 	import Spinner from '$lib/components/Spinner.svelte'
@@ -93,7 +93,7 @@
 				console.log(data)
 				removeCookie('authToken')
 
-				if ($page.data.session) {
+				if (page.data.session) {
 					//user signed in with github
 					signOut()
 					window.location.href = '/login'

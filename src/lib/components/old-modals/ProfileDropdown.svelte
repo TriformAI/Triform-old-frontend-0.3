@@ -8,7 +8,7 @@
 	import settings from '$lib/icons/settings.svg'
 	import logout from '$lib/icons/logout.svg'
 	import { getAuthToken, removeCookie } from '$lib/stores/cookie'
-	import { page } from '$app/stores'
+	import { page } from '$app/state'
 	import { signOut } from '@auth/sveltekit/client'
 	import {
 		accountInformationModal,
@@ -37,7 +37,7 @@
 				console.log(data)
 				if (response.ok) {
 					removeCookie('authToken')
-					if ($page.data.session) {
+					if (page.data.session) {
 						signOut()
 					}
 					window.location.href = '/login'

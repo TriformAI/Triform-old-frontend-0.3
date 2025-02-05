@@ -9,7 +9,7 @@
 	import Toolbar from '$lib/components/Toolbar.svelte'
 	import Footer from '$lib/components/Footer.svelte'
 	import { onMount } from 'svelte'
-	import { page } from '$app/stores'
+	import { page } from '$app/state'
 
 	const tolgee = new Tolgee()
 		.use(DevTools())
@@ -53,7 +53,7 @@
 
 <section class={`bg-website-dark-primary`}>
 	<TolgeeProvider {tolgee}>
-		{#if $page.url.pathname === '/dashboard'}
+		{#if page.url.pathname === '/dashboard'}
 			<section class="layout bg-website-dark-primary">
 				<SvelteFlowProvider>
 					<div class="flex flex-col h-screen">

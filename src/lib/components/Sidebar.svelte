@@ -1,8 +1,8 @@
 <script>
 	import logo from '../images/Logo.svg'
-	import { page } from '$app/stores'
+	import { page } from '$app/state'
 
-	let currentPath = $derived($page.url.pathname)
+	let currentPath = $derived(page.url.pathname)
 
 	let menu = true // Example state to control sidebar open/close
 </script>
