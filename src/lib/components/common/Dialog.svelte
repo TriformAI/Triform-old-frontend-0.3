@@ -6,8 +6,9 @@
 	interface Props {
 		children: Snippet
 		dialog: HTMLDialogElement | undefined
-		appearance: 'center' | 'right' | 'bottom'
+		appearance: 'center' | 'bottom'
 		onClose?: VoidFunction
+		closeByClickOutside?: boolean
 		class?: string
 	}
 
@@ -16,11 +17,21 @@
 		dialog = $bindable(),
 		appearance = 'center',
 		onClose,
+		closeByClickOutside = true,
 		class: classes
 	}: Props = $props()
+
+	function clickOutside(el: HTMLDialogElement) {
+		el.addEventListener('click', e => {
+			if (closeByClickOutside && e.target === el) {
+				el.close()
+			}
+		})
+	}
 </script>
 
 <dialog
+	use:clickOutside
 	bind:this={dialog}
 	onclose={() => {
 		if (onClose) {
@@ -49,7 +60,7 @@
 		{:else if appearance === 'center'}
 			<button
 				type="button"
-				class="absolute end-4 top-4 z-10 outline-none"
+				class="absolute end-6 top-5.5 z-10 outline-none"
 				onclick={() => {
 					dialog?.close()
 				}}
@@ -63,41 +74,49 @@
 </dialog>
 
 <style>
-	dialog {
-		--easing: cubic-bezier(0.85, 0.09, 0.15, 0.91);
-	}
-
-	/*   Closed state of the dialog   */
 	dialog.center {
-		transform: scale(0.9) translateY(-50%);
 		transition:
-			transform 0s var(--easing),
-			overlay 0s ease-out allow-discrete,
-			display 0s ease-out allow-discrete;
+			opacity 0.1s var(--easing-circ),
+			display 0.1s,
+			overlay 0.1s;
+		transition-behavior: allow-discrete;
+		transform: translateY(-50%);
+		opacity: 0;
 	}
 
 	dialog.center[open] {
-		transform: scale(1) translateY(-50%);
+		opacity: 1;
 		transition:
-			transform 0.5s var(--easing),
-			overlay 0.5s ease-out allow-discrete,
-			display 0.5s ease-out allow-discrete;
+			opacity 0.3s var(--easing-circ),
+			display 0.3s,
+			overlay 0.3s;
 	}
 
-	/*   Before-open state  */
-	/* Needs to be after the previous dialog[open] rule to take effect,
-    as the specificity is the same */
+	dialog.center::backdrop {
+		transition: backdrop-filter 0.3s ease-out;
+		background-color: rgba(0, 0, 0, 0.05);
+		backdrop-filter: blur(0px);
+	}
+
+	dialog.center[open]::backdrop {
+		backdrop-filter: blur(var(--blur-md));
+	}
+
 	@starting-style {
 		dialog.center[open] {
-			transform: scale(0.9) translateY(-50%);
+			opacity: 0;
+			transform: translateY(-50%);
+		}
+
+		dialog.center[open]::backdrop {
+			backdrop-filter: blur(0px);
 		}
 	}
 
-	/*   Closed state of the dialog   */
 	dialog.bottom {
 		transform: translateY(100%);
 		transition:
-			transform 0.5s var(--easing),
+			transform 0.5s var(--easing-circ),
 			overlay 0.3s ease-out allow-discrete,
 			display 0.3s ease-out allow-discrete;
 	}
@@ -106,28 +125,9 @@
 		transform: translateY(0%);
 	}
 
-	/*   Before-open state  */
-	/* Needs to be after the previous dialog[open] rule to take effect,
-    as the specificity is the same */
 	@starting-style {
 		dialog.bottom[open] {
 			transform: translateY(100%);
-		}
-	}
-
-	dialog.center::backdrop {
-		background: var(--color-zinc-950);
-		opacity: 0;
-		transition: opacity 0.3s ease-out;
-	}
-
-	dialog.center[open]::backdrop {
-		opacity: 1;
-	}
-
-	@starting-style {
-		dialog[open]::backdrop {
-			opacity: 0;
 		}
 	}
 </style>
