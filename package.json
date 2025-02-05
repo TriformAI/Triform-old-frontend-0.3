@@ -55,7 +55,6 @@
 		"@tolgee/svelte": "^6.0.0",
 		"@xyflow/svelte": "^0.1.26",
 		"chart.js": "^4.4.7",
-		"classnames": "^2.5.1",
 		"date-fns": "^4.1.0",
 		"elkjs": "^0.9.3",
 		"pusher-js": "^8.4.0-rc2",
