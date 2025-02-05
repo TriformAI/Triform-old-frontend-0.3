@@ -1,4 +1,7 @@
 <script>
+	import '@fontsource/space-mono'
+	import '@fontsource-variable/figtree'
+
 	import '../app.css'
 	import { toasts, ToastContainer, FlatToast } from 'svelte-toasts'
 	import Pusher from 'pusher-js'
@@ -56,7 +59,7 @@
 		{#if page.url.pathname === '/dashboard'}
 			<section class="layout bg-website-dark-primary">
 				<SvelteFlowProvider>
-					<div class="flex flex-col h-screen">
+					<div class="flex h-screen flex-col">
 						<Navbar />
 						<Toolbar />
 						<div class="flex-grow">

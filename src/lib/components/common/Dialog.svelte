@@ -30,31 +30,31 @@
 	class={[
 		classes,
 		appearance,
-		`fixed m-0 bg-transparent overflow-visible`,
+		`fixed m-0 overflow-visible bg-transparent`,
 		appearance === 'center' && 'top-1/2 mx-auto w-full max-w-xs rounded-lg md:max-w-xl',
-		appearance === 'bottom' && 'top-auto w-full bottom-0 inset-x-0 max-w-none'
+		appearance === 'bottom' && 'inset-x-0 top-auto bottom-0 w-full max-w-none'
 	]}
 >
 	<div class="grid">
 		{#if appearance === 'bottom'}
 			<button
 				type="button"
-				class="mx-auto bg-zinc-800/50 px-8 rounded-b outline-none"
+				class="mx-auto rounded-b bg-zinc-800/50 px-8 outline-none"
 				onclick={() => {
 					dialog?.close()
 				}}
 			>
-				<ChevronDown class="mx-auto text-white size-6" />
+				<ChevronDown class="mx-auto size-6 text-white" />
 			</button>
 		{:else if appearance === 'center'}
 			<button
 				type="button"
-				class="absolute z-10 end-4 top-4 outline-none"
+				class="absolute end-4 top-4 z-10 outline-none"
 				onclick={() => {
 					dialog?.close()
 				}}
 			>
-				<Close class="text-white size-5" />
+				<Close class="size-5 text-white" />
 			</button>
 		{/if}
 
@@ -116,7 +116,8 @@
 	}
 
 	dialog.center::backdrop {
-		@apply bg-zinc-950/80 opacity-0;
+		background: var(--color-zinc-950);
+		opacity: 0;
 		transition: opacity 0.3s ease-out;
 	}
 

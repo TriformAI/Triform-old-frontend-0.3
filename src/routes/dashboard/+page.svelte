@@ -42,7 +42,7 @@
 	})
 </script>
 
-<section class="flex flex-col h-screen" bind:this={instance}>
+<section class="flex h-screen flex-col" bind:this={instance}>
 	{#each openWindows() as window}
 		{@const { component: Component, customProps, ...defaultProps } = window}
 		<Component {...defaultProps} {customProps} />
