@@ -123,7 +123,6 @@
 				</ul>
 			{/snippet}
 		</Dropdown> -->
-		<Select bind:selected {options} singleValue={false} />
 	</div>
 
 	<!-- Zoom in Zoom out Fit screen -->
