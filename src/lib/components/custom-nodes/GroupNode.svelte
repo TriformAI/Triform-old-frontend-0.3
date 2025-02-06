@@ -8,7 +8,6 @@
 		id,
 		data,
 		selected,
-		handles = [],
 		...rest
 	}: {
 		id: string
@@ -16,19 +15,6 @@
 		selected: boolean
 		handles: Position[]
 	} = $props()
-
-	const getBorderClass = (state?: string) => {
-		switch (state) {
-			case 'success':
-				return 'border-emerald-500'
-			case 'error':
-				return 'border-red-500'
-			case 'running':
-				return 'border-indigo-500'
-			default:
-				return selected ? 'border-slate-200' : 'border-slate-300'
-		}
-	}
 </script>
 
 <NodeContainer {id}>
