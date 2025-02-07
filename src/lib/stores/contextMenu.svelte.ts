@@ -68,3 +68,13 @@ contextMenus.set('agent-node', [
 		onClick: () => console.log('delete agent')
 	}
 ])
+
+contextMenus.set('open-agent-node', [
+	{
+		label: 'Collapse',
+		onClick: (node?: Node) => {
+			if (!node) return
+			canvasStore[0].openAgents.delete(node.id as Uuid) // Collapse agent
+		}
+	}
+])

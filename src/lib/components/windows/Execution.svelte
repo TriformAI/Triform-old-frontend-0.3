@@ -19,9 +19,9 @@
 	let result = $state('')
 
 	const run = async () => {
-		const res = await runAgent(canvasStore[0].resource, JSON.parse(input))
-		console.log(res)
-		result = res
+		// const res = await runAgent(canvasStore[0].project, JSON.parse(input))
+		// console.log(res)
+		// result = res
 	}
 </script>
 

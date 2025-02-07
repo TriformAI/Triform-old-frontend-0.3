@@ -9,9 +9,9 @@
 		removeLocalStorageListener
 	} from '$lib/stores/windows.svelte'
 
-	import { loadAgent, canvasStore } from '$lib/stores/canvas.svelte'
+	import { loadProject, canvasStore } from '$lib/stores/canvas.svelte'
 
-	import type { Agent } from '$lib/types/agent'
+	import type { Project } from '$lib/types/project'
 
 	import { setMainAreaRef } from '$lib/stores/layoutRefs.svelte'
 	// 👇 this is important! You need to import the styles for Svelte Flow to work
@@ -23,12 +23,10 @@
 		setMainAreaRef(instance)
 	})
 
-	// import testInvocation from '$lib/dev/test-invocation.json'
-	// const invocation = testInvocation
-	import testAgent from '$lib/dev/test-agent.json'
+	import testProject from '$lib/dev/test-project.json'
 
 	onMount(() => {
-		loadAgent(testAgent as Agent)
+		loadProject(testProject as Project)
 	})
 
 	const activeCanvas = $derived(canvasStore[0])

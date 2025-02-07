@@ -22,7 +22,7 @@
 	import { menuIsOpen, toggleMenu } from '$lib/stores/contextMenu.svelte'
 
 	import '@xyflow/svelte/dist/style.css'
-	import { parseAgent } from '$lib/stores/canvas.svelte'
+	import { parseProject } from '$lib/stores/canvas.svelte'
 	import { getLayoutedNodes } from './layout.svelte'
 
 	const nodeTypes: NodeTypes = {
@@ -51,13 +51,13 @@
 		if (!canvas) return
 
 		console.time('parse agent')
-		let { nodes: nodesData, edges: edgesData } = parseAgent(canvas.resource)
+		let { nodes: nodesData, edges: edgesData } = parseProject(canvas.project)
 		console.timeEnd('parse agent')
 
 		console.log('edges', edgesData)
 
-		// Used to get effect to trigger on canvas.resource change
-		const ref = canvas.resource
+		// Used to get effect to trigger on canvas.project change
+		const ref = canvas.project
 		untrack(async () => {
 			nodesData = nodesData.map(node => {
 				if (node.type === 'action-node') {
