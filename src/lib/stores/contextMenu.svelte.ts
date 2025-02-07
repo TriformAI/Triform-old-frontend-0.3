@@ -56,7 +56,7 @@ contextMenus.set('agent-node', [
 		label: 'Expand',
 		onClick: (node?: Node) => {
 			if (!node) return
-			setNodeProps(node.id as Uuid, { expanded: true })
+			setNodeProps(node.id, { expanded: true })
 		}
 	},
 	{

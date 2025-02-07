@@ -26,22 +26,17 @@ export interface Canvas {
 	// label: string,
 }
 
+const defaultProps: NodeProps = {
+	expanded: false
+}
 export const setNodeProps = (id: Uuid, props: Partial<NodeProps>) => {
-	const propsRef = selectedCanvas().nodeProps.get(id)
-	if (!propsRef) return
+	let propsRef = selectedCanvas().nodeProps.get(id)
+	if (!propsRef) propsRef = defaultProps
 	const newProps = Object.assign({}, propsRef, props)
 	selectedCanvas().nodeProps.set(id, newProps)
 }
 
 export const getNodeProps = (id: Uuid): NodeProps | undefined => selectedCanvas().nodeProps.get(id)
-
-const initNodeProps = (id: Uuid) => {
-	if (!getNodeProps(id)) {
-		selectedCanvas().nodeProps.set(id, {
-			expanded: false
-		})
-	}
-}
 
 const isAction = (node: TriNode): node is TriNode & { spec: Action } =>
 	node.spec.resource === 'action/v1'
@@ -133,9 +128,6 @@ export const loadProject = (project: Project) => {
 	})
 
 	console.log('Loaded project', project)
-
-	const { nodes } = parseProject(project)
-	for (const node of nodes) initNodeProps(node.id)
 }
 
 // Generic function for applying a function to some node in the canvas
