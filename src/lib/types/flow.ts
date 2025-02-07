@@ -14,4 +14,11 @@ export interface NodeData {
 
 export type NodeType = 'agent-node' | 'action-node' | 'open-agent-node'
 
-export type Node = XyNode<NodeData, NodeType>
+export type Node = XyNode<NodeData, NodeType> & {
+	id: Uuid
+}
+
+// Visual properties of a node
+export interface NodeProps {
+	expanded: boolean
+}

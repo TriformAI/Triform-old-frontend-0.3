@@ -18,7 +18,7 @@
 		useUpdateNodeInternals,
 		useSvelteFlow
 	} from '@xyflow/svelte'
-
+	import { setNodeProps, selectedCanvas } from '$lib/stores/canvas.svelte'
 	import { menuIsOpen, toggleMenu } from '$lib/stores/contextMenu.svelte'
 
 	import '@xyflow/svelte/dist/style.css'
@@ -43,11 +43,10 @@
 	const nodes = writable<Node[]>([])
 	const edges = writable<Edge[]>([])
 
-	const { canvas }: { canvas: Canvas } = $props()
-
 	const updateNodeInternals = useUpdateNodeInternals()
 
 	$effect(() => {
+		const canvas = selectedCanvas()
 		if (!canvas) return
 
 		console.time('parse agent')
@@ -55,17 +54,14 @@
 		console.timeEnd('parse agent')
 
 		console.log('edges', edgesData)
-
-		// Used to get effect to trigger on canvas.project change
-		const ref = canvas.project
 		untrack(async () => {
 			nodesData = nodesData.map(node => {
 				if (node.type === 'action-node') {
 					node.data.files = undefined
 				} else if (node.type === 'agent-node') {
-					node.data.onOpen = () => canvas.openAgents.add(node.id as Uuid)
+					node.data.onOpen = () => setNodeProps(node.id as Uuid, { expanded: true })
 				} else if (node.type === 'open-agent-node') {
-					node.data.onOpen = () => canvas.openAgents.delete(node.id as Uuid)
+					node.data.onOpen = () => setNodeProps(node.id as Uuid, { expanded: false })
 					node.width = 400
 					node.height = 400
 				} else throw new Error('unknown node type ' + node.type)
