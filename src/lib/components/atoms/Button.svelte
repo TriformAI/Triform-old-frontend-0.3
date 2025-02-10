@@ -15,7 +15,10 @@
 		onClick: onClickProp,
 		autoLoad,
 		icon,
-		class: classProp
+		class: classProp,
+		href,
+		target,
+		disabled
 	}: {
 		// Will have secondary, muted, link etc as we need them
 		variation?: ButtonVariation
@@ -27,12 +30,20 @@
 		// Optionally disable the automatic loading indicator
 		autoLoad?: boolean
 		// If it returns a promise, show loading indicator until it resolves
-		onClick?: () => void | Promise<void>
+		onClick?: () => unknown | Promise<unknown>
 		class?: string
+		href?: string
+		target?: '_blank'
+		disabled?: boolean
 	} = $props()
 
 	let isLoading = $state(false)
 	const onClick = () => {
+		if (href) {
+			if (target === '_blank') window.open(href, '_blank')
+			else window.location.href = href
+		}
+
 		if (typeof onClickProp === 'function') {
 			try {
 				// If it wasn't a promise this will just resolve immediately
@@ -59,15 +70,17 @@
 <button
 	class="
     {variation === 'primary'
-		? 'border border-zinc-700 bg-zinc-800 hover:border-zinc-600 hover:bg-zinc-700'
+		? 'border border-zinc-700 bg-zinc-800 hover:enabled:border-zinc-600 hover:enabled:bg-zinc-700'
 		: ''}
-    {variation === 'link' ? 'hover:bg-zinc-500/10' : ''}
+    {variation === 'link' ? 'hover:enabled:bg-zinc-500/10' : ''}
     p-3 {!icon && !!body ? 'px-5' : ''} flex transform flex-row items-center justify-center
-    gap-x-2 rounded-md
+    gap-x-2 rounded-md cursor-pointer
     text-zinc-200 transition
-    active:scale-95 active:border-zinc-500
+    active:enabled:scale-95 active:enabled:border-zinc-500
+		disabled:cursor-not-allowed disabled:opacity-75
     {classProp}
   "
+	{disabled}
 	onclick={onClick}
 >
 	<!-- If we have an icon, animate it for loading state -->
