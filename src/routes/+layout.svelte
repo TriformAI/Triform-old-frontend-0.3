@@ -3,7 +3,7 @@
 	import '@fontsource-variable/figtree'
 
 	import '../app.css'
-	import { toasts, ToastContainer, FlatToast } from 'svelte-toasts'
+	import { Toaster } from 'svelte-sonner'
 	import { SvelteFlowProvider } from '@xyflow/svelte'
 	import { TolgeeProvider, Tolgee, DevTools, FormatSimple } from '@tolgee/svelte'
 
@@ -28,6 +28,10 @@
 
 <section class={`bg-website-dark-primary`}>
 	<TolgeeProvider {tolgee}>
+		<Toaster
+			richColors
+			position="top-right"
+		/>
 		{#if page.url.pathname === '/dashboard'}
 			<section class="layout bg-website-dark-primary">
 				<SvelteFlowProvider>
@@ -39,9 +43,6 @@
 						</div>
 						<Footer />
 					</div>
-					<ToastContainer placement="top-right" let:data>
-						<FlatToast {data} />
-					</ToastContainer>
 				</SvelteFlowProvider>
 			</section>
 		{:else}
