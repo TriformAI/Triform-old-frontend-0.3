@@ -1,29 +1,23 @@
 <script lang="ts">
-	import type { NodeData, Node, NodeType } from '$lib/types/flow'
+	import type { NodeData, Node } from '$lib/types/flow'
 	import { onMount, type Snippet } from 'svelte'
 
-	import { Position, useNodes } from '@xyflow/svelte'
-	import { get } from 'svelte/store'
+	import { useSvelteFlow } from '@xyflow/svelte'
 
 	import NodeContainer from './NodeContainer.svelte'
-	import CustomHandle from './CustomHandle.svelte'
 
 	import { contextMenus } from '$lib/stores/contextMenu.svelte'
-
-	const nodes = useNodes()
 
 	const {
 		id,
 		data,
 		selected,
-		icon,
-		handles = []
+		icon
 	}: {
 		id: string
 		data: NodeData
 		selected: boolean
 		icon: Snippet
-		handles: Position[]
 	} = $props()
 
 	const { state, onOpen } = data
@@ -41,16 +35,18 @@
 		}
 	}
 
+	const { getNode } = useSvelteFlow()
 	let node: Node
 	onMount(() => {
-		node = get(nodes).filter(n => n.id === id)[0]
+		const n = getNode(id)
+		if (n) node = n as Node
 	})
 
 	const openFn = () => {
 		if (onOpen) return onOpen()
 		// If no open function was defined, use the first context menu action instead
-		if (!node) return
-		const items = contextMenus.get(node.type as NodeType)
+		if (!node?.type) return
+		const items = contextMenus.get(node.type)
 		items?.[0]?.onClick?.(node)
 	}
 </script>
