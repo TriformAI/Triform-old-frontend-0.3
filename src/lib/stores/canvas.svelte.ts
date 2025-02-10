@@ -79,6 +79,8 @@ export const parseProject = (project: Project) => {
 			nodes.push({
 				id,
 				type: isOpen ? 'open-agent-node' : 'agent-node',
+				dragHandle: isOpen ? '.flow_drag-handle' : undefined,
+				style: isOpen ? 'pointer-events: none' : undefined,
 				position: { x: 0, y: 0 },
 				parentId,
 				extent: parentId ? 'parent' : undefined,
