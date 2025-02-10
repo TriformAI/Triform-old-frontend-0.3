@@ -136,11 +136,11 @@ export const loadProject = (project: Project) => {
 }
 
 // Generic function for applying a function to some node in the canvas
-const processNode = async (id: Uuid, fn: (node: TriNode) => Promise<TriNode | undefined>) => {
+const processNode = async (id: Uuid, fn: (node: TriNode, nodeId?: Uuid) => Promise<TriNode | undefined>) => {
 	let updatedNode: TriNode | undefined = undefined
 	const process = async (node: TriNode, nodeId: Uuid) => {
 		if (nodeId === id) {
-			Object.assign(node, await fn(node))
+			Object.assign(node, await fn(node, nodeId))
 			updatedNode = node
 			return
 		}
@@ -164,4 +164,57 @@ export const updateNode = async (id: Uuid, updatedNode: TriNode) =>
 	await processNode(id, async () => updatedNode)
 
 // Adds a child node to a specific parent node
-export const addChild = (parentId: Uuid, child: TriNode) => {}
+export const addChild = async (parentId: Uuid | 'root', child: TriNode, nodeId: Uuid) => {
+	// If the parentId is "root", add it to the project as a root level node
+	if (parentId === 'root') {
+		currentCanvas.project.spec.nodes[nodeId] = child
+	} else {
+		// Otherwise, find the right parent to add the child to
+		await processNode(parentId, async node => {
+			// If the parent isn't an agent, we can't add children to it
+			// TODO: when we encounter this case, wrap the parent in an agent first
+			if (!isAgent(node)) return
+			node.spec.spec.nodes[nodeId] = child
+			return node
+		})
+	}
+}
+
+// TODO: make this update a local tree or something first before committing
+// to the real one, since this will trigger quite a few layouts of the
+// rendered tree, basically every time we update a node
+export const removeNode = async (id: Uuid) => {
+	// If it's a root node, remove it
+	if (currentCanvas.project.spec.nodes[id]) {
+		const nodeToDelete = currentCanvas.project.spec.nodes[id]
+		// Update all the nodes that depended on this node
+		for (const [nodeId, node] of Object.entries(currentCanvas.project.spec.nodes)) {
+			if (node.inputs?.includes(id)) {
+				// Any node with the old node as parent, should instead get the old nodes parent(s)
+				node.inputs = node.inputs?.flatMap(i => (i === id ? nodeToDelete.inputs ?? [] : i)) ?? []
+				// We should make some kind of generic processNodes / updateNodes that take in a predicate/filter
+				// for which nodes it should update
+				await updateNode(nodeId as Uuid, node)
+			}
+		}
+		delete currentCanvas.project.spec.nodes[id]
+	} else {
+		// Otherwise, find the right parent to remove the child from
+		await processNode(id, async node => {
+			// Should technically always be an agent, but we need to get typescript to recognise it
+			if (!isAgent(node)) return
+			// Now we need to find all the nodes that used to depend on this node, and change their
+			// inputs to this node's parent
+			// I think for now we can just assume that all the nodes that might've depended on this node
+			// are siblings to this node. I don't think we allow inter-flow/inter-agent deps (yet)
+			for (const [childId, child] of Object.entries(node.spec.spec.nodes)) {
+				if (child.inputs?.includes(id)) {
+					child.inputs = child.inputs?.flatMap(i => (i === id ? node.inputs ?? [] : i)) ?? []
+					await updateNode(childId as Uuid, child)
+				}
+			}
+			delete node.spec.spec.nodes[id]
+			return node
+		})
+	}
+}

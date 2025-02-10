@@ -4,7 +4,7 @@ import type { Node, NodeType } from '$lib/types/flow'
 import type { Uuid } from '$lib/types/agent'
 
 import { openWindow } from './windows.svelte'
-import { setNodeProps } from './canvas.svelte'
+import { setNodeProps, removeNode } from './canvas.svelte'
 
 import CodeEditorWindow from '$lib/components/windows/CodeEditorWindow.svelte'
 
@@ -47,7 +47,11 @@ contextMenus.set('action-node', [
 	},
 	{
 		label: 'Delete',
-		onClick: () => console.log('delete action')
+		onClick: (node?: Node) => {
+			if (!node) return
+			// TODO: ask for confirmation
+			removeNode(node.id)
+		}
 	}
 ])
 
@@ -65,7 +69,11 @@ contextMenus.set('agent-node', [
 	},
 	{
 		label: 'Delete',
-		onClick: () => console.log('delete agent')
+		onClick: (node?: Node) => {
+			if (!node) return
+			// TODO: ask for confirmation
+			removeNode(node.id)
+		}
 	}
 ])
 
