@@ -52,8 +52,8 @@
 		{#snippet body()}
 			<ul>
 				{#each items as { label, onClick }}
-					<li>
-						<button class="w-full" onclick={() => itemClick(onClick)}>
+					<li class="rounded">
+						<button class="w-full cursor-pointer" onclick={() => itemClick(onClick)}>
 							{label}
 						</button>
 					</li>
