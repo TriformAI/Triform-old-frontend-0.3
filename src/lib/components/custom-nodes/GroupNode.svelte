@@ -39,13 +39,13 @@
 	{#snippet body()}
 		<div
 			class="
-			h-full w-full flex flex-row justify-center text-center
-			border border-slate-300/10 bg-zinc-900/30 rounded"
+			flex h-full w-full flex-row justify-center rounded
+			border border-slate-300/10 bg-zinc-900/30 text-center"
 		>
 			<button
 				class="
-					flex-shrink-0 w-max text-[8px] font-bold transition bg-zinc-900/50 backdrop-blur-sm px-5 rounded h-fit -mt-4
-					border border-zinc-600/10 pointer-events-auto
+					pointer-events-auto -mt-4 h-fit w-max flex-shrink-0 rounded border border-zinc-600/10 bg-zinc-900/50 px-5 text-[8px]
+					font-bold backdrop-blur-sm transition
 					{selected ? 'text-slate-200' : 'text-slate-300'}
 					flow_drag-handle
 				"

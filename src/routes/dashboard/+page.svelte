@@ -9,27 +9,18 @@
 		removeLocalStorageListener
 	} from '$lib/stores/windows.svelte'
 
-	import { loadProject, canvasStore } from '$lib/stores/canvas.svelte'
+	import { loadProject } from '$lib/stores/canvas.svelte'
 
 	import type { Project } from '$lib/types/project'
 
-	import { setMainAreaRef } from '$lib/stores/layoutRefs.svelte'
 	// 👇 this is important! You need to import the styles for Svelte Flow to work
 	import '@xyflow/svelte/dist/style.css'
-
-	let instance: HTMLElement
-
-	onMount(() => {
-		setMainAreaRef(instance)
-	})
 
 	import testProject from '$lib/dev/test-project.json'
 
 	onMount(() => {
 		loadProject(testProject as Project)
 	})
-
-	const activeCanvas = $derived(canvasStore[0])
 
 	onMount(() => {
 		loadWindowsFromLocalStorage()
@@ -40,11 +31,11 @@
 	})
 </script>
 
-<section class="flex h-screen flex-col" bind:this={instance}>
+<section class="flex h-screen flex-col">
 	{#each openWindows() as window}
 		{@const { component: Component, customProps, ...defaultProps } = window}
 		<Component {...defaultProps} {customProps} />
 	{/each}
 
-	<Flow canvas={activeCanvas} />
+	<Flow />
 </section>

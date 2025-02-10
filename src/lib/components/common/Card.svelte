@@ -33,13 +33,13 @@
 </script>
 
 <div
-	class="relative w-full h-full overflow-hidden border rounded-md shadow-lg bg-zinc-900 text-zinc-200 border-zinc-700"
+	class="relative h-full w-full overflow-hidden rounded-md border border-zinc-700 bg-zinc-900 text-zinc-200 shadow-lg"
 >
 	<div
-		class="flex flex-row items-center justify-between pr-4 border border-t-0 border-b bg-zinc-800 border-x-0 border-inherit rounded-t-md"
+		class="flex flex-row items-center justify-between rounded-t-md border border-x-0 border-t-0 border-b border-inherit bg-zinc-800 pr-4"
 	>
 		<div
-			class="flex flex-row w-full gap-3 font-semibold items-center text-left text-zinc-50 text-md p-5 {isDraggable
+			class="text-md flex w-full flex-row items-center gap-3 p-5 text-left font-semibold text-zinc-50 {isDraggable
 				? 'cursor-move select-none'
 				: ''}"
 			onmousedown={onDragStart}
@@ -47,13 +47,13 @@
 			aria-label={isDraggable ? 'Drag' : ''}
 		>
 			{#if isDraggable}
-				<IconDrag class="w-[1.25rem] h-[1.25rem]" />
+				<IconDrag class="h-[1.25rem] w-[1.25rem]" />
 			{/if}
 			{@render header?.()}
 		</div>
 		{#if typeof onClose === 'function'}
-			<button class="p-2 transition rounded-md text-zinc-300 hover:bg-zinc-700" onclick={onClose}>
-				<IconClose class="w-[1.25rem] h-[1.25rem]" />
+			<button class="rounded-md p-2 text-zinc-300 transition hover:bg-zinc-700" onclick={onClose}>
+				<IconClose class="h-[1.25rem] w-[1.25rem]" />
 			</button>
 		{/if}
 	</div>

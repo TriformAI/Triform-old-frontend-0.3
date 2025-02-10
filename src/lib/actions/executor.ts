@@ -1,7 +1,4 @@
-import type {
-	Agent,
-	Component
-} from '$lib/types/agent'
+import type { Agent, Component } from '$lib/types/agent'
 
 const baseUrl = `${import.meta.env.VITE_TRICORE_URL}/v1`
 
@@ -19,9 +16,7 @@ export const publishComponent = async (component: Component) => {
 	return updatedComponent
 }
 
-export const saveComponent = async (component: Component) => {
-	
-}
+export const saveComponent = async (component: Component) => {}
 
 export const runAgent = async (fullAgent: Agent, input: unknown) => {
 	// const agent = JSON.parse(JSON.stringify(fullAgent))

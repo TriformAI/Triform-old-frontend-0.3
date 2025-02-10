@@ -23,9 +23,9 @@
 </script>
 
 <nav
-	class="flex items-center justify-between w-full px-8 py-2 border-b bg-zinc-900 border-b-zinc-700"
+	class="flex w-full items-center justify-between border-b border-b-zinc-700 bg-zinc-900 px-8 py-2"
 >
-	<div class="flex items-center overflow-auto gap-x-4">
+	<div class="flex items-center gap-x-4 overflow-auto">
 		<img alt="triform logo" src={logo} class="relative w-8 lg:w-12" />
 	</div>
 
@@ -40,7 +40,7 @@
 			{/snippet}
 		</Button>
 
-		<div class="relative pl-5 border-l border-l-zinc-700">
+		<div class="relative border-l border-l-zinc-700 pl-5">
 			<Dropdown buttonVariation="link">
 				{#snippet button()}
 					<img alt="profile logo" src="https://picsum.photos/100" class="w-8 rounded-full" />

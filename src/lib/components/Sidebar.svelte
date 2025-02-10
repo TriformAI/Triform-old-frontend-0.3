@@ -8,37 +8,37 @@
 </script>
 
 <div
-	class={` top-0 left-0 z-10 h-screen bg-gray-900 border-r border-white/5 ${menu ? 'lg:w-80 w-[5rem]' : 'w-12'}`}
+	class={` top-0 left-0 z-10 h-screen border-r border-white/5 bg-gray-900 ${menu ? 'w-[5rem] lg:w-80' : 'w-12'}`}
 >
 	<div
-		class={`flex flex-col h-screen pb-4 overflow-hidden overflow-y-auto bg-black/10 grow gap-y-5 ${menu ? 'lg:px-6 px-2' : 'px-2'}`}
+		class={`flex h-screen grow flex-col gap-y-5 overflow-hidden overflow-y-auto bg-black/10 pb-4 ${menu ? 'px-2 lg:px-6' : 'px-2'}`}
 	>
 		<!-- Logo or Application Mark -->
-		<a href="/dashboard" class="flex items-center h-16 m-1 shrink-0 w-fit">
+		<a href="/dashboard" class="m-1 flex h-16 w-fit shrink-0 items-center">
 			<!-- Replace with your logo/image -->
-			<img alt="triform logo" src={logo} class="relative w-8 lg:w-10 lg:left-0 left-2" />
+			<img alt="triform logo" src={logo} class="relative left-2 w-8 lg:left-0 lg:w-10" />
 		</a>
 
 		<!-- Main Navigation -->
-		<div class="flex flex-col justify-between flex-1">
+		<div class="flex flex-1 flex-col justify-between">
 			<nav class="flex flex-col">
-				<ul role="list" class="flex flex-col flex-1 gap-y-7">
+				<ul role="list" class="flex flex-1 flex-col gap-y-7">
 					<li class={menu ? 'mx-2' : 'px-3'}>
 						<ul
 							role="list"
-							class="lg:-mx-4 -mx-1 space-y-2 text-brand-light-gray text-sm font-semibold"
+							class="text-brand-light-gray -mx-1 space-y-2 text-sm font-semibold lg:-mx-4"
 						>
 							<!-- Dashboard Link -->
 							<a
 								href="/dashboard"
-								class={`flex items-center p-4 rounded-2xl duration-100 ease-linear hover:bg-[#171F2D]  group ${currentPath === '/dashboard' && 'bg-[#171F2D]'}`}
+								class={`group flex items-center rounded-2xl p-4 duration-100 ease-linear  hover:bg-[#171F2D] ${currentPath === '/dashboard' && 'bg-[#171F2D]'}`}
 							>
 								<svg
 									xmlns="http://www.w3.org/2000/svg"
 									fill="none"
 									viewBox="0 0 24 24"
 									stroke-width="1.5"
-									class={`size-6 group-hover:stroke-white duration-100 ease-linear ${currentPath === '/dashboard' ? 'stroke-white' : 'stroke-gray-500'}`}
+									class={`size-6 duration-100 ease-linear group-hover:stroke-white ${currentPath === '/dashboard' ? 'stroke-white' : 'stroke-gray-500'}`}
 								>
 									<path
 										stroke-linecap="round"
@@ -48,7 +48,7 @@
 								</svg>
 
 								<span
-									class={`lg:block  hidden ml-4 group-hover:text-white duration-100 ease-linear ${currentPath === '/dashboard' ? ' text-white' : 'text-gray-500'}`}
+									class={`ml-4  hidden duration-100 ease-linear group-hover:text-white lg:block ${currentPath === '/dashboard' ? ' text-white' : 'text-gray-500'}`}
 								>
 									Dashboard
 								</span>
@@ -57,14 +57,14 @@
 							<!-- Playground Link -->
 							<a
 								href="/playground"
-								class={`flex items-center p-4 rounded-2xl duration-100 ease-linear hover:bg-[#171F2D] group ${currentPath === '/playground' && 'bg-[#171F2D]'}`}
+								class={`group flex items-center rounded-2xl p-4 duration-100 ease-linear hover:bg-[#171F2D] ${currentPath === '/playground' && 'bg-[#171F2D]'}`}
 							>
 								<svg
 									xmlns="http://www.w3.org/2000/svg"
 									fill="none"
 									viewBox="0 0 24 24"
 									stroke-width="1.5"
-									class={`size-6 group-hover:stroke-white duration-100 ease-linear ${currentPath === '/playground' ? 'stroke-white' : 'stroke-gray-500'}`}
+									class={`size-6 duration-100 ease-linear group-hover:stroke-white ${currentPath === '/playground' ? 'stroke-white' : 'stroke-gray-500'}`}
 								>
 									<path
 										stroke-linecap="round"
@@ -74,7 +74,7 @@
 								</svg>
 
 								<span
-									class={`lg:block hidden ml-4 group-hover:text-white duration-100 ease-linear ${currentPath === '/playground' ? ' text-white' : 'text-gray-500'}`}
+									class={`ml-4 hidden duration-100 ease-linear group-hover:text-white lg:block ${currentPath === '/playground' ? ' text-white' : 'text-gray-500'}`}
 								>
 									Playground
 								</span>
@@ -83,14 +83,14 @@
 							<!-- Modules Link -->
 							<a
 								href="/modules"
-								class={`flex items-center p-4 rounded-2xl duration-100 ease-linear hover:bg-[#171F2D] group ${currentPath === '/modules' && 'bg-[#171F2D]'}`}
+								class={`group flex items-center rounded-2xl p-4 duration-100 ease-linear hover:bg-[#171F2D] ${currentPath === '/modules' && 'bg-[#171F2D]'}`}
 							>
 								<svg
 									xmlns="http://www.w3.org/2000/svg"
 									fill="none"
 									viewBox="0 0 24 24"
 									stroke-width="1.5"
-									class={`size-6 group-hover:stroke-white duration-100 ease-linear ${currentPath === '/modules' ? 'stroke-white' : 'stroke-gray-500'}`}
+									class={`size-6 duration-100 ease-linear group-hover:stroke-white ${currentPath === '/modules' ? 'stroke-white' : 'stroke-gray-500'}`}
 								>
 									<path
 										stroke-linecap="round"
@@ -100,7 +100,7 @@
 								</svg>
 
 								<span
-									class={`lg:block hidden ml-4 group-hover:text-white duration-100 ease-linear ${currentPath === '/modules' ? ' text-white' : 'text-gray-500'}`}
+									class={`ml-4 hidden duration-100 ease-linear group-hover:text-white lg:block ${currentPath === '/modules' ? ' text-white' : 'text-gray-500'}`}
 								>
 									Modules
 								</span>
@@ -109,14 +109,14 @@
 							<!-- Flows Link -->
 							<a
 								href="/flows"
-								class={`flex items-center p-4 rounded-2xl duration-100 ease-linear hover:bg-[#171F2D] group ${currentPath === '/flows' && 'bg-[#171F2D]'}`}
+								class={`group flex items-center rounded-2xl p-4 duration-100 ease-linear hover:bg-[#171F2D] ${currentPath === '/flows' && 'bg-[#171F2D]'}`}
 							>
 								<svg
 									xmlns="http://www.w3.org/2000/svg"
 									fill="none"
 									viewBox="0 0 24 24"
 									stroke-width="1.5"
-									class={`size-6 group-hover:stroke-white duration-100 ease-linear ${currentPath === '/flows' ? 'stroke-white' : 'stroke-gray-500'}`}
+									class={`size-6 duration-100 ease-linear group-hover:stroke-white ${currentPath === '/flows' ? 'stroke-white' : 'stroke-gray-500'}`}
 								>
 									<path
 										stroke-linecap="round"
@@ -126,7 +126,7 @@
 								</svg>
 
 								<span
-									class={`lg:block hidden ml-4 group-hover:text-white duration-100 ease-linear ${currentPath === '/flows' ? ' text-white' : 'text-gray-500'}`}
+									class={`ml-4 hidden duration-100 ease-linear group-hover:text-white lg:block ${currentPath === '/flows' ? ' text-white' : 'text-gray-500'}`}
 								>
 									Flows
 								</span>
@@ -135,14 +135,14 @@
 							<!-- Environment Link -->
 							<a
 								href="/environment"
-								class={`flex items-center p-4 rounded-2xl duration-100 ease-linear hover:bg-[#171F2D] group ${currentPath === '/environment' && 'bg-[#171F2D]'}`}
+								class={`group flex items-center rounded-2xl p-4 duration-100 ease-linear hover:bg-[#171F2D] ${currentPath === '/environment' && 'bg-[#171F2D]'}`}
 							>
 								<svg
 									xmlns="http://www.w3.org/2000/svg"
 									fill="none"
 									viewBox="0 0 24 24"
 									stroke-width="1.5"
-									class={`size-6 group-hover:stroke-white duration-100 ease-linear ${currentPath === '/environment' ? 'stroke-white' : 'stroke-gray-500'}`}
+									class={`size-6 duration-100 ease-linear group-hover:stroke-white ${currentPath === '/environment' ? 'stroke-white' : 'stroke-gray-500'}`}
 								>
 									<path
 										stroke-linecap="round"
@@ -152,7 +152,7 @@
 								</svg>
 
 								<span
-									class={`lg:block hidden ml-4 group-hover:text-white duration-100 ease-linear ${currentPath === '/environment' ? ' text-white' : 'text-gray-500'}`}
+									class={`ml-4 hidden duration-100 ease-linear group-hover:text-white lg:block ${currentPath === '/environment' ? ' text-white' : 'text-gray-500'}`}
 								>
 									Environment
 								</span>
@@ -161,14 +161,14 @@
 							<!-- Template Library Link -->
 							<a
 								href="/library"
-								class={`flex items-center p-4 rounded-2xl duration-100 ease-linear hover:bg-[#171F2D] group ${currentPath === '/library' && 'bg-[#171F2D]'}`}
+								class={`group flex items-center rounded-2xl p-4 duration-100 ease-linear hover:bg-[#171F2D] ${currentPath === '/library' && 'bg-[#171F2D]'}`}
 							>
 								<svg
 									xmlns="http://www.w3.org/2000/svg"
 									fill="none"
 									viewBox="0 0 24 24"
 									stroke-width="1.5"
-									class={`size-6 group-hover:stroke-white duration-100 ease-linear ${currentPath === '/library' ? 'stroke-white' : 'stroke-gray-500'}`}
+									class={`size-6 duration-100 ease-linear group-hover:stroke-white ${currentPath === '/library' ? 'stroke-white' : 'stroke-gray-500'}`}
 								>
 									<path
 										stroke-linecap="round"
@@ -178,7 +178,7 @@
 								</svg>
 
 								<span
-									class={`lg:block hidden ml-4 group-hover:text-white duration-100 ease-linear ${currentPath === '/library' ? ' text-white' : 'text-gray-500'}`}
+									class={`ml-4 hidden duration-100 ease-linear group-hover:text-white lg:block ${currentPath === '/library' ? ' text-white' : 'text-gray-500'}`}
 								>
 									Template Library
 								</span>
@@ -187,14 +187,14 @@
 							<!-- Storage Link -->
 							<a
 								href="/storage"
-								class={`flex items-center p-4 rounded-2xl duration-100 ease-linear hover:bg-[#171F2D] group ${currentPath === '/storage' && 'bg-[#171F2D]'}`}
+								class={`group flex items-center rounded-2xl p-4 duration-100 ease-linear hover:bg-[#171F2D] ${currentPath === '/storage' && 'bg-[#171F2D]'}`}
 							>
 								<svg
 									xmlns="http://www.w3.org/2000/svg"
 									fill="none"
 									viewBox="0 0 24 24"
 									stroke-width="1.5"
-									class={`size-6 group-hover:stroke-white duration-100 ease-linear ${currentPath === '/storage' ? 'stroke-white' : 'stroke-gray-500'}`}
+									class={`size-6 duration-100 ease-linear group-hover:stroke-white ${currentPath === '/storage' ? 'stroke-white' : 'stroke-gray-500'}`}
 								>
 									<path
 										stroke-linecap="round"
@@ -204,7 +204,7 @@
 								</svg>
 
 								<span
-									class={`lg:block hidden ml-4 group-hover:text-white duration-100 ease-linear ${currentPath === '/storage' ? ' text-white' : 'text-gray-500'}`}
+									class={`ml-4 hidden duration-100 ease-linear group-hover:text-white lg:block ${currentPath === '/storage' ? ' text-white' : 'text-gray-500'}`}
 								>
 									Storage
 								</span>
@@ -216,22 +216,22 @@
 
 			<!-- Bottom Navigation (e.g. Billing, Support) -->
 			<nav class="flex flex-col">
-				<ul role="list" class="flex flex-col flex-1 mb-4 gap-y-7">
+				<ul role="list" class="mb-4 flex flex-1 flex-col gap-y-7">
 					<li class={menu ? 'mx-2' : 'px-4'}>
 						<ul
 							role="list"
-							class="lg:-mx-4 -mx-1 space-y-2 text-brand-light-gray text-sm font-semibold"
+							class="text-brand-light-gray -mx-1 space-y-2 text-sm font-semibold lg:-mx-4"
 						>
 							<a
 								href="/billings"
-								class={`flex items-center p-4 rounded-2xl duration-100 ease-linear hover:bg-[#171F2D] group ${currentPath === '/billings' && 'bg-[#171F2D]'}`}
+								class={`group flex items-center rounded-2xl p-4 duration-100 ease-linear hover:bg-[#171F2D] ${currentPath === '/billings' && 'bg-[#171F2D]'}`}
 							>
 								<svg
 									xmlns="http://www.w3.org/2000/svg"
 									fill="none"
 									viewBox="0 0 24 24"
 									stroke-width="1.5"
-									class={`size-6 group-hover:stroke-white duration-100 ease-linear ${currentPath === '/billings' ? 'stroke-white' : 'stroke-gray-500'}`}
+									class={`size-6 duration-100 ease-linear group-hover:stroke-white ${currentPath === '/billings' ? 'stroke-white' : 'stroke-gray-500'}`}
 								>
 									<path
 										stroke-linecap="round"
@@ -241,7 +241,7 @@
 								</svg>
 
 								<span
-									class={`lg:block hidden ml-4 group-hover:text-white duration-100 ease-linear ${currentPath === '/billings' ? ' text-white' : 'text-gray-500'}`}
+									class={`ml-4 hidden duration-100 ease-linear group-hover:text-white lg:block ${currentPath === '/billings' ? ' text-white' : 'text-gray-500'}`}
 								>
 									Billings
 								</span>
@@ -249,14 +249,14 @@
 
 							<a
 								href="https://support.triform.ai"
-								class={`flex items-center p-4 rounded-2xl duration-100 ease-linear hover:bg-[#171F2D] group `}
+								class={`group flex items-center rounded-2xl p-4 duration-100 ease-linear hover:bg-[#171F2D] `}
 							>
 								<svg
 									xmlns="http://www.w3.org/2000/svg"
 									fill="none"
 									viewBox="0 0 24 24"
 									stroke-width="1.5"
-									class={`size-6 group-hover:stroke-white duration-100 ease-linear stroke-gray-500`}
+									class={`size-6 stroke-gray-500 duration-100 ease-linear group-hover:stroke-white`}
 								>
 									<path
 										stroke-linecap="round"
@@ -266,7 +266,7 @@
 								</svg>
 
 								<span
-									class={`lg:block hidden ml-4 group-hover:text-white duration-100 ease-linear text-gray-500`}
+									class={`ml-4 hidden text-gray-500 duration-100 ease-linear group-hover:text-white lg:block`}
 								>
 									Support
 								</span>
@@ -276,16 +276,16 @@
 				</ul>
 
 				<!-- User Profile Dropdown (simplified) -->
-				<div class={menu ? 'lg:-mx-0 mx-2' : 'px-3'}>
+				<div class={menu ? 'mx-2 lg:-mx-0' : 'px-3'}>
 					<button
-						class="flex items-center px-2 text-sm text-gray-500 rounded-full gap-x-4 hover:text-gray-300"
+						class="flex items-center gap-x-4 rounded-full px-2 text-sm text-gray-500 hover:text-gray-300"
 					>
-						<div class="relative p-1 text-xs bg-white rounded-full text-blue lg:left-0 left-1">
+						<div class="text-blue relative left-1 rounded-full bg-white p-1 text-xs lg:left-0">
 							AN
 						</div>
 
 						<div class="hidden lg:block">
-							<span class="truncate max-w-[8rem]">Team Name</span>
+							<span class="max-w-[8rem] truncate">Team Name</span>
 						</div>
 					</button>
 				</div>

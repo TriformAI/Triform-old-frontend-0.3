@@ -162,7 +162,7 @@
 </script>
 
 <div
-	class="relative w-full h-full"
+	class="relative h-full w-full"
 	bind:this={wrapper}
 	ondragover={handleDragOver}
 	ondrop={handleDrop}

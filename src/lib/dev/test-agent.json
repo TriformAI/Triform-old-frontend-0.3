@@ -205,26 +205,26 @@
 					}
 				}
 			},
-      "22ccd5b4-0273-427d-9862-61d66da353b0": {
-        "component_id": "2c63901f-3f4e-431d-a1e8-ea2abbf6b8b4",
-        "component_version": 1,
-        "inputs": ["e5e8d6bf-7076-4e09-8cc5-8cc4a27f84ed"],
-        "spec": {
-          "resource": "action/v1",
-          "meta": {
-            "name": "Plus one",
-            "id": "2c63901f-3f4e-431d-a1e8-ea2abbf6b8b4",
-            "version": 1
-          },
-          "spec": {
-            "source": "@triform.entrypoint\ndef action(input):\n    return {'sum': input['sum']+1}",
-            "readme": "This action adds one to the sum of the input",
-            "deps": "",
-            "checksum": "",
-            "streaming": false
-          }
-        }
-      }
+			"22ccd5b4-0273-427d-9862-61d66da353b0": {
+				"component_id": "2c63901f-3f4e-431d-a1e8-ea2abbf6b8b4",
+				"component_version": 1,
+				"inputs": ["e5e8d6bf-7076-4e09-8cc5-8cc4a27f84ed"],
+				"spec": {
+					"resource": "action/v1",
+					"meta": {
+						"name": "Plus one",
+						"id": "2c63901f-3f4e-431d-a1e8-ea2abbf6b8b4",
+						"version": 1
+					},
+					"spec": {
+						"source": "@triform.entrypoint\ndef action(input):\n    return {'sum': input['sum']+1}",
+						"readme": "This action adds one to the sum of the input",
+						"deps": "",
+						"checksum": "",
+						"streaming": false
+					}
+				}
+			}
 		},
 		"outputs": ["2d5c7df8-f458-4c49-80a9-7e4c5f80d8db"]
 	}

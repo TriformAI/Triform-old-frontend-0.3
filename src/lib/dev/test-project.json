@@ -1,230 +1,230 @@
 {
-  "resource": "project/v1",
-  "meta": {
-    "name": "Test project",
-    "id": "007789e6-b817-4395-aad3-af7f7a828206",
-    "version": 1
-  },
-  "spec": {
-    "outputs": ["7bf95543-9ba5-486c-9312-9ace669cc047"],
-    "nodes": {
-      "29e0d2c1-22da-47b9-872d-20a6b346d843": {
-        "component_id": "2c63901f-3f4e-431d-a1e8-ea2abbf6b8b4",
-        "component_version": 1,
-        "inputs": ["parent"],
-        "spec": {
-          "resource": "action/v1",
-          "meta": {
-            "name": "Plus one",
-            "id": "2c63901f-3f4e-431d-a1e8-ea2abbf6b8b4",
-            "version": 1
-          },
-          "spec": {
-            "source": "@triform.entrypoint\ndef action(input):\n    return {'sum': input['sum']+1}",
-            "readme": "This action adds one to the sum of the input",
-            "deps": "",
-            "checksum": "",
-            "streaming": false
-          }
-        }
-      },
-      "20238c14-764b-4172-9692-b9b34be984c5": {
-        "component_id": "2c63901f-3f4e-431d-a1e8-ea2abbf6b8b4",
-        "component_version": 1,
-        "inputs": ["29e0d2c1-22da-47b9-872d-20a6b346d843"],
-        "spec": {
-          "resource": "action/v1",
-          "meta": {
-            "name": "Plus one",
-            "id": "2c63901f-3f4e-431d-a1e8-ea2abbf6b8b4",
-            "version": 1
-          },
-          "spec": {
-            "source": "@triform.entrypoint\ndef action(input):\n    return {'sum': input['sum']+1}",
-            "readme": "This action adds one to the sum of the input",
-            "deps": "",
-            "checksum": "",
-            "streaming": false
-          }
-        }
-      },
-      "e5e8d6bf-7076-4e09-8cc5-8cc4a27f84ed": {
-        "component_id": "2770d0a5-a4de-48b6-8982-edfdb712764b",
-        "component_version": 1,
-        "inputs": ["20238c14-764b-4172-9692-b9b34be984c5"],
-        "spec": {
-          "resource": "agent/v1",
-          "meta": {
-            "name": "Flow 2",
-            "id": "2770d0a5-a4de-48b6-8982-edfdb712764b",
-            "version": 1
-          },
-          "spec": {
-            "readme": "Flow 2",
-            "nodes": {
-              "2af4ce8e-916c-48f1-8fd5-da08c5f0f09b": {
-                "component_id": "2c63901f-3f4e-431d-a1e8-ea2abbf6b8b4",
-                "component_version": 1,
-                "inputs": ["parent"],
-                "spec": {
-                  "resource": "action/v1",
-                  "meta": {
-                    "name": "Plus one",
-                    "id": "2c63901f-3f4e-431d-a1e8-ea2abbf6b8b4",
-                    "version": 1
-                  },
-                  "spec": {
-                    "source": "@triform.entrypoint\ndef action(input):\n    return {'sum': input['sum']+1}",
-                    "readme": "This action adds one to the sum of the input",
-                    "deps": "",
-                    "checksum": "",
-                    "streaming": false
-                  }
-                }
-              },
-              "1cc14653-dac4-41f1-8277-69b596713455": {
-                "component_id": "2770d0a5-a4de-48b6-8982-edfdb712764b",
-                "component_version": 1,
-                "inputs": ["2af4ce8e-916c-48f1-8fd5-da08c5f0f09b"],
-                "spec": {
-                  "resource": "agent/v1",
-                  "meta": {
-                    "name": "Nested flow 2.1",
-                    "id": "2770d0a5-a4de-48b6-8982-edfdb712764b",
-                    "version": 1
-                  },
-                  "spec": {
-                    "readme": "Nested flow 2.1",
-                    "nodes": {
-                      "8f3ad634-182c-4a37-81ef-5665acae1e4f": {
-                        "component_id": "2c63901f-3f4e-431d-a1e8-ea2abbf6b8b4",
-                        "component_version": 1,
-                        "inputs": ["parent"],
-                        "spec": {
-                          "resource": "action/v1",
-                          "meta": {
-                            "name": "Plus one",
-                            "id": "2c63901f-3f4e-431d-a1e8-ea2abbf6b8b4",
-                            "version": 1
-                          },
-                          "spec": {
-                            "source": "@triform.entrypoint\ndef action(input):\n    return {'sum': input['sum']+1}",
-                            "readme": "This action adds one to the sum of the input",
-                            "deps": "",
-                            "checksum": "",
-                            "streaming": false
-                          }
-                        }
-                      },
-                      "cf1e801a-df9c-44cf-b832-6cdcb220f69c": {
-                        "component_id": "2c63901f-3f4e-431d-a1e8-ea2abbf6b8b4",
-                        "component_version": 1,
-                        "inputs": ["8f3ad634-182c-4a37-81ef-5665acae1e4f"],
-                        "spec": {
-                          "resource": "action/v1",
-                          "meta": {
-                            "name": "Plus one",
-                            "id": "2c63901f-3f4e-431d-a1e8-ea2abbf6b8b4",
-                            "version": 1
-                          },
-                          "spec": {
-                            "source": "@triform.entrypoint\ndef action(input):\n    return {'sum': input['sum']+1}",
-                            "readme": "This action adds one to the sum of the input",
-                            "deps": "",
-                            "checksum": "",
-                            "streaming": false
-                          }
-                        }
-                      }
-                    },
-                    "outputs": ["8f3ad634-182c-4a37-81ef-5665acae1e4f"]
-                  }
-                }
-              }
-            },
-            "outputs": ["1cc14653-dac4-41f1-8277-69b596713455"]
-          }
-        }
-      },
-      "7bf95543-9ba5-486c-9312-9ace669cc047": {
-        "component_id": "2770d0a5-a4de-48b6-8982-edfdb712764b",
-        "component_version": 1,
-        "inputs": ["20238c14-764b-4172-9692-b9b34be984c5"],
-        "spec": {
-          "resource": "agent/v1",
-          "meta": {
-            "name": "Nested flow 1",
-            "id": "3eb08c7f-04b9-443f-8e83-e6ff0f239eb3",
-            "version": 1
-          },
-          "spec": {
-            "readme": "Nested flow 1",
-            "nodes": {
-              "7cc57cb7-4c86-4037-9e92-7482b0fc33f8": {
-                "component_id": "2c63901f-3f4e-431d-a1e8-ea2abbf6b8b4",
-                "component_version": 1,
-                "inputs": ["parent"],
-                "spec": {
-                  "resource": "action/v1",
-                  "meta": {
-                    "name": "Plus one",
-                    "id": "2c63901f-3f4e-431d-a1e8-ea2abbf6b8b4",
-                    "version": 1
-                  },
-                  "spec": {
-                    "source": "@triform.entrypoint\ndef action(input):\n    return {'sum': input['sum']+1}",
-                    "readme": "This action adds one to the sum of the input",
-                    "deps": "",
-                    "checksum": "",
-                    "streaming": false
-                  }
-                }
-              },
-              "d1560637-7a97-4329-a1bd-803127dbe226": {
-                "component_id": "2c63901f-3f4e-431d-a1e8-ea2abbf6b8b4",
-                "component_version": 1,
-                "inputs": ["7cc57cb7-4c86-4037-9e92-7482b0fc33f8"],
-                "spec": {
-                  "resource": "action/v1",
-                  "meta": {
-                    "name": "Plus one",
-                    "id": "2c63901f-3f4e-431d-a1e8-ea2abbf6b8b4",
-                    "version": 1
-                  },
-                  "spec": {
-                    "source": "@triform.entrypoint\ndef action(input):\n    return {'sum': input['sum']+1}",
-                    "readme": "This action adds one to the sum of the input",
-                    "deps": "",
-                    "checksum": "",
-                    "streaming": false
-                  }
-                }
-              }
-            },
-            "outputs": ["1cc14653-dac4-41f1-8277-69b596713455"]
-          }
-        }
-      },
-      "22ccd5b4-0273-427d-9862-61d66da353b0": {
-        "component_id": "2c63901f-3f4e-431d-a1e8-ea2abbf6b8b4",
-        "component_version": 1,
-        "inputs": ["e5e8d6bf-7076-4e09-8cc5-8cc4a27f84ed"],
-        "spec": {
-          "resource": "action/v1",
-          "meta": {
-            "name": "Plus one",
-            "id": "2c63901f-3f4e-431d-a1e8-ea2abbf6b8b4",
-            "version": 1
-          },
-          "spec": {
-            "source": "@triform.entrypoint\ndef action(input):\n    return {'sum': input['sum']+1}",
-            "readme": "This action adds one to the sum of the input",
-            "deps": "",
-            "checksum": "",
-            "streaming": false
-          }
-        }
-      }
-    }
-  }
+	"resource": "project/v1",
+	"meta": {
+		"name": "Test project",
+		"id": "007789e6-b817-4395-aad3-af7f7a828206",
+		"version": 1
+	},
+	"spec": {
+		"outputs": ["7bf95543-9ba5-486c-9312-9ace669cc047"],
+		"nodes": {
+			"29e0d2c1-22da-47b9-872d-20a6b346d843": {
+				"component_id": "2c63901f-3f4e-431d-a1e8-ea2abbf6b8b4",
+				"component_version": 1,
+				"inputs": ["parent"],
+				"spec": {
+					"resource": "action/v1",
+					"meta": {
+						"name": "Plus one",
+						"id": "2c63901f-3f4e-431d-a1e8-ea2abbf6b8b4",
+						"version": 1
+					},
+					"spec": {
+						"source": "@triform.entrypoint\ndef action(input):\n    return {'sum': input['sum']+1}",
+						"readme": "This action adds one to the sum of the input",
+						"deps": "",
+						"checksum": "",
+						"streaming": false
+					}
+				}
+			},
+			"20238c14-764b-4172-9692-b9b34be984c5": {
+				"component_id": "2c63901f-3f4e-431d-a1e8-ea2abbf6b8b4",
+				"component_version": 1,
+				"inputs": ["29e0d2c1-22da-47b9-872d-20a6b346d843"],
+				"spec": {
+					"resource": "action/v1",
+					"meta": {
+						"name": "Plus one",
+						"id": "2c63901f-3f4e-431d-a1e8-ea2abbf6b8b4",
+						"version": 1
+					},
+					"spec": {
+						"source": "@triform.entrypoint\ndef action(input):\n    return {'sum': input['sum']+1}",
+						"readme": "This action adds one to the sum of the input",
+						"deps": "",
+						"checksum": "",
+						"streaming": false
+					}
+				}
+			},
+			"e5e8d6bf-7076-4e09-8cc5-8cc4a27f84ed": {
+				"component_id": "2770d0a5-a4de-48b6-8982-edfdb712764b",
+				"component_version": 1,
+				"inputs": ["20238c14-764b-4172-9692-b9b34be984c5"],
+				"spec": {
+					"resource": "agent/v1",
+					"meta": {
+						"name": "Flow 2",
+						"id": "2770d0a5-a4de-48b6-8982-edfdb712764b",
+						"version": 1
+					},
+					"spec": {
+						"readme": "Flow 2",
+						"nodes": {
+							"2af4ce8e-916c-48f1-8fd5-da08c5f0f09b": {
+								"component_id": "2c63901f-3f4e-431d-a1e8-ea2abbf6b8b4",
+								"component_version": 1,
+								"inputs": ["parent"],
+								"spec": {
+									"resource": "action/v1",
+									"meta": {
+										"name": "Plus one",
+										"id": "2c63901f-3f4e-431d-a1e8-ea2abbf6b8b4",
+										"version": 1
+									},
+									"spec": {
+										"source": "@triform.entrypoint\ndef action(input):\n    return {'sum': input['sum']+1}",
+										"readme": "This action adds one to the sum of the input",
+										"deps": "",
+										"checksum": "",
+										"streaming": false
+									}
+								}
+							},
+							"1cc14653-dac4-41f1-8277-69b596713455": {
+								"component_id": "2770d0a5-a4de-48b6-8982-edfdb712764b",
+								"component_version": 1,
+								"inputs": ["2af4ce8e-916c-48f1-8fd5-da08c5f0f09b"],
+								"spec": {
+									"resource": "agent/v1",
+									"meta": {
+										"name": "Nested flow 2.1",
+										"id": "2770d0a5-a4de-48b6-8982-edfdb712764b",
+										"version": 1
+									},
+									"spec": {
+										"readme": "Nested flow 2.1",
+										"nodes": {
+											"8f3ad634-182c-4a37-81ef-5665acae1e4f": {
+												"component_id": "2c63901f-3f4e-431d-a1e8-ea2abbf6b8b4",
+												"component_version": 1,
+												"inputs": ["parent"],
+												"spec": {
+													"resource": "action/v1",
+													"meta": {
+														"name": "Plus one",
+														"id": "2c63901f-3f4e-431d-a1e8-ea2abbf6b8b4",
+														"version": 1
+													},
+													"spec": {
+														"source": "@triform.entrypoint\ndef action(input):\n    return {'sum': input['sum']+1}",
+														"readme": "This action adds one to the sum of the input",
+														"deps": "",
+														"checksum": "",
+														"streaming": false
+													}
+												}
+											},
+											"cf1e801a-df9c-44cf-b832-6cdcb220f69c": {
+												"component_id": "2c63901f-3f4e-431d-a1e8-ea2abbf6b8b4",
+												"component_version": 1,
+												"inputs": ["8f3ad634-182c-4a37-81ef-5665acae1e4f"],
+												"spec": {
+													"resource": "action/v1",
+													"meta": {
+														"name": "Plus one",
+														"id": "2c63901f-3f4e-431d-a1e8-ea2abbf6b8b4",
+														"version": 1
+													},
+													"spec": {
+														"source": "@triform.entrypoint\ndef action(input):\n    return {'sum': input['sum']+1}",
+														"readme": "This action adds one to the sum of the input",
+														"deps": "",
+														"checksum": "",
+														"streaming": false
+													}
+												}
+											}
+										},
+										"outputs": ["8f3ad634-182c-4a37-81ef-5665acae1e4f"]
+									}
+								}
+							}
+						},
+						"outputs": ["1cc14653-dac4-41f1-8277-69b596713455"]
+					}
+				}
+			},
+			"7bf95543-9ba5-486c-9312-9ace669cc047": {
+				"component_id": "2770d0a5-a4de-48b6-8982-edfdb712764b",
+				"component_version": 1,
+				"inputs": ["20238c14-764b-4172-9692-b9b34be984c5"],
+				"spec": {
+					"resource": "agent/v1",
+					"meta": {
+						"name": "Nested flow 1",
+						"id": "3eb08c7f-04b9-443f-8e83-e6ff0f239eb3",
+						"version": 1
+					},
+					"spec": {
+						"readme": "Nested flow 1",
+						"nodes": {
+							"7cc57cb7-4c86-4037-9e92-7482b0fc33f8": {
+								"component_id": "2c63901f-3f4e-431d-a1e8-ea2abbf6b8b4",
+								"component_version": 1,
+								"inputs": ["parent"],
+								"spec": {
+									"resource": "action/v1",
+									"meta": {
+										"name": "Plus one",
+										"id": "2c63901f-3f4e-431d-a1e8-ea2abbf6b8b4",
+										"version": 1
+									},
+									"spec": {
+										"source": "@triform.entrypoint\ndef action(input):\n    return {'sum': input['sum']+1}",
+										"readme": "This action adds one to the sum of the input",
+										"deps": "",
+										"checksum": "",
+										"streaming": false
+									}
+								}
+							},
+							"d1560637-7a97-4329-a1bd-803127dbe226": {
+								"component_id": "2c63901f-3f4e-431d-a1e8-ea2abbf6b8b4",
+								"component_version": 1,
+								"inputs": ["7cc57cb7-4c86-4037-9e92-7482b0fc33f8"],
+								"spec": {
+									"resource": "action/v1",
+									"meta": {
+										"name": "Plus one",
+										"id": "2c63901f-3f4e-431d-a1e8-ea2abbf6b8b4",
+										"version": 1
+									},
+									"spec": {
+										"source": "@triform.entrypoint\ndef action(input):\n    return {'sum': input['sum']+1}",
+										"readme": "This action adds one to the sum of the input",
+										"deps": "",
+										"checksum": "",
+										"streaming": false
+									}
+								}
+							}
+						},
+						"outputs": ["1cc14653-dac4-41f1-8277-69b596713455"]
+					}
+				}
+			},
+			"22ccd5b4-0273-427d-9862-61d66da353b0": {
+				"component_id": "2c63901f-3f4e-431d-a1e8-ea2abbf6b8b4",
+				"component_version": 1,
+				"inputs": ["e5e8d6bf-7076-4e09-8cc5-8cc4a27f84ed"],
+				"spec": {
+					"resource": "action/v1",
+					"meta": {
+						"name": "Plus one",
+						"id": "2c63901f-3f4e-431d-a1e8-ea2abbf6b8b4",
+						"version": 1
+					},
+					"spec": {
+						"source": "@triform.entrypoint\ndef action(input):\n    return {'sum': input['sum']+1}",
+						"readme": "This action adds one to the sum of the input",
+						"deps": "",
+						"checksum": "",
+						"streaming": false
+					}
+				}
+			}
+		}
+	}
 }

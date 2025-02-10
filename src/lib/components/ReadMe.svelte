@@ -38,7 +38,7 @@
 	let parsedContent = parseMarkdown(content)
 </script>
 
-<div class="h-full p-6 overflow-y-auto text-white">
+<div class="h-full overflow-y-auto p-6 text-white">
 	<!-- eslint-disable-next-line svelte/no-at-html-tags -->
 	{@html parsedContent}
 </div>

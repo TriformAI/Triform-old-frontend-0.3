@@ -14,7 +14,7 @@
 </script>
 
 <footer
-	class="fixed grid items-center bg-zinc-950 delay-200 bottom-0 w-full px-6 ease-[cubic-bezier(0.85,_0.09,_0.15,_0.91)] transition-transform"
+	class="fixed bottom-0 grid w-full items-center bg-zinc-950 px-6 transition-transform delay-200 ease-[cubic-bezier(0.85,_0.09,_0.15,_0.91)]"
 >
 	<div class="col-start-1 row-start-1">
 		<SystemStatus data={stats} />
@@ -27,7 +27,7 @@
 			dialog?.showModal()
 		}}
 	>
-		<ChevronUp class="mx-auto text-white size-6 col-start-1 row-start-1" />
+		<ChevronUp class="col-start-1 row-start-1 mx-auto size-6 text-white" />
 	</button>
 </footer>
 

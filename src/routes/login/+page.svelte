@@ -63,13 +63,13 @@
 </script>
 
 <section>
-	<div class="flex items-center justify-center flex-1 h-screen bg-gray-900">
+	<div class="flex h-screen flex-1 items-center justify-center bg-gray-900">
 		<div>
 			<a href="/">
-				<img alt="triform logo" src={logo} class="w-16 h-16 mx-auto mb-4" />
+				<img alt="triform logo" src={logo} class="mx-auto mb-4 h-16 w-16" />
 			</a>
 			<div
-				class="space-y-4 bg-gray-950 p-10 md:w-[26em] w-full rounded-xl shadow-xl border animate-border"
+				class="animate-border w-full space-y-4 rounded-xl border bg-gray-950 p-10 shadow-xl md:w-[26em]"
 			>
 				<form on:submit|preventDefault={handleLogin} id="login-form">
 					<div class="my-4 space-y-2">
@@ -80,7 +80,7 @@
 							type="email"
 							bind:value={email}
 							required
-							class="w-full p-2 text-white placeholder-gray-500 bg-gray-800 rounded-lg"
+							class="w-full rounded-lg bg-gray-800 p-2 text-white placeholder-gray-500"
 						/>
 						<span id="email-error" class="text-sm text-red-500"></span>
 					</div>
@@ -92,19 +92,19 @@
 								type={showPassword ? 'text' : 'password'}
 								bind:value={password}
 								required
-								class="w-full p-2 text-white placeholder-gray-500 bg-gray-800 rounded-lg"
+								class="w-full rounded-lg bg-gray-800 p-2 text-white placeholder-gray-500"
 							/>
 							<button
 								type="button"
 								aria-label="Toggle Password Visibility"
-								class="absolute inset-y-0 w-5 right-3"
+								class="absolute inset-y-0 right-3 w-5"
 								on:click={() => (showPassword = !showPassword)}
 							>
 								{#if !showPassword}
 									<svg
 										xmlns="http://www.w3.org/2000/svg"
 										viewBox="0 0 576 512"
-										class="w-5 h-5 text-white"
+										class="h-5 w-5 text-white"
 									>
 										<path
 											fill="currentColor"
@@ -115,7 +115,7 @@
 									<svg
 										xmlns="http://www.w3.org/2000/svg"
 										viewBox="0 0 640 512"
-										class="w-5 h-5 text-white"
+										class="h-5 w-5 text-white"
 									>
 										<path
 											fill="currentColor"
@@ -133,7 +133,7 @@
 
 					<button
 						type="submit"
-						class="flex items-center justify-center w-full py-2 mt-3 text-white bg-gray-800 rounded-lg gap-x-2 hover:bg-gray-700"
+						class="mt-3 flex w-full items-center justify-center gap-x-2 rounded-lg bg-gray-800 py-2 text-white hover:bg-gray-700"
 						disabled={loading}
 					>
 						{#if loading}
@@ -144,10 +144,10 @@
 					</button>
 
 					{#if errorMessage}
-						<p class="mt-2 text-sm text-center text-red-500">{errorMessage}</p>
+						<p class="mt-2 text-center text-sm text-red-500">{errorMessage}</p>
 					{/if}
 				</form>
-				<div class="flex items-center justify-center my-4">
+				<div class="my-4 flex items-center justify-center">
 					<div class="flex-1 border-t border-gray-500"></div>
 					<span class="mx-4 text-gray-500">OR</span>
 					<div class="flex-1 border-t border-gray-500"></div>
@@ -155,20 +155,20 @@
 				<div>
 					<button
 						on:click={handleLoginWithGithub}
-						class="flex items-center justify-center w-full px-2 py-3 bg-gray-800 border-4 border-gray-700 rounded-full hover:bg-gray-700"
+						class="flex w-full items-center justify-center rounded-full border-4 border-gray-700 bg-gray-800 px-2 py-3 hover:bg-gray-700"
 					>
-						<div class="w-6 h-6">
-							<img src={github_mark_logo} alt="Github" class="object-contain w-full h-full" />
+						<div class="h-6 w-6">
+							<img src={github_mark_logo} alt="Github" class="h-full w-full object-contain" />
 						</div>
 						<p class="mx-5 font-mono text-xs font-bold tracking-tighter text-white sm:text-sm">
 							Login with Github
 						</p>
 					</button>
 
-					<h3 class="mt-3 text-xs text-center text-gray-400 truncate">
+					<h3 class="mt-3 truncate text-center text-xs text-gray-400">
 						Don't have an account yet? <a
 							href="/register"
-							class="font-bold text-gray-200 cursor-pointer hover:underline">Get Started</a
+							class="cursor-pointer font-bold text-gray-200 hover:underline">Get Started</a
 						>
 					</h3>
 				</div>

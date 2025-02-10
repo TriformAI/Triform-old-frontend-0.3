@@ -31,7 +31,7 @@
 	{#snippet body()}
 		<div class="flex items-center gap-x-4">
 			<button
-				class={`flex items-center justify-center flex-shrink-0 gap-x-3 px-4 py-2.5 text-sm font-medium text-brand-tertiary-gray hover:text-white transition duration-200 ease-in-out border rounded-lg bg-white/5 border-brand-primary-gray hover:border-brand-light-gray`}
+				class={`text-brand-tertiary-gray border-brand-primary-gray hover:border-brand-light-gray flex flex-shrink-0 items-center justify-center gap-x-3 rounded-lg border bg-white/5 px-4 py-2.5 text-sm font-medium transition duration-200 ease-in-out hover:text-white`}
 			>
 				<svg
 					xmlns="http://www.w3.org/2000/svg"
@@ -49,14 +49,14 @@
 				</svg>
 				<T keyName="copy-link-button" defaultValue="Copy Link" />
 			</button>
-			<div class="relative w-full my-2">
+			<div class="relative my-2 w-full">
 				<InputField
 					label={$t('invite-input-label', '')}
 					placeholder={$t('invite-input-placeholder', 'Invite users by name or email...')}
 					type="text"
 				/>
 				<button
-					class={`w-fit absolute ml-auto inset-0 px-4 py-3 text-md font-medium text-brand-tertiary-gray hover:text-white transition duration-200 ease-in-out border rounded-y-lg rounded-r-lg bg-[#262728] hover:bg-white/10 border-brand-primary-gray`}
+					class={`text-md text-brand-tertiary-gray rounded-y-lg border-brand-primary-gray absolute inset-0 ml-auto w-fit rounded-r-lg border bg-[#262728] px-4 py-3 font-medium transition duration-200 ease-in-out hover:bg-white/10 hover:text-white`}
 				>
 					<T keyName="invite-link-button" defaultValue="Invite" />
 				</button>
@@ -65,21 +65,21 @@
 		<div>
 			<div class="flex items-center justify-between pt-8">
 				<div class="flex items-center gap-x-4">
-					<img alt="profile logo" src="https://picsum.photos/100" class="w-8 mr-3 rounded-full" />
+					<img alt="profile logo" src="https://picsum.photos/100" class="mr-3 w-8 rounded-full" />
 					<h4 class="text-sm text-white">Iggy</h4>
 				</div>
 				<Select {options} bind:selected singleValue={true} />
 			</div>
 			<div class="flex items-center justify-between pt-8">
 				<div class="flex items-center gap-x-4">
-					<img alt="profile logo" src="https://picsum.photos/100" class="w-8 mr-3 rounded-full" />
+					<img alt="profile logo" src="https://picsum.photos/100" class="mr-3 w-8 rounded-full" />
 					<h4 class="text-sm text-white">Iggy</h4>
 				</div>
 				<Select {options} bind:selected singleValue={true} />
 			</div>
 			<div class="flex items-center justify-between pt-8">
 				<div class="flex items-center gap-x-4">
-					<img alt="profile logo" src="https://picsum.photos/100" class="w-8 mr-3 rounded-full" />
+					<img alt="profile logo" src="https://picsum.photos/100" class="mr-3 w-8 rounded-full" />
 					<h4 class="text-sm text-white">Iggy</h4>
 				</div>
 				<Select {options} bind:selected singleValue={true} />

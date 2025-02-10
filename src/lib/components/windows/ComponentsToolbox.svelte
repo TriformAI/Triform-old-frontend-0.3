@@ -140,33 +140,33 @@
 			{#if activeTab.key === '1'}
 				{#each actions as action}
 					<div
-						class="flex flex-row items-center justify-between px-5 py-4 text-sm rounded-md hover:bg-zinc-800"
+						class="flex flex-row items-center justify-between rounded-md px-5 py-4 text-sm hover:bg-zinc-800"
 						draggable="true"
 						ondragstart={event => handleDragStart(event, action, 'action-node')}
 						role="button"
 						tabindex="0"
 					>
 						<div class="flex items-center gap-x-5">
-							<IconSquare class="transform rotate-45 text-slate-300" />
+							<IconSquare class="rotate-45 transform text-slate-300" />
 							<p class="font-semibold text-zinc-200">{action.meta.name}</p>
 						</div>
-						<p class="font-semibold text-white uppercase cursor-pointer hover:font-bold">ReadMe</p>
+						<p class="cursor-pointer font-semibold text-white uppercase hover:font-bold">ReadMe</p>
 					</div>
 				{/each}
 			{:else if activeTab.key === '2'}
 				{#each agents as agent}
 					<div
-						class="flex flex-row items-center justify-between px-5 py-4 text-sm rounded-md hover:bg-zinc-800"
+						class="flex flex-row items-center justify-between rounded-md px-5 py-4 text-sm hover:bg-zinc-800"
 						draggable="true"
 						ondragstart={event => handleDragStart(event, agent, 'agent-node')}
 						role="button"
 						tabindex="0"
 					>
 						<div class="flex items-center gap-x-5">
-							<IconChangeHistory class="w-5 h-5 mb-1 text-indigo-500" />
+							<IconChangeHistory class="mb-1 h-5 w-5 text-indigo-500" />
 							<p class="font-semibold text-zinc-200">{agent.meta.name}</p>
 						</div>
-						<p class="font-semibold text-white uppercase cursor-pointer hover:font-bold">ReadMe</p>
+						<p class="cursor-pointer font-semibold text-white uppercase hover:font-bold">ReadMe</p>
 					</div>
 				{/each}
 			{/if}

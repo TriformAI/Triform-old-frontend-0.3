@@ -9,12 +9,12 @@
 	<ul class="p-2">
 		{#if libraries.length > 0 && libraries[0].trim() !== ''}
 			{#each libraries as lib, index}
-				<li class="max-w-lg my-2 text-sm list-disc" key={index}>
+				<li class="my-2 max-w-lg list-disc text-sm" key={index}>
 					{lib}
 				</li>
 			{/each}
 		{:else}
-			<li class="max-w-lg my-2 text-sm">No Requirements</li>
+			<li class="my-2 max-w-lg text-sm">No Requirements</li>
 		{/if}
 	</ul>
 </div>

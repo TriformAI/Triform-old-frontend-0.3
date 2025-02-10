@@ -109,10 +109,13 @@ export const parseProject = (project: Project) => {
 
 	return Object.entries(project.spec.nodes)
 		.map(([id, node]) => parseNode(node, id as Uuid))
-		.reduce((acc, curr) => ({
-			nodes: [...acc.nodes, ...curr.nodes],
-			edges: [...acc.edges, ...curr.edges]
-		}), { nodes: [], edges: [] })
+		.reduce(
+			(acc, curr) => ({
+				nodes: [...acc.nodes, ...curr.nodes],
+				edges: [...acc.edges, ...curr.edges]
+			}),
+			{ nodes: [], edges: [] }
+		)
 }
 
 export const canvasStore = $state<Canvas[]>([])
@@ -144,7 +147,8 @@ const processNode = async (id: Uuid, fn: (node: TriNode) => Promise<TriNode | un
 
 		if (isAgent(node)) {
 			if (!('spec' in node)) return
-			for (const [childId, child] of Object.entries(node.spec.spec.nodes)) await process(child, childId as Uuid)
+			for (const [childId, child] of Object.entries(node.spec.spec.nodes))
+				await process(child, childId as Uuid)
 		}
 		// Currently we only support updating children of agents so don't do anything else here
 	}
@@ -156,9 +160,8 @@ const processNode = async (id: Uuid, fn: (node: TriNode) => Promise<TriNode | un
 	return updatedNode
 }
 
-export const updateNode = async (id: Uuid, updatedNode: TriNode) => await processNode(id, async () => updatedNode)
+export const updateNode = async (id: Uuid, updatedNode: TriNode) =>
+	await processNode(id, async () => updatedNode)
 
 // Adds a child node to a specific parent node
-export const addChild = (parentId: Uuid, child: TriNode) => {
-
-}
+export const addChild = (parentId: Uuid, child: TriNode) => {}

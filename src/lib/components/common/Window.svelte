@@ -128,7 +128,7 @@
 </script>
 
 <div
-	class="absolute overflow-auto resize"
+	class="absolute resize overflow-auto"
 	style={`
 		top: ${posY}%;
 		left: ${posX}%;

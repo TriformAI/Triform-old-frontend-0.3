@@ -144,11 +144,11 @@
 	in:scale={inScale}
 	out:fade={outFade}
 	bind:this={selfRef}
-	class="flex flex-col border rounded-lg shadow-lg modal bg-website-secondary text-brand-tertiary-gray border-brand-primary-gray"
+	class="modal bg-website-secondary text-brand-tertiary-gray border-brand-primary-gray flex flex-col rounded-lg border shadow-lg"
 	style="left: {position.x}px; top: {position.y}px; width: {size.width}px; height: {size.height}px; z-index: 10;"
 >
 	<div
-		class="flex flex-row justify-between px-4 py-4 header gap-y-3 border-brand-primary-gray"
+		class="header border-brand-primary-gray flex flex-row justify-between gap-y-3 px-4 py-4"
 		onmousedown={handleMouseDown}
 		role="button"
 		aria-label="Drag"
@@ -156,9 +156,9 @@
 	>
 		<div class="flex items-center gap-x-3">
 			<img src={headerIcon} alt="modal_title_icon" class="w-6" />
-			<h3 class="font-semibold text-left text-white text-md">{headerText}</h3>
+			<h3 class="text-md text-left font-semibold text-white">{headerText}</h3>
 		</div>
-		<button type="button" class="relative cursor-pointer w-9 left-4" onclick={toggleModal}>
+		<button type="button" class="relative left-4 w-9 cursor-pointer" onclick={toggleModal}>
 			<img src={modal_cross} alt="Close modal" class="w-6" />
 		</button>
 	</div>

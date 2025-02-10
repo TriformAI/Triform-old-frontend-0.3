@@ -32,7 +32,7 @@
 
 	{#snippet body()}
 		<div class="flex flex-col gap-y-4">
-			<div class="grid grid-cols-2 gap-x-2 w-full min-w-64">
+			<div class="grid w-full min-w-64 grid-cols-2 gap-x-2">
 				<Button class="w-full" onClick={run} autoLoad={true}>
 					{#snippet icon()}
 						<IconPlay />

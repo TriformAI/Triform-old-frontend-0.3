@@ -59,13 +59,13 @@
 <button
 	class="
     {variation === 'primary'
-		? 'border-zinc-700 border bg-zinc-800 hover:border-zinc-600 hover:bg-zinc-700'
+		? 'border border-zinc-700 bg-zinc-800 hover:border-zinc-600 hover:bg-zinc-700'
 		: ''}
     {variation === 'link' ? 'hover:bg-zinc-500/10' : ''}
-    p-3 {!icon && !!body ? 'px-5' : ''} flex items-center justify-center gap-x-2 flex-row
-    rounded-md text-zinc-200
+    p-3 {!icon && !!body ? 'px-5' : ''} flex transform flex-row items-center justify-center
+    gap-x-2 rounded-md
+    text-zinc-200 transition
     active:scale-95 active:border-zinc-500
-    transition transform
     {classProp}
   "
 	onclick={onClick}
@@ -114,7 +114,7 @@
 				</div>
 			{/if}
 			<!-- Copy of the body to make sure the button is always the same width even when loading -->
-			<div class="col-start-1 row-start-1 invisible pointer-events-none">
+			<div class="pointer-events-none invisible col-start-1 row-start-1">
 				{@render body?.()}
 			</div>
 		</div>

@@ -4,9 +4,9 @@
 </script>
 
 <section
-	class="flex flex-col items-center justify-center h-screen text-white bg-website-dark-primary dark:bg-gray-900"
+	class="bg-website-dark-primary flex h-screen flex-col items-center justify-center text-white dark:bg-gray-900"
 >
-	<div class="px-4 py-8 mx-auto lg:py-16 lg:px-6">
+	<div class="mx-auto px-4 py-8 lg:px-6 lg:py-16">
 		<div class="mx-auto text-center">
 			<h1 class="error404Head">404</h1>
 			<p class="mb-4 text-3xl font-bold tracking-tight text-gray-900 md:text-4xl dark:text-white">

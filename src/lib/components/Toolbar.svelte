@@ -65,7 +65,7 @@
 </script>
 
 <div
-	class="flex items-center justify-between w-full py-0 border-b px-7 border-b-zinc-700 text-zinc-100 bg-zinc-850"
+	class="bg-zinc-850 flex w-full items-center justify-between border-b border-b-zinc-700 px-7 py-0 text-zinc-100"
 >
 	<!-- Canvas 1 dropdown -->
 	<div class="flex items-center gap-x-5">
@@ -85,7 +85,7 @@
 	</div>
 
 	<!-- Central Tools  -->
-	<div class="relative flex items-center py-3 gap-x-2">
+	<div class="relative flex items-center gap-x-2 py-3">
 		{#each tools as { icon: Icon, onClick }}
 			<Button {onClick}>
 				{#snippet icon()}

@@ -30,11 +30,11 @@
 		{@const isActive = tab.key === activeTab?.key}
 		<button
 			class="
-        transition-all px-6 py-2
-        border-b border-transparent
+        border-b border-transparent px-6
+        py-2 transition-all
         {isActive
 				? 'border-zinc-300 text-zinc-200'
-				: 'text-zinc-500 hover:text-zinc-400 hover:border-zinc-700'}
+				: 'text-zinc-500 hover:border-zinc-700 hover:text-zinc-400'}
       "
 			onclick={() => onTabSelect(tab)}
 		>
