@@ -47,7 +47,7 @@
 		{#each providers as provider}
 			<Button
 				class="w-full"
-				href={`${apiUrl}/auth/login/${provider.name.toLowerCase()}`}
+				href={`${apiUrl}/login/${provider.name.toLowerCase()}/authorize`}
 				onClick={() => onLogin(provider)}
 				autoLoad={true}
 				disabled={chosenProvider === provider.name}
