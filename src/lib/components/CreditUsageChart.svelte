@@ -1,35 +1,35 @@
-<script>
-	import { onMount } from 'svelte';
-	import Chart from 'chart.js/auto';
-	import { onDestroy } from 'svelte';
+<script lang="ts">
+	import { onMount } from 'svelte'
+	import Chart from 'chart.js/auto'
+	import { onDestroy } from 'svelte'
 
-	let canvas;
-	let chart; // Reference to the Chart.js instance
+	let canvas: HTMLCanvasElement
+	let chart: Chart | undefined // Reference to the Chart.js instance
 
-	export let lineColor;
-	export let width;
-	export let height;
-	export let data; // New data prop to be passed into the component
+	export let lineColor
+	export let width
+	export let height
+	export let data: { overall: { categories: string[]; series: number[] } } // New data prop to be passed into the component
 
-	let labels = [];
-	let dataset = [];
+	let labels: string[] = []
+	let dataset: number[] = []
 
 	// Function to update chart when data changes
 	function updateChart() {
 		if (data) {
-			labels = data.overall.categories;
-			dataset = Object.values(data.overall.series);
+			labels = data.overall.categories
+			dataset = Object.values(data.overall.series)
 
 			if (chart) {
-				chart.data.labels = labels;
-				chart.data.datasets[0].data = dataset;
-				chart.update();
+				chart.data.labels = labels
+				chart.data.datasets[0].data = dataset
+				chart.update()
 			}
 		}
 	}
 
 	onMount(() => {
-		const ctx = canvas.getContext('2d');
+		const ctx = canvas.getContext('2d')
 
 		chart = new Chart(ctx, {
 			type: 'line',
@@ -65,7 +65,7 @@
 					tooltip: {
 						callbacks: {
 							label: function (tooltipItem) {
-								return `Sales: ${tooltipItem.raw}`;
+								return `Sales: ${tooltipItem.raw}`
 							}
 						}
 					}
@@ -93,24 +93,24 @@
 					}
 				}
 			}
-		});
+		})
 
-		updateChart();
-	});
+		updateChart()
+	})
 
 	onDestroy(() => {
 		if (chart) {
-			chart.destroy(); // Clean up the chart instance on component destroy
+			chart.destroy() // Clean up the chart instance on component destroy
 		}
-	});
+	})
 
 	// Watch for changes to the `data` prop and update the chart
 	$: if (data) {
-		updateChart();
+		updateChart()
 	}
 </script>
 
-<canvas bind:this={canvas} {width} {height} />
+<canvas bind:this={canvas} {width} {height}></canvas>
 
 <style>
 	canvas {

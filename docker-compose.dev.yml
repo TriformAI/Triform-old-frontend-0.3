@@ -1,0 +1,14 @@
+services:
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile.dev
+    volumes:
+      - .:/app
+      - /app/node_modules
+      - ../agent-worker/schema/execution.json:/app/agent-worker/schema/execution.json
+      - ../agent-worker/.git:/app/agent-worker/.git
+    environment:
+      AGENT_WORKER_DIR: agent-worker
+    ports:
+      - 5173:5173

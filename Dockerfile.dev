@@ -1,0 +1,15 @@
+FROM oven/bun:1-alpine
+
+WORKDIR /app
+
+RUN apk add --no-cache git
+
+COPY package*.json bun.lockb .
+
+RUN bun install
+
+COPY . .
+
+EXPOSE 5173
+
+CMD ["sh", "start.sh"]

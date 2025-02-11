@@ -1,18 +1,18 @@
-<script>
-	import { onMount } from 'svelte';
-	import Chart from 'chart.js/auto';
+<script lang="ts">
+	import { onMount } from 'svelte'
+	import Chart from 'chart.js/auto'
 
-	let data = [20, 100, 50, 12, 20, 130, 45];
-	let labels = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
-	let ctx;
-	let canvas;
+	let data = [20, 100, 50, 12, 20, 130, 45]
+	let labels = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday']
+	let ctx
+	let canvas: HTMLCanvasElement
 
-	export let lineColor;
-	export let width;
-	export let height;
+	export let lineColor
+	export let width
+	export let height
 
 	onMount(() => {
-		ctx = canvas.getContext('2d');
+		ctx = canvas.getContext('2d')
 		new Chart(ctx, {
 			type: 'line',
 			data: {
@@ -47,7 +47,7 @@
 					tooltip: {
 						callbacks: {
 							label: function (tooltipItem) {
-								return `Sales: ${tooltipItem.raw}`;
+								return `Sales: ${tooltipItem.raw}`
 							}
 						}
 					}
@@ -75,11 +75,11 @@
 					}
 				}
 			}
-		});
-	});
+		})
+	})
 </script>
 
-<canvas bind:this={canvas} {width} {height} />
+<canvas bind:this={canvas} {width} {height}></canvas>
 
 <style>
 	canvas {

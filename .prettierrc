@@ -1,8 +1,14 @@
 {
 	"useTabs": true,
 	"singleQuote": true,
+	"jsxSingleQuote": true,
+	"bracketSpacing": true,
+	"arrowParens": "avoid",
 	"trailingComma": "none",
+	"semi": false,
 	"printWidth": 100,
-	"plugins": ["prettier-plugin-svelte"],
+	"svelteAllowShorthand": true,
+	"svelteIndentScriptAndStyle": true,
+	"plugins": ["prettier-plugin-svelte", "prettier-plugin-tailwindcss"],
 	"overrides": [{ "files": "*.svelte", "options": { "parser": "svelte" } }]
 }
