@@ -40,19 +40,19 @@
 		<div
 			class="
 			flex h-full w-full flex-row justify-center rounded
-			border border-slate-300/10 bg-zinc-900/30 text-center"
+			border border-zinc-300/10 bg-zinc-900/30 text-center"
 		>
 			<button
 				class="
-					pointer-events-auto -mt-4 h-fit w-max flex-shrink-0 rounded border border-zinc-600/10 bg-zinc-900/50 px-5 text-[8px]
+					pointer-events-auto -mt-4 h-fit w-max flex-shrink-0 rounded border border-zinc-600/10 bg-zinc-900/50 px-5
 					font-bold backdrop-blur-sm transition
-					{selected ? 'text-slate-200' : 'text-slate-300'}
+					{selected ? 'text-zinc-200' : 'text-zinc-300'}
 					flow_drag-handle
 				"
 				ondblclick={openFn}
 			>
 				{data.component_name}
-				<span class="block transition {selected ? 'text-slate-300' : 'text-slate-400'}">
+				<span class="block transition {selected ? 'text-zinc-300' : 'text-zinc-400'}">
 					v{data.component_version}
 				</span>
 			</button>

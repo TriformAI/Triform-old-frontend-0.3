@@ -4,10 +4,11 @@ import type {
 	Action,
 	Uuid
 } from '$lib/types/agent'
+import { writable } from 'svelte/store'
 import type { Project } from '$lib/types/project'
 import type { Node, NodeProps } from '$lib/types/flow'
-import type { Edge } from '@xyflow/svelte'
-
+import { type Edge } from '@xyflow/svelte'
+import type { Node as FlowNode } from '$lib/types/flow'
 import { SvelteMap } from 'svelte/reactivity'
 
 export type ParsedGraph = {
@@ -26,9 +27,13 @@ export interface Canvas {
 	// label: string,
 }
 
+export const nodes = writable<FlowNode[]>([])
+export const edges = writable<Edge[]>([])
+
 const defaultProps: NodeProps = {
 	expanded: false
 }
+
 export const setNodeProps = (id: Uuid, props: Partial<NodeProps>) => {
 	let propsRef = selectedCanvas().nodeProps.get(id)
 	if (!propsRef) propsRef = defaultProps
@@ -38,6 +43,8 @@ export const setNodeProps = (id: Uuid, props: Partial<NodeProps>) => {
 
 export const getNodeProps = (id: Uuid): NodeProps | undefined => selectedCanvas().nodeProps.get(id)
 
+const isEndpoint = (node: TriNode): node is TriNode & { spec: Action } =>
+	node.spec.resource === 'endpoint/v1'
 const isAction = (node: TriNode): node is TriNode & { spec: Action } =>
 	node.spec.resource === 'action/v1'
 const isAgent = (node: TriNode): node is TriNode & { spec: Agent } =>
@@ -53,8 +60,7 @@ export const parseProject = (project: Project) => {
 			edges.push({
 				id: `${id}:${input}`,
 				source: input,
-				target: id,
-				type: 'floating'
+				target: id
 			})
 		}
 
@@ -99,6 +105,36 @@ export const parseProject = (project: Project) => {
 				nodes.push(...childNodes)
 				edges.push(...childEdges)
 			}
+		} else if (isEndpoint(node)) {
+			nodes.push({
+				id,
+				type: 'endpoint-node',
+				dragHandle: undefined,
+				style: undefined,
+				position: { x: 0, y: 0 },
+				parentId,
+				extent: parentId ? 'parent' : undefined,
+				data: {
+					spec: node.spec,
+					component_name: node.spec.meta.name,
+					component_id: node.spec.meta.id,
+					component_version: node.spec.meta.version
+				}
+			})
+		} else if (node.spec.resource === 'selector/v1') {
+			nodes.push({
+				id,
+				type: 'selector-node',
+				parentId,
+				// Limits the movement to within the agent
+				position: { x: 0, y: 0 },
+				data: {
+					spec: node.spec,
+					component_name: node.spec.meta.name,
+					component_id: node.component_id,
+					component_version: node.component_version ?? -1
+				}
+			})
 		} else throw new Error(`Unknown node type ${node.resource}`)
 
 		return {
@@ -136,7 +172,10 @@ export const loadProject = (project: Project) => {
 }
 
 // Generic function for applying a function to some node in the canvas
-const processNode = async (id: Uuid, fn: (node: TriNode, nodeId?: Uuid) => Promise<TriNode | undefined>) => {
+const processNode = async (
+	id: Uuid,
+	fn: (node: TriNode, nodeId?: Uuid) => Promise<TriNode | undefined>
+) => {
 	let updatedNode: TriNode | undefined = undefined
 	const process = async (node: TriNode, nodeId: Uuid) => {
 		if (nodeId === id) {
@@ -163,6 +202,35 @@ const processNode = async (id: Uuid, fn: (node: TriNode, nodeId?: Uuid) => Promi
 export const updateNode = async (id: Uuid, updatedNode: TriNode) =>
 	await processNode(id, async () => updatedNode)
 
+export async function addDownstreamNode(
+	parentId: Uuid | 'root' = 'root',
+	newNode?: TriNode,
+	source_id?: Uuid
+) {
+	const newId = self.crypto.randomUUID()
+
+	if (!newNode) {
+		newNode = {
+			component_id: 'c59a74f3-7b01-41c2-8bdc-4e30aac60550',
+			component_version: 1,
+			inputs: source_id ? [source_id] : [],
+			spec: {
+				resource: `action/v1`,
+				meta: {
+					name: 'Action',
+					id: 'd91f1b9a-9c83-4ff0-a463-cb991c09b063',
+					version: 1
+				},
+				spec: {}
+			}
+		}
+	}
+
+	if (parentId === 'root') {
+		currentCanvas.project.spec.nodes[newId] = newNode
+	}
+}
+
 // Adds a child node to a specific parent node
 export const addChild = async (parentId: Uuid | 'root', child: TriNode, nodeId: Uuid) => {
 	// If the parentId is "root", add it to the project as a root level node
@@ -173,7 +241,10 @@ export const addChild = async (parentId: Uuid | 'root', child: TriNode, nodeId: 
 		await processNode(parentId, async node => {
 			// If the parent isn't an agent, we can't add children to it
 			// TODO: when we encounter this case, wrap the parent in an agent first
-			if (!isAgent(node)) return
+			if (!isAgent(node)) {
+				console.error('Not an agent!')
+				return
+			}
 			node.spec.spec.nodes[nodeId] = child
 			return node
 		})
@@ -191,7 +262,7 @@ export const removeNode = async (id: Uuid) => {
 		for (const [nodeId, node] of Object.entries(currentCanvas.project.spec.nodes)) {
 			if (node.inputs?.includes(id)) {
 				// Any node with the old node as parent, should instead get the old nodes parent(s)
-				node.inputs = node.inputs?.flatMap(i => (i === id ? nodeToDelete.inputs ?? [] : i)) ?? []
+				node.inputs = node.inputs?.flatMap(i => (i === id ? (nodeToDelete.inputs ?? []) : i)) ?? []
 				// We should make some kind of generic processNodes / updateNodes that take in a predicate/filter
 				// for which nodes it should update
 				await updateNode(nodeId as Uuid, node)
@@ -209,7 +280,7 @@ export const removeNode = async (id: Uuid) => {
 			// are siblings to this node. I don't think we allow inter-flow/inter-agent deps (yet)
 			for (const [childId, child] of Object.entries(node.spec.spec.nodes)) {
 				if (child.inputs?.includes(id)) {
-					child.inputs = child.inputs?.flatMap(i => (i === id ? node.inputs ?? [] : i)) ?? []
+					child.inputs = child.inputs?.flatMap(i => (i === id ? (node.inputs ?? []) : i)) ?? []
 					await updateNode(childId as Uuid, child)
 				}
 			}

@@ -1,31 +1,34 @@
 <script lang="ts">
-	import type { Node } from '$lib/types/flow'
-	import type { Uuid } from '$lib/types/agent'
-	import type { Edge, NodeTypes, EdgeTypes } from '@xyflow/svelte'
-
 	import ActionNode from '$lib/components/custom-nodes/ActionNode.svelte'
 	import AgentNode from '$lib/components/custom-nodes/AgentNode.svelte'
-	import OpenAgentNode from '$lib/components/custom-nodes/OpenAgentNode.svelte'
 	import ApiNode from '$lib/components/custom-nodes/ApiNode.svelte'
-	import FloatingEdge from './FloatingEdge.svelte'
+	import EndpointNode from '$lib/components/custom-nodes/EndpointNode.svelte'
+	import OpenAgentNode from '$lib/components/custom-nodes/OpenAgentNode.svelte'
+	import SelectorNode from '$lib/components/custom-nodes/SelectorNode.svelte'
+	import { addDownstreamNode, edges, nodes, removeNode } from '$lib/stores/canvas.svelte'
+	import type { Uuid } from '$lib/types/agent'
+	import type { Node } from '$lib/types/flow'
+	import type { NodeTypes } from '@xyflow/svelte'
 	import ContextMenu from './ContextMenu.svelte'
-	import { writable } from 'svelte/store'
 	import { onMount, untrack } from 'svelte'
 	import {
-		SvelteFlow,
 		Background,
 		BackgroundVariant,
-		useUpdateNodeInternals,
-		useSvelteFlow
+		SvelteFlow,
+		useSvelteFlow,
+		useUpdateNodeInternals
 	} from '@xyflow/svelte'
-	import { setNodeProps, selectedCanvas } from '$lib/stores/canvas.svelte'
-	import { menuIsOpen, toggleMenu } from '$lib/stores/contextMenu.svelte'
-
-	import '@xyflow/svelte/dist/style.css'
+	import { selectedCanvas, setNodeProps } from '$lib/stores/canvas.svelte'
+	import { menuIsOpen, toggleContextMenu } from '$lib/stores/contextMenu.svelte'
 	import { parseProject } from '$lib/stores/canvas.svelte'
+	import '@xyflow/svelte/dist/style.css'
 	import { getLayoutedNodes } from './layout.svelte'
 
 	const nodeTypes: NodeTypes = {
+		// @ts-expect-error type issue, not crucial but should probs be fixed
+		'endpoint-node': EndpointNode,
+		// @ts-expect-error type issue, not crucial but should probs be fixed
+		'selector-node': SelectorNode,
 		// @ts-expect-error type issue, not crucial but should probs be fixed
 		'action-node': ActionNode,
 		// @ts-expect-error type issue, not crucial but should probs be fixed
@@ -35,15 +38,12 @@
 		// @ts-expect-error type issue, not crucial but should probs be fixed
 		'api-node': ApiNode
 	}
-	const edgeTypes: EdgeTypes = {
-		// @ts-expect-error type issue, not crucial but should probs be fixed
-		floating: FloatingEdge
-	}
+
 	const { screenToFlowPosition } = useSvelteFlow()
-	const nodes = writable<Node[]>([])
-	const edges = writable<Edge[]>([])
 
 	const updateNodeInternals = useUpdateNodeInternals()
+
+	let projectIsParsed = $state(false)
 
 	$effect(() => {
 		const canvas = selectedCanvas()
@@ -64,6 +64,8 @@
 					node.data.onOpen = () => setNodeProps(node.id as Uuid, { expanded: false })
 					node.width = 400
 					node.height = 400
+				} else if (node.type === 'selector-node') {
+				} else if (node.type === 'endpoint-node') {
 				} else throw new Error('unknown node type ' + node.type)
 				return node
 			})
@@ -77,6 +79,8 @@
 
 			// TODO: smartly update only the modified nodes
 			updateNodeInternals(nodesData.map(n => n.id))
+
+			projectIsParsed = true
 		})
 	})
 
@@ -99,7 +103,9 @@
 	onMount(() => {
 		wrapper
 			.querySelectorAll('.draggable')
-			.forEach(el => el.addEventListener('mousedown', () => toggleMenu(false), { capture: true }))
+			.forEach(el =>
+				el.addEventListener('mousedown', () => toggleContextMenu(false), { capture: true })
+			)
 	})
 
 	const openContextMenu = (args: CustomEvent) => {
@@ -122,7 +128,7 @@
 			right: event.clientX,
 			bottom: event.clientY
 		}
-		toggleMenu(true)
+		toggleContextMenu(true)
 	}
 
 	function handleDragOver(event: DragEvent) {
@@ -159,35 +165,78 @@
 			$nodes = $nodes
 		}
 	}
+
+	const flowIsEmpty = $derived($nodes.length === 0)
+
+	function addFirstNode() {
+		const triggerNode = {
+			component_id: '360e6123-30c5-414b-8bbb-83b460be4f86',
+			component_version: 1,
+			spec: {
+				resource: 'endpoint/v1',
+				meta: {
+					name: 'Endpoint',
+					id: '360e6123-30c5-414b-8bbb-83b460be4f86',
+					version: 1
+				},
+				spec: {
+					method: 'GET',
+					path: '/'
+				}
+			}
+		}
+
+		addDownstreamNode('root', triggerNode)
+	}
 </script>
 
 <div
-	class="relative h-full w-full"
+	class="relative grid h-full w-full"
 	bind:this={wrapper}
 	ondragover={handleDragOver}
 	ondrop={handleDrop}
 	role="application"
 >
-	<SvelteFlow
-		{nodes}
-		{edges}
-		{nodeTypes}
-		{edgeTypes}
-		fitView
-		snapGrid={[1, 1]}
-		proOptions={{ hideAttribution: true }}
-		defaultEdgeOptions={{}}
-		on:nodecontextmenu={openContextMenu}
-	>
-		{#if menuIsOpen()}
-			<ContextMenu {...contextMenuProps} />
+	{#if projectIsParsed}
+		{#if flowIsEmpty}
+			<div class="-mt-32 grid place-items-center gap-10 self-center">
+				<p class="opacity-50">Get started by adding your first component</p>
+				<button
+					onclick={addFirstNode}
+					type="button"
+					class="grid size-20 place-content-center rounded-full bg-zinc-300 text-4xl leading-none text-zinc-800 transition-transform duration-300 ease-(--easing-circ) hover:scale-125"
+				>
+					+
+				</button>
+			</div>
+		{:else}
+			<SvelteFlow
+				{nodes}
+				{edges}
+				{nodeTypes}
+				fitView
+				fitViewOptions={{
+					maxZoom: 1,
+					minZoom: 1
+				}}
+				snapGrid={[1, 1]}
+				proOptions={{ hideAttribution: true }}
+				defaultEdgeOptions={{}}
+				ondelete={e => {
+					e.nodes.forEach(node => removeNode(node.id))
+				}}
+			>
+				{#if menuIsOpen()}
+					<ContextMenu {...contextMenuProps} />
+				{/if}
+				<Background
+					bgColor="#181819"
+					patternColor="#1D1E20"
+					gap={20}
+					size={1}
+					variant={BackgroundVariant.Lines}
+				/>
+			</SvelteFlow>
 		{/if}
-		<Background
-			bgColor="#181819"
-			patternColor="#1D1E20"
-			gap={20}
-			size={1}
-			variant={BackgroundVariant.Lines}
-		/>
-	</SvelteFlow>
+	{/if}
 </div>

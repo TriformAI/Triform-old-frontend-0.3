@@ -19,7 +19,7 @@ let isOpen = $state(false)
 
 export const menuIsOpen = () => isOpen
 
-export const toggleMenu = (state: boolean) => {
+export const toggleContextMenu = (state: boolean) => {
 	isOpen = state
 }
 

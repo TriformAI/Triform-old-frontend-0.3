@@ -1,6 +1,6 @@
 <script lang="ts">
 	import Node from './Node.svelte'
-	import IconSquare from '~icons/material-symbols/square-rounded'
+	import IconEndpoint from '~icons/material-symbols/bolt'
 
 	const props = $props()
 	$inspect(props.position)
@@ -8,6 +8,6 @@
 
 <Node {...props}>
 	{#snippet icon()}
-		<IconSquare class=" rotate-45 text-zinc-300" />
+		<IconEndpoint class="size-6 text-orange-200" />
 	{/snippet}
 </Node>

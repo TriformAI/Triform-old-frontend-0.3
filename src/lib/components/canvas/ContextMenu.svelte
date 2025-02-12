@@ -1,7 +1,7 @@
 <script lang="ts">
 	import type { Node, NodeType } from '$lib/types/flow'
 
-	import { contextMenus, menuIsOpen, toggleMenu } from '$lib/stores/contextMenu.svelte'
+	import { contextMenus, menuIsOpen, toggleContextMenu } from '$lib/stores/contextMenu.svelte'
 
 	import List from '../atoms/List.svelte'
 
@@ -28,7 +28,7 @@
 		// If any of the parents are the menu, don't close it
 		if (element && (event.target === element || element.contains(event.target as HTMLElement)))
 			return
-		toggleMenu(false)
+		toggleContextMenu(false)
 		for (const event of closeEvents) window.removeEventListener(event, closeMenu)
 	}
 	$effect(() => {
@@ -38,7 +38,7 @@
 
 	const itemClick = (action?: (arg?: Node) => void) => {
 		// Close menu before executing the action
-		toggleMenu(false)
+		toggleContextMenu(false)
 		action?.(node)
 	}
 </script>

@@ -50,7 +50,7 @@
 	}
 
 	body {
-		@apply overflow-hidden antialiased;
+		@apply overflow-hidden text-zinc-200 antialiased;
 
 		&:has(dialog[open]) {
 			@apply overflow-hidden;
@@ -58,7 +58,11 @@
 	}
 
 	button {
-		@apply outline-none;
+		@apply inline-flex cursor-pointer items-center gap-3 font-medium outline-none;
+	}
+
+	strong {
+		@apply font-medium;
 	}
 
 	/* width */
@@ -93,6 +97,15 @@
 			transform: rotate(360deg);
 		}
 	}
+}
+
+.svelte-flow__node:hover {
+	z-index: 10 !important;
+}
+
+.svelte-flow {
+	--xy-edge-stroke: var(--color-indigo-300);
+	--xy-edge-stroke-width: 2px;
 }
 
 @layer overrides {
@@ -252,6 +265,11 @@
 	#table-filter-dateRange-transaction_date_range::placeholder {
 		font-size: 0.875rem;
 		line-height: 1.25rem;
+	}
+
+	.svelte-flow__node:hover {
+		position: relative;
+		z-index: 2000;
 	}
 }
 

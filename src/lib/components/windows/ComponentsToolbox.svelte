@@ -107,7 +107,7 @@
 	function handleDragStart(
 		event: DragEvent,
 		item: ActionItem | AgentItem,
-		type: 'action-node' | 'agent-node'
+		type: 'action-node' | 'agent-node' | 'selector-node'
 	) {
 		event.dataTransfer?.setData('application/json', JSON.stringify({ type, item }))
 	}
@@ -147,7 +147,7 @@
 						tabindex="0"
 					>
 						<div class="flex items-center gap-x-5">
-							<IconSquare class="rotate-45 transform text-slate-300" />
+							<IconSquare class="rotate-45 transform text-zinc-300" />
 							<p class="font-semibold text-zinc-200">{action.meta.name}</p>
 						</div>
 						<p class="cursor-pointer font-semibold text-white uppercase hover:font-bold">ReadMe</p>

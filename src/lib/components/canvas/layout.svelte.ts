@@ -10,8 +10,12 @@ const elkSettings = {
 	'elk.edgeRouting': 'SPLINES',
 	'elk.padding': '[top=30,left=20,bottom=20,right=20]',
 	'elk.spacing.nodeNode': '150',
-	'elk.layered.spacing.edgeNodeBetweenLayers': '50'
+	'elk.layered.spacing.edgeNodeBetweenLayers': '50',
+	'elk.layered.considerModelOrder.strategy': 'PREFER_NODES',
+	'elk.layered.considerModelOrder.components': 'MODEL_ORDER'
 }
+
+const NODE_SIZE = 80
 
 let elk: ELKType
 
@@ -23,7 +27,7 @@ const buildElkTree = (allNodes: Node[]): ElkNode[] => {
 	const buildTree = (nodes: Node[]): ElkNode[] => {
 		return nodes.map(node => {
 			const children = allNodes.filter(n => n.parentId === node.id)
-			const nodeSize = 44
+			const nodeSize = NODE_SIZE
 			return {
 				id: node.id,
 				width: nodeSize,
@@ -46,8 +50,8 @@ const calculateGroupDimensions = async (
 	width: number
 	height: number
 }> => {
-	// Nodes are always 44x44 (this should not be hardcoded, need to figure out where its coming from...)
-	if (!childNodes.length) return { width: 44, height: 44 }
+	// Nodes are always NODE_SIZE x NODE_SIZE (this should not be hardcoded, need to figure out where its coming from...)
+	if (!childNodes.length) return { width: NODE_SIZE, height: NODE_SIZE }
 
 	// Create an elk graph with the node and all its children, and lay it out
 	// which will calculate the correct dimensions of the group
@@ -63,7 +67,7 @@ const calculateGroupDimensions = async (
 			targets: [e.target]
 		}))
 	}
-	const { width = 44, height = 44 } = await elk.layout(graph)
+	const { width = NODE_SIZE, height = NODE_SIZE } = await elk.layout(graph)
 	return { width, height }
 }
 

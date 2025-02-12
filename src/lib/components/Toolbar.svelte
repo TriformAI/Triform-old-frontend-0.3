@@ -128,17 +128,35 @@
 	<!-- Zoom in Zoom out Fit screen -->
 	<div class="flex items-center gap-x-4">
 		<div class="flex items-center gap-x-2">
-			<Button variation="link" onClick={zoomIn}>
+			<Button
+				variation="link"
+				onClick={() => {
+					zoomIn({ duration: 500 })
+				}}
+			>
 				{#snippet icon()}
 					<IconZoomIn />
 				{/snippet}
 			</Button>
-			<Button variation="link" onClick={zoomOut}>
+			<Button
+				variation="link"
+				onClick={() => {
+					zoomOut({ duration: 500 })
+				}}
+			>
 				{#snippet icon()}
 					<IconZoomOut />
 				{/snippet}
 			</Button>
-			<Button variation="link" onClick={fitView}>
+			<Button
+				variation="link"
+				onClick={() => {
+					fitView({
+						maxZoom: 1,
+						duration: 500
+					})
+				}}
+			>
 				{#snippet icon()}
 					<IconFitScreen />
 				{/snippet}

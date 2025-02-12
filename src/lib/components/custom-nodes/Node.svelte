@@ -1,29 +1,30 @@
 <script lang="ts">
 	import type { NodeData, Node } from '$lib/types/flow'
 	import { onMount, type Snippet } from 'svelte'
-
+	import NodeActions from './NodeActions.svelte'
 	import { useSvelteFlow } from '@xyflow/svelte'
 
 	import NodeContainer from './NodeContainer.svelte'
 
 	import { contextMenus } from '$lib/stores/contextMenu.svelte'
 
-	const {
-		id,
-		data,
-		selected,
-		icon
-	}: {
+	interface Props {
 		id: string
 		data: NodeData
 		selected: boolean
 		icon: Snippet
-	} = $props()
+	}
 
-	const { state, onOpen } = data
+	const props: Props = $props()
 
-	const getBorderClass = (state?: string) => {
-		switch (state) {
+	const { id, data, selected, icon } = $derived(props)
+
+	const { state: nodeState, onOpen } = $derived(data)
+
+	const componentType = $derived(data.spec.resource.split('/')[0])
+
+	const getBorderClass = (nodeState?: string) => {
+		switch (nodeState) {
 			case 'success':
 				return 'border-emerald-500'
 			case 'error':
@@ -31,7 +32,7 @@
 			case 'running':
 				return 'border-indigo-500'
 			default:
-				return selected ? 'border-slate-200' : 'border-slate-300'
+				return selected ? 'border-zinc-200' : 'border-zinc-300'
 		}
 	}
 
@@ -49,52 +50,64 @@
 		const items = contextMenus.get(node.type)
 		items?.[0]?.onClick?.(node)
 	}
+
+	let isDeleting = $state(false)
 </script>
 
-<NodeContainer {id}>
+<NodeContainer {...props}>
 	{#snippet body()}
-		<div>
-			<span
+		<div
+			class={[
+				'node-inner transition-transform duration-200 ease-(--easing-circ)',
+				isDeleting ? 'scale-0' : 'scale-100'
+			]}
+		>
+			<div
 				class="
-						absolute flex-shrink-0 w-max text-[8px] font-bold right-14 top-5 float-right transition
-						{selected ? 'text-slate-200' : 'text-slate-300'}
+						absolute -start-4 top-1/2 -translate-x-full -translate-y-1/2 text-end font-semibold transition
+						{selected ? 'text-zinc-200' : 'text-zinc-300'}
 					"
 			>
-				{data.component_name}
-				<span class="block transition {selected ? 'text-slate-300' : 'text-slate-400'}">
+				<span class="whitespace-nowrap">{data.component_name}</span>
+				<span class="block font-mono text-xs font-bold tracking-wider text-zinc-400 transition">
 					v{data.component_version}
 				</span>
 				<!-- <span
-					class="block transition text-[6px] font-normal italic {selected
-						? 'text-slate-400'
-						: 'text-slate-500'}"
+					class="block text-xs font-normal whitespace-nowrap italic transition {selected
+						? 'text-zinc-400'
+						: 'text-zinc-500'}"
 				>
-					{data.component_id}
+					{id}
 				</span> -->
-			</span>
+			</div>
+
 			<button
 				class="
-						rounded-full w-11 h-11 p-2 border flex justify-center items-center relative transition-all
-						{selected ? 'border-[2px] ease-in duration-100' : ''}
-						{getBorderClass(state)}
+						relative flex size-20 items-center justify-center rounded-full border p-2 transition-all
+						{selected ? 'border-[2px] duration-100 ease-in' : ''}
+						{getBorderClass(nodeState)}
 					"
 				ondblclick={openFn}
 			>
-				{@render icon()}
-				<div
-					class="absolute transform -translate-x-1/2 -translate-y-1/2 custom-node-icon-shadow top-1/2 left-1/2"
-				>
-					{@render icon()}
-				</div>
+				<span class="custom-node-icon-shadow">{@render icon()}</span>
 			</button>
 		</div>
+
+		<NodeActions {...props} type={componentType} onDelete={() => (isDeleting = true)} {openFn} />
 	{/snippet}
 </NodeContainer>
 
 <style>
 	/* Bit of a hack to lower the opacity of the shadow (currentColor) */
 	:global(.custom-node-icon-shadow > *) {
-		opacity: 0.35;
 		filter: drop-shadow(0px 0px 10px currentColor);
+	}
+
+	.node-inner {
+		transition-behavior: allow-discrete;
+
+		@starting-style {
+			transform: scale(0);
+		}
 	}
 </style>

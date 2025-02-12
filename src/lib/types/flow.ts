@@ -12,7 +12,12 @@ export interface NodeData {
 	[key: string]: unknown
 }
 
-export type NodeType = 'agent-node' | 'action-node' | 'open-agent-node'
+export type NodeType =
+	| 'endpoint-node'
+	| 'agent-node'
+	| 'action-node'
+	| 'open-agent-node'
+	| 'selector-node'
 
 export type Node = XyNode<NodeData, NodeType> & {
 	id: Uuid
