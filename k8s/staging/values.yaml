@@ -1,0 +1,5 @@
+replicas: 2
+httpproxy:
+  fqdn: tricore.dev
+  tls:
+    secretName: dev-tricore-root-cert

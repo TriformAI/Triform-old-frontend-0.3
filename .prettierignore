@@ -2,3 +2,6 @@
 package-lock.json
 pnpm-lock.yaml
 yarn.lock
+# Deployment YAML files
+k8s/
+.github/

@@ -1,53 +1,68 @@
-name: Deploy Svelte App to S3 and CloudFront
+name: Deploy
 
 on:
   push:
-    branches:
-      - main
+    tags:
+    - 'v*.*.*'
+
+env:
+  REGISTRY: europe-docker.pkg.dev
+  GKE_CLUSTER: staging
+  GKE_REGION: europe-west3
+  VITE_TOLGEE_API_URL: https://app.tolgee.io
+  VITE_TRICORE_URL: https://api.tricore.dev
+  VITE_TRICORE_AUTH_URL: https://api.tricore.dev
 
 jobs:
   deploy:
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      id-token: write
 
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
+    - name: Checkout repository
+      uses: actions/checkout@v4
+      with:
+        fetch-depth: 0
 
-      - name: Set up Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: '22.x' # Use the Node.js version your app requires
+    - name: Authenticate with Google Cloud
+      id: auth
+      uses: google-github-actions/auth@v2
+      with:
+        workload_identity_provider: ${{ secrets.GCP_WORKLOAD_IDENTITY_PROVIDER }}
+        service_account: ${{ secrets.GCP_SERVICE_ACCOUNT_EMAIL }}
+        token_format: 'access_token'
 
-      - name: Install dependencies
-        run: npm ci
+    - name: Login to Artifact Registry
+      uses: docker/login-action@v3
+      with:
+        registry: ${{ env.REGISTRY }}
+        username: oauth2accesstoken
+        password: ${{ steps.auth.outputs.access_token }}
 
-      - name: Build the Svelte app
-        run: npm run build
-        env:
-          PUBLIC_API_URL: ${{ secrets.PUBLIC_API_URL }}
-          PUBLIC_PRODUCTION: ${{ secrets.PUBLIC_PRODUCTION }}
-          AUTH_SECRET: ${{ secrets.AUTH_SECRET }}
-          AUTH_TRUST_HOST: ${{ secrets.AUTH_TRUST_HOST }}
-          GITHUB_CLIENT_ID: ${{ secrets.GH_CLIENT_ID }}
-          GITHUB_CLIENT_SECRET: ${{ secrets.GH_CLIENT_SECRET }}
+    - name: Set-up Docker Buildx
+      uses: docker/setup-buildx-action@v3
 
-      - name: Copy Build Index to Root
-        run: cp .svelte-kit/output/prerendered/pages/index.html .svelte-kit/index.html
+    # Nothing too secret here! Visible in `docker history`
+    - name: Build and push Docker image
+      run: |
+        echo "PUBLIC_API_URL=" > .env
+        echo "GITHUB_CLIENT_ID=" >> .env
+        echo "GITHUB_CLIENT_SECRET=" >> .env
+        echo "AUTH_SECRET=" >> .env
 
-      - name: Upload files to S3
-        run: |
-          aws s3 sync .svelte-kit/ s3://$S3_BUCKET_NAME --delete
-        env:
-          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
-          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          AWS_REGION: ${{ secrets.AWS_REGION }}
-          S3_BUCKET_NAME: ${{ secrets.S3_BUCKET_NAME }}
+        echo "VITE_TOLGEE_API_URL=${{ env.VITE_TOLGEE_API_URL }}" >> .env
+        echo "VITE_TOLGEE_API_KEY=${{ secrets.VITE_TOLGEE_API_KEY }}" >> .env
+        echo "VITE_TRICORE_URL=${{ env.VITE_TRICORE_URL }}" >> .env
+        echo "VITE_TRICORE_AUTH_URL=${{ env.VITE_TRICORE_AUTH_URL }}" >> .env
+        make push
 
-      - name: Invalidate CloudFront Cache
-        run: |
-          aws cloudfront create-invalidation --distribution-id $CLOUDFRONT_DISTRIBUTION_ID --paths "/*"
-        env:
-          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
-          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          AWS_REGION: ${{ secrets.AWS_REGION }}
-          CLOUDFRONT_DISTRIBUTION_ID: ${{ secrets.CLOUDFRONT_DISTRIBUTION_ID }}
+    - name: Get GKE credentials
+      uses: google-github-actions/get-gke-credentials@v1
+      with:
+        cluster_name: ${{ env.GKE_CLUSTER }}
+        location: ${{ env.GKE_REGION }}
+
+    - name: Deploy on GKE
+      run: make deploy GKE_CLUSTER=${{ env.GKE_CLUSTER }}

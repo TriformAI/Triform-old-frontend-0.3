@@ -1,0 +1,14 @@
+replicas: 1
+port: 8080
+service:
+  type: ClusterIP
+  annotations: {}
+httpproxy:
+  fqdn:
+  tls:
+    secretName:
+image:
+  registry: europe-docker.pkg.dev/triformcloud/k8s
+  repository: triform-app
+  tag: v0.0.1
+  imagePullPolicy: IfNotPresent
