@@ -12,3 +12,31 @@ services:
       AGENT_WORKER_DIR: agent-worker
     ports:
       - 5173:5173
+
+  proxy:
+    image: europe-docker.pkg.dev/triformcloud/k8s/proxy:v0.2.0-c7974df
+    ports:
+      - 8080:8080
+    environment:
+      RUST_LOG: debug
+      RUST_BACKTRACE: 1
+      PORT: 8080
+      JWT_SECRET: ${PROXY_JWT_SECRET}
+      DOMAIN: localhost
+      DATABASE_URL: ${PROXY_DATABASE_URL}
+      LOGIN_URL_OK: http://localhost:5173/dashboard
+      LOGIN_URL_FAIL: http://localhost:5173/login
+      # Discord
+      DISCORD_CLIENT_ID: ${PROXY_DISCORD_CLIENT_ID}
+      DISCORD_CLIENT_SECRET: ${PROXY_DISCORD_CLIENT_SECRET}
+      DISCORD_REDIRECT_URL: http://localhost:8080/v1/login/discord/redirect
+      DISCORD_AUTH_URL: https://discord.com/api/oauth2/authorize
+      DISCORD_TOKEN_URL: https://discord.com/api/oauth2/token
+      DISCORD_SCOPES: identify,email,guilds
+      # Github
+      GITHUB_CLIENT_ID: ${PROXY_GITHUB_CLIENT_ID}
+      GITHUB_CLIENT_SECRET: ${PROXY_GITHUB_CLIENT_SECRET}
+      GITHUB_REDIRECT_URL: http://localhost:8080/v1/login/github/redirect
+      GITHUB_AUTH_URL: https://github.com/login/oauth/authorize
+      GITHUB_TOKEN_URL: https://github.com/login/oauth/access_token
+      GITHUB_SCOPES: repo

@@ -52,7 +52,6 @@
 	},
 	"type": "module",
 	"dependencies": {
-		"@auth/sveltekit": "^1.7.3",
 		"@fontsource-variable/figtree": "^5.1.2",
 		"@fontsource/space-mono": "^5.1.2",
 		"@iconify/svelte": "^4.2.0",

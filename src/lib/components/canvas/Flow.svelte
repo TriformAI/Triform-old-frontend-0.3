@@ -1,6 +1,6 @@
 <script lang="ts">
-	import type { Canvas } from '$lib/stores/canvas.svelte'
-	import type { Node, Uuid } from '$lib/types/flow'
+	import type { Node } from '$lib/types/flow'
+	import type { Uuid } from '$lib/types/agent'
 	import type { Edge, NodeTypes, EdgeTypes } from '@xyflow/svelte'
 
 	import ActionNode from '$lib/components/custom-nodes/ActionNode.svelte'

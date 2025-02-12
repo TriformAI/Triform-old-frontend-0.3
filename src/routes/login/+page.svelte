@@ -18,7 +18,7 @@
 		}
 	]
 
-	const apiUrl = import.meta.env.VITE_TRICORE_URL
+	const apiUrl = import.meta.env.VITE_TRICORE_AUTH_URL + '/v1'
 
 	// Disable others
 	let chosenProvider = $state<string | null>(null)

@@ -4,11 +4,9 @@
 	import Button from '$lib/components/atoms/Button.svelte'
 	import Dropdown from './common/Dropdown.svelte'
 	import Dialog from '$lib/components/common/Dialog.svelte'
-	import { openModal, ModalId } from '$lib/stores/modals.svelte'
 	import { getTolgee } from '@tolgee/svelte'
-
 	import { T } from '@tolgee/svelte'
-	import { onMount } from 'svelte'
+	import { userData } from '$lib/stores/user.svelte'
 
 	const tolgee = getTolgee(['language'])
 	const lang = $derived($tolgee.getLanguage())
@@ -43,7 +41,7 @@
 		<div class="relative border-l border-l-zinc-700 pl-5">
 			<Dropdown buttonVariation="link">
 				{#snippet button()}
-					<img alt="profile logo" src="https://picsum.photos/100" class="w-8 rounded-full" />
+					<img alt="Avatar" src={userData()?.avatar} class="w-8 rounded-full" />
 				{/snippet}
 
 				{#snippet body()}

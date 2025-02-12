@@ -1,6 +1,8 @@
-<script>
+<script lang="ts">
 	import '@fontsource/space-mono'
 	import '@fontsource-variable/figtree'
+
+	import type { Snippet } from 'svelte'
 
 	import '../app.css'
 	import { Toaster } from 'svelte-sonner'
@@ -11,6 +13,8 @@
 	import Toolbar from '$lib/components/Toolbar.svelte'
 	import Footer from '$lib/components/Footer.svelte'
 	import { page } from '$app/state'
+	import { refreshUserData } from '$lib/stores/user.svelte'
+	import { onMount } from 'svelte'
 
 	const tolgee = new Tolgee()
 		.use(DevTools())
@@ -23,7 +27,11 @@
 			staticData: {}
 		})
 
-	let { children } = $props()
+	let { children }: { children: Snippet } = $props()
+
+	onMount(() => {
+		refreshUserData()
+	})
 </script>
 
 <section class={`bg-website-dark-primary`}>
