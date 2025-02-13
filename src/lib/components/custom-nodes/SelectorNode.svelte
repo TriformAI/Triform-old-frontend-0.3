@@ -1,12 +1,10 @@
 <script lang="ts">
 	import IconActionNode from '~icons/material-symbols/square-rounded'
 	import IconFlowNode from '~icons/material-symbols/change-history-rounded'
-	import ComboBox from '../atoms/ComboBox.svelte'
 	import { addDownstreamNode } from '$lib/stores/canvas.svelte'
 	import CustomHandle from './CustomHandle.svelte'
 	import { Position } from '@xyflow/svelte'
 	import { nodes } from '$lib/stores/canvas.svelte'
-	import { onMount } from 'svelte'
 	import { clickOutside } from '$lib/utils/clickOutside'
 
 	const { id, data } = $props()
@@ -15,7 +13,7 @@
 		$nodes = $nodes.filter(node => node.id !== id)
 	}
 
-	function addNode(type: 'action' | 'agent') {
+	function addNode(_type: 'action' | 'agent') {
 		addDownstreamNode('root', undefined, data.source_id)
 	}
 </script>

@@ -5,19 +5,13 @@
 	import Button from '$lib/components/atoms/Button.svelte'
 
 	import IconPlay from '~icons/material-symbols/play-arrow-outline-rounded'
-	import IconCategory from '~icons/material-symbols/category-outline-rounded'
-	import IconUndoRounded from '~icons/material-symbols/undo-rounded'
-	import IconRedoRounded from '~icons/material-symbols/redo-rounded'
 	import IconZoomOut from '~icons/material-symbols/zoom-out-rounded'
 	import IconZoomIn from '~icons/material-symbols/zoom-in-rounded'
 	import IconFitScreen from '~icons/material-symbols/fit-screen-outline-rounded'
 
 	import { openWindow } from '$lib/stores/windows.svelte'
 
-	import ComponentsToolbox from './windows/ComponentsToolbox.svelte'
 	import Execution from './windows/ExecutionWindow.svelte'
-	import Dropdown from './common/Dropdown.svelte'
-	import Select from './atoms/Select.svelte'
 
 	const { zoomOut, zoomIn, fitView } = useSvelteFlow()
 
@@ -35,27 +29,13 @@
 				})
 			}
 		}
-		// {
-		// 	icon: IconCategory,
-		// 	onClick: () => {
-		// 		openWindow({
-		// 			// Only one can be open rn, change this to a unique id
-		// 			// if you want multiple component toolboxes
-		// 			id: 'components-toolbox',
-		// 			component: ComponentsToolbox
-		// 		})
-		// 	}
-		// }
 	]
-
-	let selected = $state([])
-
-	// $inspect(selected)
 </script>
 
 <div
 	class="bg-zinc-850 flex w-full items-center justify-between border-b border-b-zinc-700 px-7 py-0 text-zinc-100"
 >
+	<div></div>
 	<!-- Central Tools  -->
 	<div class="relative flex items-center gap-x-2 py-3">
 		{#each tools as { icon: Icon, onClick }}

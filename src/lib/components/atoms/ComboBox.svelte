@@ -16,10 +16,6 @@
 			? nodeTypes
 			: nodeTypes.filter(item => item.label.toLowerCase().includes(searchValue.toLowerCase()))
 	)
-
-	function focus(el) {
-		el.focus()
-	}
 </script>
 
 <Combobox.Root

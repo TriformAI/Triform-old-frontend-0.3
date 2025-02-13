@@ -4,7 +4,9 @@ WORKDIR /app
 
 RUN apk add --no-cache git
 
-COPY package*.json bun.lockb .
+RUN bun install -g onchange
+
+COPY package.json bun.lockb .
 
 RUN bun install
 
@@ -12,4 +14,4 @@ COPY . .
 
 EXPOSE 5173
 
-CMD ["sh", "start.sh"]
+CMD ["sh", "start-dev.sh"]

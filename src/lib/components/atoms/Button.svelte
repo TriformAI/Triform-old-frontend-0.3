@@ -73,8 +73,8 @@
 		? 'border border-zinc-700 bg-zinc-800 hover:enabled:border-zinc-600 hover:enabled:bg-zinc-700'
 		: ''}
     {variation === 'link' ? 'hover:enabled:bg-zinc-500/10' : ''}
-    p-3 {!icon && !!body ? 'px-5' : ''} flex transform flex-row items-center justify-center
-    gap-x-2 rounded-md cursor-pointer
+    p-3 {!icon && !!body ? 'px-5' : ''} flex transform cursor-pointer flex-row items-center
+    justify-center gap-x-2 rounded-md
     text-zinc-200 transition
     active:enabled:scale-95 active:enabled:border-zinc-500
 		disabled:cursor-not-allowed disabled:opacity-75

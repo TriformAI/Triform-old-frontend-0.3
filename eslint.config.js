@@ -28,5 +28,24 @@ export default tseslint.config(
 	},
 	{
 		ignores: ['build/', '.svelte-kit/', 'dist/']
+	},
+	{
+		rules: {
+			'no-unused-vars': 'off',
+			'@typescript-eslint/no-unused-vars': [
+				'error',
+				{
+					argsIgnorePattern: '^_',
+					varsIgnorePattern: '^_',
+					caughtErrorsIgnorePattern: '^_'
+				}
+			]
+		}
+	},
+	{
+		files: ['src/lib/types/**/*.ts'],
+		linterOptions: {
+			reportUnusedDisableDirectives: 'off'
+		}
 	}
 )

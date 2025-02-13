@@ -18,7 +18,9 @@ export const publishComponent = async (component: Component) => {
 	return updatedComponent
 }
 
-export const saveComponent = async (component: Component) => {}
+export const saveComponent = async (component: Component) => {
+	console.log('saving component', component)
+}
 
 export const executeComponent = async (component: Component, input: Record<string, unknown>) => {
 	const execution: Execution = {

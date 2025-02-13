@@ -11,13 +11,7 @@
 	import type { NodeTypes } from '@xyflow/svelte'
 	import ContextMenu from './ContextMenu.svelte'
 	import { onMount, untrack } from 'svelte'
-	import {
-		Background,
-		BackgroundVariant,
-		SvelteFlow,
-		useSvelteFlow,
-		useUpdateNodeInternals
-	} from '@xyflow/svelte'
+	import { Background, BackgroundVariant, SvelteFlow, useUpdateNodeInternals } from '@xyflow/svelte'
 	import { selectedCanvas, setNodeProps } from '$lib/stores/canvas.svelte'
 	import { menuIsOpen, toggleContextMenu } from '$lib/stores/contextMenu.svelte'
 	import { parseProject } from '$lib/stores/canvas.svelte'
@@ -40,8 +34,6 @@
 		'api-node': ApiNode
 	}
 
-	const { screenToFlowPosition } = useSvelteFlow()
-
 	const updateNodeInternals = useUpdateNodeInternals()
 
 	let projectIsParsed = $state(false)
@@ -58,17 +50,25 @@
 		console.log('edges', edgesData)
 		untrack(async () => {
 			nodesData = nodesData.map(node => {
-				if (node.type === 'action-node') {
-					node.data.files = undefined
-				} else if (node.type === 'agent-node') {
-					node.data.onOpen = () => setNodeProps(node.id as Uuid, { expanded: true })
-				} else if (node.type === 'open-agent-node') {
-					node.data.onOpen = () => setNodeProps(node.id as Uuid, { expanded: false })
-					node.width = 400
-					node.height = 400
-				} else if (node.type === 'selector-node') {
-				} else if (node.type === 'endpoint-node') {
-				} else throw new Error('unknown node type ' + node.type)
+				switch (node.type) {
+					case 'action-node':
+						node.data.files = undefined
+						break
+					case 'agent-node':
+						node.data.onOpen = () => setNodeProps(node.id as Uuid, { expanded: true })
+						break
+					case 'open-agent-node':
+						node.data.onOpen = () => setNodeProps(node.id as Uuid, { expanded: false })
+						node.width = 400
+						node.height = 400
+						break
+					case 'selector-node':
+						break
+					case 'endpoint-node':
+						break
+					default:
+						throw new Error('unknown node type ' + node.type)
+				}
 				return node
 			})
 
@@ -110,64 +110,6 @@
 			)
 	})
 
-	const openContextMenu = (args: CustomEvent) => {
-		const {
-			detail: { event, node }
-		}: {
-			detail: {
-				event: MouseEvent
-				node: Node
-			}
-		} = args
-
-		event.preventDefault()
-
-		contextMenuProps = {
-			node,
-			// TODO: use the width/height of wrapper to make sure it doesn't get placed off screen
-			top: event.clientY - wrapper.offsetTop,
-			left: event.clientX - wrapper.offsetLeft,
-			right: event.clientX,
-			bottom: event.clientY
-		}
-		toggleContextMenu(true)
-	}
-
-	function handleDragOver(event: DragEvent) {
-		event.preventDefault() // Allows dropping
-	}
-
-	function handleDrop(event: DragEvent) {
-		event.preventDefault()
-		const data = event.dataTransfer?.getData('application/json')
-		const position = screenToFlowPosition({
-			x: event.clientX,
-			y: event.clientY
-		})
-
-		if (data) {
-			const { type, item } = JSON.parse(data)
-
-			//create node
-			const newNode = {
-				id: item.meta.id,
-				type: type,
-				position,
-				data: {
-					name: item.meta.name,
-					version: item.meta.version,
-					spec: item,
-					component_id: item.meta.id,
-					component_version: item.meta.version
-				},
-				origin: [0.5, 0.0]
-			} satisfies Node
-
-			$nodes.push(newNode)
-			$nodes = $nodes
-		}
-	}
-
 	const flowIsEmpty = $derived($nodes.length === 0)
 
 	function addFirstNode() {
@@ -192,13 +134,7 @@
 	}
 </script>
 
-<div
-	class="relative grid h-full w-full"
-	bind:this={wrapper}
-	ondragover={handleDragOver}
-	ondrop={handleDrop}
-	role="application"
->
+<div class="relative grid h-full w-full" bind:this={wrapper} role="application">
 	{#if projectIsParsed}
 		{#if flowIsEmpty}
 			<div class="-mt-32 grid place-items-center gap-10 self-center">

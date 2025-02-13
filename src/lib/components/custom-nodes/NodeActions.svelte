@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { nodes, edges } from '$lib/stores/canvas.svelte'
+	import { nodes } from '$lib/stores/canvas.svelte'
 	import { removeNode, addDownstreamNode } from '$lib/stores/canvas.svelte'
 	import type { Uuid } from '$lib/types/agent'
 	import IconTrash from '~icons/material-symbols/delete-outline'
@@ -16,44 +16,16 @@
 		positionAbsoluteX: number
 		positionAbsoluteY: number
 		type: string
-		onDelete: VoidFunction
-		openFn: VoidFunction
+		onDelete: () => void
+		openFn: () => void
 	}
 
 	const props: Props = $props()
-	const { id, positionAbsoluteX, positionAbsoluteY, type, onDelete, openFn } = $derived(props)
+	const { id, type, onDelete, openFn } = $derived(props)
 
 	const popoverId = $derived(`actions-${id}`)
 
 	let isOpen = $state(false)
-
-	function addSelectorNode() {
-		const x = positionAbsoluteX - 88
-		const y = positionAbsoluteY + 100
-
-		const newId = self.crypto.randomUUID()
-
-		$nodes = [
-			...$nodes,
-			{
-				id: newId,
-				type: 'selector-node',
-				position: { x, y },
-				data: {
-					source_id: id
-				}
-			}
-		]
-
-		$edges = [
-			...$edges,
-			{
-				id: `${id}:${newId}`,
-				source: id,
-				target: newId
-			}
-		]
-	}
 
 	function initDelete() {
 		isOpen = false
@@ -114,9 +86,9 @@
 	<div
 		id={popoverId}
 		class={[
-			'popover absolute left-1/2 z-100 m-0 origin-top -translate-x-1/2 peer',
+			'popover peer absolute left-1/2 z-100 m-0 origin-top -translate-x-1/2',
 			'rounded-lg bg-zinc-800 p-1 text-sm text-zinc-50 transition-[transform_opacity] duration-200 ease-(--easing-circ)',
-			isOpen ? 'block scale-100' : 'scale-75 opacity-0 pointer-events-none'
+			isOpen ? 'block scale-100' : 'pointer-events-none scale-75 opacity-0'
 		]}
 	>
 		<div class="grid">
@@ -146,9 +118,9 @@
 		class="
 			absolute bottom-5 left-1/2 grid h-4
 			-translate-x-1/2 translate-y-1/2 scale-25 place-content-center rounded-md
-			px-4 py-6 leading-none font-medium text-zinc-200 opacity-0 text-xl
+			px-4 py-6 text-xl leading-none font-medium text-zinc-200 opacity-0
 			transition-[transform_opacity] duration-150 ease-(--easing-circ)
-			group-hover/container:scale-100 group-hover/container:opacity-70 hover:opacity-100 peer-hover:opacity-100
+			group-hover/container:scale-100 group-hover/container:opacity-70 peer-hover:opacity-100 hover:opacity-100
 		"
 	>
 		<IconDots />

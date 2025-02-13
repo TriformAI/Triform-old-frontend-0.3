@@ -12,9 +12,7 @@
 			<p class="mb-4 text-3xl font-bold tracking-tight text-zinc-900 md:text-4xl dark:text-white">
 				Page Not Found
 			</p>
-			<p class="mb-6 font-light text-zinc-500 dark:text-zinc-400">
-				Sorry, we can't find that page
-			</p>
+			<p class="mb-6 font-light text-zinc-500 dark:text-zinc-400">Sorry, we can't find that page</p>
 			<div class="flex items-center justify-center">
 				<Button variation="primary" onClick={() => goto('/')}>
 					{#snippet body()}

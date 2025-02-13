@@ -1,7 +1,7 @@
 <script lang="ts">
 	import type { Node } from '$lib/types/flow'
 
-	import { T, getTranslate } from '@tolgee/svelte'
+	import { getTranslate } from '@tolgee/svelte'
 	const { t } = getTranslate()
 
 	import { toast } from 'svelte-sonner'
@@ -39,7 +39,7 @@
 		}
 		try {
 			JSON.parse(input)
-		} catch (err) {
+		} catch (_err) {
 			toast.error('The input needs to be valid JSON')
 			return
 		}
@@ -61,18 +61,13 @@
 
 	{#snippet body()}
 		{#if selectedNode}
-			<div class="flex flex-col gap-y-4 h-full min-h-fit">
+			<div class="flex h-full min-h-fit flex-col gap-y-4">
 				<TextField
 					label={$t('window-execution-input-label', 'Test data')}
 					placeholder={$t('window-execution-input-placeholder', 'Temporary test data')}
 					bind:value={input}
 				/>
-				<Button
-					class="w-full"
-					onClick={run}
-					autoLoad={false}
-					disabled={isRunning}
-				>
+				<Button class="w-full" onClick={run} autoLoad={false} disabled={isRunning}>
 					{#snippet icon()}
 						<IconPlay />
 					{/snippet}
@@ -84,10 +79,8 @@
 				{/if}
 			</div>
 		{:else}
-			<div class="flex flex-col items-center justify-center py-12 px-8">
-				<p class="text-zinc-500 text-center">
-					Select a node to execute it
-				</p>
+			<div class="flex flex-col items-center justify-center px-8 py-12">
+				<p class="text-center text-zinc-500">Select a node to execute it</p>
 			</div>
 		{/if}
 	{/snippet}

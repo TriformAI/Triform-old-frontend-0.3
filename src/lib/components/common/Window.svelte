@@ -16,8 +16,8 @@
 		id,
 		width = 0,
 		height = 0,
-		zIndex = 1,
-		customProps
+		zIndex = 1
+		// customProps
 	}: {
 		header?: Snippet
 		body: Snippet
@@ -29,7 +29,7 @@
 		width: Window['width']
 		height: Window['height']
 		zIndex: Window['zIndex']
-		customProps: Window['customProps']
+		// customProps: Window['customProps']
 	} = $props()
 
 	let element: HTMLDivElement
@@ -45,7 +45,6 @@
 		x: 0,
 		y: 0
 	}
-	let isDragging = $state(false)
 
 	const onDrag = (e: MouseEvent) => {
 		// update the local position first and then push the update to the state
@@ -81,13 +80,11 @@
 			x: e.clientX - offsetLeft,
 			y: e.clientY - offsetTop
 		}
-		isDragging = true
 
 		bringWindowToFront(id)
 	}
 
-	const onDragEnd = (e: MouseEvent) => {
-		isDragging = false
+	const onDragEnd = (_e: MouseEvent) => {
 		window.removeEventListener('mousemove', onDrag)
 	}
 

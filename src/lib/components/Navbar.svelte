@@ -2,7 +2,6 @@
 	import logo from '$lib/images/Logo.svg'
 	import Dropdown from './common/Dropdown.svelte'
 	import { getTolgee } from '@tolgee/svelte'
-	import { T } from '@tolgee/svelte'
 	import { userData } from '$lib/stores/user.svelte'
 
 	const tolgee = getTolgee(['language'])

@@ -23,7 +23,7 @@
 	// Disable others
 	let chosenProvider = $state<string | null>(null)
 
-	const onLogin = (provider: typeof providers[number]) => {
+	const onLogin = (provider: (typeof providers)[number]) => {
 		chosenProvider = provider.name
 		// Return a promise that never resolves so the button starts loading while we're redirecting the user
 		return new Promise(() => {})
@@ -39,11 +39,9 @@
 	})
 </script>
 
-<div class="h-screen w-screen flex flex-col items-center justify-center bg-zinc-900">
-	<span class="text-zinc-400 text-center mb-2">
-		Continue with
-	</span>
-	<div class="flex flex-col items-center gap-y-4 w-full max-w-xs">
+<div class="flex h-screen w-screen flex-col items-center justify-center bg-zinc-900">
+	<span class="mb-2 text-center text-zinc-400"> Continue with </span>
+	<div class="flex w-full max-w-xs flex-col items-center gap-y-4">
 		{#each providers as provider}
 			<Button
 				class="w-full"

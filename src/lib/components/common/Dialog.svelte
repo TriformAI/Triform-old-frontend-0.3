@@ -14,7 +14,7 @@
 		children: Snippet
 		dialog: HTMLDialogElement | undefined
 		appearance: 'center' | 'bottom'
-		onClose?: VoidFunction
+		onClose?: () => void
 		closeByClickOutside?: boolean
 		class?: string
 	} = $props()
@@ -91,7 +91,9 @@
 	}
 
 	dialog.center::backdrop {
-		transition: backdrop-filter 0.3s ease-out, opacity 0.3s ease-out;
+		transition:
+			backdrop-filter 0.3s ease-out,
+			opacity 0.3s ease-out;
 		background-color: rgba(0, 0, 0, 0.5);
 		backdrop-filter: blur(0px);
 		opacity: 0;
