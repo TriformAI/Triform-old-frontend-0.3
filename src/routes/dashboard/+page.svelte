@@ -31,11 +31,11 @@
 	})
 </script>
 
-<section class="flex h-screen flex-col">
+<div class="flex h-screen flex-col">
 	{#each openWindows() as window}
 		{@const { component: Component, customProps, ...defaultProps } = window}
 		<Component {...defaultProps} {customProps} />
 	{/each}
 
 	<Flow />
-</section>
+</div>
