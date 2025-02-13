@@ -33,7 +33,7 @@
 </script>
 
 <div
-	class="relative h-full w-full overflow-hidden rounded-md border border-zinc-700 bg-zinc-900 text-zinc-200 shadow-lg"
+	class="relative h-full w-full min-h-fit min-w-fit overflow-hidden rounded-md border border-zinc-700 bg-zinc-900 text-zinc-200 shadow-lg"
 >
 	<div
 		class="flex flex-row items-center justify-between rounded-t-md border border-x-0 border-t-0 border-b border-inherit bg-zinc-800 pr-4"
@@ -57,7 +57,7 @@
 			</button>
 		{/if}
 	</div>
-	<div class="p-3">
+	<div class="p-3 w-full h-auto min-h-fit">
 		{@render body()}
 	</div>
 	{#if footer}

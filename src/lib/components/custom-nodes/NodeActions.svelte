@@ -58,7 +58,7 @@
 	function initDelete() {
 		isOpen = false
 		onDelete()
-		setTimeout(() => removeNode(id), 500)
+		setTimeout(() => removeNode(id), 100)
 	}
 
 	function initAdd(e: MouseEvent) {
@@ -107,22 +107,16 @@
 <div
 	class="popover group/popover relative"
 	use:clickOutside
-	onclick_outside={() => {
+	onclickOutside={() => {
 		isOpen = false
 	}}
 >
-	<button
-		onclick={() => (isOpen = !isOpen)}
-		class="absolute bottom-4 left-1/2 grid h-4 -translate-x-1/2 translate-y-1/2 scale-0 place-content-center rounded-md px-1 leading-none font-medium text-zinc-200 transition-transform delay-50 duration-150 ease-(--easing-circ) group-hover/container:scale-100"
-	>
-		<IconDots />
-	</button>
-
 	<div
 		id={popoverId}
 		class={[
-			'popover absolute left-1/2 z-100 m-0   origin-top -translate-x-1/2 rounded-lg bg-zinc-800 p-1 text-sm text-zinc-50 transition-transform duration-200 ease-(--easing-circ)',
-			isOpen ? 'block scale-100' : 'hidden'
+			'popover absolute left-1/2 z-100 m-0 origin-top -translate-x-1/2 peer',
+			'rounded-lg bg-zinc-800 p-1 text-sm text-zinc-50 transition-[transform_opacity] duration-200 ease-(--easing-circ)',
+			isOpen ? 'block scale-100' : 'scale-75 opacity-0 pointer-events-none'
 		]}
 	>
 		<div class="grid">
@@ -145,12 +139,27 @@
 			{/each}
 		</div>
 	</div>
+
+	<!-- This needs to go after so peer works -->
+	<button
+		onclick={() => (isOpen = !isOpen)}
+		class="
+			absolute bottom-5 left-1/2 grid h-4
+			-translate-x-1/2 translate-y-1/2 scale-25 place-content-center rounded-md
+			px-4 py-6 leading-none font-medium text-zinc-200 opacity-0 text-xl
+			transition-[transform_opacity] duration-150 ease-(--easing-circ)
+			group-hover/container:scale-100 group-hover/container:opacity-70 hover:opacity-100 peer-hover:opacity-100
+		"
+	>
+		<IconDots />
+	</button>
 </div>
 
 <style lang="postcss">
 	@starting-style {
 		.popover {
-			transform: scale(0);
+			transform: scale(0.75);
+			opacity: 0;
 		}
 	}
 </style>

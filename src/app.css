@@ -103,9 +103,13 @@
 	z-index: 10 !important;
 }
 
+/* .svelte-flow__node, .svelte-flow__edge {
+	transition: transform 0.5s;
+} */
+
 .svelte-flow {
-	--xy-edge-stroke: var(--color-indigo-300);
-	--xy-edge-stroke-width: 2px;
+	--xy-edge-stroke: var(--color-indigo-100);
+	--xy-edge-stroke-width: 1.5px;
 }
 
 @layer overrides {

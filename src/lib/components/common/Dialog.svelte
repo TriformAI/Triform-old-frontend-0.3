@@ -3,15 +3,6 @@
 	import ChevronDown from '~icons/mdi/chevron-down'
 	import Close from '~icons/mdi/close'
 
-	interface Props {
-		children: Snippet
-		dialog: HTMLDialogElement | undefined
-		appearance: 'center' | 'bottom'
-		onClose?: VoidFunction
-		closeByClickOutside?: boolean
-		class?: string
-	}
-
 	let {
 		children,
 		dialog = $bindable(),
@@ -19,7 +10,14 @@
 		onClose,
 		closeByClickOutside = true,
 		class: classes
-	}: Props = $props()
+	}: {
+		children: Snippet
+		dialog: HTMLDialogElement | undefined
+		appearance: 'center' | 'bottom'
+		onClose?: VoidFunction
+		closeByClickOutside?: boolean
+		class?: string
+	} = $props()
 
 	function clickOutside(el: HTMLDialogElement) {
 		el.addEventListener('click', e => {
@@ -93,13 +91,15 @@
 	}
 
 	dialog.center::backdrop {
-		transition: backdrop-filter 0.3s ease-out;
-		background-color: rgba(0, 0, 0, 0.05);
+		transition: backdrop-filter 0.3s ease-out, opacity 0.3s ease-out;
+		background-color: rgba(0, 0, 0, 0.5);
 		backdrop-filter: blur(0px);
+		opacity: 0;
 	}
 
 	dialog.center[open]::backdrop {
-		backdrop-filter: blur(var(--blur-md));
+		backdrop-filter: blur(var(--blur-xs));
+		opacity: 1;
 	}
 
 	@starting-style {
@@ -110,6 +110,7 @@
 
 		dialog.center[open]::backdrop {
 			backdrop-filter: blur(0px);
+			opacity: 0;
 		}
 	}
 

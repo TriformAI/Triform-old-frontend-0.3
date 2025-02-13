@@ -15,7 +15,7 @@
 	import { openWindow } from '$lib/stores/windows.svelte'
 
 	import ComponentsToolbox from './windows/ComponentsToolbox.svelte'
-	import Execution from './windows/Execution.svelte'
+	import Execution from './windows/ExecutionWindow.svelte'
 	import Dropdown from './common/Dropdown.svelte'
 	import Select from './atoms/Select.svelte'
 
@@ -29,7 +29,9 @@
 					// Only one can be open rn, change this to a unique id
 					// if you want multiple
 					id: 'execution',
-					component: Execution
+					component: Execution,
+					posX: 20,
+					posY: 20
 				})
 			}
 		}

@@ -1,6 +1,6 @@
 import type { Component } from 'svelte'
 import ComponentsToolbox from '../components/windows/ComponentsToolbox.svelte'
-import Execution from '../components/windows/Execution.svelte'
+import Execution from '../components/windows/ExecutionWindow.svelte'
 import CodeEditorWindow from '../components/windows/CodeEditorWindow.svelte'
 
 export interface Window {

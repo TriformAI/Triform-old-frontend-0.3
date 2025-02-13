@@ -72,6 +72,7 @@ export const parseProject = (project: Project) => {
 				parentId,
 				// Limits the movement to within the agent
 				extent: isOpen ? 'parent' : undefined,
+				draggable: false,
 				position: { x: 0, y: 0 },
 				data: {
 					spec: node.spec,

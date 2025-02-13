@@ -24,7 +24,7 @@
 
 <div
 	use:clickOutside
-	onclick_outside={() => {
+	onclickOutside={() => {
 		cancel()
 	}}
 	class={[

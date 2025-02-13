@@ -58,8 +58,8 @@
 	{#snippet body()}
 		<div
 			class={[
-				'node-inner transition-transform duration-200 ease-(--easing-circ)',
-				isDeleting ? 'scale-0' : 'scale-100'
+				'node-inner transition-[transform_opacity] duration-200 ease-(--easing-circ)',
+				isDeleting ? 'scale-50 opacity-0' : 'scale-100'
 			]}
 		>
 			<div
@@ -69,7 +69,7 @@
 					"
 			>
 				<span class="whitespace-nowrap">{data.component_name}</span>
-				<span class="block font-mono text-xs font-bold tracking-wider text-zinc-400 transition">
+				<span class="block font-mono text-sm font-bold tracking-wider text-zinc-400 transition">
 					v{data.component_version}
 				</span>
 				<!-- <span
@@ -107,7 +107,8 @@
 		transition-behavior: allow-discrete;
 
 		@starting-style {
-			transform: scale(0);
+			transform: scale(0.5);
+			opacity: 0;
 		}
 	}
 </style>

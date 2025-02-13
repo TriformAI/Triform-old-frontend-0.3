@@ -135,8 +135,8 @@
 		z-index: ${zIndex};
 		width: ${hasResized ? `${width}px` : 'auto'};
 		height: ${hasResized ? `${height}px` : 'auto'};
-		min-width: 18rem;
-		min-height: 14em;
+		min-width: fit-content;
+		min-height: fit-content;
 	`}
 	bind:this={element}
 >
