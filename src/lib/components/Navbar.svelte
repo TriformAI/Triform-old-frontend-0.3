@@ -1,17 +1,12 @@
 <script lang="ts">
 	import logo from '$lib/images/Logo.svg'
-	import ShareCanvas from '$lib/components/modals/ShareCanvas.svelte'
-	import Button from '$lib/components/atoms/Button.svelte'
 	import Dropdown from './common/Dropdown.svelte'
-	import Dialog from '$lib/components/common/Dialog.svelte'
 	import { getTolgee } from '@tolgee/svelte'
 	import { T } from '@tolgee/svelte'
 	import { userData } from '$lib/stores/user.svelte'
 
 	const tolgee = getTolgee(['language'])
 	const lang = $derived($tolgee.getLanguage())
-
-	let shareModal = $state<HTMLDialogElement>()
 
 	// todo: add more languages and change the way this language selector works
 	const toggleLanguage = () => {
@@ -20,44 +15,24 @@
 	}
 </script>
 
-<nav
+<div
 	class="flex w-full items-center justify-between border-b border-b-zinc-700 bg-zinc-900 px-8 py-2"
 >
-	<div class="flex items-center gap-x-4 overflow-auto">
-		<img alt="triform logo" src={logo} class="relative w-8 lg:w-12" />
-	</div>
+	<img alt="Triform logo" src={logo} class="-ms-2 w-8 lg:w-12" />
 
-	<div class="flex items-center justify-center gap-x-5">
-		<Button
-			onClick={() => {
-				shareModal?.showModal()
-			}}
-		>
-			{#snippet body()}
-				<T keyName="share-canvas-button" defaultValue="Share Canvas" />
-			{/snippet}
-		</Button>
+	<Dropdown buttonVariation="link">
+		{#snippet button()}
+			<img alt="Avatar" src={userData()?.avatar} class="w-8 rounded-full" />
+		{/snippet}
 
-		<div class="relative border-l border-l-zinc-700 pl-5">
-			<Dropdown buttonVariation="link">
-				{#snippet button()}
-					<img alt="Avatar" src={userData()?.avatar} class="w-8 rounded-full" />
-				{/snippet}
-
-				{#snippet body()}
-					<ul>
-						<li>
-							<button class="w-full" onclick={toggleLanguage}>
-								Language: {lang}
-							</button>
-						</li>
-					</ul>
-				{/snippet}
-			</Dropdown>
-		</div>
-	</div>
-</nav>
-
-<Dialog class="w-3xl" appearance="center" bind:dialog={shareModal}>
-	<ShareCanvas />
-</Dialog>
+		{#snippet body()}
+			<ul>
+				<li>
+					<button class="w-full" onclick={toggleLanguage}>
+						Language: {lang}
+					</button>
+				</li>
+			</ul>
+		{/snippet}
+	</Dropdown>
+</div>

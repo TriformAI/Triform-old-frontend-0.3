@@ -32,31 +32,18 @@
 					component: Execution
 				})
 			}
-		},
-		{
-			icon: IconCategory,
-			onClick: () => {
-				openWindow({
-					// Only one can be open rn, change this to a unique id
-					// if you want multiple component toolboxes
-					id: 'components-toolbox',
-					component: ComponentsToolbox
-				})
-			}
 		}
-	]
-
-	const options = [
-		{ id: 1, name: 'Wade Cooper' },
-		{ id: 2, name: 'Arlene Mccoy' },
-		{ id: 3, name: 'Devon Webb' },
-		{ id: 4, name: 'Tom Cook' },
-		{ id: 5, name: 'Tanya Fox' },
-		{ id: 6, name: 'Hellen Schmidt' },
-		{ id: 7, name: 'Caroline Schultz' },
-		{ id: 8, name: 'Mason Heaney' },
-		{ id: 9, name: 'Claudie Smitham' },
-		{ id: 10, name: 'Emil Schaefer' }
+		// {
+		// 	icon: IconCategory,
+		// 	onClick: () => {
+		// 		openWindow({
+		// 			// Only one can be open rn, change this to a unique id
+		// 			// if you want multiple component toolboxes
+		// 			id: 'components-toolbox',
+		// 			component: ComponentsToolbox
+		// 		})
+		// 	}
+		// }
 	]
 
 	let selected = $state([])
@@ -67,29 +54,12 @@
 <div
 	class="bg-zinc-850 flex w-full items-center justify-between border-b border-b-zinc-700 px-7 py-0 text-zinc-100"
 >
-	<!-- Canvas 1 dropdown -->
-	<div class="flex items-center gap-x-5">
-		<!-- Undo Redo -->
-		<div class="flex items-center gap-x-2">
-			<Button variation="link">
-				{#snippet icon()}
-					<IconUndoRounded />
-				{/snippet}
-			</Button>
-			<Button variation="link">
-				{#snippet icon()}
-					<IconRedoRounded />
-				{/snippet}
-			</Button>
-		</div>
-	</div>
-
 	<!-- Central Tools  -->
 	<div class="relative flex items-center gap-x-2 py-3">
 		{#each tools as { icon: Icon, onClick }}
 			<Button {onClick}>
 				{#snippet icon()}
-					<Icon />
+					<Icon class="size-6" />
 				{/snippet}
 			</Button>
 		{/each}
