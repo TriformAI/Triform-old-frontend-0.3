@@ -98,7 +98,7 @@
 			icon: IconTrash,
 			label: 'Delete node',
 			trigger: initDelete,
-			condition: () => true,
+			condition: () => type !== 'endpoint',
 			isDangerous: true
 		}
 	]

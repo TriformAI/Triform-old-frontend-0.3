@@ -23,6 +23,7 @@
 	import { parseProject } from '$lib/stores/canvas.svelte'
 	import '@xyflow/svelte/dist/style.css'
 	import { getLayoutedNodes } from './layout.svelte'
+	import { toast } from 'svelte-sonner'
 
 	const nodeTypes: NodeTypes = {
 		// @ts-expect-error type issue, not crucial but should probs be fixed
@@ -47,6 +48,7 @@
 
 	$effect(() => {
 		const canvas = selectedCanvas()
+
 		if (!canvas) return
 
 		console.time('parse agent')
@@ -222,8 +224,18 @@
 				snapGrid={[1, 1]}
 				proOptions={{ hideAttribution: true }}
 				defaultEdgeOptions={{}}
+				onbeforedelete={async e => {
+					if (e.nodes.find(node => node.type === 'endpoint-node')) {
+						toast.error("You can't delete an endpoint node.")
+						return false
+					}
+
+					return true
+				}}
 				ondelete={e => {
-					e.nodes.forEach(node => removeNode(node.id))
+					e.nodes.forEach(node => {
+						removeNode(node.id)
+					})
 				}}
 			>
 				{#if menuIsOpen()}
