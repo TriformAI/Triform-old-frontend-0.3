@@ -1,4 +1,6 @@
 <script>
+	window.location.href = '/login'
+
 	import './welcome.css'
 	import logo from '$lib/images/Logo.svg'
 	import python_logo from '$lib/images/Python.svg'
