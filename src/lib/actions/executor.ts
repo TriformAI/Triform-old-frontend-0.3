@@ -1,7 +1,7 @@
 import type { Component } from '$lib/types/agent'
 import type { Execution } from '$lib/types/execution'
 
-const baseUrl = `${import.meta.env.VITE_TRICORE_URL}/v1`
+const baseUrl = import.meta.env.VITE_TRICORE_URL
 
 export const publishComponent = async (component: Component) => {
 	console.log('publishing component', component)
