@@ -14,7 +14,7 @@ services:
       - 5173:5173
 
   proxy:
-    image: europe-docker.pkg.dev/triformcloud/k8s/proxy:test-cors3
+    image: europe-docker.pkg.dev/triformcloud/k8s/proxy:fix-user-payload-parsing
     ports:
       - 8080:8080
     environment:
@@ -39,5 +39,5 @@ services:
       GITHUB_REDIRECT_URL: http://localhost:8080/v1/login/github/redirect
       GITHUB_AUTH_URL: https://github.com/login/oauth/authorize
       GITHUB_TOKEN_URL: https://github.com/login/oauth/access_token
-      GITHUB_SCOPES: repo
+      GITHUB_SCOPES: read:user,user:email
       ALLOWED_ORIGINS: http://localhost:8080,http://localhost:5173

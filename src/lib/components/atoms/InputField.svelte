@@ -2,11 +2,13 @@
 	let {
 		value = $bindable(),
 		label,
+		name,
 		placeholder,
 		type = 'text'
 	}: {
 		value?: string
 		label: string
+		name?: string
 		placeholder?: string
 		type?: string
 	} = $props()
@@ -17,6 +19,7 @@
 <div>
 	<label for={id} class="text-sm font-medium">{label}</label>
 	<input
+		{name}
 		{id}
 		{type}
 		{placeholder}

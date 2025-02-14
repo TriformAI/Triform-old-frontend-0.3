@@ -97,12 +97,7 @@
 					<button
 						onclick={action.trigger}
 						type="button"
-						class={[
-							'flex items-center gap-2 rounded px-3 py-2 whitespace-nowrap transition-colors hover:bg-zinc-900/50',
-							action.isDangerous
-								? 'text-red-300 hover:text-red-400'
-								: 'text-zinc-300 hover:text-zinc-200'
-						]}
+						class={['list-btn', action.isDangerous && 'list-btn--danger']}
 					>
 						<action.icon class="size-5.5" />
 						{action.label}

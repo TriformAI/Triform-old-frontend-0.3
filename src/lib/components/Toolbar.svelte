@@ -33,11 +33,10 @@
 </script>
 
 <div
-	class="bg-zinc-850 flex w-full items-center justify-between border-b border-b-zinc-700 px-7 py-0 text-zinc-100"
+	class="bg-zinc-850 grid w-full grid-cols-3 items-center border-b border-b-zinc-700 px-7 py-0 text-zinc-100"
 >
-	<div></div>
 	<!-- Central Tools  -->
-	<div class="relative flex items-center gap-x-2 py-3">
+	<div class="relative col-start-2 mx-auto flex items-center gap-x-2 py-3">
 		{#each tools as { icon: Icon, onClick }}
 			<Button {onClick}>
 				{#snippet icon()}
@@ -78,7 +77,7 @@
 	</div>
 
 	<!-- Zoom in Zoom out Fit screen -->
-	<div class="flex items-center gap-x-4">
+	<div class="ms-auto flex items-center gap-x-4">
 		<div class="flex items-center gap-x-2">
 			<Button
 				variation="link"

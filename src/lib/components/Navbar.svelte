@@ -1,40 +1,39 @@
 <script lang="ts">
 	import logo from '$lib/images/Logo.svg'
-	// import { getTolgee } from '@tolgee/svelte'
-	import { userData } from '$lib/stores/user.svelte'
+	import Dropdown from './common/Dropdown.svelte'
+	import { getTolgee } from '@tolgee/svelte'
+	import { T } from '@tolgee/svelte'
 
-	// const tolgee = getTolgee(['language'])
-	// const lang = $derived($tolgee.getLanguage())
+	import { page } from '$app/state'
+
+	const tolgee = getTolgee(['language'])
+	const lang = $derived($tolgee.getLanguage())
 
 	// todo: add more languages and change the way this language selector works
-	// const toggleLanguage = () => {
-	// 	if (lang === 'en') $tolgee.changeLanguage('sv')
-	// 	else $tolgee.changeLanguage('en')
-	// }
+	const toggleLanguage = () => {
+		if (lang === 'en') $tolgee.changeLanguage('sv')
+		else $tolgee.changeLanguage('en')
+	}
 </script>
 
 <div
 	class="flex w-full items-center justify-between border-b border-b-zinc-700 bg-zinc-900 px-8 py-2"
 >
-	<a href="/dashboard">
-		<img alt="Triform logo" src={logo} class="-ms-2 w-10 lg:w-12" />
-	</a>
+	<img alt="Triform logo" src={logo} class="-ms-2 w-8 lg:w-12" />
 
-	<img alt="Avatar" src={userData()?.avatar} class="w-8 rounded-full py-2" />
-
-	<!-- <Dropdown buttonVariation="link">
-		{#snippet button()}
-			<img alt="Avatar" src={userData()?.avatar} class="w-8 rounded-full" />
+	<Dropdown>
+		{#snippet trigger()}
+			<img alt="Avatar" src={page.data.user?.avatar} class="w-8 rounded-full" />
 		{/snippet}
 
 		{#snippet body()}
 			<ul>
 				<li>
-					<button class="w-full" onclick={toggleLanguage}>
-						Language: {lang}
-					</button>
+					<form action="/logout" method="post">
+						<button type="submit" class="list-btn w-full">Log out</button>
+					</form>
 				</li>
 			</ul>
 		{/snippet}
-	</Dropdown> -->
+	</Dropdown>
 </div>

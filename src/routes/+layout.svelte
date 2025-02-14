@@ -1,15 +1,12 @@
 <script lang="ts">
 	import '@fontsource/space-mono'
 	import '@fontsource-variable/figtree'
-
-	import type { Snippet } from 'svelte'
-
 	import '../app.css'
+	import type { Snippet } from 'svelte'
 	import { Toaster } from 'svelte-sonner'
 	import { TolgeeProvider, Tolgee, DevTools, FormatSimple } from '@tolgee/svelte'
-
-	import { refreshUserData } from '$lib/stores/user.svelte'
-	import { onMount } from 'svelte'
+	import { page } from '$app/state'
+	console.log({ page })
 
 	const tolgee = new Tolgee()
 		.use(DevTools())
@@ -23,10 +20,6 @@
 		})
 
 	let { children }: { children: Snippet } = $props()
-
-	onMount(() => {
-		refreshUserData()
-	})
 </script>
 
 <div class={`bg-website-dark-primary`}>

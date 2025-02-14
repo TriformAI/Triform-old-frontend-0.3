@@ -50,7 +50,7 @@
 	}
 
 	body {
-		@apply overflow-hidden text-zinc-200 antialiased;
+		@apply text-zinc-200 antialiased;
 
 		&:has(dialog[open]) {
 			@apply overflow-hidden;
@@ -441,5 +441,13 @@ div[aria-labelledby='options-menu']::-webkit-scrollbar-thumb:hover,
 		.sidePanelResponsive {
 			width: 90% !important;
 		}
+	}
+
+	.list-btn {
+		@apply flex items-center gap-2 rounded px-3 py-2 whitespace-nowrap text-zinc-300 transition-colors hover:bg-zinc-900/50 hover:text-zinc-200;
+	}
+
+	.list-btn--danger {
+		@apply text-red-300 hover:text-red-400;
 	}
 }

@@ -55,43 +55,23 @@
 	}
 
 	.btn {
-		position: relative;
-		display: inline-flex;
-		border-radius: 32px;
-		overflow: hidden;
-		transition: all 0.4s;
+		@apply relative inline-flex overflow-hidden rounded-full px-5 py-2 text-sm font-black text-white uppercase;
 
-		.inner {
-			position: absolute;
-			width: 300%;
-			height: 100%;
-			left: -100%;
-			transition: all 0.4s;
-			z-index: 0;
+		span {
+			@apply relative z-10;
 		}
 
-		button {
-			padding-left: 1.25rem;
-			padding-right: 1.25rem;
-			padding-top: 0.5rem;
-			padding-bottom: 0.5rem;
-			text-transform: uppercase;
-			color: white;
-			font-size: 17px;
-			font-weight: 900;
-			z-index: 10;
+		&:after {
+			@apply absolute inset-0 block h-full w-[300%] translate-x-[-33%] transition-transform content-[''];
+			background: -webkit-linear-gradient(285deg, #74b0e2, #833fb4, #74b0e2, #833fb4);
 		}
 
 		&:hover {
 			transform: scale(1.03);
 
-			.inner {
-				left: 0;
+			&:after {
+				@apply translate-x-[0%];
 			}
-		}
-
-		&.btn1 .inner {
-			background: -webkit-linear-gradient(285deg, #74b0e2, #833fb4, #74b0e2, #833fb4);
 		}
 	}
 

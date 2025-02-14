@@ -1,61 +1,64 @@
 <script lang="ts">
+	import { clickOutside } from '$lib/utils/clickOutside'
 	import type { Snippet } from 'svelte'
-	import type { ButtonVariation } from '$lib/components/atoms/Button.svelte'
 
-	import { createMenu } from 'svelte-headlessui'
-	import { fade } from 'svelte/transition'
+	type Type = 'default' | 'tight'
 
-	import Button from '../atoms/Button.svelte'
-	import List from '../atoms/List.svelte'
-
-	// Destructure props with default values
-	const {
-		button, // Button is required, evoke for the dropdown
-		buttonVariation,
-		body, // Body is required, content of the dropdown
-		chevron = false // Default value for chevron, dropdown icon at the end of the button
-	}: {
-		button?: Snippet
-		buttonVariation?: ButtonVariation
+	interface Props {
+		open?: boolean
+		trigger: Snippet
 		body: Snippet
-		chevron?: boolean
-	} = $props()
+		type?: Type
+		class?: string
+	}
 
-	// Create the dropdown menu
-	const menu = createMenu({ label: 'Dropdown Menu' })
+	let { open = $bindable(), trigger, body, type = 'default', class: classes }: Props = $props()
+
+	let window_event_listener: ((event: KeyboardEvent) => void) | null = null
+
+	$effect(() => {
+		if (open) {
+			window_event_listener = (event: KeyboardEvent) => {
+				if (event.key === 'Escape') {
+					open = false
+				}
+			}
+			window.addEventListener('keydown', window_event_listener)
+		} else {
+			if (window_event_listener) {
+				window.removeEventListener('keydown', window_event_listener)
+			}
+		}
+	})
 </script>
 
-<div class="relative z-40 inline-block text-left">
-	<!-- Dropdown Trigger Button -->
-	{#if button}
-		<div use:menu.button>
-			<Button variation={buttonVariation}>
-				{#snippet body()}
-					<!-- Render the button snippet -->
-					{@render button()}
-					<!-- Chevron icon if enabled -->
-					{#if chevron}
-						<svg
-							xmlns="http://www.w3.org/2000/svg"
-							fill="none"
-							viewBox="0 0 24 24"
-							stroke-width="1.5"
-							stroke="currentColor"
-							class="ml-2 h-5 w-5 transform transition duration-200 ease-in-out
-							{$menu.expanded ? '-rotate-180' : ''}"
-						>
-							<path stroke-linecap="round" stroke-linejoin="round" d="M19.5 9l-7.5 7.5L4.5 9" />
-						</svg>
-					{/if}
-				{/snippet}
-			</Button>
-		</div>
-	{/if}
+<div
+	class={[classes, 'relative']}
+	use:clickOutside
+	onclickOutside={() => {
+		open = false
+	}}
+>
+	<button type="button" onclick={() => (open = !open)}>
+		{@render trigger()}
+	</button>
 
-	<!-- Dropdown Menu -->
-	{#if $menu.expanded}
-		<div use:menu.items transition:fade={{ duration: 200 }} class="absolute right-0 mt-2">
-			<List {body} />
-		</div>
-	{/if}
+	<div
+		class={[
+			'dropdown absolute end-0 z-10 min-w-56 origin-top-right rounded-lg bg-zinc-800 p-2 duration-200 ease-(--easing-circ)',
+			open ? 'block' : 'hidden',
+			type === 'tight' && 'dropdown--tight'
+		]}
+	>
+		{@render body()}
+	</div>
 </div>
+
+<style>
+	@starting-style {
+		.dropdown {
+			transform: scale(0.75);
+			opacity: 0;
+		}
+	}
+</style>

@@ -1,6 +1,4 @@
 <script>
-	window.location.href = '/login'
-
 	import './welcome.css'
 	import logo from '$lib/images/Logo.svg'
 	import python_logo from '$lib/images/Python.svg'
@@ -8,18 +6,15 @@
 	import security_logo from '$lib/images/Security.svg'
 	import homepage_vid from '$lib/videos/Homepage.mp4'
 	import firstblockgradient from '$lib/images/firstblockgradientbelow.svg'
+	import { page } from '$app/state'
 </script>
 
 <section class="welcome z-[-1] bg-[#030712]">
 	<nav
 		class="mx-auto flex w-full max-w-7xl items-center justify-between px-3 py-7 sm:p-10 lg:justify-around"
 	>
-		<ul class="text-brand-tertiary-gray mr-auto hidden items-center gap-x-10 lg:flex">
-			<a href=" " class="cursor-pointer hover:text-white">Features</a>
-			<a href=" " class="cursor-pointer hover:text-white">Pricing</a>
-			<a href=" " class="cursor-pointer hover:text-white">How it works</a>
-		</ul>
 		<img alt="triform logo" src={logo} class="relative right-7 w-14" />
+
 		<div id="burger" class="z-50 ml-auto h-10 w-10 cursor-pointer lg:hidden">
 			<svg
 				xmlns="http://www.w3.org/2000/svg"
@@ -36,57 +31,20 @@
 				/>
 			</svg>
 		</div>
-		<div class="ml-auto hidden items-center text-white lg:flex lg:gap-x-10">
-			<a href="/login" class="cursor-pointer font-bold hover:text-gray-400"
-				><button>Login</button></a
-			>
-			<a href="/register">
-				<div class="btn btn1">
-					<div class="inner"></div>
-					<button class="text-sm">Get Started</button>
-				</div>
-			</a>
-		</div>
 
-		<div
-			id="mobileMenu"
-			class="bg-opacity-75 fixed inset-0 z-50 hidden flex-col items-center justify-center bg-black backdrop-blur-sm"
-		>
-			<div class="flex w-full items-center justify-between p-5">
-				<img alt="The project logo" src={logo} class="w-14" />
-				<div id="cross" class="z-60 ml-auto hidden h-10 w-10 cursor-pointer lg:hidden">
-					<svg
-						xmlns="http://www.w3.org/2000/svg"
-						fill="none"
-						viewBox="0 0 24 24"
-						stroke-width="1.5"
-						stroke="currentColor"
-						class="h-10 w-10 text-white"
-					>
-						<path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
-					</svg>
-				</div>
-			</div>
-
-			<div class="mx-auto flex h-full w-full flex-col items-center justify-around">
-				<div class="text-md relative top-20 flex flex-col items-center justify-center gap-y-10">
-					<a href="/" class="text-white">Features</a>
-					<a href="/" class="text-white">Pricing</a>
-					<a href="/" class="text-white">How it works</a>
-				</div>
-
-				<div class="text-md mx-5 flex items-center justify-center gap-x-10">
-					<a href="/login" class="text-white">Login</a>
-					<a href="/register" class="Navbtn Navbtn1">
-						<div class="inner"></div>
-						<button class="text-white">Get Started</button>
-					</a>
-				</div>
-			</div>
+		<div class="ms-auto hidden lg:flex">
+			{#if page.data.user}
+				<a href="/dashboard" class="btn">
+					<span>Dashboard</span>
+				</a>
+			{:else}
+				<a href="/login" class="btn">
+					<span>Login</span>
+				</a>
+			{/if}
 		</div>
 	</nav>
 
-	<!-- first block -->
 	<div id="welcome" class="mx-auto w-full">
 		<div class="relative top-2 flex w-full items-center justify-center">
 			<div
@@ -107,12 +65,10 @@
 		<div
 			class=" bottom-[350px] flex flex-col items-center justify-center lg:relative 2xl:bottom-[370px]"
 		>
-			<a href="/register">
-				<div class="btn btn1">
-					<div class="inner"></div>
-					<button class="text-sm">Get Started</button>
-				</div>
+			<a href="/login" class="btn">
+				<span>Get Started</span>
 			</a>
+
 			<video
 				class="relative top-4 mt-14 w-[95%] max-w-5xl rounded-xl border-t-[0.25px] border-l-[0.25px] border-gray-600 lg:w-[65%]"
 				autoplay

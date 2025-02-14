@@ -6,7 +6,7 @@
 
 	import DiscordIcon from '~icons/bxl/discord-alt'
 	import GithubIcon from '~icons/bxl/github'
-
+	import { PUBLIC_TRICORE_AUTH_URL } from '$env/static/public'
 	const providers = [
 		{
 			name: 'Discord',
@@ -18,7 +18,7 @@
 		}
 	]
 
-	const apiUrl = import.meta.env.VITE_TRICORE_AUTH_URL + '/v1'
+	const apiUrl = PUBLIC_TRICORE_AUTH_URL
 
 	// Disable others
 	let chosenProvider = $state<string | null>(null)
@@ -40,7 +40,8 @@
 </script>
 
 <div class="flex h-screen w-screen flex-col items-center justify-center bg-zinc-900">
-	<span class="mb-2 text-center text-zinc-400"> Continue with </span>
+	<p class="mb-4 text-center text-zinc-400">Continue with</p>
+
 	<div class="flex w-full max-w-xs flex-col items-center gap-y-4">
 		{#each providers as provider}
 			<Button
