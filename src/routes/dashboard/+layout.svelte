@@ -1,22 +1,13 @@
 <script lang="ts">
-	import { SvelteFlowProvider } from '@xyflow/svelte'
 	import Navbar from '$lib/components/Navbar.svelte'
-	import Toolbar from '$lib/components/Toolbar.svelte'
-	import Footer from '$lib/components/Footer.svelte'
 
-	let { children } = $props()
+	const { children } = $props()
 </script>
 
-<SvelteFlowProvider>
-	<div class="flex h-screen flex-col">
-		<Navbar />
+<div class="flex h-screen flex-col bg-zinc-900">
+	<Navbar />
 
-		<Toolbar />
-
-		<div class="flex-grow">
-			{@render children()}
-		</div>
-
-		<Footer />
+	<div class="container mx-auto mt-5 flex-grow px-6">
+		{@render children()}
 	</div>
-</SvelteFlowProvider>
+</div>

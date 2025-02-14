@@ -1,7 +1,6 @@
 <script lang="ts">
 	import type { Snippet } from 'svelte'
 	import ChevronDown from '~icons/mdi/chevron-down'
-	import Close from '~icons/mdi/close'
 
 	let {
 		children,
@@ -40,7 +39,7 @@
 		classes,
 		appearance,
 		`fixed m-0 overflow-visible bg-transparent`,
-		appearance === 'center' && 'top-1/2 mx-auto w-full max-w-xs rounded-lg md:max-w-xl',
+		appearance === 'center' && 'top-1/2 mx-auto w-full max-w-md rounded-lg md:max-w-xl',
 		appearance === 'bottom' && 'inset-x-0 top-auto bottom-0 w-full max-w-none'
 	]}
 >
@@ -55,7 +54,7 @@
 			>
 				<ChevronDown class="mx-auto size-6 text-white" />
 			</button>
-		{:else if appearance === 'center'}
+			<!-- {:else if appearance === 'center'}
 			<button
 				type="button"
 				class="absolute end-6 top-5.5 z-10 outline-none"
@@ -64,7 +63,7 @@
 				}}
 			>
 				<Close class="size-5 text-white" />
-			</button>
+			</button> -->
 		{/if}
 
 		{@render children()}
@@ -74,18 +73,21 @@
 <style>
 	dialog.center {
 		transition:
-			opacity 0.1s var(--easing-circ),
-			display 0.1s,
-			overlay 0.1s;
+			opacity 0.2s var(--easing-circ),
+			transform 0.2s ease-in-out,
+			display 0.2s,
+			overlay 0.2s;
 		transition-behavior: allow-discrete;
-		transform: translateY(-50%);
+		transform: translateY(-50%) scale(0.98);
 		opacity: 0;
 	}
 
 	dialog.center[open] {
 		opacity: 1;
+		transform: translateY(-50%) scale(1);
 		transition:
 			opacity 0.3s var(--easing-circ),
+			transform 0.3s ease-in-out,
 			display 0.3s,
 			overlay 0.3s;
 	}
@@ -107,7 +109,7 @@
 	@starting-style {
 		dialog.center[open] {
 			opacity: 0;
-			transform: translateY(-50%);
+			transform: translateY(-50%) scale(0.925);
 		}
 
 		dialog.center[open]::backdrop {

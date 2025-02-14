@@ -15,12 +15,12 @@
 </script>
 
 <div>
-	<label for={id} class="mb-2 text-sm font-medium">{label}</label>
+	<label for={id} class="text-sm font-medium">{label}</label>
 	<input
 		{id}
 		{type}
 		{placeholder}
 		bind:value
-		class="w-full rounded-md border border-zinc-700 bg-transparent px-5 py-3 text-zinc-200 transition outline-none hover:border-zinc-600 focus:border-zinc-500"
+		class="mt-2 w-full rounded-md border border-zinc-700 bg-transparent px-5 py-3 text-zinc-200 transition outline-none hover:border-zinc-600 focus:border-zinc-500"
 	/>
 </div>
