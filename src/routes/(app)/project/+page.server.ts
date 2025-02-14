@@ -1,5 +1,5 @@
 export const actions = {
-	async create({ request, locals }) {
+	async create({ request }) {
 		const formData = await request.formData()
 		console.log(formData)
 

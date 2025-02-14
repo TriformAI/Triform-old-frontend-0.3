@@ -1,19 +1,18 @@
 <script lang="ts">
 	import logo from '$lib/images/Logo.svg'
 	import Dropdown from './common/Dropdown.svelte'
-	import { getTolgee } from '@tolgee/svelte'
-	import { T } from '@tolgee/svelte'
+	// import { getTolgee } from '@tolgee/svelte'
 
 	import { page } from '$app/state'
 
-	const tolgee = getTolgee(['language'])
-	const lang = $derived($tolgee.getLanguage())
+	// const tolgee = getTolgee(['language'])
+	// const lang = $derived($tolgee.getLanguage())
 
 	// todo: add more languages and change the way this language selector works
-	const toggleLanguage = () => {
-		if (lang === 'en') $tolgee.changeLanguage('sv')
-		else $tolgee.changeLanguage('en')
-	}
+	// const toggleLanguage = () => {
+	// 	if (lang === 'en') $tolgee.changeLanguage('sv')
+	// 	else $tolgee.changeLanguage('en')
+	// }
 </script>
 
 <div
