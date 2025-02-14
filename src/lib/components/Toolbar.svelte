@@ -36,11 +36,11 @@
 	class="bg-zinc-850 grid w-full grid-cols-3 items-center border-b border-b-zinc-700 px-7 py-0 text-zinc-100"
 >
 	<!-- Central Tools  -->
-	<div class="relative col-start-2 mx-auto flex items-center gap-x-2 py-3">
+	<div class="relative col-start-2 mx-auto flex items-center gap-x-2 py-2">
 		{#each tools as { icon: Icon, onClick }}
 			<Button {onClick}>
 				{#snippet icon()}
-					<Icon class="size-6" />
+					<Icon />
 				{/snippet}
 			</Button>
 		{/each}

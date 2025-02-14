@@ -1,7 +1,6 @@
 import { sveltekit } from '@sveltejs/kit/vite'
 import { defineConfig } from 'vitest/config'
 import Icons from 'unplugin-icons/vite'
-import { dev } from '$app/environment'
 
 export default defineConfig({
 	plugins: [
@@ -16,6 +15,6 @@ export default defineConfig({
 		include: ['src/**/*.{test,spec}.{js,ts}']
 	},
 	server: {
-		host: dev ? true : '0.0.0.0'
+		host: '0.0.0.0'
 	}
 })
