@@ -14,6 +14,7 @@ env:
   VITE_TRICORE_AUTH_URL: https://api.tricore.dev/v1
   PUBLIC_TRICORE_AUTH_URL: https://api.tricore.dev/v1
   NODE_ENV: production
+  ORIGIN: https://tricore.dev
 
 jobs:
   deploy:
