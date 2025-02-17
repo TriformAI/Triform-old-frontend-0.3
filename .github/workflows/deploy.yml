@@ -14,7 +14,6 @@ env:
   VITE_TRICORE_AUTH_URL: https://api.tricore.dev/v1
   PUBLIC_TRICORE_AUTH_URL: https://api.tricore.dev/v1
   NODE_ENV: production
-  ORIGIN: https://tricore.dev
 
 jobs:
   deploy:
@@ -61,7 +60,6 @@ jobs:
         echo "VITE_TRICORE_AUTH_URL=${{ env.VITE_TRICORE_AUTH_URL }}" >> .env
         echo "PUBLIC_TRICORE_AUTH_URL=${{ env.PUBLIC_TRICORE_AUTH_URL }}" >> .env
         echo "NODE_ENV=${{ env.NODE_ENV }}" >> .env
-        echo "ORIGIN=${{ env.ORIGIN }}" >> .env
         make push
 
     - name: Get GKE credentials
