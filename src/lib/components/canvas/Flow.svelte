@@ -18,7 +18,7 @@
 	import '@xyflow/svelte/dist/style.css'
 	import { getLayoutedNodes } from './layout.svelte'
 	import { toast } from 'svelte-sonner'
-	import debounce from 'just-debounce-it'
+	import { debounce } from '../../utils/debounce'
 	import { useSvelteFlow } from '@xyflow/svelte'
 
 	const { fitView } = useSvelteFlow()
@@ -145,7 +145,7 @@
 			maxZoom: 1,
 			duration: 500
 		})
-	}, 300)}
+	}, 400)}
 />
 
 <div class="relative grid h-full w-full" bind:this={wrapper} role="application">
