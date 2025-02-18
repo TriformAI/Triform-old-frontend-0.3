@@ -64,16 +64,17 @@ export const updateWindowById = (id: string, update: Partial<Window>) => {
 // TODO: Add all components that need to be saved to local storage here.
 // They need to be mapped to strings so that they can be saved and recreated
 // from local storage.
-const stringToComponentMap: { str: string; cmp: Component }[] = [
+const stringToComponentMap = (): { str: string; cmp: Component }[] => [
 	{ str: 'Execution', cmp: Execution },
 	{ str: 'ConponentsToolbox', cmp: ComponentsToolbox },
 	{ str: 'CodeEditor', cmp: CodeEditorWindow }
 ]
+
 const mapStringToComponent = (str: string): Component | undefined => {
-	return stringToComponentMap.find(pair => pair.str === str)?.cmp
+	return stringToComponentMap().find(pair => pair.str === str)?.cmp
 }
 const mapComponentToString = (cmp: Component): string | undefined => {
-	return stringToComponentMap.find(pair => pair.cmp === cmp)?.str
+	return stringToComponentMap().find(pair => pair.cmp === cmp)?.str
 }
 
 type StoredWindow = Omit<Window, 'component'> & { component: string }

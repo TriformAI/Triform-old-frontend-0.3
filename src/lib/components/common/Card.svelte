@@ -6,64 +6,88 @@
 	import IconClose from '~icons/mdi/close'
 	import IconDrag from '~icons/mdi/drag'
 
+	interface Props {
+		header?: Snippet
+		body: Snippet
+		footer?: Snippet
+		padding?: 'default' | 'tight'
+		onClose?: () => void
+		onDragStart?: (e: MouseEvent) => void
+		onDragEnd?: (e: MouseEvent) => void
+	}
+
 	const {
 		header,
 		body,
 		footer,
+		padding = 'default',
 		onClose,
 		onDragStart: onDragStartProp,
 		onDragEnd: onDragEndProp
-	}: {
-		header?: Snippet
-		body: Snippet
-		footer?: Snippet
-		onClose?: () => void
-		onDragStart?: (e: MouseEvent) => void
-		onDragEnd?: (e: MouseEvent) => void
-	} = $props()
+	}: Props = $props()
 
 	const isDraggable = typeof onDragStartProp === 'function' || typeof onDragEndProp === 'function'
+
+	let isDragging = $state(false)
 
 	const onDragStart = (e: MouseEvent) => {
 		onDragStartProp?.(e)
 		window.addEventListener('mouseup', onDragEnd)
+		isDragging = true
 	}
 	const onDragEnd = (e: MouseEvent) => {
 		onDragEndProp?.(e)
 		window.removeEventListener('mouseup', onDragEnd)
+		isDragging = false
 	}
 </script>
 
 <div
-	class="relative h-full min-h-fit w-full min-w-fit overflow-hidden rounded-md border border-zinc-700 bg-zinc-900 text-zinc-200 shadow-lg"
+	class={[
+		'relative grid h-full min-h-fit w-full min-w-fit overflow-hidden rounded-md border border-zinc-800 bg-zinc-900 text-zinc-200',
+		'grid-rows-[auto_1fr]'
+	]}
 >
 	<div
-		class="flex flex-row items-center justify-between rounded-t-md border border-x-0 border-t-0 border-b border-inherit bg-zinc-800 pr-4"
+		class="flex flex-row items-center justify-between rounded-t-md border border-x-0 border-t-0 border-b border-inherit bg-zinc-900 pr-4"
 	>
 		<div
-			class="text-md flex w-full flex-row items-center gap-3 px-6 py-5 text-left font-semibold text-zinc-50 {isDraggable
-				? 'cursor-move select-none'
-				: ''}"
+			class={[
+				'flex w-full items-center gap-1 font-medium',
+				padding === 'default' && 'px-6 py-4',
+				padding === 'tight' && 'px-4 py-3',
+				isDraggable && 'cursor-grab select-none',
+				isDraggable && isDragging ? 'cursor-grabbing' : 'cursor-grab'
+			]}
 			onmousedown={onDragStart}
 			role={isDraggable ? 'dialog' : undefined}
 			aria-label={isDraggable ? 'Drag' : ''}
 		>
 			{#if isDraggable}
-				<IconDrag class="h-[1.25rem] w-[1.25rem]" />
+				<IconDrag class="h-[1.25rem] w-[1.25rem] opacity-50" />
 			{/if}
 			{@render header?.()}
 		</div>
+
 		{#if typeof onClose === 'function'}
-			<Button variation="link" onClick={onClose}>
+			<Button variation="link" class="-me-3" onClick={onClose}>
 				{#snippet icon()}
 					<IconClose />
 				{/snippet}
 			</Button>
 		{/if}
 	</div>
-	<div class="h-auto min-h-fit w-full px-6 py-5">
+
+	<div
+		class={[
+			'grid w-full',
+			padding === 'default' && 'px-6 py-5',
+			padding === 'tight' && 'px-4 py-3'
+		]}
+	>
 		{@render body()}
 	</div>
+
 	{#if footer}
 		<div class="border border-inherit">
 			{@render footer()}

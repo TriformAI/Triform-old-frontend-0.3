@@ -4,6 +4,6 @@
 
 <pre
 	class={[
-		type === 'error' && 'text-primary-red',
-		type === 'warning' && 'text-primary-yellow'
+		type === 'error' && 'text-rose',
+		type === 'warning' && 'text-idle'
 	]}>{@render children?.()}</pre>

@@ -7,7 +7,7 @@
 	import IconPlay from '~icons/material-symbols/play-arrow-outline-rounded'
 	import IconZoomOut from '~icons/material-symbols/zoom-out-rounded'
 	import IconZoomIn from '~icons/material-symbols/zoom-in-rounded'
-	import IconFitScreen from '~icons/material-symbols/fit-screen-outline-rounded'
+	import IconFitScreen from '~icons/material-symbols/filter-center-focus-outline'
 
 	import { openWindow } from '$lib/stores/windows.svelte'
 
@@ -33,14 +33,14 @@
 </script>
 
 <div
-	class="bg-zinc-850 grid w-full grid-cols-3 items-center border-b border-b-zinc-700 px-7 py-0 text-zinc-100"
+	class="grid w-full grid-cols-3 items-center border-b border-b-zinc-800 bg-zinc-900 px-7 py-0 text-zinc-100"
 >
 	<!-- Central Tools  -->
 	<div class="relative col-start-2 mx-auto flex items-center gap-x-2 py-2">
 		{#each tools as { icon: Icon, onClick }}
-			<Button {onClick}>
+			<Button variation="primary" {onClick}>
 				{#snippet icon()}
-					<Icon />
+					<Icon class="size-[24px]" />
 				{/snippet}
 			</Button>
 		{/each}
@@ -78,7 +78,7 @@
 
 	<!-- Zoom in Zoom out Fit screen -->
 	<div class="ms-auto flex items-center gap-x-4">
-		<div class="flex items-center gap-x-2">
+		<div class="flex items-center">
 			<Button
 				variation="link"
 				onClick={() => {
@@ -86,9 +86,10 @@
 				}}
 			>
 				{#snippet icon()}
-					<IconZoomIn />
+					<IconZoomIn class="size-[20px]" />
 				{/snippet}
 			</Button>
+
 			<Button
 				variation="link"
 				onClick={() => {
@@ -96,9 +97,10 @@
 				}}
 			>
 				{#snippet icon()}
-					<IconZoomOut />
+					<IconZoomOut class="size-[20px]" />
 				{/snippet}
 			</Button>
+
 			<Button
 				variation="link"
 				onClick={() => {
@@ -109,7 +111,7 @@
 				}}
 			>
 				{#snippet icon()}
-					<IconFitScreen />
+					<IconFitScreen class="size-[20px]" />
 				{/snippet}
 			</Button>
 		</div>

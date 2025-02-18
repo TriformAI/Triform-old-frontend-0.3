@@ -10,9 +10,11 @@
 	import Window from '$lib/components/common/Window.svelte'
 	import Button from '../atoms/Button.svelte'
 	import TextField from '../atoms/TextField.svelte'
-	import Code from '../atoms/Code.svelte'
 
 	import IconPlay from '~icons/material-symbols/play-arrow-outline-rounded'
+	import IconCheck from '~icons/material-symbols/check-circle-outline'
+	import IconAlert from '~icons/material-symbols/warning-outline'
+
 	import { API } from '$lib/api'
 
 	const api = new API()
@@ -28,24 +30,26 @@
 		selectedNode = ns.find(n => n.selected) as Node
 	})
 
-	let input = $state('')
+	let input = $state('{\n\t"msg":"hello world"\n}')
 	let result = $state('')
 
 	let isRunning = $state(false)
 
 	const run = async () => {
 		if (!selectedNode) return
+
 		if (!input) {
 			toast.error('Please enter a test input')
 			return
 		}
-		try {
-			JSON.parse(input)
-		} catch (_err) {
+
+		if (!isValidJson) {
 			toast.error('The input needs to be valid JSON')
 			return
 		}
+
 		isRunning = true
+
 		try {
 			result = await api.post('components', {
 				component: selectedNode?.data.spec,
@@ -55,36 +59,65 @@
 			isRunning = false
 		}
 	}
+
+	const isValidJson = $derived.by(() => {
+		try {
+			JSON.parse(input)
+		} catch (e) {
+			return false
+		}
+		return true
+	})
 </script>
 
-<Window {...props}>
+<Window padding="tight" {...props}>
 	{#snippet header()}
 		Execute {selectedNode?.data?.component_name ?? ''}
 	{/snippet}
 
 	{#snippet body()}
-		{#if selectedNode}
-			<div class="flex h-full min-h-fit flex-col gap-y-4">
-				<TextField
-					label={$t('window-execution-input-label', 'Test data')}
-					placeholder={$t('window-execution-input-placeholder', 'Temporary test data')}
-					bind:value={input}
-				/>
-				<Button class="w-full" onClick={run} autoLoad={false} disabled={isRunning}>
-					{#snippet icon()}
-						<IconPlay />
-					{/snippet}
-				</Button>
-				{#if result}
-					<div class="max-w-lg">
-						<Code code={JSON.stringify(result, null, 2)} />
-					</div>
-				{/if}
-			</div>
-		{:else}
-			<div class="flex flex-col items-center justify-center px-8 py-12">
-				<p class="text-center text-zinc-500">Select a node to execute it</p>
-			</div>
-		{/if}
+		<div
+			class={[
+				'relative col-start-1 row-start-1 grid w-full min-w-80 grid-rows-[1fr_auto] gap-y-4',
+				selectedNode ? 'visible' : 'invisible'
+			]}
+		>
+			<p
+				class={[
+					'transform-opacity text-success absolute end-1 top-8 flex items-center gap-x-2 text-xs font-medium opacity-0 duration-100',
+					isValidJson && 'opacity-100'
+				]}
+			>
+				<IconCheck class="size-5" />
+			</p>
+
+			<TextField
+				class="text-sm"
+				useMonoFont={true}
+				rows={8}
+				label={$t('window-execution-input-label', 'JSON test data')}
+				bind:value={input}
+			/>
+
+			<Button
+				variation="vibrant"
+				class="w-full"
+				onClick={run}
+				autoLoad={false}
+				disabled={!isValidJson || isRunning}
+			>
+				{#snippet icon()}
+					<IconPlay class="size-6" />
+				{/snippet}
+			</Button>
+		</div>
+		<div
+			class={[
+				'col-start-1 row-start-1 flex w-full min-w-80 flex-col items-center justify-center',
+				!selectedNode ? 'visible' : 'invisible'
+			]}
+		>
+			<p class="text-center text-zinc-500">Select a node to execute</p>
+		</div>
 	{/snippet}
 </Window>

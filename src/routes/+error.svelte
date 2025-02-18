@@ -4,7 +4,7 @@
 </script>
 
 <section
-	class="bg-website-dark-primary flex h-screen flex-col items-center justify-center text-white dark:bg-zinc-900"
+	class="flex h-screen flex-col items-center justify-center bg-zinc-900 text-white dark:bg-zinc-900"
 >
 	<div class="mx-auto px-4 py-8 lg:px-6 lg:py-16">
 		<div class="mx-auto text-center">

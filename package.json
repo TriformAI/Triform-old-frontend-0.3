@@ -64,6 +64,7 @@
 		"chart.js": "^4.4.7",
 		"date-fns": "^4.1.0",
 		"elkjs": "^0.9.3",
+		"just-debounce-it": "^3.2.0",
 		"svelte-headlessui": "^0.0.45",
 		"svelte-transition": "^0.0.17"
 	}

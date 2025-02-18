@@ -22,7 +22,8 @@
 			value: pythonCode,
 			language: 'python',
 			theme: 'vs-dark',
-			automaticLayout: true
+			automaticLayout: true,
+			minimap: { enabled: false }
 		})
 	})
 
@@ -32,7 +33,9 @@
 	})
 </script>
 
-<div class="container" bind:this={editorContainer}></div>
+<div>
+	<div class="bg-zinc-850 container rounded-md py-4" bind:this={editorContainer}></div>
+</div>
 
 <style>
 	.container {

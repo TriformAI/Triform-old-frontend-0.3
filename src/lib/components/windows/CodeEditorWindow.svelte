@@ -5,7 +5,7 @@
 	import Tabs from '$lib/components/atoms/Tabs.svelte'
 	import CodeEditor from '../CodeEditor.svelte'
 	import Button from '$lib/components/atoms/Button.svelte'
-	import IconDatabaseUpload from '~icons/material-symbols/database-upload-rounded'
+	import IconPublish from '$lib/icons/cloud-upload.svg'
 	import { API } from '$lib/api'
 	import { T } from '@tolgee/svelte'
 
@@ -62,9 +62,9 @@
 			<div class="flex items-center justify-between">
 				<!-- for testing purpose -->
 				<!-- <Select bind:selected {options} singleValue={false} /> -->
-				<Button variation="primary" class="ml-auto" autoLoad={true} onClick={publish}>
+				<Button variation="vibrant" class="ml-auto" autoLoad={true} onClick={publish}>
 					{#snippet icon()}
-						<IconDatabaseUpload />
+						<img class="size-6" src={IconPublish} alt="Publish" />
 					{/snippet}
 					{#snippet body()}
 						<T keyName="code-editor-publish-button" defaultValue="Publish" />

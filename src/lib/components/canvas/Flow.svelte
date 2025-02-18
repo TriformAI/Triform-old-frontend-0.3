@@ -18,6 +18,10 @@
 	import '@xyflow/svelte/dist/style.css'
 	import { getLayoutedNodes } from './layout.svelte'
 	import { toast } from 'svelte-sonner'
+	import debounce from 'just-debounce-it'
+	import { useSvelteFlow } from '@xyflow/svelte'
+
+	const { fitView } = useSvelteFlow()
 
 	const nodeTypes: NodeTypes = {
 		// @ts-expect-error type issue, not crucial but should probs be fixed
@@ -133,6 +137,16 @@
 		addDownstreamNode('root', triggerNode)
 	}
 </script>
+
+<svelte:window
+	onresize={debounce(() => {
+		// TODO improve this by calling setCenter instead if there is a selected node
+		fitView({
+			maxZoom: 1,
+			duration: 500
+		})
+	}, 300)}
+/>
 
 <div class="relative grid h-full w-full" bind:this={wrapper} role="application">
 	{#if projectIsParsed}

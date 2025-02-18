@@ -4,18 +4,10 @@
 	--font-sans: 'Figtree Variable', sans-serif;
 	--font-mono: 'Space Mono', monospace;
 
-	--color-website-primary: #1d1e20;
-	--color-website-dark-primary: #181819;
-	--color-website-secondary: #252526;
-	--color-website-tertiary: #2a2b2c;
-	--color-brand-white: #fff;
-	--color-brand-primary-gray: #3f4041;
-	--color-brand-secondary-gray: #ffffff65;
-	--color-brand-tertiary-gray: #d1d5db;
-	--color-brand-light-gray: #9ca3af;
-	--color-primary-red: #f44336;
-	--color-primary-green: #22c55e;
-	--color-primary-yellow: #ffc107;
+	--color-warning: var(--color-rose-500);
+	--color-idle: var(--color-amber-500);
+	--color-success: var(--color-emerald-500);
+
 	--color-zinc-850: #1d1d20;
 	--color-zinc-950: oklch(0.141 0.005 285.823);
 
@@ -42,6 +34,24 @@
 		0.995 43.4%,
 		1
 	);
+
+	--animate-fade-in: fade-in 300ms var(--easing-circ) forwards;
+
+	--shadow-window:
+		0 0 3px hsl(220deg 0% 0% / 0.15), 0 0 6px hsl(220deg 0% 0% / 0.15),
+		0 0 9px hsl(220deg 0% 0% / 0.15);
+
+	@keyframes fade-in {
+		0% {
+			transform: scale(0.9);
+			opacity: 0;
+		}
+
+		100% {
+			transform: scale(1);
+			opacity: 1;
+		}
+	}
 }
 
 @layer base {
@@ -113,6 +123,11 @@
 }
 
 @layer overrides {
+	.monaco-editor {
+		--vscode-editor-background: var(--color-zinc-850) !important;
+		--vscode-editorGutter-background: var(--color-zinc-850) !important;
+	}
+
 	‰ [x-cloak] {
 		display: none;
 	}

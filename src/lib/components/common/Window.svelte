@@ -6,22 +6,11 @@
 	import Card from './Card.svelte'
 	import { onMount, onDestroy } from 'svelte'
 
-	let {
-		header,
-		body,
-		footer,
-		onClose: onCloseProp,
-		posX = 0,
-		posY = 0,
-		id,
-		width = 0,
-		height = 0,
-		zIndex = 1
-		// customProps
-	}: {
+	interface Props {
 		header?: Snippet
 		body: Snippet
 		footer?: Snippet
+		padding?: 'default' | 'tight'
 		onClose?: () => void
 		posX: Window['posX']
 		posY: Window['posY']
@@ -30,7 +19,22 @@
 		height: Window['height']
 		zIndex: Window['zIndex']
 		// customProps: Window['customProps']
-	} = $props()
+	}
+
+	let {
+		header,
+		body,
+		footer,
+		padding = 'default',
+		onClose: onCloseProp,
+		posX = 0,
+		posY = 0,
+		id,
+		width = 0,
+		height = 0,
+		zIndex = 1
+		// customProps
+	}: Props = $props()
 
 	let element: HTMLDivElement
 	let hasResized = $state(false)
@@ -125,7 +129,7 @@
 </script>
 
 <div
-	class="absolute resize overflow-auto"
+	class="animate-fade-in shadow-window absolute resize overflow-auto"
 	style={`
 		top: ${posY}%;
 		left: ${posX}%;
@@ -137,5 +141,5 @@
 	`}
 	bind:this={element}
 >
-	<Card {header} {body} {footer} {onClose} {onDragStart} {onDragEnd} />
+	<Card {header} {body} {footer} {padding} {onClose} {onDragStart} {onDragEnd} />
 </div>

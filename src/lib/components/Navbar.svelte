@@ -16,7 +16,7 @@
 </script>
 
 <div
-	class="flex w-full items-center justify-between border-b border-b-zinc-700 bg-zinc-900 px-8 py-2"
+	class="flex w-full items-center justify-between border-b border-b-zinc-800 bg-zinc-900 px-8 py-2"
 >
 	<a href="/">
 		<img alt="Triform logo" src={logo} class="-ms-2 w-10" />

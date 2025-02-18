@@ -7,9 +7,9 @@
 	let dialog = $state<HTMLDialogElement>()
 
 	const stats = [
-		{ label: 'Runs per Hour', count: 0, color: '#22C55E' },
-		{ label: 'Errors per Hour', count: 0, color: '#F44336' },
-		{ label: 'Alerts', count: 0, color: '#FFC107' }
+		{ label: 'Runs per Hour', count: 0, color: '#00bc7d' },
+		{ label: 'Errors per Hour', count: 0, color: '#ff1f57' },
+		{ label: 'Alerts', count: 0, color: '#fe9900' }
 	]
 </script>
 

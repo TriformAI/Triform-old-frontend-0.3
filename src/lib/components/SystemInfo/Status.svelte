@@ -1,13 +1,13 @@
 <script lang="ts">
-	import green_check from '$lib/icons/green_check.svg'
+	import IconCheck from '~icons/material-symbols/check-circle-outline'
 
 	let { data } = $props()
 </script>
 
 <div class="flex items-center justify-between py-4">
-	<div class="flex items-center gap-x-3">
-		<img src={green_check} alt="green_check" class="w-5" />
-		<h2 class="text-primary-green text-sm">All system are operational</h2>
+	<div class="text-success flex items-center gap-x-3">
+		<IconCheck class="size-6" />
+		<h2 class=" text-sm">All system are operational</h2>
 	</div>
 
 	<dl class="flex items-center gap-x-8 text-white">
