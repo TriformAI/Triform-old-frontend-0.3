@@ -20,7 +20,7 @@
 </script>
 
 <label class={['grid grid-rows-[auto_1fr]', classes]}>
-	<span class="mb-2 block text-sm font-medium">{label}</span>
+	<span class="mb-1 block text-xs font-bold tracking-wide uppercase opacity-65">{label}</span>
 
 	<textarea
 		style={`min-height:${rows}lh;tab-size: 2;`}

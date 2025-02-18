@@ -8,6 +8,17 @@
 	--color-idle: var(--color-amber-500);
 	--color-success: var(--color-emerald-500);
 
+	--color-indigo-50: #edf2ff;
+	--color-indigo-100: #dbe4ff;
+	--color-indigo-200: #bac8ff;
+	--color-indigo-300: #91a7ff;
+	--color-indigo-400: #748ffc;
+	--color-indigo-500: #5c7cfa;
+	--color-indigo-600: #4c6ef5;
+	--color-indigo-700: #4263eb;
+	--color-indigo-800: #3b5bdb;
+	--color-indigo-900: #364fc7;
+
 	--color-zinc-850: #1d1d20;
 	--color-zinc-950: oklch(0.141 0.005 285.823);
 
@@ -38,8 +49,8 @@
 	--animate-fade-in: fade-in 300ms var(--easing-circ) forwards;
 
 	--shadow-window:
-		0 0 3px hsl(220deg 0% 0% / 0.15), 0 0 6px hsl(220deg 0% 0% / 0.15),
-		0 0 9px hsl(220deg 0% 0% / 0.15);
+		0 0 7px 0 hsl(220deg 0% 0% / 0.05), 0 0 14px 0 hsl(220deg 0% 0% / 0.1),
+		0 0 21px 0 hsl(220deg 0% 0% / 0.15);
 
 	@keyframes fade-in {
 		0% {

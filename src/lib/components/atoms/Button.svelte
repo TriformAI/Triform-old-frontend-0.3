@@ -71,7 +71,7 @@
 	class={[
 		variation === 'primary' &&
 			'border border-zinc-700 bg-zinc-800 hover:enabled:border-zinc-600 hover:enabled:bg-zinc-700',
-		variation === 'vibrant' && 'bg-indigo-600 hover:enabled:bg-indigo-500',
+		variation === 'vibrant' && 'bg-indigo-900 hover:enabled:bg-indigo-800',
 		variation === 'link' && 'hover:enabled:bg-zinc-500/10',
 		!icon && !!body && 'px-5',
 		`flex transform cursor-pointer flex-row items-center justify-center

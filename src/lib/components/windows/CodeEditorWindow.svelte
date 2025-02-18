@@ -1,11 +1,11 @@
 <script lang="ts">
 	import type { Node } from '$lib/types/flow'
-
+	import IconPublish from '~icons/mdi/cloud-upload-outline'
 	import Window from '$lib/components/common/Window.svelte'
 	import Tabs from '$lib/components/atoms/Tabs.svelte'
 	import CodeEditor from '../CodeEditor.svelte'
 	import Button from '$lib/components/atoms/Button.svelte'
-	import IconPublish from '$lib/icons/cloud-upload.svg'
+
 	import { API } from '$lib/api'
 	import { T } from '@tolgee/svelte'
 
@@ -64,7 +64,7 @@
 				<!-- <Select bind:selected {options} singleValue={false} /> -->
 				<Button variation="vibrant" class="ml-auto" autoLoad={true} onClick={publish}>
 					{#snippet icon()}
-						<img class="size-6" src={IconPublish} alt="Publish" />
+						<IconPublish class="size-5.5" />
 					{/snippet}
 					{#snippet body()}
 						<T keyName="code-editor-publish-button" defaultValue="Publish" />

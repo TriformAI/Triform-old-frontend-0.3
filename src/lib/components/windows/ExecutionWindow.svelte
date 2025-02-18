@@ -78,17 +78,17 @@
 	{#snippet body()}
 		<div
 			class={[
-				'relative col-start-1 row-start-1 grid w-full min-w-80 grid-rows-[1fr_auto] gap-y-4',
+				'relative col-start-1 row-start-1 grid w-full min-w-80 grid-rows-[1fr_auto] gap-y-4 pt-3',
 				selectedNode ? 'visible' : 'invisible'
 			]}
 		>
 			<p
 				class={[
-					'transform-opacity text-success absolute end-1 top-8 flex items-center gap-x-2 text-xs font-medium opacity-0 duration-100',
+					'transform-opacity text-success absolute end-0.5 top-8 flex items-center gap-x-2 text-xs font-medium opacity-0 duration-100',
 					isValidJson && 'opacity-100'
 				]}
 			>
-				<IconCheck class="size-5" />
+				<IconCheck class="me-px size-5" />
 			</p>
 
 			<TextField
