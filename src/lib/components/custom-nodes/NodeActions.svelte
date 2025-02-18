@@ -1,122 +1,75 @@
 <script lang="ts">
-	import { nodes } from '$lib/stores/canvas.svelte'
-	import { removeNode, addDownstreamNode } from '$lib/stores/canvas.svelte'
-	import type { Uuid } from '$lib/types/agent'
-	import IconTrash from '~icons/material-symbols/delete-outline'
-	import IconAdd from '~icons/material-symbols/add-diamond-outline'
-	import IconEditor from '~icons/material-symbols/code-blocks-outline'
+	import type { Node, NodeType } from '$lib/types/flow'
+	import type { onClickFn } from '$lib/stores/nodeActions.svelte'
 	import IconDots from '~icons/material-symbols/more-horiz'
 	import { clickOutside } from '$lib/utils/clickOutside'
-	import { useSvelteFlow } from '@xyflow/svelte'
-
-	const { setCenter, getZoom } = useSvelteFlow()
+	import { useSvelteFlow as useSvelteFlowHook } from '@xyflow/svelte'
+	import { untrack } from 'svelte'
+	import { actionsMap } from '$lib/stores/nodeActions.svelte'
 
 	interface Props {
-		id: Uuid
-		positionAbsoluteX: number
-		positionAbsoluteY: number
-		type: string
-		onDelete: () => void
-		openFn: () => void
+		node?: Node
 	}
 
 	const props: Props = $props()
-	const { id, type, onDelete, openFn } = $derived(props)
+	const { node } = $derived(props)
 
-	const popoverId = $derived(`actions-${id}`)
+	const popoverId = $derived(`actions-${node?.id}`)
+	const actions = $derived(actionsMap().get(node?.type as NodeType) ?? [])
 
-	let isOpen = $state(false)
-
-	function initDelete() {
-		isOpen = false
-		onDelete()
-		setTimeout(() => removeNode(id), 100)
-	}
-
-	function initAdd(e: MouseEvent) {
-		e.stopPropagation()
-		isOpen = false
-		addDownstreamNode('root', undefined, id)
-
-		setTimeout(() => {
-			const pos = $nodes[$nodes.length - 1].position
-			if (pos) {
-				const currentZoom = getZoom()
-				setCenter(pos.x + 40, pos.y + 100, { zoom: currentZoom, duration: 500 })
-			}
-		}, 100)
-	}
-
-	function openEditor() {
-		openFn()
-	}
-
-	const actions = [
-		{
-			icon: IconAdd,
-			label: 'Create action',
-			trigger: initAdd,
-			condition: () => true,
-			isDangerous: false
-		},
-		{
-			icon: IconEditor,
-			label: 'Open code editor',
-			trigger: openEditor,
-			condition: () => type === 'action',
-			isDangerous: false
-		},
-		{
-			icon: IconTrash,
-			label: 'Delete node',
-			trigger: initDelete,
-			condition: () => type !== 'endpoint',
-			isDangerous: true
+	// Flip force close back to false whenever it's set to true
+	// This is enough to trigger the close animation
+	let forceClose = $state(false)
+	$effect(() => {
+		if (forceClose) {
+			untrack(() => {
+				setTimeout(() => (forceClose = false), 150)
+			})
 		}
-	]
+	})
+
+	const useSvelteFlow = useSvelteFlowHook()
+	const onActionClick = (fn?: onClickFn) => {
+		forceClose = true
+		fn?.(node!, useSvelteFlow)
+	}
 </script>
 
-<div
-	class="popover group/popover relative"
-	use:clickOutside
-	onclickOutside={() => {
-		isOpen = false
-	}}
->
+<div class="popover group/popover relative" use:clickOutside>
 	<div
 		id={popoverId}
 		class={[
 			'popover peer absolute left-1/2 z-100 m-0 origin-top -translate-x-1/2',
 			'rounded-lg bg-zinc-800 p-1 text-sm text-zinc-50 transition-[transform_opacity] duration-200 ease-(--easing-circ)',
-			isOpen ? 'block scale-100' : 'pointer-events-none scale-75 opacity-0'
+			'pointer-events-none scale-75 opacity-0 delay-[30]',
+			!forceClose &&
+				'group-hover/popover:pointer-events-auto group-hover/popover:block group-hover/popover:scale-100 group-hover/popover:opacity-100'
 		]}
 	>
 		<div class="grid">
 			{#each actions as action}
-				{#if action.condition()}
-					<button
-						onclick={action.trigger}
-						type="button"
-						class={['list-btn', action.isDangerous && 'list-btn--danger']}
-					>
-						<action.icon class="size-5.5" />
-						{action.label}
-					</button>
-				{/if}
+				<button
+					onclick={() => onActionClick(action.onClick)}
+					type="button"
+					class={['list-btn', action.isDangerous && 'list-btn--danger']}
+				>
+					<action.icon class="size-5.5" />
+					{action.label}
+				</button>
 			{/each}
 		</div>
 	</div>
 
 	<!-- This needs to go after so peer works -->
 	<button
-		onclick={() => (isOpen = !isOpen)}
-		class="
-			absolute bottom-5 left-1/2 grid h-4
-			-translate-x-1/2 translate-y-1/2 scale-25 place-content-center rounded-md
-			px-4 py-6 text-xl leading-none font-medium text-zinc-200 opacity-0
-			transition-[transform_opacity] duration-150 ease-(--easing-circ)
-			group-hover/container:scale-100 group-hover/container:opacity-70 peer-hover:opacity-100 hover:opacity-100
-		"
+		class={[
+			'absolute bottom-5 left-1/2 grid h-4',
+			'-translate-x-1/2 translate-y-1/2 scale-25 place-content-center rounded-md',
+			'px-4 py-6 text-xl leading-none font-medium text-zinc-200 opacity-0',
+			'transition-[transform_opacity] duration-150 ease-(--easing-circ)',
+			!forceClose &&
+				'group-hover/container:scale-100 group-hover/container:opacity-70 peer-hover:opacity-100 hover:opacity-100'
+		]}
 	>
 		<IconDots />
 	</button>

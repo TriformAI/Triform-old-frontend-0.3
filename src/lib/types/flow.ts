@@ -8,7 +8,6 @@ export interface NodeData {
 	component_id: Uuid
 	spec: Agent | Action
 	state?: 'success' | 'error' | 'running'
-	onOpen?: () => void
 	[key: string]: unknown
 }
 
@@ -26,4 +25,5 @@ export type Node = XyNode<NodeData, NodeType> & {
 // Visual properties of a node
 export interface NodeProps {
 	expanded: boolean
+	deleted: boolean
 }

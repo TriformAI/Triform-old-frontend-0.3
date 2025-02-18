@@ -5,8 +5,6 @@
 	import type { Snippet } from 'svelte'
 	import { Toaster } from 'svelte-sonner'
 	import { TolgeeProvider, Tolgee, DevTools, FormatSimple } from '@tolgee/svelte'
-	import { page } from '$app/state'
-	console.log({ page })
 
 	const tolgee = new Tolgee()
 		.use(DevTools())

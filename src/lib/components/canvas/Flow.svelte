@@ -160,6 +160,7 @@
 				snapGrid={[1, 1]}
 				proOptions={{ hideAttribution: true }}
 				defaultEdgeOptions={{}}
+				zoomOnDoubleClick={false}
 				onbeforedelete={async e => {
 					if (e.nodes.find(node => node.type === 'endpoint-node')) {
 						toast.error("You can't delete an endpoint node.")

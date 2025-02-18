@@ -1,32 +1,26 @@
 import { type Handle } from '@sveltejs/kit'
 import { sequence } from '@sveltejs/kit/hooks'
+import { API } from '$lib/api'
+import type { User } from '$lib/types/auth'
 
 const baseUrl = import.meta.env.VITE_TRICORE_AUTH_URL
 
 const authHandle: Handle = async ({ event, resolve }) => {
-	const auth_token = event.cookies.get('triform_key')
+	const authToken = event.cookies.get('triform_key')
 
 	// Just resolve if no auth token is found in cookies
-	if (!auth_token) {
+	if (!authToken) {
 		return resolve(event)
 	}
 
+	// Initialize API instance and make available to locals
+	const api = new API(baseUrl, authToken)
+	event.locals.api = api
+
 	// Try to fetch the user
 	try {
-		const response = await fetch(`${baseUrl}/users/@me`, {
-			headers: {
-				'Content-Type': 'application/json',
-				Cookie: `triform_key=${auth_token}`
-			}
-		})
-
-		// If response is ok, a user was fetched – store the user object in locals
-		if (response.ok) {
-			const user = await response.json()
-			if (user) {
-				event.locals.user = user
-			}
-		}
+		const user = await api.get<User>(`users/@me`)
+		event.locals.user = user
 	} catch (error) {
 		console.error(error)
 	}

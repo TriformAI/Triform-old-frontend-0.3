@@ -31,7 +31,8 @@ export const nodes = writable<FlowNode[]>([])
 export const edges = writable<Edge[]>([])
 
 const defaultProps: NodeProps = {
-	expanded: false
+	expanded: false,
+	deleted: false
 }
 
 export const setNodeProps = (id: Uuid, props: Partial<NodeProps>) => {
@@ -112,6 +113,7 @@ export const parseProject = (project: Project) => {
 				type: 'endpoint-node',
 				dragHandle: undefined,
 				style: undefined,
+				draggable: false,
 				position: { x: 0, y: 0 },
 				parentId,
 				extent: parentId ? 'parent' : undefined,
@@ -289,4 +291,7 @@ export const removeNode = async (id: Uuid) => {
 			return node
 		})
 	}
+
+	// Remove from node props too
+	currentCanvas.nodeProps.delete(id)
 }

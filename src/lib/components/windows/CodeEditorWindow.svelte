@@ -5,12 +5,11 @@
 	import Tabs from '$lib/components/atoms/Tabs.svelte'
 	import CodeEditor from '../CodeEditor.svelte'
 	import Button from '$lib/components/atoms/Button.svelte'
-
 	import IconDatabaseUpload from '~icons/material-symbols/database-upload-rounded'
-
-	import { publishComponent } from '$lib/actions/executor'
-
+	import { API } from '$lib/api'
 	import { T } from '@tolgee/svelte'
+
+	const api = new API()
 
 	// Props passed to the component
 	const props = $props()
@@ -39,7 +38,7 @@
 
 	const publish = async () => {
 		console.log('publishing')
-		const newComponent = await publishComponent(node.data.spec)
+		const newComponent = await api.put('components', node.data.spec)
 		console.log('new component', newComponent)
 	}
 </script>

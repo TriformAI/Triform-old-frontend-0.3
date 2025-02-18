@@ -40,7 +40,7 @@ export const openWindow = (window: Window) => {
 		posX: window.posX,
 		posY: window.posY
 	})
-	saveWindowsToLocalStorage()
+	// saveWindowsToLocalStorage()
 }
 
 export const closeWindowById = (id: string) => {
@@ -58,7 +58,7 @@ export const updateWindowById = (id: string, update: Partial<Window>) => {
 		}
 		return window
 	})
-	saveWindowsToLocalStorage()
+	// saveWindowsToLocalStorage()
 }
 
 // TODO: Add all components that need to be saved to local storage here.
@@ -78,6 +78,7 @@ const mapComponentToString = (cmp: Component): string | undefined => {
 
 type StoredWindow = Omit<Window, 'component'> & { component: string }
 const LOCAL_STORAGE_KEY = 'open-windows-state'
+
 const saveWindowsToLocalStorage = () => {
 	const mappedState = openWindowsState.map((w: Window) => {
 		const componentLocalStorageId = mapComponentToString(w.component)
@@ -115,7 +116,7 @@ export const loadWindowsFromLocalStorage = () => {
 
 const loadFromLocalStorageUpdateEvent = (event: StorageEvent) => {
 	if (event.storageArea === localStorage && event.key === LOCAL_STORAGE_KEY) {
-		loadWindowsFromLocalStorage()
+		// loadWindowsFromLocalStorage()
 	}
 }
 

@@ -5,7 +5,6 @@
 	const { t } = getTranslate()
 
 	import { toast } from 'svelte-sonner'
-	import { executeComponent } from '$lib/actions/executor'
 	import { useNodes } from '@xyflow/svelte'
 
 	import Window from '$lib/components/common/Window.svelte'
@@ -14,6 +13,9 @@
 	import Code from '../atoms/Code.svelte'
 
 	import IconPlay from '~icons/material-symbols/play-arrow-outline-rounded'
+	import { API } from '$lib/api'
+
+	const api = new API()
 
 	// Just pass through all props
 	const props = $props()
@@ -45,9 +47,10 @@
 		}
 		isRunning = true
 		try {
-			const res = await executeComponent(selectedNode?.data.spec, JSON.parse(input))
-			console.log(res)
-			result = res
+			result = await api.post('components', {
+				component: selectedNode?.data.spec,
+				input: JSON.parse(input)
+			})
 		} finally {
 			isRunning = false
 		}

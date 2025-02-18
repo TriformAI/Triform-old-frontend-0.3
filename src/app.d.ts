@@ -1,5 +1,6 @@
 import 'unplugin-icons/types/svelte'
 import type { User } from '$lib/types/auth'
+import { API } from '$lib/api'
 
 // See https://kit.svelte.dev/docs/types#app
 // for information about these interfaces
@@ -8,6 +9,7 @@ declare global {
 		// interface Error {}
 		interface Locals {
 			user?: User
+			api: InstanceType<typeof API>
 		}
 		interface PageData {
 			user?: User

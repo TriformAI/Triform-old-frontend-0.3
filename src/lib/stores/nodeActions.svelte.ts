@@ -1,0 +1,85 @@
+import type { Node, NodeType } from '$lib/types/flow'
+import type { Component } from 'svelte'
+
+import { SvelteMap } from 'svelte/reactivity'
+import { useSvelteFlow as useSvelteFlowHook } from '@xyflow/svelte'
+import { openWindow } from './windows.svelte'
+import { removeNode, addDownstreamNode, setNodeProps } from './canvas.svelte'
+
+import CodeEditorWindow from '$lib/components/windows/CodeEditorWindow.svelte'
+import IconTrash from '~icons/material-symbols/delete-outline'
+import IconAdd from '~icons/material-symbols/add-diamond-outline'
+import IconEditor from '~icons/material-symbols/code-blocks-outline'
+
+export type onClickFn = (node: Node, useSvelteFlow: ReturnType<typeof useSvelteFlowHook>) => void
+interface ActionItem {
+	label: string
+	icon: Component
+	isDangerous: boolean
+	onClick: onClickFn
+}
+
+const actionsMapStore = $state(new SvelteMap<NodeType, ActionItem[]>())
+export const actionsMap = () => actionsMapStore
+
+/*
+  Generic functions used by multiple nodes
+*/
+const addAction = {
+	label: 'Add Action',
+	icon: IconAdd,
+	isDangerous: false,
+	onClick: (node: Node, useSvelteFlow: ReturnType<typeof useSvelteFlowHook>) => {
+		addDownstreamNode('root', undefined, node.id)
+
+		const { getNodes, getZoom, setCenter } = useSvelteFlow
+
+		setTimeout(() => {
+			const nodes = getNodes()
+			const pos = nodes[nodes.length - 1].position
+			if (!pos) return
+			const currentZoom = getZoom()
+			setCenter(pos.x + 40, pos.y + 100, { zoom: currentZoom, duration: 500 })
+		}, 100)
+	}
+}
+
+const deleteNode = {
+	label: 'Delete',
+	icon: IconTrash,
+	isDangerous: true,
+	onClick: (node: Node, _useSvelteFlow: ReturnType<typeof useSvelteFlowHook>) => {
+		// Update the node to indicate that it's being deleted, and then actually delete it after a delay
+		setNodeProps(node.id, { deleted: true })
+		setTimeout(() => removeNode(node.id), 100)
+	}
+}
+
+// Populate map
+actionsMapStore.set('endpoint-node', [addAction])
+actionsMapStore.set('action-node', [
+	{
+		label: 'Edit',
+		icon: IconEditor,
+		isDangerous: false,
+		onClick: (node: Node, _useSvelteFlow: ReturnType<typeof useSvelteFlowHook>) => {
+			if (!node) return
+			openWindow({
+				id: `code-editor-action-${node.id}`,
+				component: CodeEditorWindow,
+				posX: 20,
+				posY: 20,
+				customProps: {
+					files: {
+						'action.py': node.data.spec.spec.source,
+						'README.md': node.data.spec.spec.readme,
+						'requirements.txt': node.data.spec.spec.deps
+					},
+					node
+				}
+			})
+		}
+	},
+	addAction,
+	deleteNode
+])

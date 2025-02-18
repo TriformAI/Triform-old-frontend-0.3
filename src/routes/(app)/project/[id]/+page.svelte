@@ -32,7 +32,7 @@
 	})
 </script>
 
-<div class="flex h-screen flex-col">
+<div class="flex h-screen flex-col contain-paint">
 	{#each openWindows() as window}
 		{@const { component: Component, customProps, ...defaultProps } = window}
 		<Component {...defaultProps} {customProps} />

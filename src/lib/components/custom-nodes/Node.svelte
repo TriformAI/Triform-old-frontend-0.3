@@ -1,15 +1,16 @@
 <script lang="ts">
 	import type { NodeData, Node } from '$lib/types/flow'
-	import { onMount, type Snippet } from 'svelte'
+	import type { Snippet } from 'svelte'
 	import NodeActions from './NodeActions.svelte'
-	import { useSvelteFlow } from '@xyflow/svelte'
+	import { useNodes } from '@xyflow/svelte'
+	import { getNodeProps } from '$lib/stores/canvas.svelte'
+	import { actionsMap } from '$lib/stores/nodeActions.svelte'
+	import { useSvelteFlow as useSvelteFlowHook } from '@xyflow/svelte'
 
 	import NodeContainer from './NodeContainer.svelte'
 
-	import { contextMenus } from '$lib/stores/contextMenu.svelte'
-
 	interface Props {
-		id: string
+		id: Node['id']
 		data: NodeData
 		selected: boolean
 		icon: Snippet
@@ -18,10 +19,9 @@
 	const props: Props = $props()
 
 	const { id, data, selected, icon } = $derived(props)
+	const { state: nodeState } = $derived(data)
 
-	const { state: nodeState, onOpen } = $derived(data)
-
-	const componentType = $derived(data.spec.resource.split('/')[0])
+	const nodeProps = $derived(getNodeProps(id))
 
 	const getBorderClass = (nodeState?: string) => {
 		switch (nodeState) {
@@ -36,22 +36,20 @@
 		}
 	}
 
-	const { getNode } = useSvelteFlow()
-	let node: Node
-	onMount(() => {
-		const n = getNode(id)
+	const nodes = useNodes()
+	let node: Node | undefined = $state()
+	nodes.subscribe(nodes => {
+		const n = nodes.find(n => n.id === id)
 		if (n) node = n as Node
 	})
 
+	const useSvelteFlow = useSvelteFlowHook()
 	const openFn = () => {
-		if (onOpen) return onOpen()
-		// If no open function was defined, use the first context menu action instead
+		// Whenever a node is double clicked, run the first action menu item
 		if (!node?.type) return
-		const items = contextMenus.get(node.type)
-		items?.[0]?.onClick?.(node)
+		const actions = actionsMap().get(node.type)
+		actions?.[0]?.onClick?.(node, useSvelteFlow)
 	}
-
-	let isDeleting = $state(false)
 </script>
 
 <NodeContainer {...props}>
@@ -59,7 +57,7 @@
 		<div
 			class={[
 				'node-inner transition-[transform_opacity] duration-200 ease-(--easing-circ)',
-				isDeleting ? 'scale-50 opacity-0' : 'scale-100'
+				nodeProps?.deleted ? 'scale-50 opacity-0' : 'scale-100'
 			]}
 		>
 			<div
@@ -72,13 +70,6 @@
 				<span class="block font-mono text-sm font-bold tracking-wider text-zinc-400 transition">
 					v{data.component_version}
 				</span>
-				<!-- <span
-					class="block text-xs font-normal whitespace-nowrap italic transition {selected
-						? 'text-zinc-400'
-						: 'text-zinc-500'}"
-				>
-					{id}
-				</span> -->
 			</div>
 
 			<button
@@ -87,13 +78,13 @@
 						{selected ? 'border-[2px] duration-100 ease-in' : ''}
 						{getBorderClass(nodeState)}
 					"
-				ondblclick={openFn}
+				ondblclickcapture={openFn}
 			>
 				<span class="custom-node-icon-shadow">{@render icon()}</span>
 			</button>
 		</div>
 
-		<NodeActions {...props} type={componentType} onDelete={() => (isDeleting = true)} {openFn} />
+		<NodeActions {node} />
 	{/snippet}
 </NodeContainer>
 
