@@ -39,6 +39,7 @@
 	let element: HTMLDivElement
 	let hasResized = $state(false)
 	let resizeObserver: ResizeObserver
+	let isDragging = $state(false)
 
 	const onClose = () => {
 		closeWindowById(id)
@@ -129,7 +130,10 @@
 </script>
 
 <div
-	class="animate-fade-in shadow-window absolute resize overflow-auto"
+	class={[
+		'animate-fade-in absolute resize overflow-auto transition-transform duration-150',
+		isDragging ? 'shadow-window-lg scale-[1.015]' : 'shadow-window scale-100'
+	]}
 	style={`
 		top: ${posY}%;
 		left: ${posX}%;
@@ -141,5 +145,5 @@
 	`}
 	bind:this={element}
 >
-	<Card {header} {body} {footer} {padding} {onClose} {onDragStart} {onDragEnd} />
+	<Card bind:isDragging {header} {body} {footer} {padding} {onClose} {onDragStart} {onDragEnd} />
 </div>

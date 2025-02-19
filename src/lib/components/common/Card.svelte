@@ -11,24 +11,24 @@
 		body: Snippet
 		footer?: Snippet
 		padding?: 'default' | 'tight'
+		isDragging: boolean
 		onClose?: () => void
 		onDragStart?: (e: MouseEvent) => void
 		onDragEnd?: (e: MouseEvent) => void
 	}
 
-	const {
+	let {
 		header,
 		body,
 		footer,
 		padding = 'default',
+		isDragging = $bindable(false),
 		onClose,
 		onDragStart: onDragStartProp,
 		onDragEnd: onDragEndProp
 	}: Props = $props()
 
 	const isDraggable = typeof onDragStartProp === 'function' || typeof onDragEndProp === 'function'
-
-	let isDragging = $state(false)
 
 	const onDragStart = (e: MouseEvent) => {
 		onDragStartProp?.(e)
