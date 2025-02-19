@@ -1,19 +1,14 @@
 <script lang="ts">
 	import type { Node } from '$lib/types/flow'
+	import { initJsonEditor } from '$lib/jsonEditor'
 
-	import { getTranslate } from '@tolgee/svelte'
-	const { t } = getTranslate()
-
-	import { toast } from 'svelte-sonner'
 	import { useNodes } from '@xyflow/svelte'
+	import { toast } from 'svelte-sonner'
 
 	import Window from '$lib/components/common/Window.svelte'
 	import Button from '../atoms/Button.svelte'
-	import TextField from '../atoms/TextField.svelte'
 
 	import IconPlay from '~icons/material-symbols/play-arrow-outline-rounded'
-	import IconCheck from '~icons/material-symbols/check-circle-outline'
-	import IconAlert from '~icons/material-symbols/warning-outline'
 
 	import { API } from '$lib/api'
 
@@ -55,6 +50,7 @@
 				component: selectedNode?.data.spec,
 				input: JSON.parse(input)
 			})
+			console.log(result)
 		} finally {
 			isRunning = false
 		}
@@ -64,10 +60,17 @@
 		try {
 			JSON.parse(input)
 		} catch (e) {
+			console.error(e)
 			return false
 		}
 		return true
 	})
+
+	function initCodeEditor(el: HTMLDivElement) {
+		initJsonEditor(el, input, value => {
+			input = value
+		})
+	}
 </script>
 
 <Window padding="tight" {...props}>
@@ -82,35 +85,34 @@
 				selectedNode ? 'visible' : 'invisible'
 			]}
 		>
-			<p
-				class={[
-					'transform-opacity text-success absolute end-0.5 top-8 flex items-center gap-x-2 text-xs font-medium opacity-0 duration-100',
-					isValidJson && 'opacity-100'
-				]}
-			>
-				<IconCheck class="me-px size-5" />
-			</p>
+			<div class="bg-zinc-850 rounded-lg p-3">
+				<p
+					class="ms-3 mt-1 mb-2 border-b border-white/10 pb-2 text-xs font-semibold tracking-wide uppercase opacity-65"
+				>
+					Test data
+				</p>
+				<div use:initCodeEditor class="text-sm"></div>
+			</div>
 
-			<TextField
-				class="text-sm"
-				useMonoFont={true}
-				rows={8}
-				label={$t('window-execution-input-label', 'JSON test data')}
-				bind:value={input}
-			/>
-
-			<Button
-				variation="vibrant"
-				class="w-full"
-				onClick={run}
-				autoLoad={false}
-				disabled={!isValidJson || isRunning}
+			<div
+				class="tooltip-red"
+				aria-label={!isValidJson ? 'Invalid JSON data' : undefined}
+				data-balloon-pos="up"
 			>
-				{#snippet icon()}
-					<IconPlay class="size-6" />
-				{/snippet}
-			</Button>
+				<Button
+					variation="vibrant"
+					class="w-full"
+					onClick={run}
+					autoLoad={false}
+					disabled={!isValidJson || isRunning}
+				>
+					{#snippet icon()}
+						<IconPlay class="size-6" />
+					{/snippet}
+				</Button>
+			</div>
 		</div>
+
 		<div
 			class={[
 				'col-start-1 row-start-1 flex w-full min-w-80 flex-col items-center justify-center',
