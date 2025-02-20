@@ -21,6 +21,7 @@ export interface Window {
 	posY: number
 	width?: number
 	height?: number
+	isClosing?: boolean
 	// windows can overlap & stack
 	zIndex?: number
 }
@@ -44,7 +45,10 @@ export const openWindow = (window: Window) => {
 }
 
 export const closeWindowById = (id: string) => {
-	openWindowsState = openWindowsState.filter(window => window.id !== id)
+	updateWindowById(id, { isClosing: true })
+	setTimeout(() => {
+		openWindowsState = openWindowsState.filter(window => window.id !== id)
+	}, 250)
 	saveWindowsToLocalStorage()
 }
 
