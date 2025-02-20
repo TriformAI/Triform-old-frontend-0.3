@@ -66,7 +66,8 @@
 			{#if isDraggable}
 				<IconDrag class="h-[1.25rem] w-[1.25rem] opacity-50" />
 			{/if}
-			{@render header?.()}
+
+			<span class="font-medium">{@render header?.()}</span>
 		</div>
 
 		{#if typeof onClose === 'function'}

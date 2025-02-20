@@ -85,9 +85,9 @@
 				selectedNode ? 'visible' : 'invisible'
 			]}
 		>
-			<div class="bg-main-850 rounded-lg p-3">
+			<div class="bg-main-800/50 rounded-lg p-3">
 				<p
-					class="ms-3 mt-1 mb-2 border-b border-white/10 pb-2 text-xs font-semibold tracking-wide uppercase opacity-65"
+					class="border-main-800 ms-3 mt-1 mb-2 border-b pb-2 text-xs font-semibold tracking-wide uppercase"
 				>
 					Test data
 				</p>
