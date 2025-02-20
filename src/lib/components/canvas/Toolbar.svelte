@@ -7,7 +7,7 @@
 	import IconPlay from '~icons/material-symbols/play-arrow-outline-rounded'
 	import IconFitScreen from '~icons/material-symbols/filter-center-focus-outline'
 
-	import { openWindow } from '$lib/stores/windows.svelte'
+	import { closeWindowById, openWindow, windowIsOpen } from '$lib/stores/windows.svelte'
 
 	import Execution from '../windows/ExecutionWindow.svelte'
 
@@ -17,15 +17,20 @@
 		{
 			icon: IconPlay,
 			label: 'Execute',
+			toggled: () => windowIsOpen('execution'),
 			onClick: () => {
-				openWindow({
-					// Only one can be open rn, change this to a unique id
-					// if you want multiple
-					id: 'execution',
-					component: Execution,
-					posX: 20,
-					posY: 20
-				})
+				if (windowIsOpen('execution')) {
+					closeWindowById('execution')
+				} else {
+					openWindow({
+						// Only one can be open rn, change this to a unique id
+						// if you want multiple
+						id: 'execution',
+						component: Execution,
+						posX: 20,
+						posY: 20
+					})
+				}
 			}
 		}
 	]
@@ -38,8 +43,8 @@
 	"
 >
 	<div class="relative col-start-2 mx-auto flex items-center gap-x-2 py-2">
-		{#each tools as { icon: Icon, onClick, label }}
-			<Button variation="link" {onClick} tooltip={label}>
+		{#each tools as { icon: Icon, onClick, label, toggled }}
+			<Button variation="link" {onClick} tooltip={label} toggled={toggled()}>
 				{#snippet icon()}
 					<Icon class="size-[24px]" />
 				{/snippet}

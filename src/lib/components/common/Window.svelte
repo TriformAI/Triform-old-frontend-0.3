@@ -18,6 +18,7 @@
 		width: Window['width']
 		height: Window['height']
 		zIndex: Window['zIndex']
+		isClosing?: Window['isClosing']
 		// customProps: Window['customProps']
 	}
 
@@ -32,7 +33,8 @@
 		id,
 		width = 0,
 		height = 0,
-		zIndex = 1
+		zIndex = 1,
+		isClosing
 		// customProps
 	}: Props = $props()
 
@@ -40,14 +42,10 @@
 	let hasResized = $state(false)
 	let resizeObserver: ResizeObserver
 	let isDragging = $state(false)
-	let isClosing = $state(false)
 
 	const onClose = () => {
-		isClosing = true
-		setTimeout(() => {
-			closeWindowById(id)
-			onCloseProp?.()
-		}, 250)
+		closeWindowById(id)
+		onCloseProp?.()
 	}
 
 	let dragStart = {

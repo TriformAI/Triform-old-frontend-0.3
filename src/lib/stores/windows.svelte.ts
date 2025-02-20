@@ -21,6 +21,7 @@ export interface Window {
 	posY: number
 	width?: number
 	height?: number
+	isClosing?: boolean
 	// windows can overlap & stack
 	zIndex?: number
 }
@@ -44,8 +45,11 @@ export const openWindow = (window: Window) => {
 }
 
 export const closeWindowById = (id: string) => {
-	openWindowsState = openWindowsState.filter(window => window.id !== id)
-	saveWindowsToLocalStorage()
+	updateWindowById(id, { isClosing: true })
+	setTimeout(() => {
+		openWindowsState = openWindowsState.filter(window => window.id !== id)
+	}, 250)
+	// saveWindowsToLocalStorage()
 }
 
 export const updateWindowById = (id: string, update: Partial<Window>) => {
@@ -61,6 +65,11 @@ export const updateWindowById = (id: string, update: Partial<Window>) => {
 	// saveWindowsToLocalStorage()
 }
 
+export const windowIsOpen = (id: string) => {
+	const window = openWindowsState.find(w => w.id === id)
+	return !!window && !window.isClosing
+}
+
 // TODO: Add all components that need to be saved to local storage here.
 // They need to be mapped to strings so that they can be saved and recreated
 // from local storage.
@@ -73,28 +82,28 @@ const stringToComponentMap = (): { str: string; cmp: Component }[] => [
 const mapStringToComponent = (str: string): Component | undefined => {
 	return stringToComponentMap().find(pair => pair.str === str)?.cmp
 }
-const mapComponentToString = (cmp: Component): string | undefined => {
-	return stringToComponentMap().find(pair => pair.cmp === cmp)?.str
-}
+// const mapComponentToString = (cmp: Component): string | undefined => {
+// 	return stringToComponentMap().find(pair => pair.cmp === cmp)?.str
+// }
 
 type StoredWindow = Omit<Window, 'component'> & { component: string }
 const LOCAL_STORAGE_KEY = 'open-windows-state'
 
-const saveWindowsToLocalStorage = () => {
-	const mappedState = openWindowsState.map((w: Window) => {
-		const componentLocalStorageId = mapComponentToString(w.component)
-		if (componentLocalStorageId === undefined) {
-			throw new Error(
-				`Unable to store component with name ${w.component.name} because it isnt mapped to a local storage id`
-			)
-		}
-		return {
-			...w,
-			component: componentLocalStorageId
-		}
-	})
-	localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(mappedState))
-}
+// const saveWindowsToLocalStorage = () => {
+// 	const mappedState = openWindowsState.map((w: Window) => {
+// 		const componentLocalStorageId = mapComponentToString(w.component)
+// 		if (componentLocalStorageId === undefined) {
+// 			throw new Error(
+// 				`Unable to store component with name ${w.component.name} because it isnt mapped to a local storage id`
+// 			)
+// 		}
+// 		return {
+// 			...w,
+// 			component: componentLocalStorageId
+// 		}
+// 	})
+// 	localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(mappedState))
+// }
 
 export const loadWindowsFromLocalStorage = () => {
 	const windowsState = JSON.parse(localStorage.getItem(LOCAL_STORAGE_KEY) ?? '[]')
@@ -127,6 +136,10 @@ export const createLocalStorageListener = () => {
 
 export const removeLocalStorageListener = () => {
 	window.removeEventListener('storage', loadFromLocalStorageUpdateEvent)
+}
+
+export const clearLocalStorage = () => {
+	localStorage.removeItem(LOCAL_STORAGE_KEY)
 }
 
 export const bringWindowToFront = (id: string) => {
