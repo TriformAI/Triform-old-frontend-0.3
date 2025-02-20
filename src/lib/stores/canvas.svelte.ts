@@ -129,20 +129,6 @@ export const parseProject = (project: Project) => {
 					component_version: node.spec.meta.version
 				}
 			})
-		} else if (node.spec.resource === 'selector/v1') {
-			nodes.push({
-				id,
-				type: 'selector-node',
-				parentId,
-				// Limits the movement to within the agent
-				position: { x: 0, y: 0 },
-				data: {
-					spec: node.spec,
-					component_name: node.spec.meta.name,
-					component_id: node.component_id,
-					component_version: node.component_version ?? -1
-				}
-			})
 		} else throw new Error(`Unknown node type ${node.resource}`)
 
 		return {

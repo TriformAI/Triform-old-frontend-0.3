@@ -107,7 +107,7 @@
 	function handleDragStart(
 		event: DragEvent,
 		item: ActionItem | AgentItem,
-		type: 'action-node' | 'agent-node' | 'selector-node'
+		type: 'action-node' | 'agent-node'
 	) {
 		event.dataTransfer?.setData('application/json', JSON.stringify({ type, item }))
 	}

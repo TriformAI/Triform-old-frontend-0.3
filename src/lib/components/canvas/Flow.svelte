@@ -4,7 +4,6 @@
 	import ApiNode from '$lib/components/custom-nodes/ApiNode.svelte'
 	import EndpointNode from '$lib/components/custom-nodes/EndpointNode.svelte'
 	import OpenAgentNode from '$lib/components/custom-nodes/OpenAgentNode.svelte'
-	import SelectorNode from '$lib/components/custom-nodes/SelectorNode.svelte'
 	import {
 		addDownstreamNode,
 		edges,
@@ -32,8 +31,6 @@
 	const nodeTypes: NodeTypes = {
 		// @ts-expect-error type issue, not crucial but should probs be fixed
 		'endpoint-node': EndpointNode,
-		// @ts-expect-error type issue, not crucial but should probs be fixed
-		'selector-node': SelectorNode,
 		// @ts-expect-error type issue, not crucial but should probs be fixed
 		'action-node': ActionNode,
 		// @ts-expect-error type issue, not crucial but should probs be fixed
@@ -70,8 +67,6 @@
 						node.data.onOpen = () => setNodeProps(node.id as Uuid, { expanded: false })
 						node.width = 400
 						node.height = 400
-						break
-					case 'selector-node':
 						break
 					case 'endpoint-node':
 						break
