@@ -17,7 +17,7 @@
 <div>
 	<NewProject bind:dialog={projectDialog} />
 
-	<div class="flex items-center justify-start">
+	<div class="flex flex-row items-center justify-start gap-2">
 		<h1 class=" text-2xl font-semibold">Projects</h1>
 		<Button variation="link" onClick={() => projectDialog?.showModal()}>
 			{#snippet icon()}
@@ -29,16 +29,17 @@
 		{#each projects as project}
 			<a
 				class="
-				bg-main-850 group/project border-main-700 hover:border-main-600 hover:bg-main-800 relative flex w-full
+				bg-main-850 group/project border-main-800 hover:border-main-700 hover:bg-main-800 relative flex w-full
 					transform flex-row items-center justify-between gap-5
 					rounded-lg border p-4 pr-8 transition
 				"
 				href="/project/{project.meta.id}"
 			>
 				<div>
-					<h2>{project.meta.name}</h2>
-					<p class="text-main-400">Last modified sometime</p>
+					<h2 class="font-medium">{project.meta.name}</h2>
+					<p class="text-main-500">Last modified sometime</p>
 				</div>
+
 				<div
 					class="absolute right-4 opacity-0 transition-all duration-300 group-hover/project:right-1 group-hover/project:opacity-100"
 				>
