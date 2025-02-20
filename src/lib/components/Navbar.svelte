@@ -16,7 +16,7 @@
 	// }
 </script>
 
-<div
+<header
 	class="border-b-main-800 bg-main-900 flex w-full items-center justify-between border-b px-8 py-2"
 >
 	<div class="divide-main-800 flex flex-row items-center divide-x">
@@ -46,4 +46,4 @@
 			{/snippet}
 		</Dropdown>
 	</div>
-</div>
+</header>
