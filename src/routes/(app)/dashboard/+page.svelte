@@ -1,17 +1,13 @@
 <script lang="ts">
-	import type { Project } from '$lib/types/project'
-
 	import Button from '$lib/components/atoms/Button.svelte'
 	import NewProject from '$lib/components/modals/NewProject.svelte'
-
 	import IconChevronRight from '~icons/material-symbols/chevron-right'
 	import IconAdd from '~icons/material-symbols/new-window-rounded'
 
-	import testProject from '$lib/dev/test-project.json'
+	let { data } = $props()
+	const { projects } = $derived(data)
 
-	const projects: Project[] = [testProject, testProject]
-
-	let projectDialog = $state<HTMLDialogElement | undefined>(undefined)
+	let projectDialog = $state<HTMLDialogElement>()
 </script>
 
 <div>
