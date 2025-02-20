@@ -81,7 +81,7 @@
 	{#snippet body()}
 		<div
 			class={[
-				'relative col-start-1 row-start-1 grid w-full min-w-80 grid-rows-[1fr_auto] gap-y-4 pt-3',
+				'relative col-start-1 row-start-1 grid w-full min-w-80 grid-rows-[1fr_auto] gap-y-4',
 				selectedNode ? 'visible' : 'invisible'
 			]}
 		>

@@ -54,7 +54,7 @@
 		<div
 			class={[
 				'flex w-full items-center gap-1 font-medium',
-				padding === 'default' && 'px-6 py-4',
+				padding === 'default' && 'px-5 py-4',
 				padding === 'tight' && 'px-4 py-3',
 				isDraggable && 'cursor-grab select-none',
 				isDraggable && isDragging ? 'cursor-grabbing' : 'cursor-grab'
@@ -70,7 +70,7 @@
 		</div>
 
 		{#if typeof onClose === 'function'}
-			<Button variation="link" class="-me-3" onClick={onClose}>
+			<Button variation="link" class={padding === 'tight' ? '-me-3' : '-me-0.5'} onClick={onClose}>
 				{#snippet icon()}
 					<IconClose />
 				{/snippet}
@@ -81,8 +81,8 @@
 	<div
 		class={[
 			'grid w-full',
-			padding === 'default' && 'px-6 py-5',
-			padding === 'tight' && 'px-4 py-3'
+			padding === 'default' && 'px-5 py-5',
+			padding === 'tight' && 'px-4 py-4'
 		]}
 	>
 		{@render body()}
