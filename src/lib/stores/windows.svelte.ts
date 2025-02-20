@@ -49,7 +49,7 @@ export const closeWindowById = (id: string) => {
 	setTimeout(() => {
 		openWindowsState = openWindowsState.filter(window => window.id !== id)
 	}, 250)
-	saveWindowsToLocalStorage()
+	// saveWindowsToLocalStorage()
 }
 
 export const updateWindowById = (id: string, update: Partial<Window>) => {
@@ -82,28 +82,28 @@ const stringToComponentMap = (): { str: string; cmp: Component }[] => [
 const mapStringToComponent = (str: string): Component | undefined => {
 	return stringToComponentMap().find(pair => pair.str === str)?.cmp
 }
-const mapComponentToString = (cmp: Component): string | undefined => {
-	return stringToComponentMap().find(pair => pair.cmp === cmp)?.str
-}
+// const mapComponentToString = (cmp: Component): string | undefined => {
+// 	return stringToComponentMap().find(pair => pair.cmp === cmp)?.str
+// }
 
 type StoredWindow = Omit<Window, 'component'> & { component: string }
 const LOCAL_STORAGE_KEY = 'open-windows-state'
 
-const saveWindowsToLocalStorage = () => {
-	const mappedState = openWindowsState.map((w: Window) => {
-		const componentLocalStorageId = mapComponentToString(w.component)
-		if (componentLocalStorageId === undefined) {
-			throw new Error(
-				`Unable to store component with name ${w.component.name} because it isnt mapped to a local storage id`
-			)
-		}
-		return {
-			...w,
-			component: componentLocalStorageId
-		}
-	})
-	localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(mappedState))
-}
+// const saveWindowsToLocalStorage = () => {
+// 	const mappedState = openWindowsState.map((w: Window) => {
+// 		const componentLocalStorageId = mapComponentToString(w.component)
+// 		if (componentLocalStorageId === undefined) {
+// 			throw new Error(
+// 				`Unable to store component with name ${w.component.name} because it isnt mapped to a local storage id`
+// 			)
+// 		}
+// 		return {
+// 			...w,
+// 			component: componentLocalStorageId
+// 		}
+// 	})
+// 	localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(mappedState))
+// }
 
 export const loadWindowsFromLocalStorage = () => {
 	const windowsState = JSON.parse(localStorage.getItem(LOCAL_STORAGE_KEY) ?? '[]')
@@ -136,6 +136,10 @@ export const createLocalStorageListener = () => {
 
 export const removeLocalStorageListener = () => {
 	window.removeEventListener('storage', loadFromLocalStorageUpdateEvent)
+}
+
+export const clearLocalStorage = () => {
+	localStorage.removeItem(LOCAL_STORAGE_KEY)
 }
 
 export const bringWindowToFront = (id: string) => {

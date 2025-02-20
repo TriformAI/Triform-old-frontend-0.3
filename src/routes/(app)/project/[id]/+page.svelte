@@ -7,7 +7,8 @@
 		openWindows,
 		// createLocalStorageListener,
 		// loadWindowsFromLocalStorage,
-		removeLocalStorageListener
+		clearLocalStorage
+		// removeLocalStorageListener
 	} from '$lib/stores/windows.svelte'
 
 	import { loadProject } from '$lib/stores/canvas.svelte'
@@ -24,12 +25,13 @@
 	})
 
 	onMount(() => {
+		clearLocalStorage()
 		// loadWindowsFromLocalStorage()
 		// createLocalStorageListener()
 		// eslint-disable-next-line
-		;() => {
-			removeLocalStorageListener()
-		}
+		// ;() => {
+		// 	removeLocalStorageListener()
+		// }
 	})
 </script>
 
