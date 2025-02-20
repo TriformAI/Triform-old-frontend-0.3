@@ -2,6 +2,7 @@
 	import { onMount } from 'svelte'
 	import Flow from '$lib/components/canvas/Flow.svelte'
 	import Toolbar from '$lib/components/canvas/Toolbar.svelte'
+	import { SvelteFlowProvider } from '@xyflow/svelte'
 
 	import {
 		openWindows,
@@ -35,13 +36,15 @@
 	})
 </script>
 
-<div class="relative flex h-full flex-col contain-paint">
-	{#each openWindows() as window}
-		{@const { component: Component, customProps, ...defaultProps } = window}
-		<Component {...defaultProps} {customProps} />
-	{/each}
+<SvelteFlowProvider>
+	<div class="relative flex h-full flex-col contain-paint">
+		{#each openWindows() as window}
+			{@const { component: Component, customProps, ...defaultProps } = window}
+			<Component {...defaultProps} {customProps} />
+		{/each}
 
-	<Flow />
+		<Flow />
 
-	<Toolbar />
-</div>
+		<Toolbar />
+	</div>
+</SvelteFlowProvider>

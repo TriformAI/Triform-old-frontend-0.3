@@ -17,8 +17,8 @@
 <div>
 	<NewProject bind:dialog={projectDialog} />
 
-	<div class="flex flex-row justify-start gap-2">
-		<h1 class="text-main-300 text-2xl font-semibold">Projects</h1>
+	<div class="flex items-center justify-start">
+		<h1 class=" text-2xl font-semibold">Projects</h1>
 		<Button variation="link" onClick={() => projectDialog?.showModal()}>
 			{#snippet icon()}
 				<IconAdd />

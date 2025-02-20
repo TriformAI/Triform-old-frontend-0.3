@@ -1,5 +1,6 @@
 <script lang="ts">
 	import Navbar from '$lib/components/Navbar.svelte'
+	import 'balloon-css'
 
 	const { children } = $props()
 </script>
