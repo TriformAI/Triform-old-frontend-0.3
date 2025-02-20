@@ -40,10 +40,14 @@
 	let hasResized = $state(false)
 	let resizeObserver: ResizeObserver
 	let isDragging = $state(false)
+	let isClosing = $state(false)
 
 	const onClose = () => {
-		closeWindowById(id)
-		onCloseProp?.()
+		isClosing = true
+		setTimeout(() => {
+			closeWindowById(id)
+			onCloseProp?.()
+		}, 250)
 	}
 
 	let dragStart = {
@@ -131,8 +135,10 @@
 
 <div
 	class={[
-		'animate-fade-in absolute resize overflow-auto transition-transform duration-150',
-		isDragging ? 'shadow-window-lg scale-[1.015]' : 'shadow-window scale-100'
+		'window',
+		'absolute resize overflow-auto transition duration-150',
+		isDragging ? 'shadow-window-lg scale-[1.015]' : 'shadow-window',
+		isClosing ? 'scale-90 opacity-0' : 'opacity-100'
 	]}
 	style={`
 		top: ${posY}%;
@@ -142,8 +148,18 @@
 		height: ${hasResized ? `${height}px` : 'auto'};
 		min-width: fit-content;
 		min-height: fit-content;
+		transition-property: opacity scale;
 	`}
 	bind:this={element}
 >
 	<Card bind:isDragging {header} {body} {footer} {padding} {onClose} {onDragStart} {onDragEnd} />
 </div>
+
+<style>
+	@starting-style {
+		.window {
+			transform: scale(0.75);
+			opacity: 0;
+		}
+	}
+</style>

@@ -1,6 +1,7 @@
 <script lang="ts">
 	import logo from '$lib/images/Logo.svg'
 	import Dropdown from './common/Dropdown.svelte'
+	import { selectedCanvas } from '$lib/stores/canvas.svelte'
 	// import { getTolgee } from '@tolgee/svelte'
 
 	import { page } from '$app/state'
@@ -18,9 +19,15 @@
 <div
 	class="flex w-full items-center justify-between border-b border-b-zinc-800 bg-zinc-900 px-8 py-2"
 >
-	<a href="/">
-		<img alt="Triform logo" src={logo} class="-ms-2 w-10" />
-	</a>
+	<div class="flex flex-row items-center divide-x divide-zinc-800">
+		<a href="/" class="pr-5">
+			<img alt="Triform logo" src={logo} class="w-10" />
+		</a>
+
+		<span class="pl-5 text-zinc-300">
+			{selectedCanvas?.()?.project.meta.name}
+		</span>
+	</div>
 
 	<div class="mt-2">
 		<Dropdown>

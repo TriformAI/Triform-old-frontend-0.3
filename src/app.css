@@ -131,6 +131,11 @@
 	}
 }
 
+[aria-label][data-balloon-pos]:hover:not(:active):after,
+[aria-label][data-balloon-pos]:hover:not(:active):before {
+	transition-delay: 1s !important;
+}
+
 .svelte-flow__node:hover {
 	z-index: 10 !important;
 }

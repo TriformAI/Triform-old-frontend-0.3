@@ -18,7 +18,8 @@
 		class: classProp,
 		href,
 		target,
-		disabled
+		disabled,
+		tooltip
 	}: {
 		// Will have secondary, muted, link etc as we need them
 		variation?: ButtonVariation
@@ -35,6 +36,7 @@
 		href?: string
 		target?: '_blank'
 		disabled?: boolean
+		tooltip?: string
 	} = $props()
 
 	let isLoading = $state(false)
@@ -71,18 +73,22 @@
 	class={[
 		variation === 'primary' &&
 			'border border-zinc-700 bg-zinc-800 hover:enabled:border-zinc-600 hover:enabled:bg-zinc-700',
-		variation === 'vibrant' && 'bg-indigo-900 hover:enabled:bg-indigo-800',
-		variation === 'link' && 'hover:enabled:bg-zinc-500/10',
+		variation === 'vibrant' &&
+			'bg-indigo-900 inset-shadow-xs inset-shadow-indigo-600/40 hover:enabled:bg-indigo-800',
+		variation === 'link' && 'text-zinc-200 hover:enabled:bg-zinc-500/10',
 		!icon && !!body && 'px-5',
 		`flex transform cursor-pointer flex-row items-center justify-center
     gap-x-2 rounded-md p-3 font-medium
-    text-zinc-200 transition
-    active:enabled:scale-95 active:enabled:border-zinc-500
+    text-zinc-300 transition
+    hover:enabled:text-zinc-200 active:enabled:scale-95 active:enabled:border-zinc-500
 		disabled:cursor-not-allowed disabled:opacity-75`,
 		classProp
 	]}
 	{disabled}
 	onclick={onClick}
+	aria-label={tooltip}
+	data-balloon-pos={tooltip ? 'up' : undefined}
+	data-balloon-nofocus
 >
 	<!-- If we have an icon, animate it for loading state -->
 	{#if !!icon}

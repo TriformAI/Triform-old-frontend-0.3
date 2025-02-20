@@ -1,6 +1,7 @@
 <script lang="ts">
 	import { onMount } from 'svelte'
 	import Flow from '$lib/components/canvas/Flow.svelte'
+	import Toolbar from '$lib/components/canvas/Toolbar.svelte'
 
 	import {
 		openWindows,
@@ -32,11 +33,13 @@
 	})
 </script>
 
-<div class="flex h-screen flex-col contain-paint">
+<div class="relative flex h-full flex-col contain-paint">
 	{#each openWindows() as window}
 		{@const { component: Component, customProps, ...defaultProps } = window}
 		<Component {...defaultProps} {customProps} />
 	{/each}
 
 	<Flow />
+
+	<Toolbar />
 </div>
