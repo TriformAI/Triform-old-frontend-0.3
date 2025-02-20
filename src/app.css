@@ -108,6 +108,11 @@
 	}
 }
 
+@utility container {
+	margin-inline: auto;
+	padding: 1.5rem;
+}
+
 @layer overrides {
 	.prism-code-editor {
 		--editor__bg: transparent !important;

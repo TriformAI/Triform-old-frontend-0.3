@@ -10,7 +10,7 @@
 	let projectDialog = $state<HTMLDialogElement>()
 </script>
 
-<div>
+<div class="container">
 	<NewProject bind:dialog={projectDialog} />
 
 	<div class="flex flex-row items-center justify-start gap-2">

@@ -20,12 +20,8 @@
 	let { children }: { children: Snippet } = $props()
 </script>
 
-<div class={`bg-main-900`}>
-	<TolgeeProvider {tolgee}>
-		<main>
-			{@render children?.()}
-		</main>
-	</TolgeeProvider>
-</div>
+<TolgeeProvider {tolgee}>
+	{@render children?.()}
+</TolgeeProvider>
 
 <Toaster richColors position="top-right" />

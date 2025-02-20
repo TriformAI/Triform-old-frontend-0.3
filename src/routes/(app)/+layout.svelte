@@ -5,10 +5,10 @@
 	const { children } = $props()
 </script>
 
-<div class="bg-main-900 flex h-screen flex-col">
+<div class="bg-main-900 grid h-screen grid-rows-[auto_1fr]">
 	<Navbar />
 
-	<main class="container mx-auto mt-5 flex-grow px-6">
+	<main>
 		{@render children()}
 	</main>
 </div>
