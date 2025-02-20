@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { onMount } from 'svelte'
+	import { onDestroy, onMount } from 'svelte'
 	import Flow from '$lib/components/canvas/Flow.svelte'
 	import Toolbar from '$lib/components/canvas/Toolbar.svelte'
 	import { SvelteFlowProvider } from '@xyflow/svelte'
@@ -12,7 +12,7 @@
 		// removeLocalStorageListener
 	} from '$lib/stores/windows.svelte'
 
-	import { loadProject } from '$lib/stores/canvas.svelte'
+	import { loadProject, unloadProject } from '$lib/stores/canvas.svelte'
 
 	import type { Project } from '$lib/types/project'
 
@@ -33,6 +33,11 @@
 		// ;() => {
 		// 	removeLocalStorageListener()
 		// }
+	})
+
+	onDestroy(() => {
+		unloadProject()
+		// removeLocalStorageListener()
 	})
 </script>
 

@@ -171,6 +171,11 @@ export const loadProject = (project: Project) => {
 	console.log('Loaded project', project)
 }
 
+export const unloadProject = () => {
+	currentCanvas.project = undefined
+	currentCanvas.nodeProps.clear()
+}
+
 // Generic function for applying a function to some node in the canvas
 const processNode = async (
 	id: Uuid,
