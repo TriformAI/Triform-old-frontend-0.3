@@ -3,7 +3,7 @@
 
 	import { toast } from 'svelte-sonner'
 	import { onMount } from 'svelte'
-
+	import logo from '$lib/images/Logo.svg'
 	import DiscordIcon from '~icons/bxl/discord-alt'
 	import GithubIcon from '~icons/bxl/github'
 	import { PUBLIC_TRICORE_AUTH_URL } from '$env/static/public'
@@ -39,25 +39,33 @@
 	})
 </script>
 
-<div class="flex h-screen w-screen flex-col items-center justify-center bg-zinc-900">
-	<p class="mb-4 text-center text-zinc-400">Continue with</p>
+<div class="flex h-screen w-screen grid-rows-[auto_1fr] flex-col justify-center bg-zinc-900">
+	<figure class="mx-auto mt-6">
+		<img src={logo} alt="Triform logo" class="size-12" />
+	</figure>
 
-	<div class="flex w-full max-w-xs flex-col items-center gap-y-4">
-		{#each providers as provider}
-			<Button
-				class="w-full"
-				href={`${apiUrl}/login/${provider.name.toLowerCase()}/authorize`}
-				onClick={() => onLogin(provider)}
-				autoLoad={true}
-				disabled={chosenProvider === provider.name}
-			>
-				{#snippet icon()}
-					<provider.icon />
-				{/snippet}
-				{#snippet body()}
-					{provider.name}
-				{/snippet}
-			</Button>
-		{/each}
+	<div class="m-auto">
+		<p class="mb-6 text-center">
+			<span class=" text-center text-zinc-400">Please login to continue</span>
+		</p>
+
+		<div class=" flex w-xs flex-col items-center gap-y-4">
+			{#each providers as provider}
+				<Button
+					class="w-full"
+					href={`${apiUrl}/login/${provider.name.toLowerCase()}/authorize`}
+					onClick={() => onLogin(provider)}
+					autoLoad={true}
+					disabled={chosenProvider === provider.name}
+				>
+					{#snippet icon()}
+						<provider.icon />
+					{/snippet}
+					{#snippet body()}
+						{provider.name}
+					{/snippet}
+				</Button>
+			{/each}
+		</div>
 	</div>
 </div>
