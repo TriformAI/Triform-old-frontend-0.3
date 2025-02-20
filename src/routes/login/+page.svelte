@@ -39,14 +39,14 @@
 	})
 </script>
 
-<div class="flex h-screen w-screen grid-rows-[auto_1fr] flex-col justify-center bg-zinc-900">
+<div class="bg-main-900 flex h-screen w-screen grid-rows-[auto_1fr] flex-col justify-center">
 	<figure class="mx-auto mt-6">
 		<img src={logo} alt="Triform logo" class="size-12" />
 	</figure>
 
 	<div class="m-auto">
 		<p class="mb-6 text-center">
-			<span class=" text-center text-zinc-400">Please login to continue</span>
+			<span class=" text-main-400 text-center">Please login to continue</span>
 		</p>
 
 		<div class=" flex w-xs flex-col items-center gap-y-4">

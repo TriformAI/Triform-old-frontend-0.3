@@ -31,7 +31,7 @@
 	{#snippet body()}
 		<div class="flex items-center gap-x-4">
 			<button
-				class={`hover:border-brand-light-gray flex flex-shrink-0 items-center justify-center gap-x-3 rounded-lg border border-zinc-700 bg-white/5 px-4 py-2.5 text-sm font-medium text-zinc-300 transition duration-200 ease-in-out hover:text-white`}
+				class={`hover:border-brand-light-gray border-main-700 text-main-300 flex flex-shrink-0 items-center justify-center gap-x-3 rounded-lg border bg-white/5 px-4 py-2.5 text-sm font-medium transition duration-200 ease-in-out hover:text-white`}
 			>
 				<svg
 					xmlns="http://www.w3.org/2000/svg"
@@ -56,7 +56,7 @@
 					type="text"
 				/>
 				<button
-					class={`text-md rounded-y-lg absolute inset-0 ml-auto w-fit rounded-r-lg border border-zinc-700 bg-[#262728] px-4 py-3 font-medium text-zinc-300 transition duration-200 ease-in-out hover:bg-white/10 hover:text-white`}
+					class={`text-md rounded-y-lg border-main-700 text-main-300 absolute inset-0 ml-auto w-fit rounded-r-lg border bg-[#262728] px-4 py-3 font-medium transition duration-200 ease-in-out hover:bg-white/10 hover:text-white`}
 				>
 					<T keyName="invite-link-button" defaultValue="Invite" />
 				</button>

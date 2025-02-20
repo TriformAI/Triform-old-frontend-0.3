@@ -24,6 +24,6 @@
 		{type}
 		{placeholder}
 		bind:value
-		class="mt-2 w-full rounded-md border border-zinc-700 bg-transparent px-5 py-3 text-zinc-200 transition outline-none hover:border-zinc-600 focus:border-zinc-500"
+		class="border-main-700 text-main-200 hover:border-main-600 focus:border-main-500 mt-2 w-full rounded-md border bg-transparent px-5 py-3 transition outline-none"
 	/>
 </div>

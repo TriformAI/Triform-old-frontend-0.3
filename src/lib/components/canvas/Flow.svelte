@@ -161,7 +161,7 @@
 				<button
 					onclick={addFirstNode}
 					type="button"
-					class="grid size-20 place-content-center rounded-full bg-zinc-300 text-4xl leading-none text-zinc-800 transition-transform duration-300 ease-(--easing-circ) hover:scale-125"
+					class="bg-main-300 text-main-800 grid size-20 place-content-center rounded-full text-4xl leading-none transition-transform duration-300 ease-(--easing-circ) hover:scale-125"
 				>
 					+
 				</button>

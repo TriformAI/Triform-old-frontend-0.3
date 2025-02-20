@@ -40,7 +40,7 @@
 		id={popoverId}
 		class={[
 			'popover peer absolute left-1/2 z-100 m-0 origin-top -translate-x-1/2',
-			'rounded-lg bg-zinc-800 p-1 text-sm text-zinc-50 transition-[transform_opacity] duration-200 ease-(--easing-circ)',
+			'bg-main-850 text-main-50 rounded-lg p-1 text-sm transition-[transform_opacity] duration-200 ease-(--easing-circ)',
 			'pointer-events-none scale-75 opacity-0 delay-[30]',
 			!forceClose &&
 				'group-hover/popover:pointer-events-auto group-hover/popover:block group-hover/popover:scale-100 group-hover/popover:opacity-100'
@@ -63,9 +63,9 @@
 	<!-- This needs to go after so peer works -->
 	<button
 		class={[
-			'absolute bottom-5 left-1/2 grid h-4',
+			'absolute bottom-3.5 left-1/2 grid h-4',
 			'-translate-x-1/2 translate-y-1/2 scale-25 place-content-center rounded-md',
-			'px-4 py-6 text-xl leading-none font-medium text-zinc-200 opacity-0',
+			'text-main-200 px-4 py-6 text-xl leading-none font-medium opacity-0',
 			'transition-[transform_opacity] duration-150 ease-(--easing-circ)',
 			!forceClose &&
 				'group-hover/container:scale-100 group-hover/container:opacity-70 peer-hover:opacity-100 hover:opacity-100'

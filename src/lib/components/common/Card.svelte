@@ -44,12 +44,12 @@
 
 <div
 	class={[
-		'relative grid h-full min-h-fit w-full min-w-fit overflow-hidden rounded-md border border-zinc-800 bg-zinc-900 text-zinc-200',
+		'border-main-800 bg-main-850 text-main-200 relative grid h-full min-h-fit w-full min-w-fit overflow-hidden rounded-md border',
 		'grid-rows-[auto_1fr]'
 	]}
 >
 	<div
-		class="flex flex-row items-center justify-between rounded-t-md border border-x-0 border-t-0 border-b border-inherit bg-zinc-900 pr-4"
+		class="bg-main-850 flex flex-row items-center justify-between rounded-t-md border border-x-0 border-t-0 border-b border-inherit pr-4"
 	>
 		<div
 			class={[

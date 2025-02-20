@@ -7,6 +7,6 @@
 
 <GroupNode {...props}>
 	{#snippet icon()}
-		<IconChangeHistory class="mb-1 h-6 w-6 text-indigo-500" />
+		<IconChangeHistory class="text-accent-500 mb-1 h-6 w-6" />
 	{/snippet}
 </GroupNode>

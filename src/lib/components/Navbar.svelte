@@ -17,9 +17,9 @@
 </script>
 
 <div
-	class="flex w-full items-center justify-between border-b border-b-zinc-800 bg-zinc-900 px-8 py-2"
+	class="border-b-main-800 bg-main-900 flex w-full items-center justify-between border-b px-8 py-2"
 >
-	<div class="flex flex-row items-center divide-x divide-zinc-800">
+	<div class="divide-main-800 flex flex-row items-center divide-x">
 		<a href="/" class="pr-5">
 			<img alt="Triform logo" src={logo} class="w-10" />
 		</a>
@@ -34,6 +34,7 @@
 			{#snippet trigger()}
 				<img alt="Avatar" src={page.data.user?.avatar} class="w-8 rounded-full" />
 			{/snippet}
+
 			{#snippet body()}
 				<ul>
 					<li>

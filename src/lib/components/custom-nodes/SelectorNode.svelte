@@ -25,14 +25,14 @@
 		cancel()
 	}}
 	class={[
-		'selector grid w-64 origin-top scale-100 gap-4 rounded-lg  bg-zinc-800 p-4 text-sm text-zinc-100 transition-transform duration-200 ease-(--easing-circ)'
+		'selector bg-main-800 text-main-100 grid w-64 origin-top scale-100 gap-4 rounded-lg p-4 text-sm transition-transform duration-200 ease-(--easing-circ)'
 	]}
 >
 	<p><strong>Insert new…</strong></p>
 
 	<div class="grid grid-cols-2 gap-2">
 		<button
-			class=" justify-center rounded-md bg-zinc-700 px-4 py-3"
+			class=" bg-main-700 justify-center rounded-md px-4 py-3"
 			onclick={() => addNode('action')}
 		>
 			<IconActionNode class="size-5 rotate-45" />
@@ -40,7 +40,7 @@
 		</button>
 
 		<button
-			class="justify-center rounded-md bg-zinc-700 px-4 py-3"
+			class="bg-main-700 justify-center rounded-md px-4 py-3"
 			onclick={() => addNode('agent')}
 		>
 			<IconFlowNode class="size-5" />

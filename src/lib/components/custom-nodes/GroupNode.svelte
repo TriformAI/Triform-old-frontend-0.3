@@ -39,20 +39,20 @@
 	{#snippet body()}
 		<div
 			class="
-			flex h-full w-full flex-row justify-center rounded
-			border border-zinc-300/10 bg-zinc-900/30 text-center"
+			border-main-300/10 bg-main-900/30 flex h-full w-full flex-row
+			justify-center rounded border text-center"
 		>
 			<button
 				class="
-					pointer-events-auto -mt-4 h-fit w-max flex-shrink-0 rounded border border-zinc-600/10 bg-zinc-900/50 px-5
+					border-main-600/10 bg-main-900/50 pointer-events-auto -mt-4 h-fit w-max flex-shrink-0 rounded border px-5
 					font-bold backdrop-blur-sm transition
-					{selected ? 'text-zinc-200' : 'text-zinc-300'}
+					{selected ? 'text-main-200' : 'text-main-300'}
 					flow_drag-handle
 				"
 				ondblclick={openFn}
 			>
 				{data.component_name}
-				<span class="block transition {selected ? 'text-zinc-300' : 'text-zinc-400'}">
+				<span class="block transition {selected ? 'text-main-300' : 'text-main-400'}">
 					v{data.component_version}
 				</span>
 			</button>

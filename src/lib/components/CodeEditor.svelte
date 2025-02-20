@@ -34,7 +34,7 @@
 </script>
 
 <div>
-	<div class="bg-zinc-850 container rounded-md py-4" bind:this={editorContainer}></div>
+	<div class="bg-main-850 container rounded-md py-4" bind:this={editorContainer}></div>
 </div>
 
 <style>

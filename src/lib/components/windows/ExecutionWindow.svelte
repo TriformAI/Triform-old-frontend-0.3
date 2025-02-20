@@ -85,7 +85,7 @@
 				selectedNode ? 'visible' : 'invisible'
 			]}
 		>
-			<div class="bg-zinc-850 rounded-lg p-3">
+			<div class="bg-main-850 rounded-lg p-3">
 				<p
 					class="ms-3 mt-1 mb-2 border-b border-white/10 pb-2 text-xs font-semibold tracking-wide uppercase opacity-65"
 				>
@@ -119,7 +119,7 @@
 				!selectedNode ? 'visible' : 'invisible'
 			]}
 		>
-			<p class="text-center text-zinc-500">Select a node to execute</p>
+			<p class="text-main-500 text-center">Select a node to execute</p>
 		</div>
 	{/snippet}
 </Window>

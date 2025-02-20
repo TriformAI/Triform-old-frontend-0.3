@@ -30,9 +30,9 @@
 			case 'error':
 				return 'border-red-500'
 			case 'running':
-				return 'border-indigo-500'
+				return 'border-accent-500'
 			default:
-				return selected ? 'border-zinc-200' : 'border-zinc-300'
+				return selected ? 'border-main-200' : 'border-main-300'
 		}
 	}
 
@@ -63,11 +63,11 @@
 			<div
 				class="
 						absolute -start-4 top-1/2 -translate-x-full -translate-y-1/2 text-end font-semibold transition
-						{selected ? 'text-zinc-200' : 'text-zinc-300'}
+						{selected ? 'text-main-200' : 'text-main-300'}
 					"
 			>
 				<span class="whitespace-nowrap">{data.component_name}</span>
-				<span class="block font-mono text-sm font-bold tracking-wider text-zinc-400 transition">
+				<span class="text-main-400 block font-mono text-sm font-bold tracking-wider transition">
 					v{data.component_version}
 				</span>
 			</div>

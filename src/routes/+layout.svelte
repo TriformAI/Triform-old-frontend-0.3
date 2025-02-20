@@ -20,7 +20,7 @@
 	let { children }: { children: Snippet } = $props()
 </script>
 
-<div class={`bg-zinc-900`}>
+<div class={`bg-main-900`}>
 	<TolgeeProvider {tolgee}>
 		<main>
 			{@render children?.()}

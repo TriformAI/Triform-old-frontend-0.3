@@ -30,18 +30,18 @@
 		<Combobox.Input
 			autofocus
 			oninput={e => (searchValue = e.currentTarget.value)}
-			class="w-full rounded border border-zinc-700 bg-zinc-800 p-3 outline-0"
+			class="border-main-700 bg-main-800 w-full rounded border p-3 outline-0"
 			placeholder="Search components"
 			aria-label="Search components"
 		/>
 		<Combobox.Trigger class="absolute end-3 top-1/2 size-6 -translate-y-1/2">
-			<IconArrowDown class="size-5.5 text-zinc-200" />
+			<IconArrowDown class="text-main-200 size-5.5" />
 		</Combobox.Trigger>
 	</div>
 
 	<Combobox.Portal>
 		<Combobox.Content
-			class="max-h-96 w-[var(--bits-combobox-anchor-width)] min-w-[var(--bits-combobox-anchor-width)] rounded-lg border border-zinc-800 bg-zinc-800  text-zinc-100 outline-none"
+			class="border-main-800 text-main-100 bg-main-800 max-h-96 w-[var(--bits-combobox-anchor-width)] min-w-[var(--bits-combobox-anchor-width)] rounded-lg border outline-none"
 			sideOffset={10}
 		>
 			<Combobox.ScrollUpButton class="flex w-full items-center justify-center">
@@ -51,7 +51,7 @@
 			<Combobox.Viewport class="p-1 text-sm">
 				{#each filteredNodeTypes as fruit, i (i + fruit.value)}
 					<Combobox.Item
-						class="rounded-button flex w-full items-center rounded px-3 py-2 text-sm capitalize outline-none select-none data-[highlighted]:bg-zinc-900/50"
+						class="rounded-button data-[highlighted]:bg-main-900/50 flex w-full items-center rounded px-3 py-2 text-sm capitalize outline-none select-none"
 						value={fruit.value}
 						label={fruit.label}
 					>

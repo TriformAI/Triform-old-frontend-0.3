@@ -32,7 +32,7 @@
 			<button
 				use:listbox.button
 				onchange={event => handleChange(event as unknown as CustomEvent)}
-				class="focus:shadow-outline-orange relative w-full overflow-auto rounded-md border border-zinc-700 bg-zinc-800 py-2 pr-4 pl-2 text-left text-sm transition duration-150 ease-in-out focus:outline-none sm:leading-5"
+				class="focus:shadow-outline-orange border-main-700 bg-main-800 relative w-full overflow-auto rounded-md border py-2 pr-4 pl-2 text-left text-sm transition duration-150 ease-in-out focus:outline-none sm:leading-5"
 			>
 				<div class="flex flex-wrap gap-2">
 					{#if singleValue}
@@ -43,7 +43,7 @@
 					{:else}
 						<!-- Multi-select: Display selected items -->
 						{#each $listbox.selected as selectedItem (selectedItem.id)}
-							<span class="flex items-center gap-1 rounded bg-zinc-600 px-2 py-1 text-xs">
+							<span class="bg-main-600 flex items-center gap-1 rounded px-2 py-1 text-xs">
 								<span>{selectedItem.name}</span>
 								<div use:listbox.deselect={selectedItem} class="cursor-pointer">
 									<Cancel />

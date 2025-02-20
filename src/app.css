@@ -4,25 +4,38 @@
 	--font-sans: 'Figtree Variable', sans-serif;
 	--font-mono: 'Space Mono', monospace;
 
-	--color-warning: #e03131;
-	--color-warning-dim: #ffe3e3;
+	--color-*: initial; /* Disable the full Tailwind palette */
 
-	--color-idle: var(--color-amber-500);
-	--color-success: var(--color-emerald-500);
+	--color-warning: oklch(0.704 0.191 22.216);
+	--color-warning-dim: oklch(0.808 0.114 19.571);
 
-	--color-indigo-50: #edf2ff;
-	--color-indigo-100: #dbe4ff;
-	--color-indigo-200: #bac8ff;
-	--color-indigo-300: #91a7ff;
-	--color-indigo-400: #748ffc;
-	--color-indigo-500: #5c7cfa;
-	--color-indigo-600: #4c6ef5;
-	--color-indigo-700: #4263eb;
-	--color-indigo-800: #3b5bdb;
-	--color-indigo-900: #364fc7;
+	--color-idle: oklch(0.828 0.189 84.429); /* amber 400 */
+	--color-success: oklch(0.696 0.17 162.48); /* emerald 500 */
 
-	--color-zinc-850: #1d1d20;
-	--color-zinc-950: oklch(0.141 0.005 285.823);
+	--color-main-50: oklch(0.985 0 0);
+	--color-main-100: oklch(0.967 0.001 286.375);
+	--color-main-200: oklch(0.92 0.004 286.32);
+	--color-main-300: oklch(0.871 0.006 286.286);
+	--color-main-400: oklch(0.705 0.015 286.067);
+	--color-main-500: oklch(0.552 0.016 285.938);
+	--color-main-600: oklch(0.442 0.017 285.786);
+	--color-main-700: oklch(0.37 0.013 285.805);
+	--color-main-800: oklch(0.274 0.006 286.033);
+	--color-main-850: oklch(0.234 0.006 286.033);
+	--color-main-900: oklch(0.21 0.006 285.885);
+	--color-main-950: oklch(0.141 0.005 285.823);
+
+	--color-accent-50: oklch(0.962 0.018 272.314);
+	--color-accent-100: oklch(0.93 0.034 272.788);
+	--color-accent-200: oklch(0.87 0.065 274.039);
+	--color-accent-300: oklch(0.785 0.115 274.713);
+	--color-accent-400: oklch(0.673 0.182 276.935);
+	--color-accent-500: oklch(0.585 0.233 277.117);
+	--color-accent-600: oklch(0.511 0.262 276.966);
+	--color-accent-700: oklch(0.457 0.24 277.023);
+	--color-accent-800: oklch(0.398 0.195 277.366);
+	--color-accent-900: oklch(0.359 0.144 278.697);
+	--color-accent-950: oklch(0.257 0.09 281.288);
 
 	--easing-circ: cubic-bezier(0.85, 0.09, 0.15, 0.91);
 	--easing-spring: linear(
@@ -68,7 +81,7 @@
 	}
 
 	body {
-		@apply text-zinc-200 antialiased;
+		@apply text-main-200 antialiased;
 
 		&:has(dialog[open]) {
 			@apply overflow-hidden;
@@ -91,14 +104,14 @@
 
 	/* Handle */
 	::-webkit-scrollbar-thumb {
-		background: theme('colors.zinc.500');
+		@apply bg-main-500;
 		border-radius: 4px;
 		transition: background 0.2s ease-in-out;
 	}
 
 	/* Handle on hover */
 	::-webkit-scrollbar-thumb:hover {
-		background: theme('colors.zinc.300');
+		@apply bg-main-300;
 	}
 
 	.scroll_bar {
@@ -136,7 +149,7 @@
 } */
 
 .svelte-flow {
-	--xy-edge-stroke: var(--color-indigo-100);
+	--xy-edge-stroke: var(--color-accent-100);
 	--xy-edge-stroke-width: 1.5px;
 }
 
@@ -147,8 +160,8 @@
 	}
 
 	.monaco-editor {
-		--vscode-editor-background: var(--color-zinc-850) !important;
-		--vscode-editorGutter-background: var(--color-zinc-850) !important;
+		--vscode-editor-background: var(--color-main-850) !important;
+		--vscode-editorGutter-background: var(--color-main-850) !important;
 	}
 
 	‰ [x-cloak] {
@@ -482,10 +495,10 @@ div[aria-labelledby='options-menu']::-webkit-scrollbar-thumb:hover,
 	}
 
 	.list-btn {
-		@apply flex items-center gap-2 rounded px-3 py-2 whitespace-nowrap text-zinc-300 transition-colors hover:bg-zinc-900/50 hover:text-zinc-200;
+		@apply text-main-300 hover:bg-main-800 hover:text-main-200 flex items-center gap-2 rounded px-3 py-2 whitespace-nowrap transition-colors;
 	}
 
 	.list-btn--danger {
-		@apply text-red-300 hover:text-red-400;
+		@apply text-warning hover:text-warning-dim;
 	}
 }

@@ -14,7 +14,7 @@
 </script>
 
 <footer
-	class="fixed bottom-0 grid w-full items-center bg-zinc-950 px-6 transition-transform delay-200 ease-[cubic-bezier(0.85,_0.09,_0.15,_0.91)]"
+	class="bg-main-950 fixed bottom-0 grid w-full items-center px-6 transition-transform delay-200 ease-[cubic-bezier(0.85,_0.09,_0.15,_0.91)]"
 >
 	<div class="col-start-1 row-start-1">
 		<SystemStatus data={stats} />
@@ -31,6 +31,6 @@
 	</button>
 </footer>
 
-<Dialog bind:dialog appearance="bottom" class="bg-zinc-950  px-5 pb-5">
+<Dialog bind:dialog appearance="bottom" class="bg-main-950  px-5 pb-5">
 	<SystemCharts data={stats} />
 </Dialog>

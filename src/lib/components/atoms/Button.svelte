@@ -19,8 +19,7 @@
 		href,
 		target,
 		disabled,
-		tooltip,
-		toggled
+		tooltip
 	}: {
 		// Will have secondary, muted, link etc as we need them
 		variation?: ButtonVariation
@@ -38,7 +37,6 @@
 		target?: '_blank'
 		disabled?: boolean
 		tooltip?: string
-		toggled?: boolean
 	} = $props()
 
 	let isLoading = $state(false)
@@ -74,18 +72,15 @@
 <button
 	class={[
 		variation === 'primary' &&
-			'border border-zinc-700 bg-zinc-800 hover:enabled:border-zinc-600 hover:enabled:bg-zinc-700',
+			'border-main-700 bg-main-800 hover:enabled:border-main-600 hover:enabled:bg-main-700 border',
 		variation === 'vibrant' &&
-			'bg-indigo-900 inset-shadow-xs inset-shadow-indigo-600/40 hover:enabled:bg-indigo-800',
-		variation === 'link' && [
-			'text-zinc-200',
-			toggled ? 'bg-zinc-600/15 hover:enabled:bg-zinc-600/20' : 'hover:enabled:bg-zinc-500/10'
-		],
+			'bg-accent-700 inset-shadow-accent-500/40 hover:enabled:bg-accent-600 inset-shadow-xs',
+		variation === 'link' && 'text-main-200 hover:enabled:bg-main-800',
 		!icon && !!body && 'px-5',
-		`flex transform cursor-pointer flex-row items-center justify-center
-    gap-x-2 rounded-md p-3 font-medium
-    text-zinc-300 transition
-    hover:enabled:text-zinc-200 active:enabled:scale-95 active:enabled:border-zinc-500
+		`text-main-300 hover:enabled:text-main-200 active:enabled:border-main-500 flex transform cursor-pointer
+    flex-row items-center justify-center gap-x-2
+    rounded-md p-3
+    font-medium transition active:enabled:scale-95
 		disabled:cursor-not-allowed disabled:opacity-75`,
 		classProp
 	]}

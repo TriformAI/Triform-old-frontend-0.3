@@ -47,7 +47,7 @@
 		{#if appearance === 'bottom'}
 			<button
 				type="button"
-				class="mx-auto rounded-b bg-zinc-800/50 px-8 outline-none"
+				class="bg-main-800/50 mx-auto rounded-b px-8 outline-none"
 				onclick={() => {
 					dialog?.close()
 				}}

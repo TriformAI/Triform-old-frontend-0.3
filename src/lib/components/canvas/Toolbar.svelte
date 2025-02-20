@@ -38,8 +38,8 @@
 
 <div
 	class="
-		bg-zinc-850 absolute bottom-8 left-1/2 z-50 flex -translate-x-1/2
-		justify-between gap-x-2 rounded-md border border-zinc-800 px-2 shadow-lg
+		bg-main-850 border-main-800 shadow-window absolute bottom-8 left-1/2 z-50
+		flex -translate-x-1/2 justify-between gap-x-1 rounded-md border px-2
 	"
 >
 	<div class="relative col-start-2 mx-auto flex items-center gap-x-2 py-2">

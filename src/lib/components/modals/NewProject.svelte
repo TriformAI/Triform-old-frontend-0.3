@@ -26,7 +26,7 @@
 		{/snippet}
 
 		{#snippet body()}
-			<p class="mb-5 w-full text-zinc-300">
+			<p class="text-main-300 mb-5 w-full">
 				A project is a discrete collection of nodes that are connected into a flow
 			</p>
 

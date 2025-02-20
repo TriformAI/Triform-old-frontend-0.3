@@ -4,7 +4,7 @@
 	const { children } = $props()
 </script>
 
-<div class="flex h-screen flex-col bg-zinc-900">
+<div class="bg-main-900 flex h-screen flex-col">
 	<Navbar />
 
 	<div class="container mx-auto mt-5 flex-grow px-6">

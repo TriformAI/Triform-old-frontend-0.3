@@ -7,4 +7,4 @@
 </script>
 
 <pre
-	class="overflow-x-auto rounded-md border border-zinc-700 bg-zinc-900 p-4 font-mono text-zinc-200">{code}</pre>
+	class="border-main-700 bg-main-900 text-main-200 overflow-x-auto rounded-md border p-4 font-mono">{code}</pre>

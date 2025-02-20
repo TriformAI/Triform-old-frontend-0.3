@@ -33,8 +33,8 @@
         border-b border-transparent px-6
         py-2 transition-all
         {isActive
-				? 'border-zinc-300 text-zinc-200'
-				: 'text-zinc-500 hover:border-zinc-700 hover:text-zinc-400'}
+				? 'border-main-300 text-main-200'
+				: 'text-main-500 hover:border-main-700 hover:text-main-400'}
       "
 			onclick={() => onTabSelect(tab)}
 		>

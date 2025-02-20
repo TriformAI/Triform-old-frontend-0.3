@@ -8,6 +8,6 @@
 
 <Node {...props}>
 	{#snippet icon()}
-		<IconSquare class=" rotate-45 text-zinc-300" />
+		<IconSquare class=" text-main-300 rotate-45" />
 	{/snippet}
 </Node>

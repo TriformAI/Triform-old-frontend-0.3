@@ -29,7 +29,7 @@
 		{rows}
 		bind:value
 		class={[
-			'bg-zinc-850 w-full rounded-md border border-zinc-800 px-3 py-3 text-slate-200 transition outline-none',
+			'bg-main-850 border-main-800 text-main-200 w-full rounded-md border px-3 py-3 transition outline-none',
 			useMonoFont && 'font-mono'
 		]}
 	></textarea>
