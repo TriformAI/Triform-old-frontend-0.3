@@ -6,12 +6,6 @@
 
 	--color-*: initial; /* Disable the full Tailwind palette */
 
-	--color-warning: oklch(0.704 0.191 22.216);
-	--color-warning-dim: oklch(0.808 0.114 19.571);
-
-	--color-idle: oklch(0.828 0.189 84.429); /* amber 400 */
-	--color-success: oklch(0.696 0.17 162.48); /* emerald 500 */
-
 	--color-main-50: oklch(0.985 0 0);
 	--color-main-100: oklch(0.967 0.001 286.375);
 	--color-main-200: oklch(0.92 0.004 286.32);
@@ -36,6 +30,12 @@
 	--color-accent-800: oklch(0.398 0.195 277.366);
 	--color-accent-900: oklch(0.359 0.144 278.697);
 	--color-accent-950: oklch(0.257 0.09 281.288);
+
+	--color-warning: oklch(0.704 0.191 22.216);
+	--color-warning-dim: oklch(0.808 0.114 19.571);
+
+	--color-idle: oklch(0.828 0.189 84.429); /* amber 400 */
+	--color-success: oklch(0.696 0.17 162.48); /* emerald 500 */
 
 	--easing-circ: cubic-bezier(0.85, 0.09, 0.15, 0.91);
 	--easing-spring: linear(
@@ -83,6 +83,7 @@
 	body {
 		@apply text-main-200 antialiased;
 
+		/* Prevent scrolling of body when a modal is open */
 		&:has(dialog[open]) {
 			@apply overflow-hidden;
 		}
@@ -96,29 +97,6 @@
 		@apply font-medium;
 	}
 
-	/* width */
-	::-webkit-scrollbar {
-		width: 4px;
-		height: 8px;
-	}
-
-	/* Handle */
-	::-webkit-scrollbar-thumb {
-		@apply bg-main-500;
-		border-radius: 4px;
-		transition: background 0.2s ease-in-out;
-	}
-
-	/* Handle on hover */
-	::-webkit-scrollbar-thumb:hover {
-		@apply bg-main-300;
-	}
-
-	.scroll_bar {
-		scrollbar-width: thin;
-		scrollbar-color: #ffffff #ffffff;
-	}
-
 	@keyframes spin {
 		0% {
 			transform: rotate(0deg);
@@ -128,29 +106,6 @@
 			transform: rotate(360deg);
 		}
 	}
-
-	.tooltip-red {
-		--balloon-color: var(--color-warning-dim);
-		--balloon-text-color: var(--color-warning);
-	}
-}
-
-[aria-label][data-balloon-pos]:hover:not(:active):after,
-[aria-label][data-balloon-pos]:hover:not(:active):before {
-	transition-delay: 1s !important;
-}
-
-.svelte-flow__node:hover {
-	z-index: 10 !important;
-}
-
-/* .svelte-flow__node, .svelte-flow__edge {
-	transition: transform 0.5s;
-} */
-
-.svelte-flow {
-	--xy-edge-stroke: var(--color-accent-100);
-	--xy-edge-stroke-width: 1.5px;
 }
 
 @layer overrides {
@@ -164,334 +119,26 @@
 		--vscode-editorGutter-background: var(--color-main-850) !important;
 	}
 
-	‰ [x-cloak] {
-		display: none;
-	}
-
-	.react-flow__panel.react-flow__attribution.bottom.right {
-		display: none;
-	}
-
-	.react-flow__node {
-		font-family: 'Space Mono', monospace;
-		font-size: 10px;
-		background: rgba(18, 24, 38, 0.66);
-		color: #fff;
-		box-shadow: 0px 5px 12px 0px rgba(0, 0, 0, 0.13);
-		border-radius: 13px;
-		border: 1px solid #a19595;
-	}
-
-	.react-flow__edge.selected path {
-		stroke: #bef2d3 !important;
-	}
-
-	.react-flow__node .react-flow__handle {
-		/* top: calc(50%); */
-		/* right: -9px; */
-		width: 18px;
-		height: 18px;
-		border-radius: 100%;
-		background-color: #1e222c;
-		border: 1px solid #a19595;
-	}
-
-	.react-flow__node .react-flow__handle.connecting {
-		border-color: #bef2d3;
-	}
-
-	.react-flow__node .react-flow__handle-top {
-		top: -9px;
-	}
-
-	.react-flow__node .react-flow__handle-bottom {
-		bottom: -9px;
-	}
-
-	.react-flow__node .react-flow__handle::after {
-		content: '';
-		position: absolute;
-		top: 50%;
-		left: 50%;
-		width: 5px;
-		height: 5px;
-		background-color: #fff;
-		border-radius: 100%;
-		transform: translate(-50%, -50%);
-	}
-
-	.react-flow__edge-path {
-		stroke: #bef2d3;
-	}
-
-	.react-flow__node-startNode {
-		border-color: #bef2d3;
-	}
-
-	.react-flow__node.selected {
-		background: rgba(190, 242, 211, 0.13);
-	}
-
-	.react-flow__node-startNode .react-flow__handle {
-		/* top: calc(50% - 9px);
-    right: -9px; */
-	}
-
-	.react-flow__node-startNode input {
-		font-size: 10px !important;
-	}
-
-	/* .react-flow__node-endNode {
-    font-size: 10px;
-    background: #181f2d;
-    width: 50px;
-    height: 50px;
-    color: #fff;
-    border-radius: 100%;
-}
-
-*/
-
-	.react-flow__node-endNode .react-flow__handle {
-		/* left: -9px !important; */
-	}
-
-	.react-flow__node.circle {
-		border-radius: 50%;
-		width: 60px;
-		height: 60px;
-		display: flex;
-		justify-content: center;
-		align-items: center;
-		font-weight: 700;
-	}
-
-	.react-flow__node.annotation {
-		border-radius: 0;
-		text-align: left;
-		background: white;
-		border: none;
-		line-height: 1.4;
-		width: 225px;
-		box-shadow:
-			0 4px 6px -1px rgb(0 0 0 / 15%),
-			0 2px 4px -1px rgb(0 0 0 / 8%);
-	}
-
-	.react-flow__node.annotation .react-flow__handle {
-		display: none;
-	}
-
-	.custom-node__header {
-		padding: 8px 10px;
-		border-bottom: 1px solid rgba(255, 255, 255, 0.05);
-	}
-
-	.custom-node__body {
-		padding: 10px;
-	}
-
-	.custom-node__select {
-		position: relative;
-	}
-
-	.custom-node__select select {
-		width: 100%;
-		font-size: 10px;
-	}
-
-	.react-flow__handle-left {
-		left: -15px;
-	}
-
-	.ace_gutter-cell {
-		background-color: rgba(255, 255, 255, 0.1);
-	}
-
-	#react-select-3-input {
-		color: white !important;
-		border: none !important;
-	}
-
-	#table-filter-dateRange-transaction_date_range {
-		width: 21.5em !important;
-	}
-
-	#table-filter-dateRange-transaction_date_range::placeholder {
-		font-size: 0.875rem;
-		line-height: 1.25rem;
+	.svelte-flow {
+		--xy-edge-stroke: var(--color-accent-100);
+		--xy-edge-stroke-width: 1.5px;
 	}
 
 	.svelte-flow__node:hover {
 		position: relative;
-		z-index: 2000;
+		z-index: 10 !important;
 	}
-}
 
-div[aria-labelledby='options-menu']::-webkit-scrollbar,
-.choices__list::-webkit-scrollbar,
-.custom-scroll::-webkit-scrollbar {
-	width: 8px;
-	height: 8px;
-}
-
-div[aria-labelledby='options-menu']::-webkit-scrollbar-track,
-.choices__list::-webkit-scrollbar-track,
-.custom-scroll::-webkit-scrollbar-track {
-	background: transparent;
-}
-
-div[aria-labelledby='options-menu']::-webkit-scrollbar-thumb,
-.choices__list::-webkit-scrollbar-thumb,
-.custom-scroll::-webkit-scrollbar-thumb {
-	background: #888;
-	border-radius: 5px;
-}
-
-div[aria-labelledby='options-menu']::-webkit-scrollbar-thumb:hover,
-.choices__list::-webkit-scrollbar-thumb:hover,
-.custom-scroll::-webkit-scrollbar-thumb:hover {
-	background: #555;
+	[aria-label][data-balloon-pos]:hover:not(:active):after,
+	[aria-label][data-balloon-pos]:hover:not(:active):before {
+		transition-delay: 1s !important;
+	}
 }
 
 @layer components {
-	.template-layout {
-		display: grid;
-		grid-template-columns: repeat(3, 2fr);
-		max-width: 75rem;
-	}
-	.searchandselectlayout {
-		display: flex;
-		gap: 16px;
-		margin-top: 1.25rem;
-		margin-bottom: 1.25rem;
-	}
-
-	.searchStyle {
-		width: 20rem;
-	}
-
-	.selectStyle {
-		width: 20rem;
-	}
-
-	.hideCreateButton {
-		display: flex;
-	}
-
-	.playgroundHeadingLayout {
-		display: flex;
-		flex-direction: row;
-	}
-
-	.halfWidthResposiveness {
-		width: 50%;
-	}
-
-	.sidePanelResponsive {
-		width: 27% !important;
-	}
-
-	.AceEditorResponsive {
-		width: 50% !important;
-	}
-
-	.CodeBlockLayout {
-		display: flex;
-		flex-direction: row;
-		gap: 10px;
-	}
-
-	.tooltip .tooltip-content {
-		visibility: hidden;
-		width: 500px;
-		background-color: rgb(156 163 175 / var(--tw-text-opacity));
-		color: #fff;
-		text-align: center;
-		border-radius: 5px;
-		padding: 3px 0;
-		position: absolute;
-		font-size: medium;
-		z-index: 1;
-		bottom: 125%;
-		/* Position above the icon */
-		left: 50%;
-		margin-left: -100px;
-		/* Center the tooltip */
-		opacity: 0;
-		transition: opacity 0.3s;
-	}
-
-	.tooltip:hover .tooltip-content {
-		visibility: visible;
-		opacity: 1;
-	}
-
-	@media (max-width: 1324px) {
-		.template-layout {
-			grid-template-columns: repeat(2, 2fr);
-		}
-
-		.halfWidthResposiveness {
-			width: 100%;
-		}
-
-		.AceEditorResponsive {
-			width: 100% !important;
-		}
-
-		.buttonResponsive {
-			font-size: 10px;
-		}
-
-		.CodeBlockLayout {
-			flex-direction: column;
-		}
-
-		.sidePanelResponsive {
-			width: 40% !important;
-		}
-	}
-
-	@media (max-width: 968px) {
-		.template-layout {
-			grid-template-columns: repeat(1, 2fr);
-		}
-
-		.searchandselectlayout {
-			flex-direction: column;
-			width: 100%;
-		}
-
-		.searchStyle {
-			width: 100%;
-		}
-
-		.selectStyle {
-			width: 100%;
-		}
-
-		.hideCreateButton {
-			display: none;
-		}
-
-		.playgroundHeadingLayout {
-			flex-direction: column;
-			align-items: start;
-			justify-content: start;
-		}
-	}
-
-	@media (max-width: 800px) {
-		.sidePanelResponsive {
-			width: 60% !important;
-		}
-	}
-
-	@media (max-width: 600px) {
-		.sidePanelResponsive {
-			width: 90% !important;
-		}
+	.tooltip-red {
+		--balloon-color: var(--color-warning-dim);
+		--balloon-text-color: var(--color-warning);
 	}
 
 	.list-btn {
