@@ -5,14 +5,20 @@
 	import EndpointNode from '$lib/components/custom-nodes/EndpointNode.svelte'
 	import OpenAgentNode from '$lib/components/custom-nodes/OpenAgentNode.svelte'
 	import SelectorNode from '$lib/components/custom-nodes/SelectorNode.svelte'
-	import { addDownstreamNode, edges, nodes, removeNode } from '$lib/stores/canvas.svelte'
+	import {
+		addDownstreamNode,
+		edges,
+		nodes,
+		removeNode,
+		currentCanvas,
+		setNodeProps
+	} from '$lib/stores/canvas.svelte'
 	import type { Uuid } from '$lib/types/agent'
 	import type { Node } from '$lib/types/flow'
 	import type { NodeTypes } from '@xyflow/svelte'
 	import ContextMenu from './ContextMenu.svelte'
 	import { onMount, untrack } from 'svelte'
 	import { Background, BackgroundVariant, SvelteFlow, useUpdateNodeInternals } from '@xyflow/svelte'
-	import { selectedCanvas, setNodeProps } from '$lib/stores/canvas.svelte'
 	import { menuIsOpen, toggleContextMenu } from '$lib/stores/contextMenu.svelte'
 	import { parseProject } from '$lib/stores/canvas.svelte'
 	import '@xyflow/svelte/dist/style.css'
@@ -43,9 +49,8 @@
 	let projectIsParsed = $state(false)
 
 	$effect(() => {
-		const canvas = selectedCanvas()
-
-		if (!canvas) return
+		const canvas = currentCanvas
+		if (!canvas.project) return
 
 		console.time('parse agent')
 		let { nodes: nodesData, edges: edgesData } = parseProject(canvas.project)

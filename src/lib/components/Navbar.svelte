@@ -1,7 +1,7 @@
 <script lang="ts">
 	import logo from '$lib/images/Logo.svg'
 	import Dropdown from './common/Dropdown.svelte'
-	import { selectedCanvas } from '$lib/stores/canvas.svelte'
+	import { currentCanvas } from '$lib/stores/canvas.svelte'
 	// import { getTolgee } from '@tolgee/svelte'
 
 	import { page } from '$app/state'
@@ -25,7 +25,7 @@
 		</a>
 
 		<span class="pl-5 text-zinc-300">
-			{selectedCanvas?.()?.project.meta.name}
+			{currentCanvas.project?.meta.name}
 		</span>
 	</div>
 

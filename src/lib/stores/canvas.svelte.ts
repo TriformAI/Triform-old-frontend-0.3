@@ -19,7 +19,7 @@ export type ParsedGraph = {
 // The currently shown resource should always be an agent
 // The agent can have nested agents and actions, in sequence or parallel
 export interface Canvas {
-	project: Project
+	project?: Project
 	// Visual properties of the rendered nodes (frontend-only thing)
 	nodeProps: SvelteMap<Uuid, NodeProps>
 	// For when we want multiple tabs:
@@ -35,14 +35,19 @@ const defaultProps: NodeProps = {
 	deleted: false
 }
 
+export const currentCanvas = $state<Canvas>({
+	project: undefined,
+	nodeProps: new SvelteMap()
+})
+
 export const setNodeProps = (id: Uuid, props: Partial<NodeProps>) => {
-	let propsRef = selectedCanvas().nodeProps.get(id)
+	let propsRef = currentCanvas?.nodeProps.get(id)
 	if (!propsRef) propsRef = defaultProps
 	const newProps = Object.assign({}, propsRef, props)
-	selectedCanvas().nodeProps.set(id, newProps)
+	currentCanvas?.nodeProps.set(id, newProps)
 }
 
-export const getNodeProps = (id: Uuid): NodeProps | undefined => selectedCanvas().nodeProps.get(id)
+export const getNodeProps = (id: Uuid): NodeProps | undefined => currentCanvas?.nodeProps.get(id)
 
 const isEndpoint = (node: TriNode): node is TriNode & { spec: Action } =>
 	node.spec.resource === 'endpoint/v1'
@@ -157,19 +162,11 @@ export const parseProject = (project: Project) => {
 		)
 }
 
-export const canvasStore = $state<Canvas[]>([])
-const currentCanvas = $derived(canvasStore[0])
-export const selectedCanvas = () => currentCanvas
-
-// TODO: type this properly
 export const loadProject = (project: Project) => {
 	// Since we only support one tab for now, replace the entire store
-	canvasStore.length = 0
-
-	canvasStore.push({
-		project,
-		nodeProps: new SvelteMap()
-	})
+	currentCanvas.project = project
+	// Reset the node props
+	currentCanvas.nodeProps.clear()
 
 	console.log('Loaded project', project)
 }
@@ -195,7 +192,7 @@ const processNode = async (
 		// Currently we only support updating children of agents so don't do anything else here
 	}
 
-	for (const [nodeId, node] of Object.entries(canvasStore[0].project.spec.nodes)) {
+	for (const [nodeId, node] of Object.entries(currentCanvas.project?.spec.nodes ?? {})) {
 		await process(node, nodeId as Uuid)
 	}
 
@@ -210,6 +207,7 @@ export async function addDownstreamNode(
 	newNode?: TriNode,
 	source_id?: Uuid
 ) {
+	if (!currentCanvas.project) return
 	const newId = self.crypto.randomUUID()
 
 	if (!newNode) {
@@ -230,12 +228,13 @@ export async function addDownstreamNode(
 	}
 
 	if (parentId === 'root') {
-		currentCanvas.project.spec.nodes[newId] = newNode
+		currentCanvas.project.spec.nodes[newId] = newNode!
 	}
 }
 
 // Adds a child node to a specific parent node
 export const addChild = async (parentId: Uuid | 'root', child: TriNode, nodeId: Uuid) => {
+	if (!currentCanvas.project) return
 	// If the parentId is "root", add it to the project as a root level node
 	if (parentId === 'root') {
 		currentCanvas.project.spec.nodes[nodeId] = child
@@ -258,6 +257,7 @@ export const addChild = async (parentId: Uuid | 'root', child: TriNode, nodeId: 
 // to the real one, since this will trigger quite a few layouts of the
 // rendered tree, basically every time we update a node
 export const removeNode = async (id: Uuid) => {
+	if (!currentCanvas.project) return
 	// If it's a root node, remove it
 	if (currentCanvas.project.spec.nodes[id]) {
 		const nodeToDelete = currentCanvas.project.spec.nodes[id]

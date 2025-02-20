@@ -1,10 +1,9 @@
 <script lang="ts">
 	import IconActionNode from '~icons/material-symbols/square-rounded'
 	import IconFlowNode from '~icons/material-symbols/change-history-rounded'
-	import { addDownstreamNode } from '$lib/stores/canvas.svelte'
+	import { addDownstreamNode, nodes } from '$lib/stores/canvas.svelte'
 	import CustomHandle from './CustomHandle.svelte'
 	import { Position } from '@xyflow/svelte'
-	import { nodes } from '$lib/stores/canvas.svelte'
 	import { clickOutside } from '$lib/utils/clickOutside'
 
 	const { id, data } = $props()
