@@ -48,10 +48,19 @@ const deleteNode = {
 	label: 'Delete',
 	icon: IconTrash,
 	isDangerous: true,
-	onClick: (node: Node, _useSvelteFlow: ReturnType<typeof useSvelteFlowHook>) => {
+	onClick: (node: Node, useSvelteFlow: ReturnType<typeof useSvelteFlowHook>) => {
+		const { fitView } = useSvelteFlow
+
 		// Update the node to indicate that it's being deleted, and then actually delete it after a delay
 		setNodeProps(node.id, { deleted: true })
-		setTimeout(() => removeNode(node.id), 100)
+		setTimeout(() => {
+			removeNode(node.id)
+			// TODO Probably a better idea to center to the node before the deleted one
+			fitView({
+				maxZoom: 1,
+				duration: 500
+			})
+		}, 100)
 	}
 }
 
