@@ -5,8 +5,8 @@
 
 	import {
 		openWindows,
-		createLocalStorageListener,
-		loadWindowsFromLocalStorage,
+		// createLocalStorageListener,
+		// loadWindowsFromLocalStorage,
 		removeLocalStorageListener
 	} from '$lib/stores/windows.svelte'
 
@@ -24,8 +24,8 @@
 	})
 
 	onMount(() => {
-		loadWindowsFromLocalStorage()
-		createLocalStorageListener()
+		// loadWindowsFromLocalStorage()
+		// createLocalStorageListener()
 		// eslint-disable-next-line
 		;() => {
 			removeLocalStorageListener()
