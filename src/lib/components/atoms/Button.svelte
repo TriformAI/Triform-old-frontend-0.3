@@ -19,7 +19,8 @@
 		href,
 		target,
 		disabled,
-		tooltip
+		tooltip,
+		toggled
 	}: {
 		// Will have secondary, muted, link etc as we need them
 		variation?: ButtonVariation
@@ -37,6 +38,7 @@
 		target?: '_blank'
 		disabled?: boolean
 		tooltip?: string
+		toggled?: boolean
 	} = $props()
 
 	let isLoading = $state(false)
@@ -75,7 +77,10 @@
 			'border border-zinc-700 bg-zinc-800 hover:enabled:border-zinc-600 hover:enabled:bg-zinc-700',
 		variation === 'vibrant' &&
 			'bg-indigo-900 inset-shadow-xs inset-shadow-indigo-600/40 hover:enabled:bg-indigo-800',
-		variation === 'link' && 'text-zinc-200 hover:enabled:bg-zinc-500/10',
+		variation === 'link' && [
+			'text-zinc-200',
+			toggled ? 'bg-zinc-600/15 hover:enabled:bg-zinc-600/20' : 'hover:enabled:bg-zinc-500/10'
+		],
 		!icon && !!body && 'px-5',
 		`flex transform cursor-pointer flex-row items-center justify-center
     gap-x-2 rounded-md p-3 font-medium

@@ -65,6 +65,11 @@ export const updateWindowById = (id: string, update: Partial<Window>) => {
 	// saveWindowsToLocalStorage()
 }
 
+export const windowIsOpen = (id: string) => {
+	const window = openWindowsState.find(w => w.id === id)
+	return !!window && !window.isClosing
+}
+
 // TODO: Add all components that need to be saved to local storage here.
 // They need to be mapped to strings so that they can be saved and recreated
 // from local storage.
