@@ -56,9 +56,9 @@
 			{#each tabs as tab, idx}
 				{@const language = tab.key.split('.').pop() as 'py' | 'md' | 'txt'}
 
-				<div class={[idx === activeTab ? 'block' : 'hidden']}>
+				<div class={['relative', idx === activeTab ? 'block' : 'hidden']}>
 					{#if language === 'py'}
-						<CodeEditor code={files[tab.key]} class="h-full rounded-md" />
+						<CodeEditor code={files[tab.key]} class="absolute h-full w-full rounded-md" />
 					{:else}
 						<LightEditor
 							{language}
