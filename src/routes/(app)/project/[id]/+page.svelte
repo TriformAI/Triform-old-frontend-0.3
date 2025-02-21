@@ -30,7 +30,7 @@
 		clearLocalStorage()
 		// loadWindowsFromLocalStorage()
 		// createLocalStorageListener()
-		// eslint-disable-next-line
+
 		// ;() => {
 		// 	removeLocalStorageListener()
 		// }

@@ -1,9 +1,5 @@
-<script module lang="ts">
-	export type ButtonVariation = 'primary' | 'vibrant' | 'link' | 'danger'
-</script>
-
 <script lang="ts">
-	import type { Snippet } from 'svelte'
+	import { type Snippet } from 'svelte'
 
 	import { fly, scale } from 'svelte/transition'
 
@@ -19,17 +15,17 @@
 		href,
 		target,
 		disabled,
-		tooltip
+		tooltip,
+		type = 'button'
 	}: {
-		// Will have secondary, muted, link etc as we need them
-		variation?: ButtonVariation
+		variation?: 'primary' | 'vibrant' | 'link' | 'danger'
 		// disabled
 		// href
 		// etc...
 		body?: Snippet
 		icon?: Snippet
-		// Optionally disable the automatic loading indicator
-		autoLoad?: boolean
+		// promise = show until promise resolves
+		autoLoad?: 'promise'
 		// If it returns a promise, show loading indicator until it resolves
 		onClick?: () => unknown | Promise<unknown>
 		class?: string
@@ -37,11 +33,13 @@
 		target?: '_blank'
 		disabled?: boolean
 		tooltip?: string
+		type?: 'button' | 'submit' | 'reset'
 	} = $props()
 
 	const hasTextColor = ['danger'].includes(variation)
 
 	let isLoading = $state(false)
+
 	const onClick = () => {
 		if (href) {
 			if (target === '_blank') window.open(href, '_blank')
@@ -49,24 +47,24 @@
 		}
 
 		if (typeof onClickProp === 'function') {
-			try {
-				// If it wasn't a promise this will just resolve immediately
-				Promise.resolve(onClickProp()).then(() => {
-					if (!autoLoad) return
+			let timeout: ReturnType<typeof setTimeout>
+			// Wait a bit before we show the loading indicator, so it doesn't flash
+			if (autoLoad === 'promise') timeout = setTimeout(() => (isLoading = true), 75)
+			// If it wasn't a promise this will just resolve immediately
+			Promise.resolve(onClickProp())
+				.then(() => {
+					if (autoLoad !== 'promise') return
+					if (timeout) clearTimeout(timeout)
 					isLoading = false
 					// hack, in case the promise is resolved too fast
 					// (basically never happens but its pretty catastrophic if it does
 					// so better to just fix it like this)
-					setTimeout(() => (isLoading = false), 50)
+					setTimeout(() => (isLoading = false), 150)
 				})
-				if (autoLoad) {
-					console.log('loading')
-					isLoading = true
-				}
-			} catch (e) {
-				if (autoLoad) isLoading = false
-				throw e
-			}
+				.catch(_e => {
+					if (timeout) clearTimeout(timeout)
+					isLoading = false
+				})
 		}
 	}
 </script>
@@ -89,7 +87,8 @@
 		disabled:cursor-not-allowed disabled:opacity-75`,
 		classProp
 	]}
-	{disabled}
+	disabled={disabled || isLoading}
+	{type}
 	onclick={onClick}
 	aria-label={tooltip}
 	data-balloon-pos={tooltip ? 'up' : undefined}

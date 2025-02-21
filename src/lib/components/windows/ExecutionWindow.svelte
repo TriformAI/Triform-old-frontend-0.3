@@ -97,7 +97,7 @@
 					variation="vibrant"
 					class="w-full"
 					onClick={run}
-					autoLoad={false}
+					autoLoad="promise"
 					disabled={!isValidJson || isRunning}
 				>
 					{#snippet icon()}

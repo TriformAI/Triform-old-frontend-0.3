@@ -55,7 +55,7 @@
 					class="w-full"
 					href={`${apiUrl}/login/${provider.name.toLowerCase()}/authorize`}
 					onClick={() => onLogin(provider)}
-					autoLoad={true}
+					autoLoad="promise"
 					disabled={chosenProvider === provider.name}
 				>
 					{#snippet icon()}

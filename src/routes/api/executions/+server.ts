@@ -3,17 +3,6 @@ import type { Execution } from '$lib/types/execution'
 
 import { error, json } from '@sveltejs/kit'
 
-// Publish a component
-export async function PUT({ request, locals }) {
-	if (!locals.user) {
-		return error(401, 'Unauthorized')
-	}
-
-	const data = await request.json()
-	const updatedComponent = await locals.api.put(`component/publish/${data.meta.id}`, data)
-	return json(updatedComponent)
-}
-
 // Execute a component
 export async function POST({ request, locals }) {
 	if (!locals.user) {

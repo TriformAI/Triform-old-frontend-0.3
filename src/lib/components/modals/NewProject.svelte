@@ -58,7 +58,7 @@
 
 				<InputField bind:value={projectName} name="name" label="Project Name" />
 
-				<Button variation="primary" class="mt-5 w-full" onClick={createProject}>
+				<Button variation="primary" type="submit" class="mt-5 w-full" onClick={createProject}>
 					{#snippet body()}
 						Create
 					{/snippet}

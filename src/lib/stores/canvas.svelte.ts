@@ -213,7 +213,12 @@ export async function addDownstreamNode(
 					id: 'd91f1b9a-9c83-4ff0-a463-cb991c09b063',
 					version: 1
 				},
-				spec: {}
+				spec: {
+					source: '@triform.entrypoint\ndef action(input):\n  return input',
+					readme: '',
+					deps: '',
+					streaming: false
+				}
 			}
 		}
 	}

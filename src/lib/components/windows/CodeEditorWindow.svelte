@@ -6,9 +6,11 @@
 	import type { Node } from '$lib/types/flow'
 	import IconPublish from '~icons/mdi/cloud-upload-outline'
 	import CodeEditor from '../CodeEditor.svelte'
+	import { enhance } from '$app/forms'
 
 	import { API } from '$lib/api'
 	import { T } from '@tolgee/svelte'
+	import { toast } from 'svelte-sonner'
 
 	const api = new API()
 
@@ -37,16 +39,25 @@
 
 	let activeTab = $state(0) // Default to the first tab
 
-	const publish = async () => {
+	const publishComponent = async () => {
 		console.log('publishing')
-		const newComponent = await api.put('components', node.data.spec)
-		console.log('new component', newComponent)
+		try {
+			const newComponent = await api.put('components', node.data.spec)
+			console.log('new component', newComponent)
+			toast.success('Component published')
+		} catch (e) {
+			console.error('Failed to publish component', e)
+			toast.error('Failed to publish component')
+		}
 	}
 </script>
 
 <Window {...props}>
 	{#snippet header()}
-		<T keyName="code-editor-header" defaultValue="Code editor" />
+		<span>
+			<T keyName="code-editor-header" defaultValue="Edit" />
+			{node.data.component_name}
+		</span>
 	{/snippet}
 
 	{#snippet body()}
@@ -73,7 +84,7 @@
 			{/each}
 
 			<div class="mt-6 flex items-center justify-between">
-				<Button variation="vibrant" class="ml-auto" autoLoad={true} onClick={publish}>
+				<Button variation="vibrant" class="ml-auto" autoLoad="promise" onClick={publishComponent}>
 					{#snippet icon()}
 						<IconPublish class="size-5.5" />
 					{/snippet}

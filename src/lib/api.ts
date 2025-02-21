@@ -18,6 +18,7 @@ export class API {
 		data?: unknown,
 		headers: Record<string, string> = {}
 	): Promise<T> {
+		console.debug(`Sending ${method} ${this.#baseURL}/${endpoint}`, data)
 		const res = await fetch(`${this.#baseURL}/${endpoint}`, {
 			method,
 			headers: {
