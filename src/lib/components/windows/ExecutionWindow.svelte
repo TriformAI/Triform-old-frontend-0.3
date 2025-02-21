@@ -1,6 +1,6 @@
 <script lang="ts">
 	import type { Node } from '$lib/types/flow'
-	import { initJsonEditor } from '$lib/jsonEditor'
+	import LightEditor from '$lib/components/atoms/LightEditor.svelte'
 
 	import { useNodes } from '@xyflow/svelte'
 	import { toast } from 'svelte-sonner'
@@ -65,12 +65,6 @@
 		}
 		return true
 	})
-
-	function initCodeEditor(el: HTMLDivElement) {
-		initJsonEditor(el, input, value => {
-			input = value
-		})
-	}
 </script>
 
 <Window padding="tight" {...props}>
@@ -91,7 +85,7 @@
 				>
 					Test data
 				</p>
-				<div use:initCodeEditor class="text-sm"></div>
+				<LightEditor language="json" value={input} onUpdate={v => (input = v)} class="text-sm" />
 			</div>
 
 			<div

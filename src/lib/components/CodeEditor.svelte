@@ -1,15 +1,20 @@
 <script lang="ts">
 	import loader from '@monaco-editor/loader'
-	import { onDestroy, onMount } from 'svelte'
+	import { onDestroy } from 'svelte'
 	import type * as Monaco from 'monaco-editor/esm/vs/editor/editor.api'
+	import githubDarkTheme from '$lib/editor-themes/github-dark.json'
 
 	let editor: Monaco.editor.IStandaloneCodeEditor
 	let monaco: typeof Monaco
-	let editorContainer: HTMLElement
 
-	export let code
+	interface Props {
+		code: string
+		class: string
+	}
 
-	onMount(async () => {
+	const { code, class: classes }: Props = $props()
+
+	async function initEditor(el: HTMLDivElement) {
 		const monacoEditor = await import('monaco-editor')
 		loader.config({ monaco: monacoEditor.default })
 
@@ -17,15 +22,19 @@
 
 		// Set the initial value to the provided Python code
 		const pythonCode = code || ''
+		console.log(githubDarkTheme)
 
-		editor = monaco.editor.create(editorContainer, {
+		editor = monaco.editor.create(el, {
 			value: pythonCode,
 			language: 'python',
-			theme: 'vs-dark',
 			automaticLayout: true,
+			fontSize: 14,
 			minimap: { enabled: false }
 		})
-	})
+
+		monaco.editor.defineTheme('GithubDark', githubDarkTheme)
+		monaco.editor.setTheme('GithubDark')
+	}
 
 	onDestroy(() => {
 		monaco?.editor.getModels().forEach(model => model.dispose())
@@ -33,15 +42,4 @@
 	})
 </script>
 
-<div>
-	<div class="bg-main-850 container rounded-md py-4" bind:this={editorContainer}></div>
-</div>
-
-<style>
-	.container {
-		min-height: 500px;
-		min-width: 800px;
-		width: 100%;
-		height: 100%;
-	}
-</style>
+<div class={['bg-main-800 rounded-md py-4 ps-0', classes]} use:initEditor></div>

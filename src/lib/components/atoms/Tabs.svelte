@@ -1,42 +1,30 @@
 <script lang="ts">
-	import { onMount } from 'svelte'
-
 	export interface Tab {
 		key: string
 		label: string
 	}
 
-	let {
-		tabs,
-		activeTab = $bindable()
-	}: {
+	interface Props {
 		tabs: Tab[]
-		activeTab: Tab | null
-	} = $props()
-
-	const onTabSelect = (tab: Tab) => {
-		activeTab = tab
+		activeTab: number
 	}
 
-	onMount(() => {
-		if (!activeTab) {
-			activeTab = tabs[0]
-		}
-	})
+	let { tabs, activeTab = $bindable(0) }: Props = $props()
+
+	const onTabSelect = (idx: number) => {
+		activeTab = idx
+	}
 </script>
 
-<div class="flex flex-row">
-	{#each tabs as tab}
-		{@const isActive = tab.key === activeTab?.key}
+<div class="flex gap-2">
+	{#each tabs as tab, idx}
+		{@const isActive = idx === activeTab}
 		<button
-			class="
-        border-b border-transparent px-6
-        py-2 transition-all
-        {isActive
-				? 'border-main-300 text-main-200'
-				: 'text-main-500 hover:border-main-700 hover:text-main-400'}
-      "
-			onclick={() => onTabSelect(tab)}
+			class={[
+				'hover:text-main-200  border-b-2  px-4 py-2 transition-colors',
+				isActive ? 'border-main-300 text-main-200' : 'text-main-500 border-transparent'
+			]}
+			onclick={() => onTabSelect(idx)}
 		>
 			{tab.label}
 		</button>

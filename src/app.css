@@ -120,8 +120,12 @@
 	}
 
 	.monaco-editor {
-		--vscode-editor-background: var(--color-main-850) !important;
-		--vscode-editorGutter-background: var(--color-main-850) !important;
+		--vscode-editor-background: var(--color-main-800) !important;
+		--vscode-editorGutter-background: var(--color-main-800) !important;
+	}
+
+	.monaco-editor .view-overlays .current-line {
+		background: transparent !important;
 	}
 
 	.svelte-flow {
