@@ -4,12 +4,15 @@
 		label: string
 	}
 
-	interface Props {
+	let {
+		tabs,
+		activeTab = $bindable(0),
+		class: classes
+	}: {
 		tabs: Tab[]
 		activeTab: number
-	}
-
-	let { tabs, activeTab = $bindable(0) }: Props = $props()
+		class?: string
+	} = $props()
 
 	const onTabSelect = (idx: number) => {
 		activeTab = idx
@@ -21,8 +24,9 @@
 		{@const isActive = idx === activeTab}
 		<button
 			class={[
-				'hover:text-main-200  border-b-2  px-4 py-2 transition-colors',
-				isActive ? 'border-main-300 text-main-200' : 'text-main-500 border-transparent'
+				'hover:text-main-200  border-b  px-4 py-2 transition-colors',
+				isActive ? 'border-main-300 text-main-200' : 'text-main-500 border-transparent',
+				classes
 			]}
 			onclick={() => onTabSelect(idx)}
 		>
