@@ -31,8 +31,9 @@
 	--color-accent-900: oklch(0.359 0.144 278.697);
 	--color-accent-950: oklch(0.257 0.09 281.288);
 
+	--color-warning-dim: oklch(0.936 0.032 17.717);
 	--color-warning: oklch(0.704 0.191 22.216);
-	--color-warning-dim: oklch(0.808 0.114 19.571);
+	--color-warning-hard: oklch(0.505 0.213 27.518);
 
 	--color-idle: oklch(0.828 0.189 84.429); /* amber 400 */
 	--color-success: oklch(0.696 0.17 162.48); /* emerald 500 */
@@ -147,7 +148,7 @@
 @layer components {
 	.tooltip-red {
 		--balloon-color: var(--color-warning-dim);
-		--balloon-text-color: var(--color-warning);
+		--balloon-text-color: var(--color-warning-hard);
 	}
 
 	.list-btn {
@@ -156,5 +157,9 @@
 
 	.list-btn--danger {
 		@apply text-warning hover:text-warning-dim;
+	}
+
+	.error-msg {
+		@apply bg-warning-dim text-warning-hard rounded-md p-4 text-center;
 	}
 }

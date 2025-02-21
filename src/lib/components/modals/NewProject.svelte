@@ -17,6 +17,8 @@
 	const createProject = () => {
 		console.log('create project', projectName)
 	}
+
+	let error_msg = $state<string>()
 </script>
 
 <Dialog bind:dialog appearance="center">
@@ -35,24 +37,26 @@
 				method="POST"
 				use:enhance={() => {
 					return async ({ update, result }) => {
-						console.log(result)
-
 						if (result.type === 'success') {
 							toast.success('Project created!')
+							dialog?.close()
 						}
 
-						dialog?.close()
+						if (result.type === 'failure') {
+							error_msg = 'Could not create project'
+						}
 
 						await update()
 					}
 				}}
 			>
-				<InputField
-					bind:value={projectName}
-					name="name"
-					label="Project Name"
-					placeholder="Project Name"
-				/>
+				{#if error_msg}
+					<div class="error-msg mb-4">
+						{error_msg}
+					</div>
+				{/if}
+
+				<InputField bind:value={projectName} name="name" label="Project Name" />
 
 				<Button variation="primary" class="mt-5 w-full" onClick={createProject}>
 					{#snippet body()}

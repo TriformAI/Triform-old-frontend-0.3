@@ -1,4 +1,4 @@
-import { redirect } from '@sveltejs/kit'
+import { fail, redirect } from '@sveltejs/kit'
 
 export const load = () => {
 	redirect(302, '/dashboard')
@@ -7,8 +7,12 @@ export const load = () => {
 export const actions = {
 	async create({ request }) {
 		const formData = await request.formData()
-		console.log(formData)
+		const name = formData.get('name')
 
-		return true
+		if (!name) {
+			return fail(400, { message: 'Invalid input' })
+		}
+
+		return false
 	}
 }
