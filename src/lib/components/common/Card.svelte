@@ -11,7 +11,7 @@
 		body: Snippet
 		footer?: Snippet
 		padding?: 'default' | 'tight'
-		isDragging: boolean
+		isDragging?: boolean
 		onClose?: () => void
 		onDragStart?: (e: MouseEvent) => void
 		onDragEnd?: (e: MouseEvent) => void
@@ -67,7 +67,7 @@
 				<IconDrag class="h-[1.25rem] w-[1.25rem] opacity-50" />
 			{/if}
 
-			<span class="font-medium">{@render header?.()}</span>
+			<span class="text-lg font-semibold">{@render header?.()}</span>
 		</div>
 
 		{#if typeof onClose === 'function'}
@@ -81,7 +81,7 @@
 
 	<div
 		class={[
-			'grid w-full',
+			'text-main-400 grid w-full',
 			padding === 'default' && 'px-5 py-5',
 			padding === 'tight' && 'px-4 py-4'
 		]}

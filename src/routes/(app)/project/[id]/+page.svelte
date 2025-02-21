@@ -2,6 +2,7 @@
 	import { onDestroy, onMount } from 'svelte'
 	import Flow from '$lib/components/canvas/Flow.svelte'
 	import Toolbar from '$lib/components/canvas/Toolbar.svelte'
+	import Confirm from '$lib/components/common/Confirm.svelte'
 	import { SvelteFlowProvider } from '@xyflow/svelte'
 
 	import {
@@ -52,3 +53,5 @@
 		<Toolbar />
 	</div>
 </SvelteFlowProvider>
+
+<Confirm />

@@ -5,11 +5,12 @@ import { SvelteMap } from 'svelte/reactivity'
 import { useSvelteFlow as useSvelteFlowHook } from '@xyflow/svelte'
 import { openWindow } from './windows.svelte'
 import { removeNode, addDownstreamNode, setNodeProps } from './canvas.svelte'
-
+import { confirmStore } from './confirm.svelte'
 import CodeEditorWindow from '$lib/components/windows/CodeEditorWindow.svelte'
 import IconTrash from '~icons/material-symbols/delete-outline'
 import IconAdd from '~icons/material-symbols/add-diamond-outline'
 import IconEditor from '~icons/material-symbols/code-blocks-outline'
+import { toast } from 'svelte-sonner'
 
 export type onClickFn = (node: Node, useSvelteFlow: ReturnType<typeof useSvelteFlowHook>) => void
 interface ActionItem {
@@ -48,19 +49,34 @@ const deleteNode = {
 	label: 'Delete',
 	icon: IconTrash,
 	isDangerous: true,
-	onClick: (node: Node, useSvelteFlow: ReturnType<typeof useSvelteFlowHook>) => {
+	onClick: async (node: Node, useSvelteFlow: ReturnType<typeof useSvelteFlowHook>) => {
 		const { fitView } = useSvelteFlow
 
-		// Update the node to indicate that it's being deleted, and then actually delete it after a delay
-		setNodeProps(node.id, { deleted: true })
-		setTimeout(() => {
+		const is_confirmed = await confirmStore.show({
+			title: 'Really delete?',
+			message: 'Please confirm that you want to delete this node'
+		})
+
+		if (is_confirmed) {
+			const response = await fetch(`/api/nodes/${node.id}`, { method: 'DELETE' })
+
+			if (!response.ok) {
+				console.error(response.statusText)
+				toast.error('Failed to delete node')
+				return
+			}
+
+			// Deletion confirmed and API request was OK - go ahead and delete from canvas
+
+			// Update the node to indicate that it's being deleted, and then actually delete it after a delay
+			setNodeProps(node.id, { deleted: true })
 			removeNode(node.id)
 			// TODO Probably a better idea to center to the node before the deleted one
 			fitView({
 				maxZoom: 1,
 				duration: 500
 			})
-		}, 100)
+		}
 	}
 }
 

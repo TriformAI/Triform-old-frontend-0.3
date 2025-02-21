@@ -1,5 +1,5 @@
 <script module lang="ts">
-	export type ButtonVariation = 'primary' | 'vibrant' | 'link'
+	export type ButtonVariation = 'primary' | 'vibrant' | 'link' | 'danger'
 </script>
 
 <script lang="ts">
@@ -71,6 +71,7 @@
 
 <button
 	class={[
+		variation === 'danger' && 'bg-warning-dim text-warning-hard hover:enabled:text-warning-hard ',
 		variation === 'primary' &&
 			'border-main-700 bg-main-800 hover:enabled:border-main-600 hover:enabled:bg-main-700 border',
 		variation === 'vibrant' &&

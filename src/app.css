@@ -98,6 +98,12 @@
 		@apply font-medium;
 	}
 
+	dialog {
+		&:focus {
+			outline: none;
+		}
+	}
+
 	@keyframes spin {
 		0% {
 			transform: rotate(0deg);

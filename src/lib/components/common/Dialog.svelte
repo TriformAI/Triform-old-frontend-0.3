@@ -8,6 +8,7 @@
 		appearance = 'center',
 		onClose,
 		closeByClickOutside = true,
+		allowEscapeClose = true,
 		class: classes
 	}: {
 		children: Snippet
@@ -15,6 +16,7 @@
 		appearance: 'center' | 'bottom'
 		onClose?: () => void
 		closeByClickOutside?: boolean
+		allowEscapeClose?: boolean
 		class?: string
 	} = $props()
 
@@ -31,6 +33,8 @@
 	use:clickOutside
 	bind:this={dialog}
 	onclose={() => {
+		console.log('onclose')
+
 		if (onClose) {
 			onClose()
 		}
