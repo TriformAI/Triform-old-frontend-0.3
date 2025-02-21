@@ -3,6 +3,10 @@
 	import NewProject from '$lib/components/modals/NewProject.svelte'
 	import IconChevronRight from '~icons/material-symbols/chevron-right'
 	import IconAdd from '~icons/material-symbols/new-window-rounded'
+	import Dropdown from '$lib/components/common/Dropdown.svelte'
+	import IconDots from '~icons/material-symbols/more-horiz'
+	import IconTrash from '~icons/material-symbols/delete-outline'
+	import { enhance } from '$app/forms'
 
 	let { data } = $props()
 	const { projects } = $derived(data)
@@ -23,25 +27,55 @@
 	</div>
 	<div class="mt-4 grid grid-cols-2 gap-5 md:grid-cols-3 lg:grid-cols-4">
 		{#each projects as project}
-			<a
-				class="
-				bg-main-850 group/project border-main-800 hover:border-main-700 hover:bg-main-800 relative flex w-full
-					transform flex-row items-center justify-between gap-5
-					rounded-lg border p-4 pr-8 transition
-				"
-				href="/project/{project.meta.id}"
+			<div
+				class="group/project bg-main-850 border-main-800 hover:border-main-700 hover:bg-main-800 relative rounded-lg border transition"
 			>
-				<div>
-					<h2 class="font-medium">{project.meta.name}</h2>
-					<p class="text-main-500">Last modified sometime</p>
-				</div>
+				<a class=" relative block w-full transform p-4 pr-8" href="/project/{project.meta.id}">
+					<div>
+						<h2 class="mb-1 flex items-center font-medium">
+							{project.meta.name}
+							<span
+								class="opacity-0 transition-all duration-300 group-hover/project:translate-x-2 group-hover/project:opacity-100"
+							>
+								<IconChevronRight class="text-main-400 text-lg" />
+							</span>
+						</h2>
+						<p class="text-main-500">Last modified sometime</p>
+					</div>
+				</a>
 
 				<div
-					class="absolute right-4 opacity-0 transition-all duration-300 group-hover/project:right-1 group-hover/project:opacity-100"
+					class={[
+						'absolute end-4 top-4',
+						'opacity-0 transition-opacity duration-300 group-hover/project:opacity-100'
+					]}
 				>
-					<IconChevronRight class="text-main-400 text-lg" />
+					<Dropdown>
+						{#snippet trigger()}
+							<IconDots />
+						{/snippet}
+
+						{#snippet body()}
+							<form
+								action="/project/{project.meta.id}?/delete"
+								method="POST"
+								use:enhance={() => {
+									return async ({ update, result }) => {
+										if (result.type === 'success') {
+											await update()
+										}
+									}
+								}}
+							>
+								<button type="submit" class="list-btn w-full text-sm font-medium">
+									<IconTrash />
+									Delete
+								</button>
+							</form>
+						{/snippet}
+					</Dropdown>
 				</div>
-			</a>
+			</div>
 		{/each}
 	</div>
 </div>

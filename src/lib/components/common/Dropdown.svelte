@@ -39,13 +39,19 @@
 		open = false
 	}}
 >
-	<button type="button" onclick={() => (open = !open)}>
+	<button
+		type="button"
+		onclick={e => {
+			e.stopPropagation()
+			open = !open
+		}}
+	>
 		{@render trigger()}
 	</button>
 
 	<div
 		class={[
-			'dropdown bg-main-850 shadow-window absolute end-0 z-10 min-w-56 origin-top-right rounded-md p-2 duration-200 ease-(--easing-circ)',
+			'dropdown bg-main-850 shadow-window absolute end-0 z-10 min-w-56 origin-top-right rounded-md p-1 duration-200 ease-(--easing-circ)',
 			open ? 'scale-100 opacity-100 duration-150' : 'pointer-events-none scale-90 opacity-0',
 			type === 'tight' && 'dropdown--tight'
 		]}
