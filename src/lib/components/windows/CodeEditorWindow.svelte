@@ -51,7 +51,7 @@
 
 	{#snippet body()}
 		<div class="grid min-h-[400px] min-w-[600px] grid-rows-[auto_1fr_auto]">
-			<Tabs {tabs} bind:activeTab class="mb-4" />
+			<Tabs {tabs} bind:activeTab class="-mt-3 mb-4" />
 
 			{#each tabs as tab, idx}
 				{@const language = tab.key.split('.').pop() as 'py' | 'md' | 'txt'}

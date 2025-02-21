@@ -65,7 +65,7 @@
 		class={[
 			'absolute bottom-3.5 left-1/2 grid h-4',
 			'-translate-x-1/2 translate-y-1/2 scale-25 place-content-center rounded-md',
-			'text-main-200 px-4 py-6 text-xl leading-none font-medium opacity-0',
+			'text-main-200 px-4 py-4 text-xl leading-none font-medium opacity-0',
 			'transition-[transform_opacity] duration-150 ease-(--easing-circ)',
 			!forceClose &&
 				'group-hover/container:scale-100 group-hover/container:opacity-70 peer-hover:opacity-100 hover:opacity-100'

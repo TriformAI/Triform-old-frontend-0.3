@@ -39,6 +39,8 @@
 		tooltip?: string
 	} = $props()
 
+	const hasTextColor = ['danger'].includes(variation)
+
 	let isLoading = $state(false)
 	const onClick = () => {
 		if (href) {
@@ -71,14 +73,16 @@
 
 <button
 	class={[
-		variation === 'danger' && 'bg-warning-dim text-warning-hard hover:enabled:text-warning-hard ',
 		variation === 'primary' &&
 			'border-main-700 bg-main-800 hover:enabled:border-main-600 hover:enabled:bg-main-700 border',
 		variation === 'vibrant' &&
 			'bg-accent-700 inset-shadow-accent-500/40 hover:enabled:bg-accent-600 inset-shadow-xs',
 		variation === 'link' && 'text-main-200 hover:enabled:bg-main-800',
+		variation === 'danger' &&
+			'bg-danger-200 text-danger-600 hover:enabled:text-danger-700 hover:enabled:bg-danger-300',
 		!icon && !!body && 'px-5',
-		`text-main-300 hover:enabled:text-main-200 active:enabled:border-main-500 flex transform cursor-pointer
+		!hasTextColor && 'text-main-300 hover:enabled:text-main-200',
+		`active:enabled:border-main-500 flex transform cursor-pointer
     flex-row items-center justify-center gap-x-2
     rounded-md p-3
     font-medium transition active:enabled:scale-95

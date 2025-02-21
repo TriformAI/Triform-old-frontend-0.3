@@ -31,9 +31,17 @@
 	--color-accent-900: oklch(0.359 0.144 278.697);
 	--color-accent-950: oklch(0.257 0.09 281.288);
 
-	--color-warning-dim: oklch(0.936 0.032 17.717);
-	--color-warning: oklch(0.704 0.191 22.216);
-	--color-warning-hard: oklch(0.505 0.213 27.518);
+  --color-danger-50: oklch(0.971 0.013 17.38);
+  --color-danger-100: oklch(0.936 0.032 17.717);
+  --color-danger-200: oklch(0.885 0.062 18.334);
+  --color-danger-300: oklch(0.808 0.114 19.571);
+  --color-danger-400: oklch(0.704 0.191 22.216);
+  --color-danger-500: oklch(0.637 0.237 25.331);
+  --color-danger-600: oklch(0.577 0.245 27.325);
+  --color-danger-700: oklch(0.505 0.213 27.518);
+  --color-danger-800: oklch(0.444 0.177 26.899);
+  --color-danger-900: oklch(0.396 0.141 25.723);
+  --color-danger-950: oklch(0.258 0.092 26.042);
 
 	--color-idle: oklch(0.828 0.189 84.429); /* amber 400 */
 	--color-success: oklch(0.696 0.17 162.48); /* emerald 500 */
@@ -153,8 +161,8 @@
 
 @layer components {
 	.tooltip-red {
-		--balloon-color: var(--color-warning-dim);
-		--balloon-text-color: var(--color-warning-hard);
+		--balloon-color: var(--color-danger-200);
+		--balloon-text-color: var(--color-danger-500);
 	}
 
 	.list-btn {
@@ -162,10 +170,10 @@
 	}
 
 	.list-btn--danger {
-		@apply text-warning hover:text-warning-dim;
+		@apply text-danger-400 hover:text-danger-500;
 	}
 
 	.error-msg {
-		@apply bg-warning-dim text-warning-hard rounded-md p-4 text-center;
+		@apply bg-danger-100 text-danger-500 rounded-md p-4 text-center;
 	}
 }
