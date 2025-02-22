@@ -32,8 +32,8 @@ export interface Endpoint {
 	resource: 'endpoint/v1'
 	meta: Meta
 	spec: {
-		method: 'GET'
-		path: '/'
+		component_id: Uuid
+		component_version: number
 	}
 	[k: string]: unknown
 }

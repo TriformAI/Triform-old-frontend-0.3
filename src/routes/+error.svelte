@@ -16,7 +16,7 @@
 			<div class="flex items-center justify-center">
 				<Button variation="primary" onClick={() => goto('/')}>
 					{#snippet body()}
-						Go To Homepage
+						Go home
 					{/snippet}
 				</Button>
 			</div>

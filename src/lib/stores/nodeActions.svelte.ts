@@ -6,11 +6,12 @@ import { useSvelteFlow as useSvelteFlowHook } from '@xyflow/svelte'
 import { openWindow } from './windows.svelte'
 import { removeNode, addDownstreamNode, setNodeProps } from './canvas.svelte'
 import { confirmStore } from './confirm.svelte'
+import { toast } from 'svelte-sonner'
+
 import CodeEditorWindow from '$lib/components/windows/CodeEditorWindow.svelte'
 import IconTrash from '~icons/material-symbols/delete-outline'
 import IconAdd from '~icons/material-symbols/add-diamond-outline'
 import IconEditor from '~icons/material-symbols/code-blocks-outline'
-import { toast } from 'svelte-sonner'
 
 export type onClickFn = (node: Node, useSvelteFlow: ReturnType<typeof useSvelteFlowHook>) => void
 interface ActionItem {

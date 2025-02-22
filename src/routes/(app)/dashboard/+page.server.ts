@@ -1,8 +1,7 @@
 import type { Project } from '$lib/types/project'
-import testProject from '$lib/dev/test-project.json'
 
-export function load() {
-	const projects: Project[] = [testProject, testProject]
+export async function load({ locals }) {
+	const projects = await locals.api.get<Project['meta'][]>('projects')
 
 	return {
 		projects

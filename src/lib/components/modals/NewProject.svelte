@@ -6,19 +6,13 @@
 	import Button from '../atoms/Button.svelte'
 	import { enhance } from '$app/forms'
 	import { toast } from 'svelte-sonner'
+	import { goto } from '$app/navigation'
 
 	let {
 		dialog = $bindable()
 	}: {
 		dialog: HTMLDialogElement | undefined
 	} = $props()
-
-	let projectName = $state('')
-	const createProject = () => {
-		console.log('create project', projectName)
-	}
-
-	let error_msg = $state<string>()
 </script>
 
 <Dialog bind:dialog appearance="center">
@@ -35,30 +29,27 @@
 			<form
 				action="/project?/create"
 				method="POST"
+				class="flex flex-col gap-y-4"
 				use:enhance={() => {
 					return async ({ update, result }) => {
 						if (result.type === 'success') {
 							toast.success('Project created!')
-							dialog?.close()
+							console.log('result', result)
+							goto(`/project/${result.data?.meta?.id}`)
 						}
 
 						if (result.type === 'failure') {
-							error_msg = 'Could not create project'
+							toast.error('Could not create project')
 						}
 
 						await update()
 					}
 				}}
 			>
-				{#if error_msg}
-					<div class="error-msg mb-4">
-						{error_msg}
-					</div>
-				{/if}
+				<InputField name="name" label="Project Name" required />
+				<InputField name="intention" label="Project Intention" required />
 
-				<InputField bind:value={projectName} name="name" label="Project Name" />
-
-				<Button variation="primary" type="submit" class="mt-5 w-full" onClick={createProject}>
+				<Button variation="primary" type="submit" class="mt-5 w-full">
 					{#snippet body()}
 						Create
 					{/snippet}

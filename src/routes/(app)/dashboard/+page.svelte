@@ -30,17 +30,19 @@
 			<div
 				class="group/project bg-main-850 border-main-800 hover:border-main-700 hover:bg-main-800 relative rounded-lg border transition"
 			>
-				<a class=" relative block w-full transform p-4 pr-8" href="/project/{project.meta.id}">
+				<a class=" relative block w-full transform p-4 pr-8" href="/project/{project.id}">
 					<div>
 						<h2 class="mb-1 flex items-center font-medium">
-							{project.meta.name}
+							{project.name}
 							<span
 								class="opacity-0 transition-all duration-300 group-hover/project:translate-x-2 group-hover/project:opacity-100"
 							>
 								<IconChevronRight class="text-main-400 text-lg" />
 							</span>
 						</h2>
-						<p class="text-main-500">Last modified sometime</p>
+						<p class="text-main-500">
+							{project.intention}
+						</p>
 					</div>
 				</a>
 
@@ -57,7 +59,7 @@
 
 						{#snippet body()}
 							<form
-								action="/project/{project.meta.id}?/delete"
+								action="/project/{project.id}?/delete"
 								method="POST"
 								use:enhance={() => {
 									return async ({ update, result }) => {

@@ -5,7 +5,7 @@
 	const { children } = $props()
 </script>
 
-<div class="bg-main-900 grid h-screen grid-rows-[auto_1fr]">
+<div class="bg-main-900 grid h-full min-h-screen grid-rows-[auto_1fr]">
 	<Navbar />
 
 	<main>

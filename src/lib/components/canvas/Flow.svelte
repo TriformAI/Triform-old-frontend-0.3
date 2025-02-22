@@ -118,13 +118,13 @@
 
 	function addFirstNode() {
 		const triggerNode = {
-			component_id: '360e6123-30c5-414b-8bbb-83b460be4f86',
+			component_id: crypto.randomUUID(),
 			component_version: 1,
 			spec: {
 				resource: 'endpoint/v1',
 				meta: {
 					name: 'Endpoint',
-					id: '360e6123-30c5-414b-8bbb-83b460be4f86',
+					id: crypto.randomUUID(),
 					version: 1
 				},
 				spec: {

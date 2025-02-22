@@ -20,10 +20,10 @@
 	// 👇 this is important! You need to import the styles for Svelte Flow to work
 	import '@xyflow/svelte/dist/style.css'
 
-	import testProject from '$lib/dev/test-project.json'
+	const { data } = $props()
 
 	onMount(() => {
-		loadProject(testProject as Project)
+		loadProject(data.project)
 	})
 
 	onMount(() => {

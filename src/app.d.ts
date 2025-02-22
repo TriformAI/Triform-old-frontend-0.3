@@ -20,6 +20,10 @@ declare global {
 		/// <reference types="vite/client" />
 		/// <reference types="unplugin-icons/types/svelte" />
 	}
+	// Global DeepPartial type definition
+	type DeepPartial<T> = {
+		[P in keyof T]?: T[P] extends object ? DeepPartial<T[P]> : T[P]
+	}
 }
 
 export {}
