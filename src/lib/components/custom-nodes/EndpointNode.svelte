@@ -3,7 +3,6 @@
 	import IconEndpoint from '~icons/material-symbols/bolt'
 
 	const props = $props()
-	$inspect(props.position)
 </script>
 
 <Node {...props}>

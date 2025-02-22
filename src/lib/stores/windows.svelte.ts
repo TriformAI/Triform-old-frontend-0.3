@@ -26,9 +26,10 @@ export interface Window {
 	height?: number
 	isClosing?: boolean
 	// windows can overlap & stack
-	zIndex?: number
+	zIndex: number
 }
 
+// @hmr:keep
 export const openWindows = $state<Map<Window['id'], Window>>(new SvelteMap())
 
 export const openWindow = (window: Window) => {
@@ -141,19 +142,18 @@ export const clearLocalStorage = () => {
 }
 
 export const bringWindowToFront = (id: string) => {
+	if (!openWindows.has(id)) return
 	// Recalculate all z-indexes so the window is on top
+	openWindows.set(id, {
+		...openWindows.get(id)!,
+		zIndex: openWindows.size + 1
+	})
+	const zOrder = [...openWindows.entries()].sort((a, b) => a[1].zIndex - b[1].zIndex).map(e => e[0])
 	for (const [windowId, window] of openWindows) {
-		if (windowId === id) {
-			openWindows.set(windowId, {
-				...window,
-				zIndex: openWindows.size + 1
-			})
-		} else {
-			openWindows.set(windowId, {
-				...window,
-				// Drop the z-index by 1 but make sure it doesn't change the current order
-				zIndex: window.zIndex > openWindows.get(id)!.zIndex ? window.zIndex - 1 : window.zIndex
-			})
-		}
+		if (windowId === id) continue
+		openWindows.set(windowId, {
+			...window,
+			zIndex: zOrder.indexOf(windowId) + 1
+		})
 	}
 }

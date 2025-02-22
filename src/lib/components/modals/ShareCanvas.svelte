@@ -19,8 +19,6 @@
 	]
 
 	let selected = $state([])
-
-	$inspect(selected)
 </script>
 
 <Card>

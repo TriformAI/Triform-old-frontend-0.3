@@ -3,7 +3,6 @@
 	import IconSquare from '~icons/material-symbols/square-rounded'
 
 	const props = $props()
-	$inspect(props.position)
 </script>
 
 <Node {...props}>
