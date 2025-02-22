@@ -62,8 +62,8 @@
 
 <SvelteFlowProvider>
 	<div class="relative flex h-full flex-col contain-paint">
-		{#each openWindows() as { component: Component, customProps, ...defaultProps }}
-			<Component {...defaultProps} {customProps} />
+		{#each openWindows as [id, { component: Component, customProps, ...defaultProps }]}
+			<Component key={id} {...defaultProps} {customProps} />
 		{/each}
 
 		<Flow />

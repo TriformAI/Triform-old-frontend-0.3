@@ -1,4 +1,7 @@
 import type { Component } from 'svelte'
+
+import { SvelteMap } from 'svelte/reactivity'
+
 import ComponentsToolbox from '../components/windows/ComponentsToolbox.svelte'
 import Execution from '../components/windows/ExecutionWindow.svelte'
 import CodeEditorWindow from '../components/windows/CodeEditorWindow.svelte'
@@ -26,18 +29,16 @@ export interface Window {
 	zIndex?: number
 }
 
-let openWindowsState = $state<Window[]>([])
-
-export const openWindows = () => openWindowsState
+export const openWindows = $state<Map<Window['id'], Window>>(new SvelteMap())
 
 export const openWindow = (window: Window) => {
 	// Some windows should only have one instance, and for those
 	// we just select a specific id to ensure that only one instance
 	// exists at once
-	if (openWindowsState.some(w => w.id === window.id)) return
-	openWindowsState.push({
+	if (openWindows.has(window.id)) return
+	openWindows.set(window.id, {
 		...window,
-		zIndex: openWindowsState.length + 1,
+		zIndex: openWindows.size + 1,
 		posX: window.posX,
 		posY: window.posY
 	})
@@ -47,26 +48,22 @@ export const openWindow = (window: Window) => {
 export const closeWindowById = (id: string) => {
 	updateWindowById(id, { isClosing: true })
 	setTimeout(() => {
-		openWindowsState = openWindowsState.filter(window => window.id !== id)
+		openWindows.delete(id)
 	}, 250)
 	// saveWindowsToLocalStorage()
 }
 
 export const updateWindowById = (id: string, update: Partial<Window>) => {
-	openWindowsState = openWindowsState.map(window => {
-		if (window.id === id) {
-			return {
-				...window,
-				...update
-			}
-		}
-		return window
+	if (!openWindows.has(id)) return
+	openWindows.set(id, {
+		...openWindows.get(id)!,
+		...update
 	})
 	// saveWindowsToLocalStorage()
 }
 
 export const windowIsOpen = (id: string) => {
-	const window = openWindowsState.find(w => w.id === id)
+	const window = openWindows.get(id)
 	return !!window && !window.isClosing
 }
 
@@ -90,7 +87,7 @@ type StoredWindow = Omit<Window, 'component'> & { component: string }
 const LOCAL_STORAGE_KEY = 'open-windows-state'
 
 // const saveWindowsToLocalStorage = () => {
-// 	const mappedState = openWindowsState.map((w: Window) => {
+// 	const mappedState = openWindows.map((w: Window) => {
 // 		const componentLocalStorageId = mapComponentToString(w.component)
 // 		if (componentLocalStorageId === undefined) {
 // 			throw new Error(
@@ -106,22 +103,23 @@ const LOCAL_STORAGE_KEY = 'open-windows-state'
 // }
 
 export const loadWindowsFromLocalStorage = () => {
-	const windowsState = JSON.parse(localStorage.getItem(LOCAL_STORAGE_KEY) ?? '[]')
+	const windowsState: Record<string, StoredWindow> = JSON.parse(
+		localStorage.getItem(LOCAL_STORAGE_KEY) ?? '{}'
+	)
 
-	openWindowsState = [
-		...windowsState.map((w: StoredWindow) => {
-			const component = mapStringToComponent(w.component)
-			if (typeof component === 'undefined') {
-				throw new Error(
-					`Unable to load window from local storage. Couldnt map component id "${w.component}" to a component.`
-				)
-			}
-			return {
-				...w,
-				component: component
-			}
+	openWindows.clear()
+	for (const [id, window] of Object.entries(windowsState)) {
+		const component = mapStringToComponent(window.component)
+		if (typeof component === 'undefined') {
+			throw new Error(
+				`Unable to load window from local storage. Couldnt map component id "${window.component}" to a component.`
+			)
+		}
+		openWindows.set(id, {
+			...window,
+			component: component
 		})
-	]
+	}
 }
 
 const loadFromLocalStorageUpdateEvent = (event: StorageEvent) => {
@@ -144,20 +142,18 @@ export const clearLocalStorage = () => {
 
 export const bringWindowToFront = (id: string) => {
 	// Recalculate all z-indexes so the window is on top
-	openWindowsState = openWindowsState.map((window: Window) => {
-		if (window.id === id) {
-			return {
+	for (const [windowId, window] of openWindows) {
+		if (windowId === id) {
+			openWindows.set(windowId, {
 				...window,
-				zIndex: openWindowsState.length + 1
-			}
+				zIndex: openWindows.size + 1
+			})
+		} else {
+			openWindows.set(windowId, {
+				...window,
+				// Drop the z-index by 1 but make sure it doesn't change the current order
+				zIndex: window.zIndex > openWindows.get(id)!.zIndex ? window.zIndex - 1 : window.zIndex
+			})
 		}
-		return {
-			...window,
-			// Drop the z-index by 1 but make sure it doesn't change the current order
-			zIndex:
-				window.zIndex > openWindowsState.find(w => w.id === id)!.zIndex
-					? window.zIndex - 1
-					: window.zIndex
-		}
-	})
+	}
 }
