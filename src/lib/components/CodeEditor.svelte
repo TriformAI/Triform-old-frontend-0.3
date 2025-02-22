@@ -41,8 +41,10 @@
 	}
 
 	onDestroy(() => {
-		monaco?.editor.getModels().forEach(model => model.dispose())
 		editor?.dispose()
+		for (const model of monaco?.editor.getModels() ?? []) {
+			if (model.id === editor?.getId()) model.dispose()
+		}
 	})
 </script>
 
