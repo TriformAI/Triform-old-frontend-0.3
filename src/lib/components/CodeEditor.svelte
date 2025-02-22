@@ -12,7 +12,7 @@
 		class: string
 	}
 
-	const { code, class: classes }: Props = $props()
+	let { code = $bindable(), class: classes }: Props = $props()
 
 	async function initEditor(el: HTMLDivElement) {
 		const monacoEditor = await import('monaco-editor')
@@ -30,6 +30,10 @@
 			automaticLayout: true,
 			fontSize: 14,
 			minimap: { enabled: false }
+		})
+
+		editor.onDidChangeModelContent(e => {
+			code = editor.getValue()
 		})
 
 		monaco.editor.defineTheme('GithubDark', githubDarkTheme)

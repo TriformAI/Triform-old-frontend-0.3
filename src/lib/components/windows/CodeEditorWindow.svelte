@@ -42,7 +42,11 @@
 	let activeTab = $state(0) // Default to the first tab
 
 	const publishComponent = async () => {
-		console.log('publishing')
+		// Update the code files
+		node.data.spec.spec.source = files['action.py']
+		node.data.spec.spec.readme = files['README.md']
+		node.data.spec.spec.deps = files['requirements.txt']
+
 		try {
 			const newComponent = await api.put<Component>('components', node.data.spec)
 			console.log('new component', newComponent)
@@ -76,14 +80,14 @@
 
 				<div class={['relative', idx === activeTab ? 'block' : 'hidden']}>
 					{#if language === 'py'}
-						<CodeEditor code={files[tab.key]} class="absolute h-full w-full rounded-md" />
+						<CodeEditor bind:code={files[tab.key]} class="absolute h-full w-full rounded-md" />
 					{:else}
 						<LightEditor
 							{language}
 							wordWrap={true}
 							class="bg-main-800 h-full w-full rounded-md ps-6 pt-2.5 text-sm"
 							onUpdate={val => {
-								console.log(val)
+								files[tab.key] = val
 							}}
 						/>
 					{/if}
