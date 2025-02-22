@@ -1,18 +1,16 @@
 <script lang="ts">
 	import type { Node } from '$lib/types/flow'
-	import LightEditor from '$lib/components/atoms/LightEditor.svelte'
+	import type { ExecutionTraceData } from '$lib/types/execution'
 
 	import { useNodes } from '@xyflow/svelte'
 	import { toast } from 'svelte-sonner'
+	import { source } from 'sveltekit-sse'
 
 	import Window from '$lib/components/common/Window.svelte'
 	import Button from '../atoms/Button.svelte'
+	import LightEditor from '$lib/components/atoms/LightEditor.svelte'
 
 	import IconPlay from '~icons/material-symbols/play-arrow-outline-rounded'
-
-	import { API } from '$lib/api'
-
-	const api = new API()
 
 	// Just pass through all props
 	const props = $props()
@@ -33,25 +31,60 @@
 	const run = async () => {
 		if (!selectedNode) return
 
-		if (!input) {
-			toast.error('Please enter a test input')
-			return
-		}
-
-		if (!isValidJson) {
-			toast.error('The input needs to be valid JSON')
-			return
-		}
+		if (!selectedNode?.data.spec) return toast.error('This node cannot be executed')
+		if (!input) return toast.error('Please enter a test input')
+		if (!isValidJson) return toast.error('The input needs to be valid JSON')
 
 		isRunning = true
 
+		let stream: ReturnType<typeof source> | undefined = undefined
 		try {
-			result = await api.post('components', {
-				component: selectedNode?.data.spec,
-				input: JSON.parse(input)
+			console.log('executing component', selectedNode?.data.spec)
+			// Add timestamp to query param to force it to open a new stream on every execution
+			stream = source(`/api/executions?v=${+new Date()}`, {
+				options: {
+					body: JSON.stringify({
+						input: JSON.parse(input),
+						component: selectedNode?.data.spec
+					}),
+					method: 'POST',
+					credentials: 'include'
+				}
 			})
-			console.log(result)
-		} finally {
+			console.log('stream', stream)
+			stream.select('execution_completed').subscribe(msg => {
+				if (!msg || typeof msg !== 'string') return
+				console.log('got execution_completed', msg)
+				let data: ExecutionTraceData
+				try {
+					data = JSON.parse(msg as unknown as string)
+				} catch (e) {
+					console.error('Failed to parse execution trace data', e)
+					return
+				}
+				if (!('result' in data.payload)) return
+				// If we executed just one action, use the result from just that one
+				if (data.payload.result && Object.keys(data.payload.result).length === 1) {
+					result = JSON.stringify(Object.values(data.payload.result)[0], null, 2)
+				} else {
+					// Otherwise, show all results for now
+					result = JSON.stringify(data.payload.result, null, 2)
+				}
+				console.log(result)
+			})
+			// stream.select('action_started').subscribe(console.log)
+			// stream.select('action_completed').subscribe(console.log)
+			stream.select('close').subscribe(msg => {
+				if (msg === 'finished') {
+					console.log('finished')
+					isRunning = false
+					stream?.close()
+					stream = undefined
+				}
+			})
+		} catch (e) {
+			console.error('Failed executing component', e)
+			toast.error('There was an error executing the component')
 			isRunning = false
 		}
 	}
@@ -86,6 +119,26 @@
 					Test data
 				</p>
 				<LightEditor language="json" value={input} onUpdate={v => (input = v)} class="text-sm" />
+			</div>
+
+			<div class="bg-main-800/50 rounded-lg p-3">
+				<p
+					class="border-main-800 ms-3 mt-1 mb-2 border-b pb-2 text-xs font-semibold tracking-wide uppercase"
+				>
+					Result
+				</p>
+				<code class="inline-block h-fit w-full rounded-md px-2 transition-all">
+					{#if isRunning}
+						<div
+							class={[
+								'bg-main-700 h-full min-h-16 w-full animate-pulse rounded-md transition-all',
+								!isRunning ? 'opacity-100' : 'opacity-0'
+							]}
+						></div>
+					{:else}
+						<pre class="min-h-16 font-mono text-sm">{result}</pre>
+					{/if}
+				</code>
 			</div>
 
 			<div

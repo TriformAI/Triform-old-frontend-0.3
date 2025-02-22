@@ -1,7 +1,9 @@
 import type { Component } from '$lib/types/agent'
-import type { Execution } from '$lib/types/execution'
+import type { Execution, ExecutionTraceEvent } from '$lib/types/execution'
+import type { ServerSentEventMessage } from 'fetch-event-stream'
 
-import { error, json } from '@sveltejs/kit'
+import { error } from '@sveltejs/kit'
+import { produce } from 'sveltekit-sse'
 
 // Execute a component
 export async function POST({ request, locals }) {
@@ -19,15 +21,35 @@ export async function POST({ request, locals }) {
 	const execution: Execution = {
 		resource: 'execution/v1',
 		input,
-		turbo: true,
 		spec: {
 			component_id: component.meta.id,
 			component_version: component.meta.version
 		}
 	}
 
-	console.log('executing component', component, execution)
-	const result = await locals.api.post(`run`, execution)
+	console.log('executing component with trace', component, execution)
+	const emitter = await locals.api.stream('trace', 'POST', execution)
 
-	return json(result)
+	console.log('got emitter', emitter)
+
+	return produce(async function start({ emit, lock }) {
+		const msgHandler = (evt: Event) => {
+			const msg = evt as CustomEvent<ServerSentEventMessage>
+			emit(
+				msg.detail.event as ExecutionTraceEvent,
+				msg.detail.data! // ExecutionTraceData stringified
+			)
+		}
+		emitter.addEventListener('message', msgHandler)
+		// Wait for trace to finish
+		await new Promise(resolve => emitter.addEventListener('close', resolve))
+		// Stop stream
+		emit('close', 'finished')
+		lock.set(false)
+		return function cancel() {
+			// Clean up
+			console.debug('Cleaning up stream')
+			emitter.removeEventListener('message', msgHandler)
+		}
+	})
 }

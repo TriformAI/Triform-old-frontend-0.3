@@ -1,3 +1,5 @@
+import { stream } from 'fetch-event-stream'
+
 type RequestMethod = 'GET' | 'POST' | 'PUT' | 'DELETE'
 
 export class API {
@@ -18,7 +20,7 @@ export class API {
 		data?: unknown,
 		headers: Record<string, string> = {}
 	): Promise<T> {
-		console.debug(`Sending ${method} ${this.#baseURL}/${endpoint}`, data)
+		console.debug(`-> ${method} ${this.#baseURL}/${endpoint}`, data ?? '')
 		const res = await fetch(`${this.#baseURL}/${endpoint}`, {
 			method,
 			headers: {
@@ -50,5 +52,48 @@ export class API {
 
 	delete<T>(endpoint: string, headers?: Record<string, string>) {
 		return this.#request<T>('DELETE', endpoint, undefined, headers)
+	}
+
+	stream(
+		endpoint: string,
+		method: RequestMethod = 'GET',
+		data?: unknown,
+		headers?: Record<string, string>
+	) {
+		// Create a promise so we can return the emitter early before it's done streaming
+		// eslint-disable-next-line no-async-promise-executor
+		return new Promise<EventTarget>(async resolve => {
+			console.debug(`-> stream ${method} ${this.#baseURL}/${endpoint}`, data ?? '')
+
+			const emitter = new EventTarget()
+
+			try {
+				const events = await stream(`${this.#baseURL}/${endpoint}`, {
+					method,
+					headers: {
+						Cookie: this.#authToken ? `triform_key=${this.#authToken}` : '',
+						...headers
+					},
+					body: data ? JSON.stringify(data) : undefined
+				})
+
+				resolve(emitter)
+
+				for await (const event of events) {
+					emitter.dispatchEvent(
+						new CustomEvent('message', {
+							detail: event
+						})
+					)
+				}
+			} catch (e) {
+				// @ts-expect-error text is not in the error type
+				console.error('Failed to start stream', e, await e?.text?.())
+			}
+
+			// Once we're done, emit the final close event
+			emitter.dispatchEvent(new CustomEvent('close', {}))
+			return
+		})
 	}
 }

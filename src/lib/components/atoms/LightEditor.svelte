@@ -20,15 +20,23 @@
 		language: 'json' | 'md' | 'txt'
 		class: string
 		wordWrap?: boolean
-		onUpdate: (value: string) => void
+		readOnly?: boolean
+		onUpdate?: (value: string) => void
 	}
 
-	const { value, language, class: classes, wordWrap = false, onUpdate }: Props = $props()
+	const {
+		value,
+		language,
+		class: classes,
+		wordWrap = false,
+		onUpdate,
+		readOnly = false
+	}: Props = $props()
 
 	export const initEditor = (el: HTMLDivElement) => {
 		return createEditor(
 			el,
-			{ language, value, wordWrap, onUpdate },
+			{ language, value, wordWrap, onUpdate, readOnly },
 			defaultCommands(),
 			matchTags(),
 			indentGuides(),

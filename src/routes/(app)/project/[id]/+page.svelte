@@ -4,8 +4,7 @@
 	import Toolbar from '$lib/components/canvas/Toolbar.svelte'
 	import Confirm from '$lib/components/common/Confirm.svelte'
 	import { SvelteFlowProvider } from '@xyflow/svelte'
-	import { confirmStore } from '$lib/stores/confirm.svelte'
-	import { beforeNavigate, goto } from '$app/navigation'
+	import { beforeNavigate } from '$app/navigation'
 	import type { BeforeNavigate } from '@sveltejs/kit'
 
 	import {
