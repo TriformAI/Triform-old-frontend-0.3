@@ -35,7 +35,7 @@
 						if (result.type === 'success') {
 							toast.success('Project created!')
 							console.log('result', result)
-							goto(`/project/${result.data?.meta?.id}`)
+							await goto(`project/${result.data?.meta?.id}`)
 						}
 
 						if (result.type === 'failure') {
