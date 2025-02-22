@@ -14,30 +14,35 @@
 
 	let { code = $bindable(), class: classes }: Props = $props()
 
-	async function initEditor(el: HTMLDivElement) {
-		const monacoEditor = await import('monaco-editor')
-		loader.config({ monaco: monacoEditor.default })
+	const initEditor = (el: HTMLDivElement) => {
+		// Wrap in inner async so the top level function can be sync so svelte ts type cheking is happy
+		;(async () => {
+			const monacoEditor = await import('monaco-editor')
+			loader.config({ monaco: monacoEditor.default })
 
-		monaco = await loader.init()
+			monaco = await loader.init()
 
-		// Set the initial value to the provided Python code
-		const pythonCode = code || ''
-		console.log(githubDarkTheme)
+			// Set the initial value to the provided Python code
+			const pythonCode = code || ''
 
-		editor = monaco.editor.create(el, {
-			value: pythonCode,
-			language: 'python',
-			automaticLayout: true,
-			fontSize: 14,
-			minimap: { enabled: false }
-		})
+			editor = monaco.editor.create(el, {
+				value: pythonCode,
+				language: 'python',
+				automaticLayout: true,
+				fontSize: 14,
+				minimap: { enabled: false }
+			})
 
-		editor.onDidChangeModelContent(e => {
-			code = editor.getValue()
-		})
+			editor.onDidChangeModelContent(e => {
+				code = editor.getValue()
+			})
 
-		monaco.editor.defineTheme('GithubDark', githubDarkTheme)
-		monaco.editor.setTheme('GithubDark')
+			// @ts-expect-error theme typing
+			monaco.editor.defineTheme('GithubDark', githubDarkTheme)
+			monaco.editor.setTheme('GithubDark')
+
+			console.log('Created monaco', editor.getId())
+		})()
 	}
 
 	onDestroy(() => {
