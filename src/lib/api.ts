@@ -30,7 +30,7 @@ export class API {
 		})
 
 		if (!res.ok) {
-			throw new Error(`API Error: ${res.status} ${res.statusText}`)
+			throw new Error(`API Error: ${res.status} ${res.statusText} ${await res.text()}`)
 		}
 
 		return res.json() as Promise<T>

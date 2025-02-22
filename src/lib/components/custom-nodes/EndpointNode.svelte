@@ -8,6 +8,6 @@
 
 <Node {...props}>
 	{#snippet icon()}
-		<IconEndpoint class="text-idle size-6" />
+		<IconEndpoint class="text-warning-400 size-6" />
 	{/snippet}
 </Node>

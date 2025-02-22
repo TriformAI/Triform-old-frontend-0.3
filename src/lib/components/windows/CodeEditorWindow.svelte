@@ -1,13 +1,15 @@
 <script lang="ts">
+	import type { Component } from '$lib/types/agent'
+	import type { Node } from '$lib/types/flow'
+
 	import Button from '$lib/components/atoms/Button.svelte'
 	import LightEditor from '$lib/components/atoms/LightEditor.svelte'
 	import Tabs from '$lib/components/atoms/Tabs.svelte'
 	import Window from '$lib/components/common/Window.svelte'
-	import type { Node } from '$lib/types/flow'
 	import IconPublish from '~icons/mdi/cloud-upload-outline'
 	import CodeEditor from '../CodeEditor.svelte'
-	import { enhance } from '$app/forms'
 
+	import { updateNode } from '$lib/stores/canvas.svelte'
 	import { API } from '$lib/api'
 	import { T } from '@tolgee/svelte'
 	import { toast } from 'svelte-sonner'
@@ -42,9 +44,14 @@
 	const publishComponent = async () => {
 		console.log('publishing')
 		try {
-			const newComponent = await api.put('components', node.data.spec)
+			const newComponent = await api.put<Component>('components', node.data.spec)
 			console.log('new component', newComponent)
-			toast.success('Component published')
+			// Update the node in the project
+			updateNode(node.id, {
+				component_version: newComponent.meta.version,
+				component_id: newComponent.meta.id,
+				spec: newComponent
+			})
 		} catch (e) {
 			console.error('Failed to publish component', e)
 			toast.error('Failed to publish component')
@@ -56,7 +63,7 @@
 	{#snippet header()}
 		<span>
 			<T keyName="code-editor-header" defaultValue="Edit" />
-			{node.data.component_name}
+			{node.data.component_name} v{node.data.component_version}
 		</span>
 	{/snippet}
 

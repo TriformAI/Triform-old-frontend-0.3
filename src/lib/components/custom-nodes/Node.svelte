@@ -57,7 +57,8 @@
 		<div
 			class={[
 				'node-inner transition-[transform_opacity] duration-200 ease-(--easing-circ)',
-				nodeProps?.deleted ? 'scale-50 opacity-0' : 'scale-100'
+				nodeProps?.deleted ? 'scale-50 opacity-0' : 'scale-100',
+				nodeProps?.creating ? 'animate-pulse cursor-progress' : ''
 			]}
 		>
 			<div

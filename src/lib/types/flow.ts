@@ -21,4 +21,5 @@ export type Node = XyNode<NodeData, NodeType> & {
 export interface NodeProps {
 	expanded: boolean
 	deleted: boolean
+	creating: boolean
 }
