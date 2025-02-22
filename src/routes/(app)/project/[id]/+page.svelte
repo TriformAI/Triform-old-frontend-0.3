@@ -56,15 +56,13 @@
 		unloadProject()
 		// removeLocalStorageListener()
 	})
-
-	$inspect(openWindows)
 </script>
 
 <svelte:window onbeforeunload={beforeUnload} />
 
 <SvelteFlowProvider>
 	<div class="relative flex h-full flex-col contain-paint">
-		{#each openWindows.values() as { component: Component, customProps, ...defaultProps }}
+		{#each openWindows.entries() as [id, { component: Component, customProps, ...defaultProps }] (id)}
 			<Component {...defaultProps} {customProps} />
 		{/each}
 
