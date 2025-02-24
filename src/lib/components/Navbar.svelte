@@ -24,9 +24,12 @@
 			<img alt="Triform logo" src={logo} class="w-10" />
 		</a>
 
-		<span class="pl-5 text-zinc-300">
-			{currentCanvas.project?.meta.name}
-		</span>
+		<div>
+			<span class="text-main-300 pl-5">
+				{currentCanvas.project?.meta.name}
+			</span>
+			<span class="text-main-500 pl-2">{currentCanvas.hasUnsavedChanges ? '(unsaved)' : ''}</span>
+		</div>
 	</div>
 
 	<div class="mt-2">

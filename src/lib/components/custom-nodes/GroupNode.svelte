@@ -2,8 +2,8 @@
 	import type { NodeData, Node } from '$lib/types/flow'
 
 	import NodeContainer from './NodeContainer.svelte'
-	import { contextMenus } from '$lib/stores/contextMenu.svelte'
-	import { useSvelteFlow } from '@xyflow/svelte'
+	import { useSvelteFlow as useSvelteFlowHook } from '@xyflow/svelte'
+	import { actionsMap } from '$lib/stores/nodeActions.svelte'
 	import { onMount } from 'svelte'
 
 	const {
@@ -16,9 +16,8 @@
 		selected: boolean
 	} = $props()
 
-	const { onOpen } = data
-
-	const { getNode } = useSvelteFlow()
+	const useSvelteFlow = useSvelteFlowHook()
+	const { getNode } = useSvelteFlow
 	let node: Node
 	onMount(() => {
 		const n = getNode(id)
@@ -27,11 +26,10 @@
 
 	// I don't like how this function is defined on both GroupNode and Node, should probably consolidate them
 	const openFn = () => {
-		if (onOpen) return onOpen()
-		// If no open function was defined, use the first context menu action instead
+		// Whenever a node is double clicked, run the first action menu item
 		if (!node?.type) return
-		const items = contextMenus.get(node.type)
-		items?.[0]?.onClick?.(node)
+		const actions = actionsMap().get(node.type)
+		actions?.[0]?.onClick?.(node, useSvelteFlow)
 	}
 </script>
 

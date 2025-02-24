@@ -1,6 +1,7 @@
 <script lang="ts">
 	import type { Component } from '$lib/types/agent'
-	import type { Node } from '$lib/types/flow'
+	import type { Node, NodeData } from '$lib/types/flow'
+	import type { Window as WindowType } from '$lib/stores/windows.svelte'
 
 	import Button from '$lib/components/atoms/Button.svelte'
 	import LightEditor from '$lib/components/atoms/LightEditor.svelte'
@@ -13,25 +14,41 @@
 	import { API } from '$lib/api'
 	import { T } from '@tolgee/svelte'
 	import { toast } from 'svelte-sonner'
+	import { useNodesData } from '@xyflow/svelte'
 
 	const api = new API()
 
-	interface Props {
+	interface Props extends WindowType {
 		customProps: {
-			files: {
-				'action.py': string
-				'README.md': string
-				'requirements.txt': string
-				[k: string]: string
-			}
-			node: Node
+			// Explicitly pass in a node id instead of node so we're forced
+			// to fetch it from the store instead so it's reactive
+			nodeId: Node['id']
 		}
 	}
 
 	const props: Props = $props()
-	const { files, node } = $derived(props.customProps)
+	const { nodeId } = $derived(props.customProps)
 
-	// Get the keys from customProps as dynamic tabs
+	// Watch the node state and update the nodeData whenever it changes
+	// We do it like this instead of just passing node from props because
+	// that won't be reactive (because of the way windows are opened/stored)
+	let nodeData = $state<NodeData>()
+	$inspect(nodeData)
+	$effect(() => {
+		useNodesData(nodeId).subscribe(d => {
+			if (!d) return
+			console.log('nodedata', d)
+			nodeData = d.data as NodeData
+		})
+	})
+
+	const files = $derived<Record<string, string>>({
+		'action.py': (nodeData?.spec.spec.source ?? '') as string,
+		'README.md': (nodeData?.spec.spec.readme ?? '') as string,
+		'requirements.txt': (nodeData?.spec.spec.deps ?? '') as string
+	})
+
+	// Get the keys from files as dynamic tabs
 	const tabs = $derived.by(() => {
 		return Object.keys(files).map(key => ({
 			key,
@@ -42,16 +59,17 @@
 	let activeTab = $state(0) // Default to the first tab
 
 	const publishComponent = async () => {
-		// Update the code files
-		node.data.spec.spec.source = files['action.py']
-		node.data.spec.spec.readme = files['README.md']
-		node.data.spec.spec.deps = files['requirements.txt']
+		if (!nodeData) return
+		// Update the code files (locally) before publishing
+		nodeData.spec.spec.source = files['action.py']
+		nodeData.spec.spec.readme = files['README.md']
+		nodeData.spec.spec.deps = files['requirements.txt']
 
 		try {
-			const newComponent = await api.put<Component>('components', node.data.spec)
+			const newComponent = await api.put<Component>('components', nodeData.spec)
 			console.log('new component', newComponent)
-			// Update the node in the project
-			updateNode(node.id, {
+			// Update the node in the project with the new data
+			updateNode(nodeId, {
 				component_version: newComponent.meta.version,
 				component_id: newComponent.meta.id,
 				spec: newComponent
@@ -67,7 +85,7 @@
 	{#snippet header()}
 		<span>
 			<T keyName="code-editor-header" defaultValue="Edit" />
-			{node.data.component_name} v{node.data.component_version}
+			{nodeData?.component_name ?? ''} v{nodeData?.component_version ?? ''}
 		</span>
 	{/snippet}
 
@@ -84,6 +102,7 @@
 					{:else}
 						<LightEditor
 							{language}
+							value={files[tab.key]}
 							wordWrap={true}
 							class="bg-main-800 h-full w-full rounded-md ps-6 pt-2.5 text-sm"
 							onUpdate={val => {

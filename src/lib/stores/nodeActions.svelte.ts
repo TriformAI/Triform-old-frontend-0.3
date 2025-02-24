@@ -86,12 +86,7 @@ actionsMapStore.set('action-node', [
 				posX: 20,
 				posY: 20,
 				customProps: {
-					files: {
-						'action.py': node.data.spec.spec.source,
-						'README.md': node.data.spec.spec.readme,
-						'requirements.txt': node.data.spec.spec.deps
-					},
-					node
+					nodeId: node.id
 				}
 			})
 		}

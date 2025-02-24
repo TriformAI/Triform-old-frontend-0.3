@@ -1,6 +1,7 @@
 <script lang="ts">
 	import type { Node } from '$lib/types/flow'
 	import type { ExecutionTraceData } from '$lib/types/execution'
+	import type { Window as WindowType } from '$lib/stores/windows.svelte'
 
 	import { useNodes } from '@xyflow/svelte'
 	import { toast } from 'svelte-sonner'
@@ -12,8 +13,10 @@
 
 	import IconPlay from '~icons/material-symbols/play-arrow-outline-rounded'
 
+	interface Props extends WindowType {}
+
 	// Just pass through all props
-	const props = $props()
+	const props: Props = $props()
 
 	const nodes = useNodes()
 	// Support only one selected node for now

@@ -6,20 +6,12 @@
 	import Card from './Card.svelte'
 	import { onMount, onDestroy } from 'svelte'
 
-	interface Props {
+	interface Props extends Window {
 		header?: Snippet
 		body: Snippet
 		footer?: Snippet
 		padding?: 'default' | 'tight'
 		onClose?: () => void
-		posX: Window['posX']
-		posY: Window['posY']
-		id: Window['id']
-		width: Window['width']
-		height: Window['height']
-		zIndex: Window['zIndex']
-		isClosing?: Window['isClosing']
-		// customProps: Window['customProps']
 	}
 
 	let {
@@ -34,8 +26,8 @@
 		width = 0,
 		height = 0,
 		zIndex = 1,
-		isClosing
-		// customProps
+		isClosing,
+		customProps
 	}: Props = $props()
 
 	let element: HTMLDivElement

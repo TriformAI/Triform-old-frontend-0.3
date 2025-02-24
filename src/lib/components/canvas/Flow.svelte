@@ -15,10 +15,8 @@
 	import type { Uuid } from '$lib/types/agent'
 	import type { Node } from '$lib/types/flow'
 	import type { NodeTypes } from '@xyflow/svelte'
-	import ContextMenu from './ContextMenu.svelte'
 	import { onMount, untrack } from 'svelte'
 	import { Background, BackgroundVariant, SvelteFlow, useUpdateNodeInternals } from '@xyflow/svelte'
-	import { menuIsOpen, toggleContextMenu } from '$lib/stores/contextMenu.svelte'
 	import { parseProject } from '$lib/stores/canvas.svelte'
 	import '@xyflow/svelte/dist/style.css'
 	import { getLayoutedNodes } from './layout.svelte'
@@ -90,29 +88,16 @@
 		})
 	})
 
-	let contextMenuProps: {
-		node?: Node
-		top: number
-		left: number
-		right: number
-		bottom: number
-	} = $state({
-		node: undefined,
-		top: 0,
-		left: 0,
-		right: 0,
-		bottom: 0
-	})
-
 	let wrapper: HTMLElement
 
-	onMount(() => {
-		wrapper
-			.querySelectorAll('.draggable')
-			.forEach(el =>
-				el.addEventListener('mousedown', () => toggleContextMenu(false), { capture: true })
-			)
-	})
+	// For when we add a context menu, there's some trickery to be done:
+	// onMount(() => {
+	// 	wrapper
+	// 		.querySelectorAll('.draggable')
+	// 		.forEach(el =>
+	// 			el.addEventListener('mousedown', () => toggleContextMenu(false), { capture: true })
+	// 		)
+	// })
 
 	const flowIsEmpty = $derived($nodes.length === 0)
 
@@ -189,9 +174,6 @@
 					})
 				}}
 			>
-				{#if menuIsOpen()}
-					<ContextMenu {...contextMenuProps} />
-				{/if}
 				<Background
 					bgColor="#181819"
 					patternColor="#1D1E20"

@@ -14,6 +14,7 @@
 	import { cursorPosition } from 'prism-code-editor/cursor'
 	import { defaultCommands } from 'prism-code-editor/commands'
 	import { matchBrackets } from 'prism-code-editor/match-brackets'
+	import { onDestroy } from 'svelte'
 
 	interface Props {
 		value?: string
@@ -33,8 +34,9 @@
 		readOnly = false
 	}: Props = $props()
 
+	let editor: ReturnType<typeof createEditor>
 	export const initEditor = (el: HTMLDivElement) => {
-		return createEditor(
+		editor = createEditor(
 			el,
 			{ language, value, wordWrap, onUpdate, readOnly },
 			defaultCommands(),
@@ -43,7 +45,20 @@
 			matchBrackets(),
 			cursorPosition()
 		)
+		return editor
 	}
+
+	// Whenever the parent value changes, we need to update the editor
+	// (often its initialised as '' and then updated afterwards...)
+	$effect(() => {
+		const ref = value
+		if (!editor) return
+		editor.setOptions({ value: ref })
+	})
+
+	onDestroy(() => {
+		if (editor) editor.remove()
+	})
 </script>
 
 <div use:initEditor class={['overflow-auto', classes]}></div>
