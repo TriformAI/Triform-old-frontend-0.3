@@ -14,6 +14,7 @@
 
 	let { code = $bindable(), class: classes }: Props = $props()
 
+	let editorInitialized = $state(false)
 	const initEditor = (el: HTMLDivElement) => {
 		// Wrap in inner async so the top level function can be sync so svelte ts type cheking is happy
 		;(async () => {
@@ -41,6 +42,7 @@
 			monaco.editor.defineTheme('GithubDark', githubDarkTheme)
 			monaco.editor.setTheme('GithubDark')
 
+			editorInitialized = true
 			console.log('Created monaco', editor.getId())
 		})()
 	}
@@ -53,4 +55,10 @@
 	})
 </script>
 
-<div class={['bg-main-800 rounded-md py-4 ps-0', classes]} use:initEditor></div>
+<div
+	class={['bg-main-800 h-full w-full animate-pulse rounded-md', editorInitialized && 'hidden']}
+></div>
+<div
+	class={['bg-main-800 rounded-md py-4 ps-0', !editorInitialized && 'invisible', classes]}
+	use:initEditor
+></div>
