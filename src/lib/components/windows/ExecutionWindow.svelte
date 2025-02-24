@@ -46,8 +46,7 @@
 
 		let stream: ReturnType<typeof source> | undefined = undefined
 		try {
-			// Add timestamp to query param to force it to open a new stream on every execution
-			stream = source(`/api/executions?v=${+new Date()}`, {
+			stream = source(`/api/executions`, {
 				options: {
 					body: JSON.stringify({
 						input: JSON.parse(input),
@@ -55,7 +54,8 @@
 					}),
 					method: 'POST',
 					credentials: 'include'
-				}
+				},
+				cache: false
 			})
 			console.log('stream', stream)
 
