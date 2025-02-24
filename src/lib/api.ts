@@ -62,7 +62,7 @@ export class API {
 	) {
 		// Create a promise so we can return the emitter early before it's done streaming
 		// eslint-disable-next-line no-async-promise-executor
-		return new Promise<EventTarget>(async resolve => {
+		return new Promise<EventTarget>(async (resolve, reject) => {
 			console.debug(`-> stream ${method} ${this.#baseURL}/${endpoint}`, data ?? '')
 
 			const emitter = new EventTarget()
@@ -86,13 +86,16 @@ export class API {
 						})
 					)
 				}
+
+				// Once we're done, emit the final close event
+				console.log('emitting close event')
+				emitter.dispatchEvent(new CustomEvent('close', {}))
 			} catch (e) {
 				// @ts-expect-error text is not in the error type
-				console.error('Failed to start stream', e, await e?.text?.())
+				const text = await e?.text?.()
+				console.error('Failed to start stream', e, text)
+				reject(new Error(text))
 			}
-
-			// Once we're done, emit the final close event
-			emitter.dispatchEvent(new CustomEvent('close', {}))
 			return
 		})
 	}

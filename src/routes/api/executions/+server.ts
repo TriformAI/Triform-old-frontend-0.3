@@ -28,7 +28,24 @@ export async function POST({ request, locals }) {
 	}
 
 	console.log('executing component with trace', component, execution)
-	const emitter = await locals.api.stream('trace', 'POST', execution)
+	let emitter
+	try {
+		emitter = await locals.api.stream('trace', 'POST', execution)
+	} catch (e) {
+		console.error('failed to start trace stream', e)
+		// Normally we'd return an error() or something here
+		// but the SSE library we're using in the frontend doesn't allow
+		// for catching such errors in any nice way, so instead we'll just
+		// return a stream and send just an error event
+		return produce(async function start({ emit, lock }) {
+			if (e instanceof Error) {
+				emit('error', e.message)
+			} else {
+				emit('error', 'Failed to start trace stream')
+			}
+			lock.set(false)
+		})
+	}
 
 	console.log('got emitter', emitter)
 

@@ -38,11 +38,14 @@
 		if (!input) return toast.error('Please enter a test input')
 		if (!isValidJson) return toast.error('The input needs to be valid JSON')
 
+		console.log('executing component', selectedNode?.data.spec)
+
+		// If it's an endpoint, we'll have to figure out all the downstream nodes
+
 		isRunning = true
 
 		let stream: ReturnType<typeof source> | undefined = undefined
 		try {
-			console.log('executing component', selectedNode?.data.spec)
 			// Add timestamp to query param to force it to open a new stream on every execution
 			stream = source(`/api/executions?v=${+new Date()}`, {
 				options: {
@@ -55,36 +58,58 @@
 				}
 			})
 			console.log('stream', stream)
-			stream.select('execution_completed').subscribe(msg => {
-				if (!msg || typeof msg !== 'string') return
-				console.log('got execution_completed', msg)
-				let data: ExecutionTraceData
-				try {
-					data = JSON.parse(msg as unknown as string)
-				} catch (e) {
-					console.error('Failed to parse execution trace data', e)
-					return
+
+			// Define event handlers
+			const eventHandlers = {
+				close: msg => {
+					if (msg === 'finished') {
+						console.log('finished')
+						isRunning = false
+						stream?.close()
+						stream = undefined
+					}
+				},
+				error: msg => {
+					isRunning = false
+					toast.error('Error executing component')
+					let parsedMsg: Record<string, unknown>
+					try {
+						parsedMsg = JSON.parse(msg as unknown as string)
+					} catch (e) {
+						console.error('Failed to parse error message', e)
+						return
+					}
+					console.error('Error executing component', parsedMsg.error ?? parsedMsg)
+				},
+				execution_completed: msg => {
+					console.log('got execution_completed', msg)
+					let data: ExecutionTraceData
+					try {
+						data = JSON.parse(msg as unknown as string)
+					} catch (e) {
+						console.error('Failed to parse execution trace data', e)
+						return
+					}
+					if (!('result' in data.payload)) return
+					// If we executed just one action, use the result from just that one
+					if (data.payload.result && Object.keys(data.payload.result).length === 1) {
+						result = JSON.stringify(Object.values(data.payload.result)[0], null, 2)
+					} else {
+						// Otherwise, show all results for now
+						result = JSON.stringify(data.payload.result, null, 2)
+					}
+					console.log(result)
 				}
-				if (!('result' in data.payload)) return
-				// If we executed just one action, use the result from just that one
-				if (data.payload.result && Object.keys(data.payload.result).length === 1) {
-					result = JSON.stringify(Object.values(data.payload.result)[0], null, 2)
-				} else {
-					// Otherwise, show all results for now
-					result = JSON.stringify(data.payload.result, null, 2)
-				}
-				console.log(result)
-			})
+			} as Record<string, (msg: string) => void>
+			// Subscribe to the events above
+			for (const [event, handler] of Object.entries(eventHandlers))
+				stream.select(event).subscribe(msg => {
+					if (!msg) return
+					return handler(msg)
+				})
+
 			// stream.select('action_started').subscribe(console.log)
 			// stream.select('action_completed').subscribe(console.log)
-			stream.select('close').subscribe(msg => {
-				if (msg === 'finished') {
-					console.log('finished')
-					isRunning = false
-					stream?.close()
-					stream = undefined
-				}
-			})
 		} catch (e) {
 			console.error('Failed executing component', e)
 			toast.error('There was an error executing the component')
