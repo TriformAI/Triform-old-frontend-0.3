@@ -20,7 +20,7 @@
 
 	const nodes = useNodes()
 	// Support only one selected node for now
-	let selectedNode = $state<Node | undefined>(undefined)
+	let selectedNode = $state<Node>()
 	// For some reason we can't use a derived store here, so need to susbcribe instead
 	nodes.subscribe(ns => {
 		selectedNode = ns.find(n => n.selected) as Node
@@ -106,6 +106,7 @@
 <Window padding="tight" {...props}>
 	{#snippet header()}
 		Execute {selectedNode?.data?.component_name ?? ''}
+		{selectedNode?.data ? `v${selectedNode?.data?.component_version}` : ''}
 	{/snippet}
 
 	{#snippet body()}
