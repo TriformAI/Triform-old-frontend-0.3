@@ -54,6 +54,10 @@ export const closeWindowById = (id: string) => {
 	// saveWindowsToLocalStorage()
 }
 
+export const unloadWindows = () => {
+	openWindows.clear()
+}
+
 export const updateWindowById = (id: string, update: Partial<Window>) => {
 	if (!openWindows.has(id)) return
 	openWindows.set(id, {

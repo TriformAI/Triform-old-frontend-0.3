@@ -9,6 +9,7 @@
 
 	import {
 		openWindows,
+		unloadWindows,
 		// createLocalStorageListener,
 		// loadWindowsFromLocalStorage,
 		clearLocalStorage
@@ -54,6 +55,7 @@
 
 	onDestroy(() => {
 		unloadProject()
+		unloadWindows()
 		// removeLocalStorageListener()
 	})
 </script>
