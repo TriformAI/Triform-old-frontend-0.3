@@ -23,7 +23,7 @@
 	let selectedNode = $state<Node>()
 	// For some reason we can't use a derived store here, so need to susbcribe instead
 	nodes.subscribe(ns => {
-		selectedNode = ns.find(n => n.selected) as Node
+		selectedNode = ns.find(n => n.selected) as Node | undefined
 	})
 
 	let input = $state('{\n\t"msg":"hello world"\n}')

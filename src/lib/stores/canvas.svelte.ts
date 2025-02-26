@@ -64,6 +64,12 @@ const isAgent = (node: TriNode): node is TriNode & { spec: Agent } =>
 	node.spec.resource === 'agent/v1'
 
 export const parseProject = (project: Project) => {
+	// Keep selected nodes even when re-parsing the project
+	const selectedNodes = new Set(
+		get(nodes)
+			.filter(n => n.selected)
+			.map(n => n.id)
+	)
 	const parseNode = (node: TriNode, id: Uuid, parentId?: Uuid): ParsedGraph => {
 		const nodes: Node[] = []
 		const edges: Edge[] = []
@@ -87,6 +93,7 @@ export const parseProject = (project: Project) => {
 				extent: isOpen ? 'parent' : undefined,
 				draggable: false,
 				position: { x: 0, y: 0 },
+				selected: selectedNodes.has(id),
 				data: {
 					spec: node.spec,
 					inputs: node.inputs,
@@ -102,6 +109,7 @@ export const parseProject = (project: Project) => {
 				type: isOpen ? 'open-agent-node' : 'agent-node',
 				dragHandle: isOpen ? '.flow_drag-handle' : undefined,
 				style: isOpen ? 'pointer-events: none' : undefined,
+				selected: selectedNodes.has(id),
 				position: { x: 0, y: 0 },
 				parentId,
 				extent: parentId ? 'parent' : undefined,
@@ -128,6 +136,7 @@ export const parseProject = (project: Project) => {
 				dragHandle: undefined,
 				style: undefined,
 				draggable: false,
+				selected: selectedNodes.has(id),
 				position: { x: 0, y: 0 },
 				parentId,
 				extent: parentId ? 'parent' : undefined,
