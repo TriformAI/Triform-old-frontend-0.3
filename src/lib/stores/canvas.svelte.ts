@@ -5,7 +5,7 @@ import type {
 	Uuid,
 	Component
 } from '$lib/types/agent'
-import { writable } from 'svelte/store'
+import { writable, get } from 'svelte/store'
 import type { Project } from '$lib/types/project'
 import type { Node, NodeProps } from '$lib/types/flow'
 import { type Edge } from '@xyflow/svelte'
@@ -89,6 +89,7 @@ export const parseProject = (project: Project) => {
 				position: { x: 0, y: 0 },
 				data: {
 					spec: node.spec,
+					inputs: node.inputs,
 					component_name: node.spec.meta.name,
 					component_id: node.component_id,
 					component_version: node.component_version ?? -1
@@ -106,6 +107,7 @@ export const parseProject = (project: Project) => {
 				extent: parentId ? 'parent' : undefined,
 				data: {
 					spec: node.spec,
+					inputs: node.inputs,
 					component_name: node.spec.meta.name,
 					component_id: node.spec.meta.id,
 					component_version: node.spec.meta.version
@@ -131,6 +133,7 @@ export const parseProject = (project: Project) => {
 				extent: parentId ? 'parent' : undefined,
 				data: {
 					spec: node.spec,
+					// can't have any inputs (for now)
 					component_name: node.spec.meta.name,
 					component_id: node.spec.meta.id,
 					component_version: node.spec.meta.version
@@ -337,4 +340,20 @@ export const removeNode = async (id: Uuid) => {
 	currentCanvas.nodeProps.delete(id)
 
 	currentCanvas.hasUnsavedChanges = true
+}
+
+export const getDownstreamNodes = (id: Uuid): Set<Node> => {
+	let downstreamNodes = new Set<Node>()
+	if (!nodes) return downstreamNodes
+
+	for (const node of get(nodes)) {
+		if (node.data.inputs?.includes(id)) {
+			downstreamNodes.add(node)
+			// Get all this nodes downstream nodes as well
+			const nestedNodes = getDownstreamNodes(node.id)
+			downstreamNodes = downstreamNodes.union(nestedNodes)
+		}
+	}
+
+	return downstreamNodes
 }

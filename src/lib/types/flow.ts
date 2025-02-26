@@ -1,4 +1,4 @@
-import type { Uuid, Action, Agent } from './agent'
+import type { Uuid, Action, Agent, Node as TriNode, Endpoint } from './agent'
 import type { Node as XyNode } from '@xyflow/svelte'
 
 // Custom data passed to each node
@@ -6,8 +6,9 @@ export interface NodeData {
 	component_name: string
 	component_version: number
 	component_id: Uuid
-	spec: Agent | Action
+	spec: Agent | Action | Endpoint
 	state?: 'success' | 'error' | 'running'
+	inputs?: TriNode['inputs']
 	[key: string]: unknown
 }
 
