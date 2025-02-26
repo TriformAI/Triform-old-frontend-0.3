@@ -195,7 +195,10 @@
 				!selectedNode ? 'visible' : 'invisible'
 			]}
 		>
-			<p class="text-main-500 text-center">Select a node to execute</p>
+			<p class="text-main-400 mb-1 text-center">Select a node to execute</p>
+			<p class="text-main-600 max-w-xs text-center">
+				Selecting an endpoint will execute all downstream nodes
+			</p>
 		</div>
 	{/snippet}
 </Window>
