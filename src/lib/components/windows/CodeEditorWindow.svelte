@@ -45,7 +45,6 @@
 		untrack(() => {
 			useNodesData(nodeId).subscribe(d => {
 				if (!d) return
-				console.log('nodedata', d)
 				nodeData = d.data as NodeData
 				newName = nodeData.component_name
 				// So typescript understands that it's an action
@@ -56,7 +55,7 @@
 					'requirements.txt': (nodeData.spec.spec.deps ?? '') as string
 				}
 				// Keep track of the original files to know if the user has modified them yet
-				originalFiles = Object.assign({}, files)
+				if (!Object.values(originalFiles).join('').length) originalFiles = Object.assign({}, files)
 			})
 		})
 	})
@@ -97,7 +96,6 @@
 		nodeData.spec.spec.source = files['action.py']
 		nodeData.spec.spec.readme = files['README.md']
 		nodeData.spec.spec.deps = files['requirements.txt']
-		console.log('updating code', nodeData.spec.spec)
 		await updateNode(
 			nodeId,
 			{

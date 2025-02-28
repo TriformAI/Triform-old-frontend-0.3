@@ -94,7 +94,17 @@ export const parseProject = (project: Project) => {
 				position: { x: 0, y: 0 },
 				selected: selectedNodes.has(id),
 				data: {
-					spec: node.spec,
+					spec: {
+						...node.spec,
+						spec: {
+							// Delete checksum for now
+							// We'll need it later for the execution, but only if the requirements.txt
+							// stays constant. But for now we'll leave it out and let the backend calculate
+							// it on the fly instead...
+							checksum: '',
+							...node.spec.spec
+						}
+					},
 					inputs: node.inputs,
 					component_name: node.spec.meta.name,
 					component_id: node.component_id,

@@ -40,9 +40,9 @@
 		if (!isValidJson) return toast.error('The input needs to be valid JSON')
 
 		isRunning = true
-		console.log('executing component', selectedNode?.data.spec)
 
 		const execution = createExecution(selectedNode, JSON.parse(input))
+		console.log('creating execution', execution)
 
 		let stream: ReturnType<typeof source> | undefined = undefined
 		try {
@@ -88,14 +88,32 @@
 						return
 					}
 					if (!('result' in data.payload)) return
+					let res: unknown
 					// If we executed just one action, use the result from just that one
 					if (data.payload.result && Object.keys(data.payload.result).length === 1) {
-						result = JSON.stringify(Object.values(data.payload.result)[0], null, 2)
+						res = Object.values(data.payload.result)[0]
 					} else {
 						// Otherwise, show all results for now
-						result = JSON.stringify(data.payload.result, null, 2)
+						res = data.payload.result
 					}
+					result = typeof res === 'string' ? res : JSON.stringify(res, null, 2)
 					console.log(result)
+				},
+				execution_failed: msg => {
+					isRunning = false
+					toast.error('Execution failed')
+					let data: ExecutionTraceData
+					try {
+						data = JSON.parse(msg)
+					} catch (e) {
+						console.error('Failed to parse execution failed message', e)
+						return
+					}
+					if (!('error' in data.payload)) return
+					result =
+						typeof data.payload.error === 'string'
+							? data.payload.error
+							: JSON.stringify(data.payload.error, null, 2)
 				}
 			} as Record<string, (msg: string) => void>
 			// Subscribe to the events above
@@ -162,7 +180,7 @@
 							]}
 						></div>
 					{:else}
-						<pre class="min-h-16 font-mono text-sm">{result}</pre>
+						<pre class="word-break-[break-word] min-h-16 font-mono text-sm text-wrap">{result}</pre>
 					{/if}
 				</code>
 			</div>

@@ -129,7 +129,7 @@
 <div
 	class={[
 		'window',
-		'absolute resize overflow-auto transition duration-150',
+		'absolute max-w-screen resize overflow-auto transition duration-150',
 		isDragging && !disableDrag ? 'shadow-window-lg scale-[1.015]' : 'shadow-window',
 		isClosing ? 'scale-90 opacity-0' : 'opacity-100'
 	]}
@@ -139,7 +139,7 @@
 		z-index: ${zIndex};
 		width: ${hasResized ? `${width}px` : 'auto'};
 		height: ${hasResized ? `${height}px` : 'auto'};
-		min-width: fit-content;
+		min-width: min-content;
 		min-height: fit-content;
 		transition-property: opacity scale;
 	`}
