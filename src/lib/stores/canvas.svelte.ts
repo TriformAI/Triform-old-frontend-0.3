@@ -223,8 +223,21 @@ const processNode = async (
 	return updatedNode
 }
 
-export const updateNode = async (id: Uuid, updatedNode: Partial<TriNode>) => {
-	currentCanvas.hasUnsavedChanges = true
+export const updateNode = async (
+	id: Uuid,
+	updatedNode: Partial<TriNode>,
+	triggerUnsavedChanges = true
+) => {
+	currentCanvas.hasUnsavedChanges = currentCanvas.hasUnsavedChanges || triggerUnsavedChanges
+	// Update node "locally" too
+	nodes.update(nodes => {
+		return nodes.map(n => {
+			if (n.id !== id) return n
+			n.data = Object.assign(n.data, updatedNode)
+			return n
+		})
+	})
+	// Update it in the project
 	return await processNode(id, async () => updatedNode)
 }
 
@@ -234,7 +247,7 @@ export async function addDownstreamNode(
 	sourceId?: Uuid
 ) {
 	if (!currentCanvas.project) return
-	const nodeId = self.crypto.randomUUID()
+	const nodeId = crypto.randomUUID()
 
 	if (!newNode) {
 		const componentId = crypto.randomUUID() // placeholder for sake of validation

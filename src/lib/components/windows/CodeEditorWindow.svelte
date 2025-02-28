@@ -17,7 +17,8 @@
 	import { T } from '@tolgee/svelte'
 	import { toast } from 'svelte-sonner'
 	import { useNodesData } from '@xyflow/svelte'
-	import { untrack, tick } from 'svelte'
+	import { untrack } from 'svelte'
+	import { debounce } from '$lib/utils/debounce'
 
 	const api = new API()
 
@@ -32,7 +33,7 @@
 	const props: Props = $props()
 	const { nodeId } = $derived(props.customProps)
 
-	let isUnsaved = $state(false)
+	let hasUnsavedChanges = $state(false)
 	let isRenaming = $state(false)
 	let newName = $state('')
 
@@ -47,15 +48,32 @@
 				console.log('nodedata', d)
 				nodeData = d.data as NodeData
 				newName = nodeData.component_name
+				// So typescript understands that it's an action
+				if (nodeData.spec.resource !== 'action/v1') return
+				files = {
+					'action.py': (nodeData.spec.spec.source ?? '') as string,
+					'README.md': (nodeData.spec.spec.readme ?? '') as string,
+					'requirements.txt': (nodeData.spec.spec.deps ?? '') as string
+				}
+				// Keep track of the original files to know if the user has modified them yet
+				originalFiles = Object.assign({}, files)
 			})
 		})
 	})
 
-	const files = $derived<Record<string, string>>({
-		'action.py': (nodeData?.spec.spec.source ?? '') as string,
-		'README.md': (nodeData?.spec.spec.readme ?? '') as string,
-		'requirements.txt': (nodeData?.spec.spec.deps ?? '') as string
-	})
+	type Files = Record<'action.py' | 'README.md' | 'requirements.txt', string>
+	const initialFiles = {
+		'action.py': '',
+		'README.md': '',
+		'requirements.txt': ''
+	}
+	let originalFiles = $state<Files>(initialFiles)
+	let files = $state<Files>(initialFiles)
+	const hasChangedFiles = $derived(
+		Object.entries(files).some(([key, value]) => originalFiles[key as keyof Files] !== value)
+	)
+
+	const isUnsaved = $derived(hasUnsavedChanges || hasChangedFiles)
 
 	// Get the keys from files as dynamic tabs
 	const tabs = $derived.by(() => {
@@ -67,12 +85,30 @@
 
 	let activeTab = $state(0) // Default to the first tab
 
-	const publishComponent = async () => {
-		if (!nodeData) return
-		// Update the code files (locally) before publishing
+	// Whenever the files are updated, save them to the local representation of the project
+	// so they're available from anywhere else in the app too
+	// The updated code won't be persisted to the backend until we actually publish the component
+	// and save the project
+	const debounceSaveCode = debounce(async () => {
+		if (!hasChangedFiles) return
+		// So typescript understands that it's an action
+		if (nodeData?.spec.resource !== 'action/v1') return
+
 		nodeData.spec.spec.source = files['action.py']
 		nodeData.spec.spec.readme = files['README.md']
 		nodeData.spec.spec.deps = files['requirements.txt']
+		console.log('updating code', nodeData.spec.spec)
+		await updateNode(
+			nodeId,
+			{
+				spec: nodeData.spec
+			},
+			false
+		)
+	}, 300)
+
+	const publishComponent = async () => {
+		if (!nodeData) return
 
 		try {
 			const newComponent = await api.put<Component>('components', nodeData.spec)
@@ -83,7 +119,7 @@
 				component_id: newComponent.meta.id,
 				spec: newComponent
 			})
-			isUnsaved = false
+			hasUnsavedChanges = false
 		} catch (e) {
 			console.error('Failed to publish component', e)
 			toast.error('Failed to publish component')
@@ -124,10 +160,8 @@
 		nodeData.component_name = newName // so it updates "locally" within this component
 
 		isRenaming = false
-		isUnsaved = true
+		hasUnsavedChanges = true
 	}
-
-	$inspect(isUnsaved)
 </script>
 
 <Window disableDrag={isRenaming} {...props}>
@@ -178,19 +212,27 @@
 			<Tabs {tabs} bind:activeTab class="-mt-3 mb-4" />
 
 			{#each tabs as tab, idx}
+				{@const fileName = tab.key as keyof Files}
 				{@const language = tab.key.split('.').pop() as 'py' | 'md' | 'txt'}
 
 				<div class={['relative', idx === activeTab ? 'block' : 'hidden']}>
 					{#if language === 'py'}
-						<CodeEditor bind:code={files[tab.key]} class="absolute h-full w-full rounded-md" />
+						<CodeEditor
+							bind:code={files[fileName]}
+							class="absolute h-full w-full rounded-md"
+							onUpdate={() => {
+								debounceSaveCode()
+							}}
+						/>
 					{:else}
 						<LightEditor
 							{language}
-							value={files[tab.key]}
+							value={files[fileName]}
 							wordWrap={true}
 							class="bg-main-800 h-full w-full rounded-md ps-6 pt-2.5 text-sm"
 							onUpdate={val => {
-								files[tab.key] = val
+								files[fileName] = val
+								debounceSaveCode()
 							}}
 						/>
 					{/if}

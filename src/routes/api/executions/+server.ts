@@ -11,23 +11,9 @@ export async function POST({ request, locals }) {
 		return error(401, 'Unauthorized')
 	}
 
-	interface Payload {
-		input: Record<string, unknown>
-		component: Component
-	}
+	const execution: Execution = await request.json()
 
-	const { input, component }: Payload = await request.json()
-
-	const execution: Execution = {
-		resource: 'execution/v1',
-		input,
-		spec: {
-			component_id: component.meta.id,
-			component_version: component.meta.version
-		}
-	}
-
-	console.log('executing component with trace', component, execution)
+	console.log('executing component with trace', execution)
 	let emitter
 	try {
 		emitter = await locals.api.stream('trace', 'POST', execution)

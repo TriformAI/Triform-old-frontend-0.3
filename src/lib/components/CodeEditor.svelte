@@ -10,9 +10,10 @@
 	interface Props {
 		code: string
 		class: string
+		onUpdate?: (code: string) => void
 	}
 
-	let { code = $bindable(), class: classes }: Props = $props()
+	let { code = $bindable(), class: classes, onUpdate }: Props = $props()
 
 	let editorInitialized = $state(false)
 	const initEditor = (el: HTMLDivElement) => {
@@ -36,6 +37,7 @@
 
 			editor.onDidChangeModelContent(e => {
 				code = editor.getValue()
+				onUpdate?.(code)
 			})
 
 			// @ts-expect-error theme typing

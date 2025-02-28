@@ -39,8 +39,10 @@ export const createExecution = (node: Node, input: Record<string, unknown>): Exe
 			resource: 'execution/v1',
 			input,
 			spec: {
-				component_id: node.data.spec.meta.id,
-				component_version: node.data.spec.meta.version
+				spec: node.data.spec,
+				// Dummy data just for the backend to validate
+				component_id: crypto.randomUUID(),
+				component_version: 1
 			}
 		}
 	}

@@ -1,4 +1,4 @@
-import type { Uuid } from './agent'
+import type { Uuid, Component } from './agent'
 
 export interface Execution {
 	resource: 'execution/v1'
@@ -6,6 +6,7 @@ export interface Execution {
 	spec: {
 		component_id: Uuid
 		component_version: number
+		spec?: Component
 	}
 }
 

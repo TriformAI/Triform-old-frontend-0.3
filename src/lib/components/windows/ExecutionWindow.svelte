@@ -12,6 +12,7 @@
 	import LightEditor from '$lib/components/atoms/LightEditor.svelte'
 
 	import IconPlay from '~icons/material-symbols/play-arrow-outline-rounded'
+	import { createExecution } from '$lib/utils/execution'
 
 	interface Props extends WindowType {}
 
@@ -38,20 +39,16 @@
 		if (!input) return toast.error('Please enter a test input')
 		if (!isValidJson) return toast.error('The input needs to be valid JSON')
 
+		isRunning = true
 		console.log('executing component', selectedNode?.data.spec)
 
-		// If it's an endpoint, we'll have to figure out all the downstream nodes
-
-		isRunning = true
+		const execution = createExecution(selectedNode, JSON.parse(input))
 
 		let stream: ReturnType<typeof source> | undefined = undefined
 		try {
 			stream = source(`/api/executions`, {
 				options: {
-					body: JSON.stringify({
-						input: JSON.parse(input),
-						component: selectedNode?.data.spec
-					}),
+					body: JSON.stringify(execution),
 					method: 'POST',
 					credentials: 'include'
 				},
