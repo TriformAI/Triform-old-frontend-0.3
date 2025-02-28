@@ -1,6 +1,6 @@
 import type {
 	Node as TriNode, // as to not conflict with @xyflow/svelte
-	Agent,
+	Flow,
 	Action,
 	Uuid,
 	Component
@@ -60,8 +60,7 @@ const isEndpoint = (node: TriNode): node is TriNode & { spec: Action } =>
 	node.spec.resource === 'endpoint/v1'
 const isAction = (node: TriNode): node is TriNode & { spec: Action } =>
 	node.spec.resource === 'action/v1'
-const isAgent = (node: TriNode): node is TriNode & { spec: Agent } =>
-	node.spec.resource === 'agent/v1'
+const isFlow = (node: TriNode): node is TriNode & { spec: Flow } => node.spec.resource === 'flow/v1'
 
 export const parseProject = (project: Project) => {
 	// Keep selected nodes even when re-parsing the project
@@ -89,7 +88,7 @@ export const parseProject = (project: Project) => {
 				id,
 				type: 'action-node',
 				parentId,
-				// Limits the movement to within the agent
+				// Limits the movement to within the flow
 				extent: isOpen ? 'parent' : undefined,
 				draggable: false,
 				position: { x: 0, y: 0 },
@@ -102,11 +101,11 @@ export const parseProject = (project: Project) => {
 					component_version: node.component_version ?? -1
 				}
 			})
-		} else if (isAgent(node)) {
+		} else if (isFlow(node)) {
 			const isOpen = getNodeProps(id)?.expanded
 			nodes.push({
 				id,
-				type: isOpen ? 'open-agent-node' : 'agent-node',
+				type: isOpen ? 'open-flow-node' : 'flow-node',
 				dragHandle: isOpen ? '.flow_drag-handle' : undefined,
 				style: isOpen ? 'pointer-events: none' : undefined,
 				selected: selectedNodes.has(id),
@@ -209,7 +208,7 @@ const processNode = async (
 			return
 		}
 
-		if (isAgent(node)) {
+		if (isFlow(node)) {
 			if (!('spec' in node)) return
 			for (const [childId, child] of Object.entries(node.spec.spec.nodes))
 				await process(child, childId as Uuid)
@@ -295,8 +294,8 @@ export const addChild = async (parentId: Uuid | 'root', child: TriNode, nodeId: 
 		await processNode(parentId, async node => {
 			// If the parent isn't an agent, we can't add children to it
 			// TODO: when we encounter this case, wrap the parent in an agent first
-			if (!isAgent(node)) {
-				console.error('Not an agent!')
+			if (!isFlow(node)) {
+				console.error('Not a flow!')
 				return
 			}
 			node.spec.spec.nodes[nodeId] = child
@@ -329,7 +328,7 @@ export const removeNode = async (id: Uuid) => {
 		// Otherwise, find the right parent to remove the child from
 		await processNode(id, async node => {
 			// Should technically always be an agent, but we need to get typescript to recognise it
-			if (!isAgent(node)) return
+			if (!isFlow(node)) return
 			// Now we need to find all the nodes that used to depend on this node, and change their
 			// inputs to this node's parent
 			// I think for now we can just assume that all the nodes that might've depended on this node

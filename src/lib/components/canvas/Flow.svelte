@@ -1,9 +1,9 @@
 <script lang="ts">
 	import ActionNode from '$lib/components/custom-nodes/ActionNode.svelte'
-	import AgentNode from '$lib/components/custom-nodes/AgentNode.svelte'
+	import FlowNode from '$lib/components/custom-nodes/FlowNode.svelte'
 	import ApiNode from '$lib/components/custom-nodes/ApiNode.svelte'
 	import EndpointNode from '$lib/components/custom-nodes/EndpointNode.svelte'
-	import OpenAgentNode from '$lib/components/custom-nodes/OpenAgentNode.svelte'
+	import OpenFlowNode from '$lib/components/custom-nodes/OpenFlowNode.svelte'
 	import {
 		addDownstreamNode,
 		edges,
@@ -13,9 +13,8 @@
 		setNodeProps
 	} from '$lib/stores/canvas.svelte'
 	import type { Uuid } from '$lib/types/agent'
-	import type { Node } from '$lib/types/flow'
 	import type { NodeTypes } from '@xyflow/svelte'
-	import { onMount, untrack } from 'svelte'
+	import { untrack } from 'svelte'
 	import { Background, BackgroundVariant, SvelteFlow, useUpdateNodeInternals } from '@xyflow/svelte'
 	import { parseProject } from '$lib/stores/canvas.svelte'
 	import '@xyflow/svelte/dist/style.css'
@@ -32,9 +31,9 @@
 		// @ts-expect-error type issue, not crucial but should probs be fixed
 		'action-node': ActionNode,
 		// @ts-expect-error type issue, not crucial but should probs be fixed
-		'agent-node': AgentNode,
+		'flow-node': FlowNode,
 		// @ts-expect-error type issue, not crucial but should probs be fixed
-		'open-agent-node': OpenAgentNode,
+		'open-flow-node': OpenFlowNode,
 		// @ts-expect-error type issue, not crucial but should probs be fixed
 		'api-node': ApiNode
 	}
@@ -47,9 +46,9 @@
 		const canvas = currentCanvas
 		if (!canvas.project) return
 
-		console.time('parse agent')
+		console.time('parse project')
 		let { nodes: nodesData, edges: edgesData } = parseProject(canvas.project)
-		console.timeEnd('parse agent')
+		console.timeEnd('parse project')
 
 		console.log('edges', edgesData)
 		untrack(async () => {
@@ -58,10 +57,10 @@
 					case 'action-node':
 						node.data.files = undefined
 						break
-					case 'agent-node':
+					case 'flow-node':
 						node.data.onOpen = () => setNodeProps(node.id as Uuid, { expanded: true })
 						break
-					case 'open-agent-node':
+					case 'open-flow-node':
 						node.data.onOpen = () => setNodeProps(node.id as Uuid, { expanded: false })
 						node.width = 400
 						node.height = 400

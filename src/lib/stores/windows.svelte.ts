@@ -2,7 +2,6 @@ import type { Component } from 'svelte'
 
 import { SvelteMap } from 'svelte/reactivity'
 
-import ComponentsToolbox from '../components/windows/ComponentsToolbox.svelte'
 import Execution from '../components/windows/ExecutionWindow.svelte'
 import CodeEditorWindow from '../components/windows/CodeEditorWindow.svelte'
 
@@ -77,7 +76,6 @@ export const windowIsOpen = (id: string) => {
 // from local storage.
 const stringToComponentMap = (): { str: string; cmp: Component }[] => [
 	{ str: 'Execution', cmp: Execution },
-	{ str: 'ConponentsToolbox', cmp: ComponentsToolbox },
 	{ str: 'CodeEditor', cmp: CodeEditorWindow }
 ]
 
