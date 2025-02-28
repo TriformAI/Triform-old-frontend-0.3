@@ -16,6 +16,7 @@
 		target,
 		disabled,
 		tooltip,
+		tooltipPos = 'up',
 		type = 'button'
 	}: {
 		variation?: 'primary' | 'vibrant' | 'link' | 'danger'
@@ -33,6 +34,7 @@
 		target?: '_blank'
 		disabled?: boolean
 		tooltip?: string
+		tooltipPos?: 'up' | 'right' | 'down' | 'left'
 		type?: 'button' | 'submit' | 'reset'
 	} = $props()
 
@@ -91,7 +93,7 @@
 	{type}
 	onclick={onClick}
 	aria-label={tooltip}
-	data-balloon-pos={tooltip ? 'up' : undefined}
+	data-balloon-pos={tooltip ? tooltipPos : undefined}
 	data-balloon-nofocus
 >
 	<!-- If we have an icon, animate it for loading state -->

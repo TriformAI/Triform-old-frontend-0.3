@@ -9,12 +9,15 @@
 	import Window from '$lib/components/common/Window.svelte'
 	import IconPublish from '~icons/mdi/cloud-upload-outline'
 	import CodeEditor from '../CodeEditor.svelte'
+	import IconEdit from '~icons/material-symbols/edit-outline'
+	import InputField from '../atoms/InputField.svelte'
 
 	import { updateNode } from '$lib/stores/canvas.svelte'
 	import { API } from '$lib/api'
 	import { T } from '@tolgee/svelte'
 	import { toast } from 'svelte-sonner'
 	import { useNodesData } from '@xyflow/svelte'
+	import { untrack, tick } from 'svelte'
 
 	const api = new API()
 
@@ -29,16 +32,22 @@
 	const props: Props = $props()
 	const { nodeId } = $derived(props.customProps)
 
+	let isUnsaved = $state(false)
+	let isRenaming = $state(false)
+	let newName = $state('')
+
 	// Watch the node state and update the nodeData whenever it changes
 	// We do it like this instead of just passing node from props because
 	// that won't be reactive (because of the way windows are opened/stored)
 	let nodeData = $state<NodeData>()
-	$inspect(nodeData)
 	$effect(() => {
-		useNodesData(nodeId).subscribe(d => {
-			if (!d) return
-			console.log('nodedata', d)
-			nodeData = d.data as NodeData
+		untrack(() => {
+			useNodesData(nodeId).subscribe(d => {
+				if (!d) return
+				console.log('nodedata', d)
+				nodeData = d.data as NodeData
+				newName = nodeData.component_name
+			})
 		})
 	})
 
@@ -74,19 +83,94 @@
 				component_id: newComponent.meta.id,
 				spec: newComponent
 			})
+			isUnsaved = false
 		} catch (e) {
 			console.error('Failed to publish component', e)
 			toast.error('Failed to publish component')
 		}
 	}
+
+	const bindRenameField = (el: HTMLInputElement) => {
+		// Whenever the node starts being renamed, focus the input field
+		$effect(() => {
+			if (!isRenaming) return
+			el.focus()
+			// Make sure entire selection is empty first
+			document.getSelection()?.empty()
+			el.select()
+		})
+	}
+
+	const saveName = async (e: FocusEvent | KeyboardEvent) => {
+		if (!nodeData || !isRenaming) return
+
+		if (e instanceof KeyboardEvent) {
+			if (e.key === 'Escape') {
+				isRenaming = false
+				newName = nodeData.component_name
+				return
+			} else if (e.key === 'Enter') {
+				e.preventDefault()
+				// Continue as usual
+			} else {
+				// Some other key, just ignore it
+				return
+			}
+		}
+
+		if (!newName?.length) return toast.error('Please enter a name')
+
+		nodeData.spec.meta.name = newName
+		nodeData.component_name = newName // so it updates "locally" within this component
+
+		isRenaming = false
+		isUnsaved = true
+	}
+
+	$inspect(isUnsaved)
 </script>
 
-<Window {...props}>
+<Window disableDrag={isRenaming} {...props}>
 	{#snippet header()}
-		<span>
-			<T keyName="code-editor-header" defaultValue="Edit" />
-			{nodeData?.component_name ?? ''} v{nodeData?.component_version ?? ''}
-		</span>
+		<div class="w-full">
+			<span>
+				<T keyName="code-editor-header" defaultValue="Edit" />
+			</span>
+			{#if isRenaming}
+				<InputField
+					containerClass="inline-block py-1"
+					variation="tight"
+					bind:value={newName}
+					onblur={saveName}
+					onkeydown={saveName}
+					use={bindRenameField}
+				/>
+				<!-- <span>
+					v{nodeData?.component_version ?? ''}
+				</span> -->
+			{:else}
+				<div class="inline-flex flex-row items-center gap-2">
+					<span>
+						{nodeData?.component_name ?? ''}
+						<!-- v{nodeData?.component_version ?? ''} -->
+					</span>
+					{#if isUnsaved}
+						<span class="text-main-600 font-medium">(unpublished)</span>
+					{/if}
+					<Button
+						variation="link"
+						onClick={() => (isRenaming = true)}
+						tooltip="Rename"
+						tooltipPos="right"
+						class="opacity-0 transition-opacity group-hover/card-header:opacity-100"
+					>
+						{#snippet icon()}
+							<IconEdit />
+						{/snippet}
+					</Button>
+				</div>
+			{/if}
+		</div>
 	{/snippet}
 
 	{#snippet body()}

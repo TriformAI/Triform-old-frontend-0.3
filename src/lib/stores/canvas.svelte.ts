@@ -199,7 +199,7 @@ export const saveProject = async () => {
 // Generic function for applying a function to some node in the canvas
 const processNode = async (
 	id: Uuid,
-	fn: (node: TriNode, nodeId?: Uuid) => Promise<TriNode | undefined>
+	fn: (node: TriNode, nodeId?: Uuid) => Promise<Partial<TriNode> | undefined>
 ) => {
 	let updatedNode: TriNode | undefined = undefined
 	const process = async (node: TriNode, nodeId: Uuid) => {
@@ -224,7 +224,7 @@ const processNode = async (
 	return updatedNode
 }
 
-export const updateNode = async (id: Uuid, updatedNode: TriNode) => {
+export const updateNode = async (id: Uuid, updatedNode: Partial<TriNode>) => {
 	currentCanvas.hasUnsavedChanges = true
 	return await processNode(id, async () => updatedNode)
 }

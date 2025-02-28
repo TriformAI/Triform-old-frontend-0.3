@@ -11,6 +11,7 @@
 		body: Snippet
 		footer?: Snippet
 		padding?: 'default' | 'tight'
+		disableDrag?: boolean
 		onClose?: () => void
 	}
 
@@ -27,6 +28,7 @@
 		height = 0,
 		zIndex = 1,
 		isClosing,
+		disableDrag = false,
 		customProps
 	}: Props = $props()
 
@@ -71,6 +73,7 @@
 	}
 
 	const onDragStart = (e: MouseEvent) => {
+		if (disableDrag) return
 		window.addEventListener('mousemove', onDrag)
 
 		// Offset within the window
@@ -127,7 +130,7 @@
 	class={[
 		'window',
 		'absolute resize overflow-auto transition duration-150',
-		isDragging ? 'shadow-window-lg scale-[1.015]' : 'shadow-window',
+		isDragging && !disableDrag ? 'shadow-window-lg scale-[1.015]' : 'shadow-window',
 		isClosing ? 'scale-90 opacity-0' : 'opacity-100'
 	]}
 	style={`

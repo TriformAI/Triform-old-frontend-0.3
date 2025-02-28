@@ -49,7 +49,11 @@
 	]}
 >
 	<div
-		class="bg-main-850 flex flex-row items-center justify-between rounded-t-md border border-x-0 border-t-0 border-b border-inherit pr-4"
+		class={[
+			'bg-main-850 flex flex-row items-center justify-between pr-4',
+			'rounded-t-md border border-x-0 border-t-0 border-b border-inherit',
+			'group/card-header'
+		]}
 	>
 		<div
 			class={[
