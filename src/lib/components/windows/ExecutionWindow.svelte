@@ -56,6 +56,20 @@
 			})
 			console.log('stream', stream)
 
+			const extractErrorMessage = (msg: string) => {
+				let data: ExecutionTraceData
+				try {
+					data = JSON.parse(msg as unknown as string)
+				} catch (e) {
+					console.error('Failed to parse error message', e)
+					return
+				}
+				if (!('error' in data.payload)) return
+				return typeof data.payload.error === 'string'
+					? data.payload.error
+					: JSON.stringify(data.payload.error, null, 2)
+			}
+
 			// Define event handlers
 			const eventHandlers = {
 				close: msg => {
@@ -99,21 +113,16 @@
 					result = typeof res === 'string' ? res : JSON.stringify(res, null, 2)
 					console.log(result)
 				},
+				action_failed: msg => {
+					// TODO: highlight the node that failed
+					isRunning = false
+					toast.error('Action failed')
+					result = extractErrorMessage(msg)
+				},
 				execution_failed: msg => {
 					isRunning = false
 					toast.error('Execution failed')
-					let data: ExecutionTraceData
-					try {
-						data = JSON.parse(msg)
-					} catch (e) {
-						console.error('Failed to parse execution failed message', e)
-						return
-					}
-					if (!('error' in data.payload)) return
-					result =
-						typeof data.payload.error === 'string'
-							? data.payload.error
-							: JSON.stringify(data.payload.error, null, 2)
+					result = extractErrorMessage(msg)
 				}
 			} as Record<string, (msg: string) => void>
 			// Subscribe to the events above
