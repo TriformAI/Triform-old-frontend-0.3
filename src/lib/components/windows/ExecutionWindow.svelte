@@ -27,7 +27,7 @@
 		selectedNode = ns.find(n => n.selected) as Node | undefined
 	})
 
-	let input = $state('{\n\t"msg":"hello world"\n}')
+	let input = $state('{\n\t"msg": "hello world"\n}')
 	let result = $state('')
 
 	let isRunning = $state(false)
@@ -56,15 +56,15 @@
 			})
 			console.log('stream', stream)
 
-			const extractErrorMessage = (msg: string) => {
+			const extractErrorMessage = (msg: string): string => {
 				let data: ExecutionTraceData
 				try {
 					data = JSON.parse(msg as unknown as string)
 				} catch (e) {
 					console.error('Failed to parse error message', e)
-					return
+					return ''
 				}
-				if (!('error' in data.payload)) return
+				if (!('error' in data.payload)) return ''
 				return typeof data.payload.error === 'string'
 					? data.payload.error
 					: JSON.stringify(data.payload.error, null, 2)
@@ -91,6 +91,17 @@
 						return
 					}
 					console.error('Error executing component', parsedMsg.error ?? parsedMsg)
+				},
+				action_started: msg => {
+					let data: ExecutionTraceData
+					try {
+						data = JSON.parse(msg as unknown as string)
+					} catch (e) {
+						console.error('Failed to parse execution trace data', e)
+						return
+					}
+					if (!('result' in data.payload)) return
+					console.log('starting action')
 				},
 				execution_completed: msg => {
 					console.log('got execution_completed', msg)
@@ -131,9 +142,6 @@
 					if (!msg) return
 					return handler(msg)
 				})
-
-			// stream.select('action_started').subscribe(console.log)
-			// stream.select('action_completed').subscribe(console.log)
 		} catch (e) {
 			console.error('Failed executing component', e)
 			toast.error('There was an error executing the component')
