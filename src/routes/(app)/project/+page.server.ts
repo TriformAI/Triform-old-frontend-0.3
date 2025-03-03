@@ -26,12 +26,11 @@ export const actions = {
 				version: 1
 			},
 			spec: {
+				// gets overwritten by the backend, just needs to validate
 				component_id: crypto.randomUUID(),
 				component_version: 1
 			}
 		})
-
-		console.log('initial endpoint', initialEndpoint)
 
 		// Need to manaually update the component id in spec for now, because the API doesn't do it
 		initialEndpoint.spec.component_id = initialEndpoint.meta.id
@@ -54,6 +53,7 @@ export const actions = {
 			}
 		}
 
+		// Create the project and return it
 		const createdProject = await locals.api.post<Project>('projects', project)
 
 		return createdProject
