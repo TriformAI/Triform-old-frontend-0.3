@@ -26,7 +26,9 @@ export const createExecution = (node: Node, input: Record<string, unknown>): Exe
 						{
 							component_id: n.data.component_id,
 							component_version: n.data.component_version,
-							inputs: n.data.inputs?.filter(i => i !== node.id) ?? ['parent'],
+							inputs: n.data.inputs?.filter(i => i !== node.id).length
+								? n.data.inputs?.filter(i => i !== node.id)
+								: ['parent'],
 							spec: n.data.spec
 						}
 					])
