@@ -126,13 +126,11 @@
 
 	const bindRenameField = (el: HTMLInputElement) => {
 		// Whenever the node starts being renamed, focus the input field
-		$effect(() => {
-			if (!isRenaming) return
-			el.focus()
-			// Make sure entire selection is empty first
-			document.getSelection()?.empty()
-			el.select()
-		})
+		if (!isRenaming) return
+		el.focus()
+		// Make sure entire selection is empty first
+		document.getSelection()?.empty()
+		el.select()
 	}
 
 	const saveName = async (e: FocusEvent | KeyboardEvent) => {
