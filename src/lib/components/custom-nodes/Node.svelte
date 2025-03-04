@@ -68,9 +68,6 @@
 					"
 			>
 				<span class="whitespace-nowrap">{data.component_name}</span>
-				<span class="text-main-400 block font-mono text-sm font-bold tracking-wider transition">
-					v{data.component_version}
-				</span>
 			</div>
 
 			<button
