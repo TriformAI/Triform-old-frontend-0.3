@@ -52,6 +52,9 @@
 					method: 'POST',
 					credentials: 'include'
 				},
+				error: err => {
+					throw err
+				},
 				cache: false
 			})
 			console.log('stream', stream)
