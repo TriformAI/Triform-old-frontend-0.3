@@ -23,18 +23,17 @@
 
 	const nodeProps = $derived(getNodeProps(id))
 
-	const getBorderClass = (nodeState?: string) => {
-		switch (nodeState) {
-			case 'success':
-				return 'border-emerald-500'
-			case 'error':
-				return 'border-red-500'
-			case 'running':
-				return 'border-accent-500'
-			default:
-				return selected ? 'border-main-200' : 'border-main-300'
+	const borderClass = $derived.by(() => {
+		if (!nodeState) {
+			return selected ? 'border-main-200' : 'border-main-300'
 		}
-	}
+
+		return {
+			success: 'border-emerald-500',
+			error: 'border-red-500',
+			running: 'border-accent-500'
+		}[nodeState]
+	})
 
 	const nodes = useNodes()
 	let node: Node | undefined = $state()
@@ -71,11 +70,11 @@
 			</div>
 
 			<button
-				class="
-						relative flex size-20 items-center justify-center rounded-full border p-2 transition-all
-						{selected ? 'border-[2px] duration-100 ease-in' : ''}
-						{getBorderClass(nodeState)}
-					"
+				class={[
+					'relative flex size-20 items-center justify-center rounded-full border p-2 transition-all',
+					selected && 'border-[2px] duration-100 ease-in',
+					borderClass
+				]}
 				ondblclickcapture={openFn}
 			>
 				<span class="custom-node-icon-shadow">{@render icon()}</span>
