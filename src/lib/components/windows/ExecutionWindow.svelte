@@ -172,7 +172,7 @@
 	{#snippet body()}
 		<div
 			class={[
-				'relative col-start-1 row-start-1 grid w-full min-w-80 grid-rows-[1fr_auto] gap-y-4',
+				' col-start-1 row-start-1 grid min-w-80 grid-rows-[auto_1fr_min-content] gap-y-4',
 				selectedNode ? 'visible' : 'invisible'
 			]}
 		>
@@ -185,24 +185,28 @@
 				<LightEditor language="json" value={input} onUpdate={v => (input = v)} class="text-sm" />
 			</div>
 
-			<div class="bg-main-800/50 rounded-lg p-3">
+			<div class="bg-main-800/50 grid grid-rows-[auto_minmax(100px,1fr)] rounded-lg p-3">
 				<p
 					class="border-main-800 ms-3 mt-1 mb-2 border-b pb-2 text-xs font-semibold tracking-wide uppercase"
 				>
 					Result
 				</p>
-				<code class="inline-block h-fit w-full rounded-md px-2 transition-all">
-					{#if isRunning}
-						<div
-							class={[
-								'bg-main-700 h-full min-h-16 w-full animate-pulse rounded-md transition-all',
-								!isRunning ? 'opacity-100' : 'opacity-0'
-							]}
-						></div>
-					{:else}
-						<pre class="word-break-[break-word] min-h-16 font-mono text-sm text-wrap">{result}</pre>
-					{/if}
-				</code>
+				<div class="relative">
+					<code class="absolute inset-0 w-full overflow-auto px-3 transition-all">
+						{#if isRunning}
+							<div
+								class={[
+									'bg-main-700 h-full min-h-16 w-full animate-pulse rounded-md transition-all',
+									!isRunning ? 'opacity-100' : 'opacity-0'
+								]}
+							></div>
+						{:else}
+							<pre class="word-break-[break-word] min-h-16 font-mono text-sm text-wrap">
+{result}
+							</pre>
+						{/if}
+					</code>
+				</div>
 			</div>
 
 			<div
