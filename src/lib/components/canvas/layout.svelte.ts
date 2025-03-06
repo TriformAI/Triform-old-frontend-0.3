@@ -11,6 +11,7 @@ const elkSettings = {
 	'elk.padding': '[top=30,left=20,bottom=20,right=20]',
 	'elk.spacing.nodeNode': '150',
 	'elk.layered.spacing.edgeNodeBetweenLayers': '50',
+	'elk.layered.spacing.nodeNodeBetweenLayers': '40',
 	'elk.layered.considerModelOrder.strategy': 'PREFER_NODES',
 	'elk.layered.considerModelOrder.components': 'MODEL_ORDER'
 }

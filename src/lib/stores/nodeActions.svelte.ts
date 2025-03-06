@@ -11,6 +11,7 @@ import CodeEditorWindow from '$lib/components/windows/CodeEditorWindow.svelte'
 import IconTrash from '~icons/material-symbols/delete-outline'
 import IconAdd from '~icons/material-symbols/add-diamond-outline'
 import IconEditor from '~icons/material-symbols/code-blocks-outline'
+import IconExpand from '~icons/mdi/circle-expand'
 
 export type onClickFn = (node: Node, useSvelteFlow: ReturnType<typeof useSvelteFlowHook>) => void
 interface ActionItem {
@@ -93,4 +94,15 @@ actionsMapStore.set('action-node', [
 	},
 	addAction,
 	deleteNode
+])
+actionsMapStore.set('flow-node', [
+	{
+		label: 'Expand',
+		icon: IconExpand,
+		isDangerous: false,
+		onClick: (node: Node, _useSvelteFlow: ReturnType<typeof useSvelteFlowHook>) => {
+			if (!node) return
+			setNodeProps(node.id, { expanded: true })
+		}
+	}
 ])

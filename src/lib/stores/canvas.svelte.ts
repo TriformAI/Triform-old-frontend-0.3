@@ -118,6 +118,7 @@ export const parseProject = (project: Project) => {
 				type: isOpen ? 'open-flow-node' : 'flow-node',
 				dragHandle: isOpen ? '.flow_drag-handle' : undefined,
 				style: isOpen ? 'pointer-events: none' : undefined,
+				draggable: false,
 				selected: selectedNodes.has(id),
 				position: { x: 0, y: 0 },
 				parentId,

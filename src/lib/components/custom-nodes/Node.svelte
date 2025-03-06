@@ -14,19 +14,19 @@
 		data: NodeData
 		selected: boolean
 		icon: Snippet
+		shape: 'circle' | 'square'
+		class?: string
 	}
 
 	const props: Props = $props()
 
-	const { id, data, selected, icon } = $derived(props)
+	const { id, data, selected, icon, shape = 'circle', class: classes } = $derived(props)
 	const { state: nodeState } = $derived(data)
 
 	const nodeProps = $derived(getNodeProps(id))
 
 	const borderClass = $derived.by(() => {
-		if (!nodeState) {
-			return selected ? 'border-main-200' : 'border-main-300'
-		}
+		if (!nodeState) return ''
 
 		return {
 			success: 'border-emerald-500',
@@ -73,7 +73,10 @@
 				class={[
 					'relative flex size-20 items-center justify-center rounded-full border p-2 transition-all',
 					selected && 'border-[2px] duration-100 ease-in',
-					borderClass
+					shape === 'circle' && 'rounded-full',
+					shape === 'square' && 'rounded-md',
+					borderClass,
+					classes
 				]}
 				ondblclickcapture={openFn}
 			>
