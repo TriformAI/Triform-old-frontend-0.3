@@ -204,18 +204,18 @@
 	{/snippet}
 
 	{#snippet body()}
-		<div class="grid min-h-[400px] min-w-[600px] grid-rows-[auto_1fr_auto]">
+		<div class="grid min-w-[600px] grid-rows-[auto_minmax(205px,1fr)_auto]">
 			<Tabs {tabs} bind:activeTab class="-mt-3 mb-4" />
 
-			{#each tabs as tab, idx}
-				{@const fileName = tab.key as keyof Files}
-				{@const language = tab.key.split('.').pop() as 'py' | 'md' | 'txt'}
+			<div class="relative grid">
+				{#each tabs as tab, idx}
+					{@const fileName = tab.key as keyof Files}
+					{@const language = tab.key.split('.').pop() as 'py' | 'md' | 'txt'}
 
-				<div class={['relative', idx === activeTab ? 'block' : 'hidden']}>
 					{#if language === 'py'}
 						<CodeEditor
 							bind:code={files[fileName]}
-							class="absolute h-full w-full rounded-md"
+							class={`${idx === activeTab ? 'block' : 'hidden'} absolute h-full w-full rounded-md`}
 							onUpdate={() => {
 								debounceSaveCode()
 							}}
@@ -225,15 +225,15 @@
 							{language}
 							value={files[fileName]}
 							wordWrap={true}
-							class="bg-main-800 h-full w-full rounded-md ps-6 pt-2.5 text-sm"
+							class={`${idx === activeTab ? 'block' : 'hidden'} bg-main-800 absolute h-full w-full rounded-md ps-6 pt-2.5 text-sm`}
 							onUpdate={val => {
 								files[fileName] = val
 								debounceSaveCode()
 							}}
 						/>
 					{/if}
-				</div>
-			{/each}
+				{/each}
+			</div>
 
 			<div class="mt-6 flex items-center justify-between">
 				<Button variation="vibrant" class="ml-auto" autoLoad="promise" onClick={publishComponent}>

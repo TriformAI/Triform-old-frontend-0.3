@@ -129,7 +129,7 @@
 <div
 	class={[
 		'window',
-		'absolute max-w-screen resize overflow-auto transition duration-150',
+		'absolute max-h-[80vh] max-w-screen resize overflow-auto transition duration-150',
 		isDragging && !disableDrag ? 'shadow-window-lg scale-[1.015]' : 'shadow-window',
 		isClosing ? 'scale-90 opacity-0' : 'opacity-100'
 	]}
