@@ -5,7 +5,7 @@
 	import EndpointNode from '$lib/components/custom-nodes/EndpointNode.svelte'
 	import OpenFlowNode from '$lib/components/custom-nodes/OpenFlowNode.svelte'
 	import {
-		addDownstreamNode,
+		addNode,
 		edges,
 		nodes,
 		removeNode,
@@ -118,7 +118,7 @@
 			}
 		}
 
-		addDownstreamNode('root', triggerNode)
+		addNode('root', triggerNode)
 	}
 </script>
 

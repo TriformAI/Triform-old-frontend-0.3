@@ -1,5 +1,6 @@
 <script lang="ts">
 	import type { NodeData, Node } from '$lib/types/flow'
+	import type { Uuid } from '$lib/types/agent'
 
 	import NodeContainer from './NodeContainer.svelte'
 	import { useSvelteFlow as useSvelteFlowHook } from '@xyflow/svelte'
@@ -11,7 +12,7 @@
 		data,
 		selected
 	}: {
-		id: string
+		id: Uuid
 		data: NodeData
 		selected: boolean
 	} = $props()
@@ -36,23 +37,21 @@
 <NodeContainer {id}>
 	{#snippet body()}
 		<div
-			class="
-			border-main-300/10 bg-main-900/30 flex h-full w-full flex-row
-			justify-center rounded border text-center"
+			class={[
+				'border-main-300/10 bg-main-900/30 flex h-full w-full flex-row',
+				'justify-center rounded border text-center'
+			]}
 		>
 			<button
-				class="
-					border-main-600/10 bg-main-900/50 pointer-events-auto -mt-4 h-fit w-max flex-shrink-0 rounded border px-5
-					font-bold backdrop-blur-sm transition
-					{selected ? 'text-main-200' : 'text-main-300'}
-					flow_drag-handle
-				"
+				class={[
+					'border-main-600/10 pointer-events-auto -mt-4 h-fit w-max flex-shrink-0 rounded border px-5 py-1',
+					'font-bold backdrop-blur-sm transition',
+					'flow_drag-handle',
+					selected ? 'text-main-200' : 'text-main-300'
+				]}
 				ondblclick={openFn}
 			>
 				{data.component_name}
-				<span class="block transition {selected ? 'text-main-300' : 'text-main-400'}">
-					v{data.component_version}
-				</span>
 			</button>
 		</div>
 	{/snippet}

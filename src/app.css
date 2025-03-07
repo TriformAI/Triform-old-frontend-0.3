@@ -161,9 +161,13 @@
 		--xy-edge-stroke-width: 1.5px;
 	}
 
+	/* Override svelte flow's suspicious z-stacking */
+	.svelte-flow__node {
+		z-index: -1 !important;
+	}
+
 	.svelte-flow__node:hover {
 		position: relative;
-		z-index: 10 !important;
 	}
 
 	[aria-label][data-balloon-pos]:hover:not(:active):after,

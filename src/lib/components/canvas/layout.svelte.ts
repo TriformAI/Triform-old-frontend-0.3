@@ -27,7 +27,12 @@ const buildElkTree = (allNodes: Node[]): ElkNode[] => {
 	// Then build the tree recursively starting from root nodes
 	const buildTree = (nodes: Node[]): ElkNode[] => {
 		return nodes.map(node => {
-			const children = allNodes.filter(n => n.parentId === node.id)
+			const children = allNodes.filter(
+				n =>
+					n.parentId === node.id &&
+					// prevent recursion
+					n.id !== node.id
+			)
 			const nodeSize = NODE_SIZE
 			return {
 				id: node.id,
