@@ -9,7 +9,6 @@
 	import { getNodeProps } from '$lib/stores/canvas.svelte'
 
 	import IconNetworkNode from '~icons/material-symbols/network-node'
-	import IconMinimize from '~icons/material-symbols/minimize-rounded'
 
 	const {
 		id,

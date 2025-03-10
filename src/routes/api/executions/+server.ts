@@ -1,4 +1,3 @@
-import type { Component } from '$lib/types/agent'
 import type { Execution, ExecutionTraceEvent } from '$lib/types/execution'
 import type { ServerSentEventMessage } from 'fetch-event-stream'
 

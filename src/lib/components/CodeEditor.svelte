@@ -35,7 +35,7 @@
 				minimap: { enabled: false }
 			})
 
-			editor.onDidChangeModelContent(e => {
+			editor.onDidChangeModelContent(_e => {
 				code = editor.getValue()
 				onUpdate?.(code)
 			})
