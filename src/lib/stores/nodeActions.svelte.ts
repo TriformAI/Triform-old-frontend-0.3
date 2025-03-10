@@ -5,7 +5,7 @@ import type { Uuid, Node as TriNode, Action, Flow } from '$lib/types/agent'
 import { SvelteMap } from 'svelte/reactivity'
 import { useSvelteFlow as useSvelteFlowHook } from '@xyflow/svelte'
 import { openWindow } from './windows.svelte'
-import { removeNode, addNode, setNodeProps } from './canvas.svelte'
+import { removeNode, addNode, setNodeProps, saveProject } from './canvas.svelte'
 import { confirmStore } from './confirm.svelte'
 import { API } from '$lib/api'
 const api = new API()
@@ -163,8 +163,10 @@ const deleteNode = {
 
 		// Update the node to indicate that it's being deleted, and then actually delete it after a delay
 		setNodeProps(node.id, { deleted: true })
-		setTimeout(() => {
-			removeNode(node.id, node.parentId as Uuid)
+		setTimeout(async () => {
+			await removeNode(node.id, node.parentId as Uuid)
+			console.log('Deleted node, saving project automatically...')
+			saveProject()
 			fitView({
 				maxZoom: 1,
 				duration: 500

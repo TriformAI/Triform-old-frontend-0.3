@@ -112,11 +112,15 @@
 			const newComponent = await api.put<Component>('components', nodeData.spec)
 			console.log('new component', newComponent)
 			// Update the node in the project with the new data
-			updateNode(nodeId, {
-				component_version: newComponent.meta.version,
-				component_id: newComponent.meta.id,
-				spec: newComponent
-			})
+			updateNode(
+				nodeId,
+				{
+					// component_version: newComponent.meta.version,
+					component_id: newComponent.meta.id,
+					spec: newComponent
+				},
+				false
+			)
 			hasUnsavedChanges = false
 		} catch (e) {
 			console.error('Failed to publish component', e)

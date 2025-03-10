@@ -272,8 +272,9 @@ export const addNode = async (
 	// If the parentId is "root", add it to the project as a root level node
 	if (parentId === 'root') {
 		currentCanvas.project.spec.nodes[nodeId] = newNode
-		// if the parent is the root, project is now unsaved
-		currentCanvas.hasUnsavedChanges = true
+		// if the parent is the root, save project
+		// currentCanvas.hasUnsavedChanges = true
+		await saveProject()
 	} else {
 		const parentNode = await getNode(parentId)
 		if (!parentNode || !isFlow(parentNode)) {
