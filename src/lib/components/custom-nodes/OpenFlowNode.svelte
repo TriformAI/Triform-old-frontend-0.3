@@ -9,6 +9,7 @@
 	import { getNodeProps } from '$lib/stores/canvas.svelte'
 
 	import IconNetworkNode from '~icons/material-symbols/network-node'
+	import IconMinimize from '~icons/material-symbols/minimize-rounded'
 
 	const {
 		id,
@@ -37,6 +38,14 @@
 		const actions = actionsMap().get(node.type)
 		actions?.[0]?.onClick?.(node, useSvelteFlow)
 	}
+
+	const closeFn = () => {
+		if (!node?.type) return
+		const action = actionsMap()
+			.get(node.type)
+			?.find(a => a.id === 'close')
+		action?.onClick?.(node, useSvelteFlow)
+	}
 </script>
 
 <NodeContainer {id}>
@@ -50,8 +59,9 @@
 		>
 			<button
 				class={[
-					'border-main-600/10 pointer-events-auto -mt-4 h-fit w-max flex-shrink-0 rounded border px-5 py-1',
+					'border-main-600/10 pointer-events-auto -mt-4 h-fit w-max flex-shrink-0 rounded border py-1 pr-1 pl-5',
 					'font-bold backdrop-blur-sm transition',
+					'flex flex-row justify-center',
 					'flow_drag-handle',
 					selected ? 'text-main-200' : 'text-main-300'
 				]}
@@ -61,6 +71,17 @@
 					class="text-accent-400 my-auto mb-1 h-4 drop-shadow-[0px_0px_5px_var(--color-accent-600)]"
 				/>
 				{data.component_name}
+				<div
+					class="group flex items-center self-stretch pr-4 pl-1"
+					aria-label="Close"
+					role="button"
+					tabindex="0"
+					onclick={closeFn}
+					onkeydown={e => ['Enter', ' '].includes(e.key) && closeFn()}
+					data-balloon-pos="up"
+				>
+					<div class="bg-main-500 group-hover:bg-main-200 h-0.5 w-3 transition"></div>
+				</div>
 			</button>
 		</div>
 	{/snippet}

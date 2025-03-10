@@ -16,9 +16,12 @@ import IconAdd from '~icons/material-symbols/add-diamond-outline'
 import IconEditor from '~icons/material-symbols/code-blocks-outline'
 import IconExpand from '~icons/mdi/circle-expand'
 import IconNetworkNode from '~icons/material-symbols/network-node'
+import IconClose from '~icons/material-symbols/close-fullscreen-rounded'
 
 export type onClickFn = (node: Node, useSvelteFlow: ReturnType<typeof useSvelteFlowHook>) => void
 interface ActionItem {
+	// For when we access the items programmatically
+	id?: string
 	label: string
 	icon: Component
 	isDangerous: boolean
@@ -207,4 +210,16 @@ actionsMapStore.set('flow-node', [
 	addAction,
 	addFlow,
 	deleteNode
+])
+actionsMapStore.set('open-flow-node', [
+	{
+		label: 'Close',
+		id: 'close',
+		icon: IconClose,
+		isDangerous: false,
+		onClick: (node: Node, _useSvelteFlow: ReturnType<typeof useSvelteFlowHook>) => {
+			if (!node) return
+			setNodeProps(node.id, { expanded: false })
+		}
+	}
 ])
