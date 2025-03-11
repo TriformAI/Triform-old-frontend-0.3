@@ -19,7 +19,7 @@
 	const props: Props = $props()
 
 	const useSvelteFlow = useSvelteFlowHook()
-	const { getNode, deleteElements } = useSvelteFlow
+	const { getNode, deleteElements, updateNode } = useSvelteFlow
 
 	const componentTypes = $derived.by(() => {
 		const components = [
@@ -53,17 +53,11 @@
 		if (!node) return
 		deleteElements({ nodes: [node] })
 
-		// Get the dom node..
-		// Shrink it back to height before dragging was initialized
-		const flowContainer = document.querySelector<HTMLDivElement>(
-			`[data-id="${sourceNode?.parentId}"]`
-		)
-
-		if (!flowContainer) {
-			return
-		}
-
-		flowContainer.style.height = (parseInt(flowContainer.style.height) - 80).toString() + 'px'
+		if (!sourceNode?.parentId) return
+		const flow = getNode(sourceNode.parentId)
+		if (!flow) return
+		flow.height = (flow.measured?.height ?? 0) - 80
+		updateNode(flow.id, flow)
 	}
 </script>
 

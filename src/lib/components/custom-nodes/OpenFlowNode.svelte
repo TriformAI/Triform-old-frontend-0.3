@@ -4,9 +4,12 @@
 
 	import NodeContainer from './NodeContainer.svelte'
 	import { useSvelteFlow as useSvelteFlowHook } from '@xyflow/svelte'
-	import { actionsMap } from '$lib/stores/nodeActions.svelte'
+	import { getActions } from '$lib/stores/nodeActions.svelte'
 	import { onMount } from 'svelte'
 	import { getNodeProps } from '$lib/stores/canvas.svelte'
+
+	import FlowOutputHandle from './FlowOutputHandle.svelte'
+	import FlowInputHandle from './FlowInputHandle.svelte'
 
 	import IconNetworkNode from '~icons/material-symbols/network-node'
 
@@ -34,20 +37,18 @@
 	const openFn = () => {
 		// Whenever a node is double clicked, run the first action menu item
 		if (!node?.type) return
-		const actions = actionsMap().get(node.type)
+		const actions = getActions(node.type)
 		actions?.[0]?.onClick?.(node, useSvelteFlow)
 	}
 
 	const closeFn = () => {
 		if (!node?.type) return
-		const action = actionsMap()
-			.get(node.type)
-			?.find(a => a.id === 'close')
+		const action = getActions(node.type).find(a => a.id === 'close')
 		action?.onClick?.(node, useSvelteFlow)
 	}
 </script>
 
-<NodeContainer {id}>
+<NodeContainer {id} invisibleHandles={['source', 'target']}>
 	{#snippet body()}
 		<div
 			class={[
@@ -56,32 +57,35 @@
 				nodeProps?.creating && 'animate-pulse'
 			]}
 		>
-			<button
-				class={[
-					'border-main-600/10 pointer-events-auto -mt-4 h-fit w-max flex-shrink-0 rounded border py-1 pr-1 pl-5',
-					'font-bold backdrop-blur-sm transition',
-					'flex flex-row justify-center',
-					'flow_drag-handle',
-					selected ? 'text-main-200' : 'text-main-300'
-				]}
-				ondblclick={openFn}
-			>
-				<IconNetworkNode
-					class="text-accent-400 my-auto mb-1 h-4 drop-shadow-[0px_0px_5px_var(--color-accent-600)]"
-				/>
-				{data.component_name}
-				<div
-					class="group flex items-center self-stretch pr-4 pl-1"
-					aria-label="Close"
-					role="button"
-					tabindex="0"
-					onclick={closeFn}
-					onkeydown={e => ['Enter', ' '].includes(e.key) && closeFn()}
-					data-balloon-pos="up"
+			<FlowInputHandle id={`${id}:input`}>
+				<button
+					class={[
+						'border-main-600/10 pointer-events-auto -mt-4 h-fit w-max flex-shrink-0 rounded border py-1 pr-1 pl-5',
+						'font-bold backdrop-blur-sm transition',
+						'flex flex-row justify-center',
+						'flow_drag-handle',
+						selected ? 'text-main-200' : 'text-main-300'
+					]}
+					ondblclick={openFn}
 				>
-					<div class="bg-main-500 group-hover:bg-main-200 h-0.5 w-3 transition"></div>
-				</div>
-			</button>
+					<IconNetworkNode
+						class="text-accent-400 my-auto mb-1 h-4 drop-shadow-[0px_0px_5px_var(--color-accent-600)]"
+					/>
+					{data.component_name}
+					<div
+						class="group flex items-center self-stretch pr-4 pl-1"
+						aria-label="Close"
+						role="button"
+						tabindex="0"
+						onclick={closeFn}
+						onkeydown={e => ['Enter', ' '].includes(e.key) && closeFn()}
+						data-balloon-pos="up"
+					>
+						<div class="bg-main-500 group-hover:bg-main-200 h-0.5 w-3 transition"></div>
+					</div>
+				</button>
+			</FlowInputHandle>
 		</div>
+		<FlowOutputHandle id={`${id}:output`} />
 	{/snippet}
 </NodeContainer>

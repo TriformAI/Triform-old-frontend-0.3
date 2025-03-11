@@ -74,8 +74,20 @@ export const parseProject = (project: Project) => {
 		const nodes: Node[] = []
 		const edges: Edge[] = []
 
+		console.log('inputs', node.component_id, node.inputs)
 		for (const input of node.inputs ?? []) {
-			if (input === 'parent') continue
+			// Flow inputs
+			if (input === 'parent') {
+				if (!parentId) continue
+				edges.push({
+					id: `${id}:${parentId}:input`,
+					source: parentId,
+					sourceHandle: `${parentId}:input`,
+					target: id
+				})
+				continue
+			}
+			// Normal edges
 			edges.push({
 				id: `${id}:${input}`,
 				source: input,
@@ -139,6 +151,16 @@ export const parseProject = (project: Project) => {
 				const { nodes: childNodes, edges: childEdges } = parseNode(child, childId as Uuid, id)
 				nodes.push(...childNodes)
 				edges.push(...childEdges)
+			}
+
+			// Add edges for the flow outputs
+			for (const source of node.spec.spec.outputs) {
+				edges.push({
+					id: `${source}:${id}:output`,
+					source,
+					target: id,
+					targetHandle: `${id}:output`
+				})
 			}
 		} else if (isEndpoint(node)) {
 			nodes.push({

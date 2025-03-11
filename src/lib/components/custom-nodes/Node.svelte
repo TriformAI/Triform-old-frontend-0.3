@@ -3,7 +3,7 @@
 	import type { Snippet } from 'svelte'
 	import { useNodes } from '@xyflow/svelte'
 	import { getNodeProps } from '$lib/stores/canvas.svelte'
-	import { actionsMap } from '$lib/stores/nodeActions.svelte'
+	import { getActions } from '$lib/stores/nodeActions.svelte'
 	import { useSvelteFlow as useSvelteFlowHook } from '@xyflow/svelte'
 	import { ContextMenu } from 'bits-ui'
 
@@ -47,8 +47,8 @@
 	const openFn = () => {
 		// Whenever a node is double clicked, run the first action menu item
 		if (!node?.type) return
-		const actions = actionsMap().get(node.type)
-		actions?.[0]?.onClick?.(node, useSvelteFlow)
+		const actions = getActions(node.type)
+		actions[0]?.onClick?.(node, useSvelteFlow)
 	}
 
 	let contextIsOpen = $state(false)

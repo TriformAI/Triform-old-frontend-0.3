@@ -109,21 +109,34 @@ export const getLayoutedNodes = async (nodes: Node[], edges: Edge[]) => {
 	let children = buildElkTree(nodes)
 	console.timeEnd('build tree')
 
+	// Remove our internal input/output edges for flows, as their source & destination don't
+	// really exist in elk, since they're just handles and not actual nodes. Another reason is that they
+	// exist on the parent flow, and since we do the layouting bottom-up, we don't have access to the parent
+	// flow from within its children (usually)
+	const flowInputOutputRegex = /.+:(out|in)put$/
+	const filteredEdges = edges.filter(
+		e =>
+			!flowInputOutputRegex.test(e.sourceHandle ?? '') &&
+			!flowInputOutputRegex.test(e.targetHandle ?? '')
+	)
+
 	// Go through the graph in a post-order fashion to calculate the correct size of all groups
 	console.time('update group sizes')
-	children = await Promise.all(children.map(c => updateGroupSizes(c, edges)))
+	children = await Promise.all(children.map(c => updateGroupSizes(c, filteredEdges)))
 	console.timeEnd('update group sizes')
 
 	const graph = {
 		id: 'root',
 		layoutOptions: elkSettings,
 		children,
-		edges: edges.map(e => ({
+		edges: filteredEdges.map(e => ({
 			id: e.id,
 			sources: [e.source],
 			targets: [e.target]
 		}))
 	}
+
+	console.log(graph.edges)
 
 	console.time('layout elk')
 	const layout = await elk.layout(graph)

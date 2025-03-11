@@ -3,7 +3,7 @@
 	import type { onClickFn } from '$lib/stores/nodeActions.svelte'
 	import { useSvelteFlow as useSvelteFlowHook } from '@xyflow/svelte'
 
-	import { actionsMap } from '$lib/stores/nodeActions.svelte'
+	import { getActions } from '$lib/stores/nodeActions.svelte'
 
 	interface Props {
 		node?: Node
@@ -12,7 +12,7 @@
 
 	let { node, isOpen = $bindable() }: Props = $props()
 
-	const actions = $derived(actionsMap().get(node?.type as NodeType) ?? [])
+	const actions = $derived(getActions(node?.type!))
 
 	const useSvelteFlow = useSvelteFlowHook()
 	const onActionClick = (fn?: onClickFn) => {

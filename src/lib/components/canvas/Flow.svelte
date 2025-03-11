@@ -134,11 +134,17 @@
 	}
 
 	const handleConnectEnd: OnConnectEnd = (event, connectionState) => {
-		if (connectionState.isValid) return
-
 		const { fromNode } = connectionState
+		if (!fromNode) return
 
-		if (!fromNode) {
+		// Don't trigger the selector for valid conenctions, or
+		// if the origin of the new edge is at the top of a node
+		if (connectionState.isValid || connectionState.fromHandle?.type === 'target') {
+			if (!fromNode.parentId) return
+			const flow = getNode(fromNode.parentId)
+			if (!flow) return
+			flow.height = (flow.measured?.height ?? 0) - 80
+			updateNodeInternals(flow.id)
 			return
 		}
 
@@ -171,22 +177,17 @@
 		$edges = $edges
 	}
 
+	import { get } from 'svelte/store'
 	const handleConnectStart: OnConnectStart = (event, connectionState) => {
+		console.log('edges', JSON.stringify(get(edges), null, 2))
 		const nodeId = connectionState.nodeId as Uuid
 		const node = getNode(nodeId)
-		if (!node) {
-			return
-		}
+		if (!node || !node.parentId) return
 
-		// Get the dom node of the flow (parent) container..
-		// Then expand height to give room for a new node
-		const flowContainer = document.querySelector<HTMLDivElement>(`[data-id="${node.parentId}"]`)
-
-		if (!flowContainer) {
-			return
-		}
-
-		flowContainer.style.height = (parseInt(flowContainer.style.height) + 80).toString() + 'px'
+		const flow = getNode(node.parentId)
+		if (!flow) return
+		flow.height = (flow.measured?.height ?? 0) + 80
+		updateNodeInternals(flow.id)
 	}
 </script>
 

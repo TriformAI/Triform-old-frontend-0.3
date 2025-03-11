@@ -2,11 +2,13 @@ import type { Node, NodeType } from '$lib/types/flow'
 import type { Component } from 'svelte'
 import type { Uuid, Node as TriNode, Action, Flow } from '$lib/types/agent'
 
+import { dev } from '$app/environment'
 import { SvelteMap } from 'svelte/reactivity'
 import { useSvelteFlow as useSvelteFlowHook } from '@xyflow/svelte'
 import { openWindow } from './windows.svelte'
 import { removeNode, addNode, setNodeProps, saveProject } from './canvas.svelte'
 import { confirmStore } from './confirm.svelte'
+import { toast } from 'svelte-sonner'
 import { API } from '$lib/api'
 const api = new API()
 
@@ -17,12 +19,14 @@ import IconEditor from '~icons/material-symbols/code-blocks-outline'
 import IconExpand from '~icons/mdi/circle-expand'
 import IconNetworkNode from '~icons/material-symbols/network-node'
 import IconClose from '~icons/material-symbols/close-fullscreen-rounded'
+import IconBug from '~icons/material-symbols/bug-report-outline-rounded'
 
 export type onClickFn = (node: Node, useSvelteFlow: ReturnType<typeof useSvelteFlowHook>) => void
 interface ActionItem {
 	// For when we access the items programmatically
 	id?: string
 	label: string
+	hide?: () => boolean
 	icon: Component
 	isDangerous: boolean
 	onClick: onClickFn
@@ -30,10 +34,25 @@ interface ActionItem {
 
 const actionsMapStore = $state(new SvelteMap<NodeType, ActionItem[]>())
 export const actionsMap = () => actionsMapStore
+export const getActions = (nodeType: NodeType) =>
+	actionsMap()
+		.get(nodeType)
+		?.filter(a => !a.hide?.()) ?? []
 
 /*
   Generic functions used by multiple nodes
 */
+const getDebugData = {
+	label: 'Debug',
+	icon: IconBug,
+	isDangerous: false,
+	hide: () => !dev,
+	onClick: async (node: Node, _useSvelteFlow: ReturnType<typeof useSvelteFlowHook>) => {
+		console.log('Debug', $state.snapshot(node))
+		toast.info('Printed debug data to console')
+	}
+}
+
 export const addAction = {
 	label: 'Create Action',
 	icon: IconAdd,
@@ -175,7 +194,7 @@ const deleteNode = {
 }
 
 // Populate map
-actionsMapStore.set('endpoint-node', [addFlow])
+actionsMapStore.set('endpoint-node', [addFlow, getDebugData])
 actionsMapStore.set('action-node', [
 	{
 		label: 'Edit',
@@ -196,7 +215,8 @@ actionsMapStore.set('action-node', [
 	},
 	addAction,
 	addFlow,
-	deleteNode
+	deleteNode,
+	getDebugData
 ])
 actionsMapStore.set('flow-node', [
 	{
@@ -210,7 +230,8 @@ actionsMapStore.set('flow-node', [
 	},
 	addAction,
 	addFlow,
-	deleteNode
+	deleteNode,
+	getDebugData
 ])
 actionsMapStore.set('open-flow-node', [
 	{
@@ -222,5 +243,6 @@ actionsMapStore.set('open-flow-node', [
 			if (!node) return
 			setNodeProps(node.id, { expanded: false })
 		}
-	}
+	},
+	getDebugData
 ])
