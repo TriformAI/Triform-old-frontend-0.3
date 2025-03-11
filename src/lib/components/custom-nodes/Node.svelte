@@ -1,19 +1,20 @@
 <script lang="ts">
 	import type { NodeData, Node } from '$lib/types/flow'
 	import type { Snippet } from 'svelte'
-	import NodeActions from './NodeActions.svelte'
 	import { useNodes } from '@xyflow/svelte'
 	import { getNodeProps } from '$lib/stores/canvas.svelte'
 	import { actionsMap } from '$lib/stores/nodeActions.svelte'
 	import { useSvelteFlow as useSvelteFlowHook } from '@xyflow/svelte'
+	import { ContextMenu } from 'bits-ui'
 
 	import NodeContainer from './NodeContainer.svelte'
+	import NodeActions from './NodeActions.svelte'
 
 	interface Props {
 		id: Node['id']
 		data: NodeData
 		selected: boolean
-		icon: Snippet
+		icon?: Snippet
 		shape: 'circle' | 'square'
 		class?: string
 	}
@@ -49,42 +50,58 @@
 		const actions = actionsMap().get(node.type)
 		actions?.[0]?.onClick?.(node, useSvelteFlow)
 	}
+
+	let contextIsOpen = $state(false)
 </script>
 
-<NodeContainer {...props}>
+<NodeContainer {...props} showTargetHandle={node?.type !== 'endpoint-node'}>
 	{#snippet body()}
-		<div
-			class={[
-				'node-inner transition-[transform_opacity] duration-200 ease-(--easing-circ)',
-				nodeProps?.deleted ? 'scale-50 opacity-0' : 'scale-100',
-				nodeProps?.creating ? 'animate-pulse cursor-progress' : ''
-			]}
-		>
-			<div
-				class="
+		<ContextMenu.Root bind:open={contextIsOpen}>
+			<ContextMenu.Trigger>
+				<div
+					class={[
+						'node-inner transition-[transform_opacity] duration-200 ease-(--easing-circ)',
+						nodeProps?.deleted ? 'scale-50 opacity-0' : 'scale-100',
+						nodeProps?.creating ? 'animate-pulse cursor-progress' : ''
+					]}
+				>
+					<div
+						class="
 						absolute -start-4 top-1/2 -translate-x-full -translate-y-1/2 text-end font-semibold transition
 						{selected ? 'text-main-200' : 'text-main-300'}
 					"
-			>
-				<span class="whitespace-nowrap">{data.component_name}</span>
-			</div>
+					>
+						<span class="whitespace-nowrap">{data.component_name}</span>
+						<!-- <span class="block text-xs whitespace-nowrap">{props.id}</span> -->
+					</div>
 
-			<button
-				class={[
-					'relative flex size-20 items-center justify-center rounded-full border p-2 transition-all',
-					selected && 'border-[2px] duration-100 ease-in',
-					shape === 'circle' && 'rounded-full',
-					shape === 'square' && 'rounded-md',
-					borderClass,
-					classes
-				]}
-				ondblclickcapture={openFn}
-			>
-				<span class="custom-node-icon-shadow">{@render icon()}</span>
-			</button>
-		</div>
+					<button
+						class={[
+							'relative flex size-20 items-center justify-center rounded-full border p-2 transition-all',
+							selected && 'border-[2px] duration-100 ease-in',
+							shape === 'circle' && 'rounded-full',
+							shape === 'square' && 'rounded-md',
+							selected && node?.type === 'endpoint-node' && 'bg-warning-900/50',
+							selected && node?.type === 'action-node' && 'bg-main-600/50',
+							selected && node?.type === 'flow-node' && 'bg-accent-900/50',
+							borderClass,
+							classes
+						]}
+						ondblclickcapture={openFn}
+					>
+						{#if icon}
+							<span class="custom-node-icon-shadow">{@render icon()}</span>
+						{/if}
+					</button>
+				</div>
+			</ContextMenu.Trigger>
 
-		<NodeActions {node} />
+			<ContextMenu.Portal>
+				<ContextMenu.Content>
+					<NodeActions {node} bind:isOpen={contextIsOpen} />
+				</ContextMenu.Content>
+			</ContextMenu.Portal>
+		</ContextMenu.Root>
 	{/snippet}
 </NodeContainer>
 

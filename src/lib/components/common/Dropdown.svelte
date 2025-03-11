@@ -34,9 +34,10 @@
 
 <div
 	class={[classes, 'relative']}
-	use:clickOutside
-	onclickOutside={() => {
-		open = false
+	use:clickOutside={{
+		handler: () => {
+			open = false
+		}
 	}}
 >
 	<button

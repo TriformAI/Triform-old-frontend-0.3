@@ -34,7 +34,7 @@ export const actionsMap = () => actionsMapStore
 /*
   Generic functions used by multiple nodes
 */
-const addAction = {
+export const addAction = {
 	label: 'Create Action',
 	icon: IconAdd,
 	isDangerous: false,
@@ -74,7 +74,7 @@ const addAction = {
 	}
 }
 
-const addFlow = {
+export const addFlow = {
 	label: 'Create Flow',
 	icon: IconNetworkNode,
 	isDangerous: false,
@@ -135,9 +135,8 @@ const addFlow = {
 		// Add the new action to the flow
 		await addNode(flowNodeId, newActionNode, crypto.randomUUID())
 
-		const { getNodes, getZoom, setCenter } = useSvelteFlow
-
 		setTimeout(() => {
+			const { getNodes, getZoom, setCenter } = useSvelteFlow
 			const nodes = getNodes()
 			const pos = nodes[nodes.length - 1].position
 			if (!pos) return

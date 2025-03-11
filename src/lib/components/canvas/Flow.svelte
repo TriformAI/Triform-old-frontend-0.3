@@ -4,6 +4,8 @@
 	import ApiNode from '$lib/components/custom-nodes/ApiNode.svelte'
 	import EndpointNode from '$lib/components/custom-nodes/EndpointNode.svelte'
 	import OpenFlowNode from '$lib/components/custom-nodes/OpenFlowNode.svelte'
+	import SelectorNode from '$lib/components/custom-nodes/SelectorNode.svelte'
+
 	import {
 		addNode,
 		edges,
@@ -13,9 +15,18 @@
 		setNodeProps
 	} from '$lib/stores/canvas.svelte'
 	import type { Uuid } from '$lib/types/agent'
-	import type { NodeTypes } from '@xyflow/svelte'
+
 	import { untrack } from 'svelte'
-	import { Background, BackgroundVariant, SvelteFlow, useUpdateNodeInternals } from '@xyflow/svelte'
+	import {
+		Background,
+		BackgroundVariant,
+		SvelteFlow,
+		useUpdateNodeInternals,
+		type OnConnectEnd,
+		type OnConnectStart,
+		type Node,
+		type NodeTypes
+	} from '@xyflow/svelte'
 	import { parseProject } from '$lib/stores/canvas.svelte'
 	import '@xyflow/svelte/dist/style.css'
 	import { getLayoutedNodes } from './layout.svelte'
@@ -23,7 +34,7 @@
 	import { debounce } from '../../utils/debounce'
 	import { useSvelteFlow } from '@xyflow/svelte'
 
-	const { fitView } = useSvelteFlow()
+	const { fitView, screenToFlowPosition, getNode } = useSvelteFlow()
 
 	const nodeTypes: NodeTypes = {
 		// @ts-expect-error type issue, not crucial but should probs be fixed
@@ -35,7 +46,9 @@
 		// @ts-expect-error type issue, not crucial but should probs be fixed
 		'open-flow-node': OpenFlowNode,
 		// @ts-expect-error type issue, not crucial but should probs be fixed
-		'api-node': ApiNode
+		'api-node': ApiNode,
+		// @ts-expect-error type issue, not crucial but should probs be fixed
+		'selector-node': SelectorNode
 	}
 
 	const updateNodeInternals = useUpdateNodeInternals()
@@ -50,7 +63,6 @@
 		let { nodes: nodesData, edges: edgesData } = parseProject(canvas.project)
 		console.timeEnd('parse project')
 
-		console.log('edges', edgesData)
 		untrack(async () => {
 			nodesData = nodesData.map(node => {
 				switch (node.type) {
@@ -120,6 +132,62 @@
 
 		addNode('root', triggerNode)
 	}
+
+	const handleConnectEnd: OnConnectEnd = (event, connectionState) => {
+		if (connectionState.isValid) return
+
+		const { fromNode } = connectionState
+
+		if (!fromNode) {
+			return
+		}
+
+		const sourceNodeId = fromNode.id as Uuid
+
+		const id = crypto.randomUUID()
+		const { clientX, clientY } = 'changedTouches' in event ? event.changedTouches[0] : event
+
+		const newNode: Node = {
+			id,
+			type: 'selector-node',
+			data: { sourceNodeId },
+			// project the screen coordinates to pane coordinates
+			position: screenToFlowPosition({
+				x: clientX,
+				y: clientY
+			}),
+			// set the origin of the new node so it is centered
+			origin: [0.5, 0.0]
+		}
+
+		$nodes.push(newNode)
+		$edges.push({
+			source: sourceNodeId,
+			target: id,
+			id: `${sourceNodeId}:${id}`
+		})
+
+		$nodes = $nodes
+		$edges = $edges
+	}
+
+	const handleConnectStart: OnConnectStart = (event, connectionState) => {
+		const nodeId = connectionState.nodeId as Uuid
+		const node = getNode(nodeId)
+		if (!node) {
+			return
+		}
+
+		// Get the dom node of the flow (parent) container..
+		// Then expand height to give room for a new node
+		const flowContainer = document.querySelector<HTMLDivElement>(`[data-id="${node.parentId}"]`)
+
+		if (!flowContainer) {
+			return
+		}
+
+		flowContainer.style.height = (parseInt(flowContainer.style.height) + 80).toString() + 'px'
+	}
 </script>
 
 <svelte:window
@@ -155,6 +223,8 @@
 					maxZoom: 1,
 					minZoom: 1
 				}}
+				onconnectstart={handleConnectStart}
+				onconnectend={handleConnectEnd}
 				snapGrid={[1, 1]}
 				proOptions={{ hideAttribution: true }}
 				defaultEdgeOptions={{}}

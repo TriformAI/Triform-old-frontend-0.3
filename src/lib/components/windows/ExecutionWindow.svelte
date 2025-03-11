@@ -177,11 +177,7 @@
 			]}
 		>
 			<div class="bg-main-800/50 rounded-lg p-3">
-				<p
-					class="border-main-800 ms-3 mt-1 mb-2 border-b pb-2 text-xs font-semibold tracking-wide uppercase"
-				>
-					Test data
-				</p>
+				<p class=" eyebrow ms-3 mt-1 mb-2">Test data</p>
 				<LightEditor language="json" value={input} onUpdate={v => (input = v)} class="text-sm" />
 			</div>
 

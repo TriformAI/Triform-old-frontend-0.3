@@ -163,6 +163,7 @@
 
 	/* Override svelte flow's suspicious z-stacking */
 	.svelte-flow__node {
+		transition: height 0.3s ease-out;
 		z-index: -1 !important;
 	}
 
@@ -192,5 +193,9 @@
 
 	.error-msg {
 		@apply bg-danger-100 text-danger-500 rounded-md p-4 text-center;
+	}
+
+	.eyebrow {
+		@apply text-main-400 border-main-800 border-b pb-2 text-xs font-semibold tracking-wide uppercase;
 	}
 }

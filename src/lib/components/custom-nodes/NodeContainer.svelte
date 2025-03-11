@@ -8,20 +8,19 @@
 	interface Props {
 		id: Uuid
 		body: Snippet
+		showTargetHandle?: boolean
 	}
 
 	const props: Props = $props()
-	const { id, body } = $derived(props)
+	const { id, body, showTargetHandle = true } = $derived(props)
 </script>
 
 <div class="group/container relative h-full w-full">
-	<div>
+	{#if showTargetHandle}
 		<CustomHandle {id} type="target" position={Position.Top} />
-	</div>
+	{/if}
 
 	{@render body()}
 
-	<div>
-		<CustomHandle {id} type="source" position={Position.Bottom} />
-	</div>
+	<CustomHandle {id} type="source" position={Position.Bottom} />
 </div>
