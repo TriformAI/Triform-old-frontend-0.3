@@ -165,19 +165,26 @@ export const addFlow = {
 	}
 }
 
-const deleteNode = {
+export const deleteNode = {
 	label: 'Remove',
 	icon: IconTrash,
 	isDangerous: true,
-	onClick: async (node: Node, useSvelteFlow: ReturnType<typeof useSvelteFlowHook>) => {
+	onClick: async (
+		node: Node,
+		useSvelteFlow: ReturnType<typeof useSvelteFlowHook>,
+		showConfirmation: boolean = true
+	) => {
 		const { fitView } = useSvelteFlow
 
-		const isConfirmed = await confirmStore.show({
-			title: 'Are you sure?',
-			message: 'Please confirm that you want to delete this node'
-		})
-
-		if (!isConfirmed) return
+		if (showConfirmation) {
+			const isConfirmed = await confirmStore.show({
+				title: 'Are you sure?',
+				message: 'Please confirm that you want to delete this node'
+			})
+			if (!isConfirmed) {
+				return
+			}
+		}
 
 		// Update the node to indicate that it's being deleted, and then actually delete it after a delay
 		setNodeProps(node.id, { deleted: true })

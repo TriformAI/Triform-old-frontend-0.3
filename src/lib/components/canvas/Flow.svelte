@@ -5,6 +5,10 @@
 	import EndpointNode from '$lib/components/custom-nodes/EndpointNode.svelte'
 	import OpenFlowNode from '$lib/components/custom-nodes/OpenFlowNode.svelte'
 	import SelectorNode from '$lib/components/custom-nodes/SelectorNode.svelte'
+	import { deleteNode as deleteNodeAction } from '$lib/stores/nodeActions.svelte'
+	import { confirmStore } from '$lib/stores/confirm.svelte'
+
+	const { onClick: deleteNode } = deleteNodeAction
 
 	import {
 		addNode,
@@ -189,6 +193,38 @@
 		flow.height = (flow.measured?.height ?? 0) + 80
 		updateNodeInternals(flow.id)
 	}
+
+	const handleBeforeDelete = async ({ nodes }: { nodes: Node[] }) => {
+		const numNodes = nodes.length
+		const isMultipleNodes = numNodes > 1
+
+		// Always allow deleting of selector nodes
+		if (nodes.some(node => node.type === 'selector-node')) {
+			return true
+		}
+
+		// Don't allow deleting of endpoint nodes
+		if (nodes.find(node => node.type === 'endpoint-node')) {
+			toast.error("You can't delete an endpoint node.")
+			return false
+		}
+
+		// For other nodes – Ask user for confirmation
+		const isConfirmed = await confirmStore.show({
+			title: 'Are you sure?',
+			message: `Please confirm that you want to delete ${isMultipleNodes ? `these ${numNodes} nodes` : 'this node'}`
+		})
+
+		return isConfirmed
+	}
+
+	const useSvelteFlowObj = useSvelteFlow()
+
+	const handleDelete = async ({ nodes }: { nodes: Node[] }) => {
+		for (const node of nodes) {
+			await deleteNode(node, useSvelteFlowObj, false)
+		}
+	}
 </script>
 
 <svelte:window
@@ -230,19 +266,8 @@
 				proOptions={{ hideAttribution: true }}
 				defaultEdgeOptions={{}}
 				zoomOnDoubleClick={false}
-				onbeforedelete={async e => {
-					if (e.nodes.find(node => node.type === 'endpoint-node')) {
-						toast.error("You can't delete an endpoint node.")
-						return false
-					}
-
-					return true
-				}}
-				ondelete={e => {
-					e.nodes.forEach(node => {
-						removeNode(node.id)
-					})
-				}}
+				onbeforedelete={handleBeforeDelete}
+				ondelete={handleDelete}
 			>
 				<Background
 					bgColor="#181819"
