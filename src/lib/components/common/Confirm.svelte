@@ -9,10 +9,13 @@
 	$effect(() => {
 		if (confirmStore.active) {
 			dialog?.showModal()
+			submitBtn?.focus()
 		} else {
 			dialog?.close()
 		}
 	})
+
+	let submitBtn = $state<HTMLButtonElement>()
 </script>
 
 <Dialog
@@ -32,7 +35,15 @@
 					{confirmStore.message}
 				</p>
 
-				<div class="mt-6 flex justify-end gap-2">
+				<form
+					class="mt-6 flex justify-end gap-2"
+					method="dialog"
+					onsubmit={() => {
+						console.log('confirm')
+
+						confirmStore.confirm()
+					}}
+				>
 					<Button
 						variation="link"
 						onClick={() => {
@@ -44,24 +55,12 @@
 						{/snippet}
 					</Button>
 
-					<Button
-						variation="danger"
-						onClick={() => {
-							confirmStore.confirm()
-						}}
-					>
+					<Button variation="danger" type="submit" bind:element={submitBtn}>
 						{#snippet body()}
 							Confirm
 						{/snippet}
 					</Button>
-
-					<!-- <button
-						type="button"
-						onclick={() => {
-							confirmStore.cancel()
-						}}>Cancel</button
-					> -->
-				</div>
+				</form>
 			{/snippet}
 		</Card>
 	{/if}

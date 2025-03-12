@@ -5,20 +5,7 @@
 
 	import AutorenewIcon from '~icons/material-symbols/autorenew-rounded'
 
-	const {
-		variation = 'primary',
-		body,
-		onClick: onClickProp,
-		autoLoad,
-		icon,
-		class: classProp,
-		href,
-		target,
-		disabled,
-		tooltip,
-		tooltipPos = 'up',
-		type = 'button'
-	}: {
+	interface Props {
 		variation?: 'primary' | 'vibrant' | 'link' | 'danger'
 		// disabled
 		// href
@@ -36,7 +23,24 @@
 		tooltip?: string
 		tooltipPos?: 'up' | 'right' | 'down' | 'left'
 		type?: 'button' | 'submit' | 'reset'
-	} = $props()
+		element?: HTMLButtonElement
+	}
+
+	let {
+		variation = 'primary',
+		body,
+		onClick: onClickProp,
+		autoLoad,
+		icon,
+		class: classProp,
+		href,
+		target,
+		disabled,
+		tooltip,
+		tooltipPos = 'up',
+		type = 'button',
+		element = $bindable()
+	}: Props = $props()
 
 	const hasTextColor = ['danger'].includes(variation)
 
@@ -72,6 +76,7 @@
 </script>
 
 <button
+	bind:this={element}
 	class={[
 		variation === 'primary' &&
 			'border-main-700 bg-main-800 hover:enabled:border-main-600 hover:enabled:bg-main-700 border',
