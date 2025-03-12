@@ -60,7 +60,7 @@
 						class={[
 							'border-main-700 bg-main-900/40 pointer-events-auto h-fit w-max flex-shrink-0 rounded-t-md border py-1 pr-0 pl-5',
 							'-translate-y-full font-bold backdrop-blur-xs transition',
-							'z-10 flex flex-row justify-center gap-x-1',
+							'relative z-10 flex flex-row justify-center gap-x-1',
 							'flow_drag-handle',
 							selected ? 'text-main-200' : 'text-main-300'
 						]}
