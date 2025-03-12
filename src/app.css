@@ -164,9 +164,14 @@
 
 	/* Override svelte flow's suspicious z-stacking */
 	.svelte-flow__node {
-		transition: height 0.3s ease-out;
-		transition: height 0.35s var(--easing-out), transform 0.2s var(--easing-out);
+		transition: height 0.35s var(--easing-out), transform 0.2s var(--easing-out), opacity 0.5s var(--easing-out);
 		z-index: -1 !important;
+	}
+
+	@starting-style {
+		.svelte-flow__node {
+			opacity: 0;
+		}
 	}
 
 	.svelte-flow__node:hover {
