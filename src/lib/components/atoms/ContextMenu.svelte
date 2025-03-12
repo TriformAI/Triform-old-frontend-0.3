@@ -5,10 +5,10 @@
 	interface Props {
 		open: boolean
 		trigger: Snippet
-		menu: Snippet
+		content: Snippet
 	}
 
-	let { open = $bindable(), trigger, menu }: Props = $props()
+	let { open = $bindable(), trigger, content }: Props = $props()
 </script>
 
 <ContextMenu.Root bind:open>
@@ -18,7 +18,7 @@
 
 	<ContextMenu.Portal>
 		<ContextMenu.Content>
-			{@render menu()}
+			{@render content()}
 		</ContextMenu.Content>
 	</ContextMenu.Portal>
 </ContextMenu.Root>

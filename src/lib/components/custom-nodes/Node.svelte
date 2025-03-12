@@ -94,8 +94,8 @@
 					</button>
 				</div>
 			{/snippet}
-			{#snippet menu()}
-				<NodeActions {node} bind:isOpen={contextIsOpen} />
+			{#snippet content()}
+				<NodeActions {node} onActionClick={() => (contextIsOpen = false)} />
 			{/snippet}
 		</ContextMenu>
 	{/snippet}

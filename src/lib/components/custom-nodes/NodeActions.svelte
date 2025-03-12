@@ -7,17 +7,18 @@
 
 	interface Props {
 		node?: Node
-		isOpen: boolean
+		onActionClick?: () => void
 	}
 
-	let { node, isOpen = $bindable() }: Props = $props()
+	let { node, onActionClick }: Props = $props()
 
 	const actions = $derived(getActions(node?.type!))
 
 	const useSvelteFlow = useSvelteFlowHook()
-	const onActionClick = (fn?: onClickFn) => {
-		isOpen = false
-		fn?.(node!, useSvelteFlow)
+
+	const handleActionClick = (fn: onClickFn) => {
+		onActionClick?.()
+		fn(node!, useSvelteFlow)
 	}
 </script>
 
@@ -30,7 +31,7 @@
 	<div class="grid">
 		{#each actions as action}
 			<button
-				onclick={() => onActionClick(action.onClick)}
+				onclick={() => handleActionClick(action.onClick)}
 				type="button"
 				class={['list-btn', action.isDangerous && 'list-btn--danger']}
 			>

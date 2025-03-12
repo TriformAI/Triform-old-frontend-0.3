@@ -5,39 +5,34 @@
 	import NodeContainer from './NodeContainer.svelte'
 	import { useSvelteFlow as useSvelteFlowHook } from '@xyflow/svelte'
 	import { getActions } from '$lib/stores/nodeActions.svelte'
-	import { onMount } from 'svelte'
 	import { getNodeProps } from '$lib/stores/canvas.svelte'
-
+	import ContextMenu from '$lib/components/atoms/ContextMenu.svelte'
 	import FlowOutputHandle from './FlowOutputHandle.svelte'
 	import FlowInputHandle from './FlowInputHandle.svelte'
 
 	import IconChevron from '~icons/material-symbols/chevron-right-rounded'
+	import NodeActions from './NodeActions.svelte'
 
-	const {
-		id,
-		data,
-		selected
-	}: {
+	interface Props {
 		id: Uuid
 		data: NodeData
 		selected: boolean
-	} = $props()
+	}
+
+	const { id, data, selected }: Props = $props()
 
 	const nodeProps = $derived(getNodeProps(id))
 
 	const useSvelteFlow = useSvelteFlowHook()
 	const { getNode } = useSvelteFlow
-	let node: Node
-	onMount(() => {
-		const n = getNode(id)
-		if (n) node = n as Node
-	})
+
+	let node = $derived(getNode(id)) as Node
 
 	// I don't like how this function is defined on both GroupNode and Node, should probably consolidate them
 	const openFn = () => {
 		// Whenever a node is double clicked, run the first action menu item
 		if (!node?.type) return
-		const actions = getActions(node.type)
+		const actions = getActions(node?.type)
 		actions?.[0]?.onClick?.(node, useSvelteFlow)
 	}
 
@@ -46,6 +41,8 @@
 		const action = getActions(node.type).find(a => a.id === 'close')
 		action?.onClick?.(node, useSvelteFlow)
 	}
+
+	let contextMenuOpen = $state(false)
 </script>
 
 <NodeContainer {id} invisibleHandles={['source', 'target']}>
@@ -57,33 +54,41 @@
 				nodeProps?.creating && 'animate-pulse'
 			]}
 		>
-			<button
-				class={[
-					'border-main-700 bg-main-900/40 pointer-events-auto h-fit w-max flex-shrink-0 rounded-t-md border py-1 pr-0 pl-5',
-					'-translate-y-full font-bold backdrop-blur-xs transition',
-					'z-10 flex flex-row justify-center gap-x-1',
-					'flow_drag-handle',
-					selected ? 'text-main-200' : 'text-main-300'
-				]}
-				ondblclick={openFn}
-			>
-				<!-- <IconNetworkNode
+			<ContextMenu bind:open={contextMenuOpen}>
+				{#snippet trigger()}
+					<button
+						class={[
+							'border-main-700 bg-main-900/40 pointer-events-auto h-fit w-max flex-shrink-0 rounded-t-md border py-1 pr-0 pl-5',
+							'-translate-y-full font-bold backdrop-blur-xs transition',
+							'z-10 flex flex-row justify-center gap-x-1',
+							'flow_drag-handle',
+							selected ? 'text-main-200' : 'text-main-300'
+						]}
+						ondblclick={openFn}
+					>
+						<!-- <IconNetworkNode
 					class="text-accent-400 my-auto mb-1 h-4 drop-shadow-[0px_0px_5px_var(--color-accent-600)]"
 				/> -->
-				{data.component_name}
-				<div
-					class="text-main-400 hover:text-main-200 flex items-center self-stretch pr-3 pl-1"
-					aria-label="Close"
-					role="button"
-					tabindex="0"
-					onclick={closeFn}
-					onkeydown={e => ['Enter', ' '].includes(e.key) && closeFn()}
-					data-balloon-pos="up"
-				>
-					<IconChevron class="mt-1 rotate-90 transition" />
-				</div>
-			</button>
-			<FlowInputHandle id={`${id}:input`}></FlowInputHandle>
+						{data.component_name}
+						<div
+							class="text-main-400 hover:text-main-200 flex items-center self-stretch pr-3 pl-1"
+							aria-label="Close"
+							role="button"
+							tabindex="0"
+							onclick={closeFn}
+							onkeydown={e => ['Enter', ' '].includes(e.key) && closeFn()}
+							data-balloon-pos="up"
+						>
+							<IconChevron class="mt-1 rotate-90 transition" />
+						</div>
+					</button>
+					<FlowInputHandle id={`${id}:input`}></FlowInputHandle>
+				{/snippet}
+
+				{#snippet content()}
+					<NodeActions {node} onActionClick={() => (contextMenuOpen = false)} />
+				{/snippet}
+			</ContextMenu>
 		</div>
 		<FlowOutputHandle id={`${id}:output`} />
 	{/snippet}
