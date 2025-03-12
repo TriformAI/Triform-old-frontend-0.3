@@ -5,7 +5,6 @@
 	import { getNodeProps } from '$lib/stores/canvas.svelte'
 	import { getActions } from '$lib/stores/nodeActions.svelte'
 	import { useSvelteFlow as useSvelteFlowHook } from '@xyflow/svelte'
-
 	import ContextMenu from '$lib/components/atoms/ContextMenu.svelte'
 
 	import NodeContainer from './NodeContainer.svelte'
@@ -68,13 +67,12 @@
 				>
 					<div
 						class={[
-							'absolute -start-4 top-1/2 -translate-x-full -translate-y-1/2 text-end font-semibold transition',
-							selected ? 'text-main-200' : 'text-main-300'
+							'bg-main-900 absolute inset-x-0 -top-1 -translate-y-full truncate rounded py-0.5 text-center text-sm font-semibold transition',
+							selected ? 'text-main-300' : 'text-main-400'
 						]}
 					>
 						<span class="whitespace-nowrap">{data.component_name}</span>
 					</div>
-
 					<button
 						class={[
 							'relative flex size-20 items-center justify-center rounded-full border border-[var(--node-color)] p-2 transition-all',

@@ -49,8 +49,7 @@
 	{#snippet body()}
 		<div
 			class={[
-				'border-main-700 flex h-full w-full flex-row',
-				'justify-center rounded border text-center',
+				'border-main-700 flex h-full w-full justify-center rounded border text-center',
 				nodeProps?.creating && 'animate-pulse'
 			]}
 		>
@@ -58,9 +57,9 @@
 				{#snippet trigger()}
 					<button
 						class={[
-							'border-main-700 bg-main-900/40 pointer-events-auto h-fit w-max flex-shrink-0 rounded-t-md border py-1 pr-0 pl-5',
-							'-translate-y-full font-bold backdrop-blur-xs transition',
-							'relative z-10 flex flex-row justify-center gap-x-1',
+							'border-main-700 bg-main-900/40 pointer-events-auto rounded-t-md border py-1 ps-4 text-base',
+							'-translate-y-full font-semibold backdrop-blur-xs transition',
+							'relative z-10 flex gap-x-1',
 							'flow_drag-handle',
 							selected ? 'text-main-200' : 'text-main-300'
 						]}
