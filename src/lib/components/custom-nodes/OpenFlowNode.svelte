@@ -12,6 +12,7 @@
 	import FlowInputHandle from './FlowInputHandle.svelte'
 
 	import IconNetworkNode from '~icons/material-symbols/network-node'
+	import IconChevron from '~icons/material-symbols/chevron-right-rounded'
 
 	const {
 		id,
@@ -52,39 +53,38 @@
 	{#snippet body()}
 		<div
 			class={[
-				'border-main-300/10 bg-main-900/30 flex h-full w-full flex-row',
+				'border-main-700 bg-main-900/30 flex h-full w-full flex-row',
 				'justify-center rounded border text-center',
 				nodeProps?.creating && 'animate-pulse'
 			]}
 		>
-			<FlowInputHandle id={`${id}:input`}>
-				<button
-					class={[
-						'border-main-600/10 pointer-events-auto -mt-4 h-fit w-max flex-shrink-0 rounded border py-1 pr-1 pl-5',
-						'font-bold backdrop-blur-sm transition',
-						'flex flex-row justify-center',
-						'flow_drag-handle',
-						selected ? 'text-main-200' : 'text-main-300'
-					]}
-					ondblclick={openFn}
+			<button
+				class={[
+					'border-main-700 pointer-events-auto h-fit w-max flex-shrink-0 rounded-t-md border py-1 pr-0 pl-5',
+					'font-bold backdrop-blur-sm transition',
+					'z-10 flex -translate-y-full flex-row justify-center',
+					'flow_drag-handle',
+					selected ? 'text-main-200' : 'text-main-300'
+				]}
+				ondblclick={openFn}
+			>
+				<IconNetworkNode
+					class="text-accent-400 my-auto mb-1 h-4 drop-shadow-[0px_0px_5px_var(--color-accent-600)]"
+				/>
+				{data.component_name}
+				<div
+					class="text-main-400 hover:text-main-200 flex items-center self-stretch pr-4 pl-1"
+					aria-label="Close"
+					role="button"
+					tabindex="0"
+					onclick={closeFn}
+					onkeydown={e => ['Enter', ' '].includes(e.key) && closeFn()}
+					data-balloon-pos="up"
 				>
-					<IconNetworkNode
-						class="text-accent-400 my-auto mb-1 h-4 drop-shadow-[0px_0px_5px_var(--color-accent-600)]"
-					/>
-					{data.component_name}
-					<div
-						class="group flex items-center self-stretch pr-4 pl-1"
-						aria-label="Close"
-						role="button"
-						tabindex="0"
-						onclick={closeFn}
-						onkeydown={e => ['Enter', ' '].includes(e.key) && closeFn()}
-						data-balloon-pos="up"
-					>
-						<div class="bg-main-500 group-hover:bg-main-200 h-0.5 w-3 transition"></div>
-					</div>
-				</button>
-			</FlowInputHandle>
+					<IconChevron class="mt-1 rotate-90 transition" />
+				</div>
+			</button>
+			<FlowInputHandle id={`${id}:input`}></FlowInputHandle>
 		</div>
 		<FlowOutputHandle id={`${id}:output`} />
 	{/snippet}

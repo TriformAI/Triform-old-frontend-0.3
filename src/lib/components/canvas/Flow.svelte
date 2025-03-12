@@ -181,9 +181,7 @@
 		$edges = $edges
 	}
 
-	import { get } from 'svelte/store'
-	const handleConnectStart: OnConnectStart = (event, connectionState) => {
-		console.log('edges', JSON.stringify(get(edges), null, 2))
+	const handleConnectStart: OnConnectStart = (_event, connectionState) => {
 		const nodeId = connectionState.nodeId as Uuid
 		const node = getNode(nodeId)
 		if (!node || !node.parentId) return

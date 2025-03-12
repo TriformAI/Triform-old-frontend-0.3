@@ -8,12 +8,13 @@ const elkSettings = {
 	'elk.direction': 'DOWN',
 	'elk.algorithm': 'layered',
 	'elk.edgeRouting': 'SPLINES',
-	'elk.padding': '[top=30,left=20,bottom=20,right=20]',
+	'elk.padding': '[top=60,left=50,bottom=60,right=50]',
 	'elk.spacing.nodeNode': '150',
 	'elk.layered.spacing.edgeNodeBetweenLayers': '50',
-	'elk.layered.spacing.nodeNodeBetweenLayers': '40',
+	'elk.layered.spacing.nodeNodeBetweenLayers': '60',
 	'elk.layered.considerModelOrder.strategy': 'PREFER_NODES',
-	'elk.layered.considerModelOrder.components': 'MODEL_ORDER'
+	'elk.layered.considerModelOrder.components': 'MODEL_ORDER',
+	'elk.alignment': 'CENTER'
 }
 
 const NODE_SIZE = 80

@@ -74,7 +74,6 @@ export const parseProject = (project: Project) => {
 		const nodes: Node[] = []
 		const edges: Edge[] = []
 
-		console.log('inputs', node.component_id, node.inputs)
 		for (const input of node.inputs ?? []) {
 			// Flow inputs
 			if (input === 'parent') {
