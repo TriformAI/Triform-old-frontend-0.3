@@ -1,6 +1,6 @@
 <script lang="ts">
 	import type { Snippet } from 'svelte'
-	import CustomHandle from './CustomHandle.svelte'
+	import CustomHandle from './handles/CustomHandle.svelte'
 	import { Position } from '@xyflow/svelte'
 
 	import type { Uuid } from '$lib/types/agent'

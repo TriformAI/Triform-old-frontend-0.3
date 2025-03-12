@@ -7,8 +7,7 @@
 	import { getActions } from '$lib/stores/nodeActions.svelte'
 	import { getNodeProps } from '$lib/stores/canvas.svelte'
 	import ContextMenu from '$lib/components/atoms/ContextMenu.svelte'
-	import FlowOutputHandle from './FlowOutputHandle.svelte'
-	import FlowInputHandle from './FlowInputHandle.svelte'
+	import FlowHandle from './handles/FlowHandle.svelte'
 
 	import IconChevron from '~icons/material-symbols/chevron-right-rounded'
 	import NodeActions from './NodeActions.svelte'
@@ -81,7 +80,7 @@
 							<IconChevron class="mt-1 rotate-90 transition" />
 						</div>
 					</button>
-					<FlowInputHandle id={`${id}:input`}></FlowInputHandle>
+					<FlowHandle {id} type="input" />
 				{/snippet}
 
 				{#snippet content()}
@@ -89,6 +88,6 @@
 				{/snippet}
 			</ContextMenu>
 		</div>
-		<FlowOutputHandle id={`${id}:output`} />
+		<FlowHandle {id} type="output" />
 	{/snippet}
 </NodeContainer>
