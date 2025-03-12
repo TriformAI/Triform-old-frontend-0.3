@@ -73,6 +73,7 @@
 		0.995 43.4%,
 		1
 	);
+	--easing-out: cubic-bezier(0.25, 0, 0, 1);
 
 	--shadow-window:
 		0 0 7px 0 hsl(220deg 0% 0% / 0.05), 0 0 14px 0 hsl(220deg 0% 0% / 0.1),
@@ -164,6 +165,7 @@
 	/* Override svelte flow's suspicious z-stacking */
 	.svelte-flow__node {
 		transition: height 0.3s ease-out;
+		transition: height 0.35s var(--easing-out), transform 0.2s var(--easing-out);
 		z-index: -1 !important;
 	}
 
