@@ -5,7 +5,7 @@
 	const props = $props()
 </script>
 
-<Node {...props} class="border-warning-300">
+<Node {...props} --node-color="var(--color-warning-300)">
 	{#snippet icon()}
 		<IconEndpoint class="text-warning-400 size-6" />
 	{/snippet}

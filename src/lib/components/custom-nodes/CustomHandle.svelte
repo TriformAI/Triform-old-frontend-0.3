@@ -13,5 +13,11 @@
 </script>
 
 <div class="relative">
-	<Handle {id} {type} {position} class={['z-10 !size-2 !bg-[#000]/80', classes].join(' ')} />
+	<Handle
+		{id}
+		{type}
+		{position}
+		class={[' !bg-main-950/80 z-10 !size-2', classes].join(' ')}
+		style="border-color: color-mix(in oklab, var(--node-color) 80%, transparent)"
+	/>
 </div>

@@ -5,7 +5,7 @@
 	const props = $props()
 </script>
 
-<Node {...props}>
+<Node {...props} --node-color="var(--color-main-300)">
 	{#snippet icon()}
 		<IconAction class="text-main-300" />
 	{/snippet}

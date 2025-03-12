@@ -1,7 +1,6 @@
 <script lang="ts">
 	import ActionNode from '$lib/components/custom-nodes/ActionNode.svelte'
 	import FlowNode from '$lib/components/custom-nodes/FlowNode.svelte'
-	import ApiNode from '$lib/components/custom-nodes/ApiNode.svelte'
 	import EndpointNode from '$lib/components/custom-nodes/EndpointNode.svelte'
 	import OpenFlowNode from '$lib/components/custom-nodes/OpenFlowNode.svelte'
 	import SelectorNode from '$lib/components/custom-nodes/SelectorNode.svelte'
@@ -44,8 +43,6 @@
 		'flow-node': FlowNode,
 		// @ts-expect-error type issue, not crucial but should probs be fixed
 		'open-flow-node': OpenFlowNode,
-		// @ts-expect-error type issue, not crucial but should probs be fixed
-		'api-node': ApiNode,
 		// @ts-expect-error type issue, not crucial but should probs be fixed
 		'selector-node': SelectorNode
 	}

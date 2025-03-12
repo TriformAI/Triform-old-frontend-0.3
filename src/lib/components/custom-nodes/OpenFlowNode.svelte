@@ -11,7 +11,6 @@
 	import FlowOutputHandle from './FlowOutputHandle.svelte'
 	import FlowInputHandle from './FlowInputHandle.svelte'
 
-	import IconNetworkNode from '~icons/material-symbols/network-node'
 	import IconChevron from '~icons/material-symbols/chevron-right-rounded'
 
 	const {
@@ -53,27 +52,27 @@
 	{#snippet body()}
 		<div
 			class={[
-				'border-main-700 bg-main-900/30 flex h-full w-full flex-row',
+				'border-main-700 flex h-full w-full flex-row',
 				'justify-center rounded border text-center',
 				nodeProps?.creating && 'animate-pulse'
 			]}
 		>
 			<button
 				class={[
-					'border-main-700 pointer-events-auto h-fit w-max flex-shrink-0 rounded-t-md border py-1 pr-0 pl-5',
-					'font-bold backdrop-blur-sm transition',
-					'z-10 flex -translate-y-full flex-row justify-center',
+					'border-main-700 bg-main-900/40 pointer-events-auto h-fit w-max flex-shrink-0 rounded-t-md border py-1 pr-0 pl-5',
+					'-translate-y-full font-bold backdrop-blur-xs transition',
+					'z-10 flex flex-row justify-center gap-x-1',
 					'flow_drag-handle',
 					selected ? 'text-main-200' : 'text-main-300'
 				]}
 				ondblclick={openFn}
 			>
-				<IconNetworkNode
+				<!-- <IconNetworkNode
 					class="text-accent-400 my-auto mb-1 h-4 drop-shadow-[0px_0px_5px_var(--color-accent-600)]"
-				/>
+				/> -->
 				{data.component_name}
 				<div
-					class="text-main-400 hover:text-main-200 flex items-center self-stretch pr-4 pl-1"
+					class="text-main-400 hover:text-main-200 flex items-center self-stretch pr-3 pl-1"
 					aria-label="Close"
 					role="button"
 					tabindex="0"

@@ -68,30 +68,28 @@
 					<div
 						class="
 						absolute -start-4 top-1/2 -translate-x-full -translate-y-1/2 text-end font-semibold transition
-						{selected ? 'text-main-200' : 'text-main-300'}
+						{selected ? 'text-main-200' : 'text-main-300/95'}
 					"
 					>
 						<span class="whitespace-nowrap">{data.component_name}</span>
-						<!-- <span class="block text-xs whitespace-nowrap">{props.id}</span> -->
 					</div>
 
 					<button
 						class={[
-							'relative flex size-20 items-center justify-center rounded-full border p-2 transition-all',
-							selected && 'border-[2px] duration-100 ease-in',
+							'relative flex size-20 items-center justify-center rounded-full border border-[var(--node-color)] p-2 transition-all',
 							shape === 'circle' && 'rounded-full',
 							shape === 'square' && 'rounded-md',
-							selected && node?.type === 'endpoint-node' && 'bg-warning-900/50',
-							selected && node?.type === 'action-node' && 'bg-main-600/50',
-							selected && node?.type === 'flow-node' && 'bg-accent-900/50',
 							borderClass,
 							classes
 						]}
+						style:background-color={selected
+							? 'color-mix(in oklab, color-mix(in oklab, var(--node-color) 40%, black) 50%, transparent)'
+							: undefined}
 						ondblclickcapture={openFn}
 					>
-						{#if icon}
-							<span class="custom-node-icon-shadow">{@render icon()}</span>
-						{/if}
+						<span class="drop-shadow-[0px_0px_10px_var(--node-color)]">
+							{@render icon?.()}
+						</span>
 					</button>
 				</div>
 			</ContextMenu.Trigger>
@@ -106,11 +104,6 @@
 </NodeContainer>
 
 <style>
-	/* Bit of a hack to lower the opacity of the shadow (currentColor) */
-	:global(.custom-node-icon-shadow > *) {
-		filter: drop-shadow(0px 0px 10px currentColor);
-	}
-
 	.node-inner {
 		transition-behavior: allow-discrete;
 

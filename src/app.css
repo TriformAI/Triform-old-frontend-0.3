@@ -157,7 +157,7 @@
 	}
 
 	.svelte-flow {
-		--xy-edge-stroke: var(--color-accent-100);
+		--xy-edge-stroke: color-mix(in oklab, var(--color-main-100) 50%, transparent);
 		--xy-edge-stroke-width: 1.5px;
 	}
 
