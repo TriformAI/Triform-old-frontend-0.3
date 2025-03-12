@@ -10,14 +10,7 @@
 
 	const { onClick: deleteNode } = deleteNodeAction
 
-	import {
-		addNode,
-		edges,
-		nodes,
-		removeNode,
-		currentCanvas,
-		setNodeProps
-	} from '$lib/stores/canvas.svelte'
+	import { addNode, edges, nodes, removeNode, currentCanvas } from '$lib/stores/canvas.svelte'
 	import type { Uuid } from '$lib/types/agent'
 
 	import { untrack } from 'svelte'
@@ -37,6 +30,8 @@
 	import { toast } from 'svelte-sonner'
 	import { debounce } from '../../utils/debounce'
 	import { useSvelteFlow } from '@xyflow/svelte'
+	import { get } from 'svelte/store'
+	import type { NodeData } from '$lib/types/flow'
 
 	const { fitView, screenToFlowPosition, getNode } = useSvelteFlow()
 
@@ -147,7 +142,9 @@
 			if (!fromNode.parentId) return
 			const flow = getNode(fromNode.parentId)
 			if (!flow) return
-			flow.height = (flow.measured?.height ?? 0) - 80
+			const extended = (flow.data as NodeData).extended?.height ?? 0
+			flow.height = (flow.measured?.height ?? 0) - extended
+			flow.data.extended = { height: 0 }
 			updateNodeInternals(flow.id)
 			return
 		}
@@ -188,7 +185,20 @@
 
 		const flow = getNode(node.parentId)
 		if (!flow) return
-		flow.height = (flow.measured?.height ?? 0) + 80
+
+		// If the origin node is the furthest down of all sibling nodes, grow the flow a bit
+		const maxYPos = Math.max(
+			...get(nodes)
+				.filter(n => n.parentId === flow.id)
+				.map(n => n.position.y)
+		)
+		// Add a bit of leeway in case of rounding errors and other stuff
+		const offset = 10
+		if (node.position.y + offset < maxYPos) return
+
+		const additionalHeight = 80
+		flow.height = (flow.measured?.height ?? 0) + additionalHeight
+		flow.data.extended = { height: additionalHeight }
 		updateNodeInternals(flow.id)
 	}
 

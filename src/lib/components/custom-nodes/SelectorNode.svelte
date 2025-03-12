@@ -10,7 +10,7 @@
 	import { addAction, addFlow } from '$lib/stores/nodeActions.svelte'
 	import { clickOutside } from '$lib/utils/clickOutside'
 	import type { Uuid } from '$lib/types/agent'
-	import { type Node } from '$lib/types/flow'
+	import { type Node, type NodeData } from '$lib/types/flow'
 
 	interface Props extends NodeProps {
 		sourceNodeId: Uuid
@@ -56,7 +56,9 @@
 		if (!sourceNode?.parentId) return
 		const flow = getNode(sourceNode.parentId)
 		if (!flow) return
-		flow.height = (flow.measured?.height ?? 0) - 80
+		const extended = (flow.data as NodeData).extended?.height ?? 0
+		flow.height = (flow.measured?.height ?? 0) - extended
+		flow.data.extended = { height: 0 }
 		updateNode(flow.id, flow)
 	}
 </script>

@@ -9,6 +9,9 @@ export interface NodeData {
 	spec: Flow | Action | Endpoint
 	state?: 'success' | 'error' | 'running'
 	inputs?: TriNode['inputs']
+	extended?: {
+		height: number
+	}
 	[key: string]: unknown
 }
 
