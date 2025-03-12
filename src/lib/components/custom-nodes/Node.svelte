@@ -5,7 +5,8 @@
 	import { getNodeProps } from '$lib/stores/canvas.svelte'
 	import { getActions } from '$lib/stores/nodeActions.svelte'
 	import { useSvelteFlow as useSvelteFlowHook } from '@xyflow/svelte'
-	import { ContextMenu } from 'bits-ui'
+
+	import ContextMenu from '$lib/components/atoms/ContextMenu.svelte'
 
 	import NodeContainer from './NodeContainer.svelte'
 	import NodeActions from './NodeActions.svelte'
@@ -56,8 +57,8 @@
 
 <NodeContainer {...props} showTargetHandle={node?.type !== 'endpoint-node'}>
 	{#snippet body()}
-		<ContextMenu.Root bind:open={contextIsOpen}>
-			<ContextMenu.Trigger>
+		<ContextMenu bind:open={contextIsOpen}>
+			{#snippet trigger()}
 				<div
 					class={[
 						'node-inner transition-[transform_opacity] duration-200 ease-(--easing-circ)',
@@ -66,10 +67,10 @@
 					]}
 				>
 					<div
-						class="
-						absolute -start-4 top-1/2 -translate-x-full -translate-y-1/2 text-end font-semibold transition
-						{selected ? 'text-main-200' : 'text-main-300/95'}
-					"
+						class={[
+							'absolute -start-4 top-1/2 -translate-x-full -translate-y-1/2 text-end font-semibold transition',
+							selected ? 'text-main-200' : 'text-main-300'
+						]}
 					>
 						<span class="whitespace-nowrap">{data.component_name}</span>
 					</div>
@@ -92,14 +93,11 @@
 						</span>
 					</button>
 				</div>
-			</ContextMenu.Trigger>
-
-			<ContextMenu.Portal>
-				<ContextMenu.Content>
-					<NodeActions {node} bind:isOpen={contextIsOpen} />
-				</ContextMenu.Content>
-			</ContextMenu.Portal>
-		</ContextMenu.Root>
+			{/snippet}
+			{#snippet menu()}
+				<NodeActions {node} bind:isOpen={contextIsOpen} />
+			{/snippet}
+		</ContextMenu>
 	{/snippet}
 </NodeContainer>
 
