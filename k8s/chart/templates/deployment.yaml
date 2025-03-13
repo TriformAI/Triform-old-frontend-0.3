@@ -28,6 +28,12 @@ spec:
         env:
         - name: PORT
           value: {{ .Values.port | quote }}
+        - name: ORIGIN
+          value: {{ .Values.port | quote }}
+        - name: PROTOCOL_HEADER
+          value: x-forwarded-proto
+        - name: HOST_HEADER
+          value: x-forwarded-host
         ports:
         - containerPort: {{ .Values.port }}
           name: http

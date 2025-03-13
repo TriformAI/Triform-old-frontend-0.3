@@ -1,5 +1,6 @@
 replicas: 1
 port: 8080
+origin: https://tricore.dev
 service:
   type: ClusterIP
   annotations: {}
