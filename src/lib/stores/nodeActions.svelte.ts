@@ -94,13 +94,17 @@ export const addAction = {
 
 		console.log(node, addAsChild, newActionNode, parentId)
 
-		const { getNodes, getZoom, setCenter } = useSvelteFlow
+		const {
+			getNodes
+			// getZoom,
+			// setCenter
+		} = useSvelteFlow
 		setTimeout(() => {
 			const nodes = getNodes()
 			const pos = nodes[nodes.length - 1].position
 			if (!pos) return
-			const currentZoom = getZoom()
-			setCenter(pos.x + 40, pos.y + 100, { zoom: currentZoom, duration: 500 })
+			// const currentZoom = getZoom()
+			// setCenter(pos.x + 40, pos.y + 100, { zoom: currentZoom, duration: 500 })
 		}, 100)
 
 		return newNodeId
@@ -177,12 +181,16 @@ export const addFlow = {
 		await addNode(flowNodeId, newActionNode, newNodeId)
 
 		setTimeout(() => {
-			const { getNodes, getZoom, setCenter } = useSvelteFlow
+			const {
+				getNodes
+				// getZoom,
+				// setCenter
+			} = useSvelteFlow
 			const nodes = getNodes()
 			const pos = nodes[nodes.length - 1].position
 			if (!pos) return
-			const currentZoom = getZoom()
-			setCenter(pos.x + 40, pos.y + 100, { zoom: currentZoom, duration: 500 })
+			// const currentZoom = getZoom()
+			// setCenter(pos.x + 40, pos.y + 100, { zoom: currentZoom, duration: 500 })
 		}, 100)
 
 		return newNodeId
