@@ -22,7 +22,7 @@
 			{id}
 			type="target"
 			position={Position.Top}
-			class={[invisibleHandles.includes('target') ? 'invisible' : '']}
+			class={[invisibleHandles.includes('target') ? 'pointer-events-none invisible' : '']}
 		/>
 	{/if}
 
@@ -32,6 +32,6 @@
 		{id}
 		type="source"
 		position={Position.Bottom}
-		class={[invisibleHandles.includes('source') ? 'hidden' : '']}
+		class={[invisibleHandles.includes('source') ? 'pointer-events-none invisible' : '']}
 	/>
 </div>

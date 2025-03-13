@@ -1,4 +1,4 @@
-import { type OnConnectEnd, useSvelteFlow as svelteFlowHook } from '@xyflow/svelte'
+import { type OnConnectEnd, useSvelteFlow as svelteFlowHook, type Edge } from '@xyflow/svelte'
 import { type Node } from '$lib/types/flow'
 import { nodes, edges, updateNode, publishComponent, getNode } from '$lib/stores/canvas.svelte'
 import type { Flow, Uuid } from '$lib/types/agent'
@@ -182,7 +182,7 @@ const createNodeSelector: ConnectEnd = async (event, connectionState, useSvelteF
 		origin: [0.5, 0.0]
 	}
 
-	let newEdge
+	let newEdge: Edge
 	// Depending on the type of handle we started dragging from, we have a couple cases
 	// 1. The origin handle is an input handle, so the new node is created below as normal
 	if (fromHandle?.id?.endsWith(':input'))
@@ -204,7 +204,13 @@ const createNodeSelector: ConnectEnd = async (event, connectionState, useSvelteF
 	// But if it's dropped outside, we should create a downstream node of this flow, so a sibling basically
 	else if (fromHandle?.id?.endsWith(':output')) {
 		// For now I think it's enough that we create it outside of the flow, ie as a sibling
-		return
+		newEdge = {
+			source: sourceNodeId,
+			target: id,
+			sourceHandle: sourceNodeId,
+			id: `${sourceNodeId}:nodeSelector`
+		}
+		console.log('output')
 	}
 	// 3. The origin handle is on a node, but it's a target handle, so the new node is created "above"
 	else if (fromHandle?.type === 'target') {

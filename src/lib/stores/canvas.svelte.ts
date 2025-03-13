@@ -90,6 +90,8 @@ export const parseProject = (project: Project) => {
 			edges.push({
 				id: `${id}:${input}`,
 				source: input,
+				// Force it to connect to the right handle and not just the first one
+				sourceHandle: input,
 				target: id
 			})
 		}
