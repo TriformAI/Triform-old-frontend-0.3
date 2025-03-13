@@ -228,6 +228,15 @@ export const saveProject = async () => {
 	currentCanvas.hasUnsavedChanges = false
 }
 
+export const publishComponent = async (nodeId: Uuid | 'root') => {
+	// If the "root" component is being published, it's equal to saving the project
+	if (nodeId === 'root') return saveProject()
+	const node = await getNode(nodeId)
+	if (!node) return console.error('Could not find node to publish')
+	console.log('Publishing', node)
+	return await api.put<typeof node.spec>('components', node.spec)
+}
+
 // Generic function for applying a function to some node in the canvas
 const processNode = async (
 	id: Uuid,
@@ -357,20 +366,25 @@ export const removeNode = async (id: Uuid, parentId: Uuid | 'root' = 'root') => 
 		}
 		delete currentCanvas.project.spec.nodes[id]
 	} else {
+		const oldNode = await getNode(id)
+		if (!oldNode) return
 		// Otherwise, find the right parent to remove the child from
 		const updatedNode = await processNode(parentId, async node => {
 			// Should technically always be a flow, but we need to get typescript to recognise it
 			if (!isFlow(node)) return
 			// Now we need to find all the nodes that used to depend on this node, and change their
-			// inputs to this node's parent
+			// inputs to the old node's inputs
 			// I think for now we can just assume that all the nodes that might've depended on this node
 			// are siblings to this node. I don't think we allow inter-flow/inter-agent deps (yet)
 			for (const [childId, child] of Object.entries(node.spec.spec.nodes)) {
 				if (child.inputs?.includes(id)) {
-					child.inputs = child.inputs?.flatMap(i => (i === id ? (node.inputs ?? []) : i)) ?? []
-					await updateNode(childId as Uuid, child)
+					child.inputs =
+						child.inputs?.flatMap(input => (input === id ? (oldNode.inputs ?? []) : input)) ?? []
+					await updateNode(childId as Uuid, child, false)
 				}
 			}
+			// Remove the node from the outputs array if it's there
+			node.spec.spec.outputs = node.spec.spec.outputs?.filter(o => o !== id) ?? []
 			delete node.spec.spec.nodes[id]
 			return node
 		})

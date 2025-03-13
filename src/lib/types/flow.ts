@@ -4,9 +4,9 @@ import type { Node as XyNode } from '@xyflow/svelte'
 // Custom data passed to each node
 export interface NodeData {
 	component_name: string
-	component_version: number
+	component_version?: number
 	component_id: Uuid
-	spec: Flow | Action | Endpoint
+	spec: Flow | Action | Endpoint | Record<string, never>
 	state?: 'success' | 'error' | 'running'
 	inputs?: TriNode['inputs']
 	extended?: {
@@ -15,10 +15,16 @@ export interface NodeData {
 	[key: string]: unknown
 }
 
-export type NodeType = 'endpoint-node' | 'flow-node' | 'action-node' | 'open-flow-node'
+export type NodeType =
+	| 'endpoint-node'
+	| 'flow-node'
+	| 'action-node'
+	| 'open-flow-node'
+	| 'selector-node'
 
 export type Node = XyNode<NodeData, NodeType> & {
 	id: Uuid
+	parentId?: Uuid
 }
 
 // Visual properties of a node

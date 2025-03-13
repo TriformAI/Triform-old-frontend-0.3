@@ -21,7 +21,10 @@ import IconNetworkNode from '~icons/material-symbols/network-node'
 import IconClose from '~icons/material-symbols/close-fullscreen-rounded'
 import IconBug from '~icons/material-symbols/bug-report-outline-rounded'
 
-export type onClickFn = (node: Node, useSvelteFlow: ReturnType<typeof useSvelteFlowHook>) => void
+export type onClickFn = (
+	node: Node,
+	useSvelteFlow: ReturnType<typeof useSvelteFlowHook>
+) => Promise<Uuid | void> | void
 interface ActionItem {
 	// For when we access the items programmatically
 	id?: string
@@ -57,11 +60,16 @@ export const addAction = {
 	label: 'Create Action',
 	icon: IconAdd,
 	isDangerous: false,
-	onClick: async (node: Node, useSvelteFlow: ReturnType<typeof useSvelteFlowHook>) => {
+	onClick: async (
+		node: Node,
+		useSvelteFlow: ReturnType<typeof useSvelteFlowHook>,
+		addAsChild: boolean = false,
+		inputs?: Uuid[]
+	) => {
 		const newActionNode = {
 			component_id: crypto.randomUUID(), // so it validates
 			component_version: null,
-			inputs: [node.id],
+			inputs: inputs ?? [addAsChild ? 'parent' : node.id],
 			spec: {
 				resource: 'action/v1',
 				meta: {
@@ -80,7 +88,11 @@ export const addAction = {
 		const newActionComponent = await api.post<Action>('components', newActionNode.spec)
 		newActionNode.component_id = newActionComponent.meta.id
 		newActionNode.spec = newActionComponent
-		await addNode(node.parentId as Uuid, newActionNode, crypto.randomUUID())
+		const parentId = (addAsChild ? node.id : node.parentId) as Uuid
+		const newNodeId = crypto.randomUUID()
+		await addNode(parentId, newActionNode, newNodeId)
+
+		console.log(node, addAsChild, newActionNode, parentId)
 
 		const { getNodes, getZoom, setCenter } = useSvelteFlow
 		setTimeout(() => {
@@ -90,6 +102,8 @@ export const addAction = {
 			const currentZoom = getZoom()
 			setCenter(pos.x + 40, pos.y + 100, { zoom: currentZoom, duration: 500 })
 		}, 100)
+
+		return newNodeId
 	}
 }
 
@@ -97,12 +111,17 @@ export const addFlow = {
 	label: 'Create Flow',
 	icon: IconNetworkNode,
 	isDangerous: false,
-	onClick: async (node: Node, useSvelteFlow: ReturnType<typeof useSvelteFlowHook>) => {
+	onClick: async (
+		node: Node,
+		useSvelteFlow: ReturnType<typeof useSvelteFlowHook>,
+		addAsChild: boolean = false,
+		inputs?: Uuid[]
+	) => {
 		const flowNodeId = crypto.randomUUID()
 		const newFlowNode = {
 			component_id: crypto.randomUUID(), // so it validates
 			component_version: null,
-			inputs: [node.id],
+			inputs: inputs ?? [addAsChild ? 'parent' : node.id],
 			spec: {
 				resource: 'flow/v1',
 				meta: {
@@ -123,6 +142,7 @@ export const addFlow = {
 		const newActionNode = {
 			component_id: crypto.randomUUID(), // so it validates
 			component_version: null,
+			inputs: ['parent'],
 			spec: {
 				resource: 'action/v1',
 				meta: {
@@ -139,7 +159,7 @@ export const addFlow = {
 			}
 		} as TriNode
 		// Create components
-		// TODO: do this in addnOde maybe so the nodes can appear on the canvas quicker
+		// TODO: do this in addNode maybe so the nodes can appear on the canvas quicker
 		// and show some sort of loading state
 		const [publishedFlow, publishedAction] = await Promise.all([
 			api.post<Flow>('components', newFlowNode.spec),
@@ -150,9 +170,11 @@ export const addFlow = {
 		newActionNode.component_id = publishedAction.meta.id
 		newActionNode.spec = publishedAction
 		// Add the final flow to the parent flow (or root project)
-		await addNode(node.parentId as Uuid, newFlowNode, flowNodeId)
+		const parentId = (addAsChild ? node.id : node.parentId) as Uuid
+		await addNode(parentId, newFlowNode, flowNodeId)
 		// Add the new action to the flow
-		await addNode(flowNodeId, newActionNode, crypto.randomUUID())
+		const newNodeId = crypto.randomUUID()
+		await addNode(flowNodeId, newActionNode, newNodeId)
 
 		setTimeout(() => {
 			const { getNodes, getZoom, setCenter } = useSvelteFlow
@@ -162,6 +184,8 @@ export const addFlow = {
 			const currentZoom = getZoom()
 			setCenter(pos.x + 40, pos.y + 100, { zoom: currentZoom, duration: 500 })
 		}, 100)
+
+		return newNodeId
 	}
 }
 
@@ -174,8 +198,6 @@ export const deleteNode = {
 		useSvelteFlow: ReturnType<typeof useSvelteFlowHook>,
 		showConfirmation: boolean = true
 	) => {
-		const { fitView } = useSvelteFlow
-
 		if (showConfirmation) {
 			const isConfirmed = await confirmStore.show({
 				title: 'Are you sure?',
@@ -186,16 +208,17 @@ export const deleteNode = {
 			}
 		}
 
+		// const { fitView } = useSvelteFlow
 		// Update the node to indicate that it's being deleted, and then actually delete it after a delay
 		setNodeProps(node.id, { deleted: true })
 		setTimeout(async () => {
 			await removeNode(node.id, node.parentId as Uuid)
 			console.log('Deleted node, saving project automatically...')
 			saveProject()
-			fitView({
-				maxZoom: 1,
-				duration: 500
-			})
+			// fitView({
+			// 	maxZoom: 1,
+			// 	duration: 500
+			// })
 		}, 150)
 	}
 }

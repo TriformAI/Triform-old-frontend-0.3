@@ -4,20 +4,18 @@
 	import EndpointNode from '$lib/components/custom-nodes/EndpointNode.svelte'
 	import OpenFlowNode from '$lib/components/custom-nodes/OpenFlowNode.svelte'
 	import SelectorNode from '$lib/components/custom-nodes/SelectorNode.svelte'
+
 	import { deleteNode as deleteNodeAction } from '$lib/stores/nodeActions.svelte'
 	import { confirmStore } from '$lib/stores/confirm.svelte'
-
-	const { onClick: deleteNode } = deleteNodeAction
-
-	import { addNode, edges, nodes, removeNode, currentCanvas } from '$lib/stores/canvas.svelte'
+	import { addNode, edges, nodes, currentCanvas } from '$lib/stores/canvas.svelte'
 	import type { Uuid } from '$lib/types/agent'
-
 	import { untrack } from 'svelte'
 	import {
 		Background,
 		BackgroundVariant,
 		SvelteFlow,
 		useUpdateNodeInternals,
+		useSvelteFlow as svelteFlowHook,
 		type OnConnectEnd,
 		type OnConnectStart,
 		type Node,
@@ -28,11 +26,14 @@
 	import { getLayoutedNodes } from './layout.svelte'
 	import { toast } from 'svelte-sonner'
 	import { debounce } from '../../utils/debounce'
-	import { useSvelteFlow } from '@xyflow/svelte'
 	import { get } from 'svelte/store'
-	import type { NodeData } from '$lib/types/flow'
+	import { handleConnectEnd } from './FlowEvents/connectEnd'
+	import { isValidConnection } from './FlowEvents/isValidConnection'
 
-	const { fitView, screenToFlowPosition, getNode } = useSvelteFlow()
+	const { onClick: deleteNode } = deleteNodeAction
+
+	const useSvelteFlow = svelteFlowHook()
+	const { fitView, getNode } = useSvelteFlow
 
 	const nodeTypes: NodeTypes = {
 		// @ts-expect-error type issue, not crucial but should probs be fixed
@@ -95,17 +96,6 @@
 		})
 	})
 
-	let wrapper: HTMLElement
-
-	// For when we add a context menu, there's some trickery to be done:
-	// onMount(() => {
-	// 	wrapper
-	// 		.querySelectorAll('.draggable')
-	// 		.forEach(el =>
-	// 			el.addEventListener('mousedown', () => toggleContextMenu(false), { capture: true })
-	// 		)
-	// })
-
 	const flowIsEmpty = $derived($nodes.length === 0)
 
 	function addFirstNode() {
@@ -127,52 +117,6 @@
 		}
 
 		addNode('root', triggerNode)
-	}
-
-	const handleConnectEnd: OnConnectEnd = (event, connectionState) => {
-		const { fromNode } = connectionState
-		if (!fromNode) return
-
-		// Don't trigger the selector for valid conenctions, or
-		// if the origin of the new edge is at the top of a node
-		if (connectionState.isValid || connectionState.fromHandle?.type === 'target') {
-			if (!fromNode.parentId) return
-			const flow = getNode(fromNode.parentId)
-			if (!flow) return
-			const extended = (flow.data as NodeData).extended?.height ?? 0
-			flow.height = (flow.measured?.height ?? 0) - extended
-			flow.data.extended = { height: 0 }
-			updateNodeInternals(flow.id)
-			return
-		}
-
-		const sourceNodeId = fromNode.id as Uuid
-
-		const id = crypto.randomUUID()
-		const { clientX, clientY } = 'changedTouches' in event ? event.changedTouches[0] : event
-
-		const newNode: Node = {
-			id,
-			type: 'selector-node',
-			data: { sourceNodeId },
-			// project the screen coordinates to pane coordinates
-			position: screenToFlowPosition({
-				x: clientX,
-				y: clientY
-			}),
-			// set the origin of the new node so it is centered
-			origin: [0.5, 0.0]
-		}
-
-		$nodes.push(newNode)
-		$edges.push({
-			source: sourceNodeId,
-			target: id,
-			id: `${sourceNodeId}:${id}`
-		})
-
-		$nodes = $nodes
-		$edges = $edges
 	}
 
 	const handleConnectStart: OnConnectStart = (_event, connectionState) => {
@@ -223,11 +167,9 @@
 		return isConfirmed
 	}
 
-	const useSvelteFlowObj = useSvelteFlow()
-
 	const handleDelete = async ({ nodes }: { nodes: Node[] }) => {
 		for (const node of nodes) {
-			await deleteNode(node, useSvelteFlowObj, false)
+			await deleteNode(node, useSvelteFlow, false)
 		}
 	}
 </script>
@@ -242,7 +184,7 @@
 	}, 400)}
 />
 
-<div class="relative grid h-full w-full" bind:this={wrapper} role="application">
+<div class="relative grid h-full w-full" role="application">
 	{#if projectIsParsed}
 		{#if flowIsEmpty}
 			<div class="-mt-32 grid place-items-center gap-10 self-center">
@@ -260,13 +202,14 @@
 				{nodes}
 				{edges}
 				{nodeTypes}
+				isValidConnection={(...args) => isValidConnection(...args, useSvelteFlow)}
 				fitView
 				fitViewOptions={{
 					maxZoom: 1,
 					minZoom: 1
 				}}
 				onconnectstart={handleConnectStart}
-				onconnectend={handleConnectEnd}
+				onconnectend={(...args) => handleConnectEnd(...args, useSvelteFlow)}
 				snapGrid={[1, 1]}
 				proOptions={{ hideAttribution: true }}
 				defaultEdgeOptions={{}}

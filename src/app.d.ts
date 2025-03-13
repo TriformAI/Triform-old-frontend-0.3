@@ -25,6 +25,10 @@ declare global {
 		[P in keyof T]?: T[P] extends object ? DeepPartial<T[P]> : T[P]
 	}
 	type ValueOf<T> = T[keyof T]
+	type AddParameters<
+		TFunction extends (...args: any) => any,
+		TParameters extends [...args: any]
+	> = (...args: [...Parameters<TFunction>, ...TParameters]) => ReturnType<TFunction>
 }
 
 export {}

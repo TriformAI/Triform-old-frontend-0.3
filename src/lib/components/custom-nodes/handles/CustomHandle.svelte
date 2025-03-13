@@ -10,6 +10,9 @@
 	}
 
 	const { id, position, type, class: classes }: Props = $props()
+
+	// The handle is made with a wrapped div so we can add some invisible padding around it
+	// so the hitbox for the handle gets bigger
 </script>
 
 <div class="relative">
@@ -17,7 +20,11 @@
 		{id}
 		{type}
 		{position}
-		class={[' !bg-main-950/80 z-10 !size-2', classes].join(' ')}
-		style="border-color: color-mix(in oklab, var(--node-color) 80%, transparent)"
-	/>
+		class={['z-10 !border-none !bg-transparent p-3', classes].join(' ')}
+	>
+		<div
+			style="border-color: color-mix(in oklab, var(--node-color) 80%, transparent)"
+			class="bg-main-950/80 pointer-events-none absolute size-2 -translate-x-1/2 -translate-y-1/2 rounded-full border"
+		></div>
+	</Handle>
 </div>
