@@ -31,7 +31,7 @@ deploy:
 		echo "ERROR: GKE_CLUSTER is required. Use 'make deploy GKE_CLUSTER=<cluster>'"; \
 		exit 1; \
 	fi
-	@helm upgrade --install $(PKG_NAME) \
+	@helm secrets upgrade --install $(PKG_NAME) \
 		--values k8s/$(GKE_CLUSTER)/values.yaml \
 		--set image.tag=$(VERSION) \
 		--kube-context gke_$(PROJECT_ID)_$(GKE_REGION)_$(GKE_CLUSTER) \
