@@ -12,7 +12,7 @@
 		footer?: Snippet
 		padding?: 'default' | 'tight'
 		disableDrag?: boolean
-		onClose?: () => void
+		onClose?: () => void | Promise<boolean>
 	}
 
 	let {
@@ -37,9 +37,14 @@
 	let resizeObserver: ResizeObserver
 	let isDragging = $state(false)
 
-	const onClose = () => {
+	const onClose = async () => {
+		const confirmClose = await onCloseProp?.()
+
+		if (confirmClose === false) {
+			return
+		}
+
 		closeWindowById(id)
-		onCloseProp?.()
 	}
 
 	let dragStart = {

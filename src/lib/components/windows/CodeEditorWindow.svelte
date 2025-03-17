@@ -3,6 +3,7 @@
 	import type { Node, NodeData } from '$lib/types/flow'
 	import type { Window as WindowType } from '$lib/stores/windows.svelte'
 
+	import { confirmStore } from '$lib/stores/confirm.svelte'
 	import Button from '$lib/components/atoms/Button.svelte'
 	import LightEditor from '$lib/components/atoms/LightEditor.svelte'
 	import Tabs from '$lib/components/atoms/Tabs.svelte'
@@ -66,8 +67,10 @@
 		'README.md': '',
 		'requirements.txt': ''
 	}
+
 	let originalFiles = $state<Files>(initialFiles)
 	let files = $state<Files>(initialFiles)
+
 	const hasChangedFiles = $derived(
 		Object.entries(files).some(([key, value]) => originalFiles[key as keyof Files] !== value)
 	)
@@ -122,6 +125,7 @@
 				false
 			)
 			hasUnsavedChanges = false
+			originalFiles = Object.assign({}, files)
 		} catch (e) {
 			console.error('Failed to publish component', e)
 			toast.error('Failed to publish component')
@@ -162,9 +166,20 @@
 		isRenaming = false
 		hasUnsavedChanges = true
 	}
+
+	async function onClose() {
+		if (!isUnsaved) {
+			return true
+		}
+
+		return await confirmStore.show({
+			title: 'Are you sure?',
+			message: `You have unsaved changes. Are you sure you want to close this window?`
+		})
+	}
 </script>
 
-<Window disableDrag={isRenaming} {...props}>
+<Window disableDrag={isRenaming} {...props} {onClose}>
 	{#snippet header()}
 		<div class="w-full">
 			<span>
