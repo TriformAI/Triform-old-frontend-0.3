@@ -1,0 +1,12 @@
+apiVersion: cert-manager.io/v1
+kind: Certificate
+metadata:
+  name: dev-tricore-root
+  namespace: default
+spec:
+  dnsNames:
+  - tricore.dev
+  issuerRef:
+    kind: ClusterIssuer
+    name: letsencrypt-dns
+  secretName: dev-tricore-root-cert
