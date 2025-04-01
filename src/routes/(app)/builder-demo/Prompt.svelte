@@ -70,7 +70,7 @@
 			}
 
 			await animate('form', { opacity: 0, y: 0 }, { duration: 0.5, ease: 'circOut' })
-			await animate('#lucky-btn', { opacity: 0, y: 0 }, { duration: 0.5, ease: 'circOut' })
+			//await animate('#lucky-btn', { opacity: 0, y: 0 }, { duration: 0.5, ease: 'circOut' })
 
 			onSubmit()
 		}, 500)
@@ -95,7 +95,7 @@
 							delay={i === 0 ? 2000 : 1000}
 							{disableAnimation}
 							autoplay={true}
-							speed="fast"
+							speed="normal"
 							class="text-main-100 max-w-4/5 text-lg font-medium"
 							text={msg}
 							onComplete={async () => {
@@ -144,11 +144,11 @@
 		</form>
 	</div>
 
-	<div class="flex justify-center" data-motion>
+	<!-- <div class="flex justify-center" data-motion>
 		<button id="lucky-btn" type="button" class="btn btn--dark text-sm" onclick={goToFlow}>
 			I'm feeling lucky
 		</button>
-	</div>
+	</div> -->
 </div>
 
 <style lang="postcss">
