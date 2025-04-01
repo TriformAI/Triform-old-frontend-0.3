@@ -41,7 +41,7 @@
 							</span>
 						</h2>
 						<p class="text-main-500">
-							{project.intention}
+							{project.intention.purpose}
 						</p>
 					</div>
 				</a>

@@ -40,7 +40,11 @@ export const actions = {
 			resource: 'project/v1',
 			meta: {
 				name,
-				intention
+				intention: {
+					purpose: intention,
+					input: '',
+					output: ''
+				}
 			},
 			spec: {
 				nodes: {
