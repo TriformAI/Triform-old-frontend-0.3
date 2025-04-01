@@ -69,6 +69,7 @@
 		"elkjs": "^0.9.3",
 		"fetch-event-stream": "^0.1.5",
 		"monaco-themes": "^0.4.4",
+		"motion": "^12.6.0",
 		"prism-code-editor": "^3.4.0",
 		"svelte-headlessui": "^0.0.45",
 		"svelte-transition": "^0.0.17"

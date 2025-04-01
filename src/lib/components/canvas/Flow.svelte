@@ -30,10 +30,12 @@
 	import { handleConnectEnd } from './FlowEvents/connectEnd'
 	import { isValidConnection } from './FlowEvents/isValidConnection'
 
-	const { onClick: deleteNode } = deleteNodeAction
-
 	const useSvelteFlow = svelteFlowHook()
 	const { fitView, getNode } = useSvelteFlow
+
+	export { fitView }
+
+	const { onClick: deleteNode } = deleteNodeAction
 
 	const nodeTypes: NodeTypes = {
 		// @ts-expect-error type issue, not crucial but should probs be fixed
@@ -199,6 +201,7 @@
 			</div>
 		{:else}
 			<SvelteFlow
+				class="rounded"
 				{nodes}
 				{edges}
 				{nodeTypes}

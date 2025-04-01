@@ -20,6 +20,8 @@
 
 	// 👇 this is important! You need to import the styles for Svelte Flow to work
 	import '@xyflow/svelte/dist/style.css'
+	import PropsPanel from '$lib/components/PropsPanel.svelte'
+	import ColResizer from '$lib/components/ColResizer.svelte'
 
 	const { data } = $props()
 
@@ -58,6 +60,9 @@
 		unloadWindows()
 		// removeLocalStorageListener()
 	})
+
+	let gridContainer = $state<HTMLDivElement>()
+	let flowComponent = $state<Flow>()
 </script>
 
 <svelte:window onbeforeunload={beforeUnload} />
@@ -68,7 +73,24 @@
 			<Component {...defaultProps} {customProps} />
 		{/each}
 
-		<Flow />
+		<div
+			bind:this={gridContainer}
+			class="bg-main-800 grid h-full grid-cols-[1fr_4px_450px] gap-0.5 p-1"
+		>
+			<Flow bind:this={flowComponent} />
+
+			<ColResizer
+				{gridContainer}
+				onResizeEnd={() =>
+					flowComponent?.fitView({
+						maxZoom: 1,
+						minZoom: 1,
+						duration: 500
+					})}
+			/>
+
+			<PropsPanel />
+		</div>
 
 		<Toolbar />
 	</div>

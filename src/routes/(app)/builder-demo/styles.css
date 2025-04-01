@@ -83,7 +83,7 @@
 		0 0 10px 0 hsl(220deg 0% 0% / 0.05), 0 0 30px 0 hsl(220deg 0% 0% / 0.1),
 		0 0 30px 0 hsl(220deg 0% 0% / 0.15);
 
-	--animate-fade-in: fade-in 300ms var(--easing-circ) forwards;
+	--animate-fade-in2: fade-in 1000ms var(--easing-circ) forwards;
 
 	@keyframes fade-in {
 		0% {
@@ -98,119 +98,24 @@
 	}
 }
 
-@layer base {
-	:root {
-		interpolate-size: allow-keywords;
-	}
-
-	body {
-		@apply text-main-200 antialiased;
-
-		/* Prevent scrolling of body when a modal is open */
-		&:has(dialog[open]) {
-			@apply overflow-hidden;
-		}
-	}
-
-	button {
-		@apply inline-flex cursor-pointer items-center gap-3 font-medium outline-none;
-	}
-
-	strong {
-		@apply font-medium;
-	}
-
-	dialog {
-		&:focus {
-			outline: none;
-		}
-	}
-
-	@keyframes spin {
-		0% {
-			transform: rotate(0deg);
-		}
-
-		100% {
-			transform: rotate(360deg);
-		}
-	}
-}
-
-@utility container {
-	margin-inline: auto;
-	padding: 1.5rem;
-}
-
-@layer overrides {
-	.prism-code-editor {
-		--editor__bg: transparent !important;
-		--editor__bg-highlight: transparent !important;
-	}
-
-	.monaco-editor {
-		--vscode-editor-background: var(--color-main-800) !important;
-		--vscode-editorGutter-background: var(--color-main-800) !important;
-	}
-
-	.monaco-editor .view-overlays .current-line {
-		background: transparent !important;
-	}
-
-	.svelte-flow {
-		--xy-edge-stroke: color-mix(in oklab, var(--color-main-100) 50%, transparent);
-		--xy-edge-stroke-width: 1.5px;
-	}
-
-	/* Override svelte flow's suspicious z-stacking */
-	.svelte-flow__node:not(.dragging):not(.svelte-flow__node-selector-node) {
-		transition:
-			height 0.35s var(--easing-out),
-			transform 0.2s var(--easing-out),
-			opacity 0.5s var(--easing-out);
-		z-index: -1 !important;
-	}
-
-	/* Keep only opacity transition for the selector node */
-	.svelte-flow__node-selector-node {
-		transition: opacity 0.5s var(--easing-out);
-	}
-
-	@starting-style {
-		.svelte-flow__node {
-			opacity: 0;
-		}
-	}
-
-	.svelte-flow__node:hover {
-		position: relative;
-	}
-
-	[aria-label][data-balloon-pos]:hover:not(:active):after,
-	[aria-label][data-balloon-pos]:hover:not(:active):before {
-		transition-delay: 1s !important;
-	}
-}
-
 @layer components {
-	.tooltip-red {
-		--balloon-color: var(--color-danger-200);
-		--balloon-text-color: var(--color-danger-500);
+	.input {
+		@apply bg-main-800 border-main-700 w-full rounded border p-4 outline-none focus-visible:ring-4 focus-visible:ring-[#1D1E20];
 	}
 
-	.list-btn {
-		@apply text-main-300 hover:bg-main-800 hover:text-main-200 flex origin-center items-center gap-2 rounded px-3 py-2 whitespace-nowrap transition-all;
+	.btn {
+		@apply bg-accent-900 hover:bg-accent-950 border-accent-700 text-accent-200 rounded border px-4 py-2 font-medium transition-colors;
 	}
 
-	.list-btn--danger {
-		@apply text-danger-400 hover:text-danger-500;
+	.btn--dark {
+		@apply bg-main-800 hover:bg-main-700 border-main-700 text-main-100;
 	}
+}
 
-	.error-msg {
-		@apply bg-danger-100 text-danger-500 rounded-md p-4 text-center;
-	}
-
-	.eyebrow {
-		@apply text-main-400 border-main-800 border-b pb-2 text-xs font-semibold tracking-wide uppercase;
+@starting-style {
+	.builder-node {
+		opacity: 0;
+		transform: scale(0.5);
+		@apply transition-all;
 	}
 }
