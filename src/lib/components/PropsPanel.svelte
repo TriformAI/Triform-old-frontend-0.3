@@ -8,7 +8,7 @@
 	const nodeType = $derived(selectedNode?.type?.split('-')[0] ?? 'action')
 </script>
 
-<div class="bg-main-950 rounded p-5">
+<div class="bg-main-900 p-5">
 	{#if selectedNode}
 		<p class="grid grid-cols-[auto_1fr] items-center gap-2">
 			<NodeIcon type={nodeType} class="size-5" />

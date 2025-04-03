@@ -201,7 +201,6 @@
 			</div>
 		{:else}
 			<SvelteFlow
-				class="rounded"
 				{nodes}
 				{edges}
 				{nodeTypes}
@@ -221,11 +220,11 @@
 				ondelete={handleDelete}
 			>
 				<Background
-					bgColor="#181819"
-					patternColor="#1D1E20"
+					bgColor="#18181b"
+					patternColor="#52525c"
 					gap={20}
 					size={1}
-					variant={BackgroundVariant.Lines}
+					variant={BackgroundVariant.Dots}
 				/>
 			</SvelteFlow>
 		{/if}

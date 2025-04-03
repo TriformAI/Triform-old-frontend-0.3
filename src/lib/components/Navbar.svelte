@@ -16,9 +16,7 @@
 	// }
 </script>
 
-<header
-	class="border-b-main-800 bg-main-900 flex w-full items-center justify-between border-b px-8 py-2"
->
+<header class=" bg-main-900 flex w-full items-center justify-between px-5 py-2">
 	<div class="divide-main-800 flex flex-row items-center divide-x">
 		<a href="/" class="pr-5">
 			<img alt="Triform logo" src={logo} class="w-10" />

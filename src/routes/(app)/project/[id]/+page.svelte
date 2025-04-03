@@ -73,10 +73,7 @@
 			<Component {...defaultProps} {customProps} />
 		{/each}
 
-		<div
-			bind:this={gridContainer}
-			class="bg-main-800 grid h-full grid-cols-[1fr_4px_450px] gap-0.5 p-1"
-		>
+		<div bind:this={gridContainer} class="bg-main-800 grid h-full grid-cols-[1fr_4px_450px] pt-1">
 			<Flow bind:this={flowComponent} />
 
 			<ColResizer
