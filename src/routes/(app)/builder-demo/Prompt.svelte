@@ -121,7 +121,8 @@
 			<textarea
 				bind:this={textarea}
 				onkeydown={e => {
-					if (e.key === 'Enter' && e.metaKey) {
+					if (e.key === 'Enter') {
+						e.preventDefault()
 						sendUserMsg()
 					}
 				}}
@@ -129,7 +130,7 @@
 				bind:value={userInput}
 				data-motion
 				rows="1"
-				class="input resize-none pe-16 opacity-0"
+				class="input field-sizing-content resize-none pe-16 opacity-0"
 			></textarea>
 
 			<div class="absolute end-2 bottom-2 ms-auto" data-motion>
