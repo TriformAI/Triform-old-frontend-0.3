@@ -27,7 +27,7 @@
 		customProps: {
 			// Explicitly pass in a node id instead of node so we're forced
 			// to fetch it from the store instead so it's reactive
-			nodeId: Node['id']
+			node: Node['id']
 		}
 	}
 

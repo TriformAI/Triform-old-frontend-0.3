@@ -1,7 +1,7 @@
 <script lang="ts">
 	import logo from '$lib/images/Logo.svg'
 	import Dropdown from './common/Dropdown.svelte'
-	import { currentCanvas } from '$lib/stores/canvas.svelte'
+	import { project } from '$lib/stores/canvas.svelte'
 	// import { getTolgee } from '@tolgee/svelte'
 
 	import { page } from '$app/state'
@@ -24,9 +24,9 @@
 
 		<div>
 			<span class="text-main-300 pl-5">
-				{currentCanvas.project?.meta.name}
+				{project()?.meta.name ?? 'Projects'}
 			</span>
-			<span class="text-main-500 pl-2">{currentCanvas.hasUnsavedChanges ? '(unsaved)' : ''}</span>
+			<!-- <span class="text-main-500 pl-2">{currentProject.hasUnsavedChanges ? '(unsaved)' : ''}</span> -->
 		</div>
 	</div>
 

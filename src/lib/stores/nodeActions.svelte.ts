@@ -6,11 +6,19 @@ import { dev } from '$app/environment'
 import { SvelteMap } from 'svelte/reactivity'
 import { useSvelteFlow as useSvelteFlowHook } from '@xyflow/svelte'
 import { openWindow } from './windows.svelte'
-import { removeNode, addNode, setNodeProps, saveProject } from './canvas.svelte'
+import {
+	addChild,
+	collapseFlow,
+	expandFlow,
+	removeChild,
+	project,
+	nodes,
+	updateNode
+} from './canvas.svelte'
 import { confirmStore } from './confirm.svelte'
 import { toast } from 'svelte-sonner'
-import { API } from '$lib/api'
-const api = new API()
+import { publishComponent, createComponent } from '$lib/actions/components'
+import { saveProject } from '$lib/actions/project'
 
 import CodeEditorWindow from '$lib/components/windows/CodeEditorWindow.svelte'
 import IconTrash from '~icons/material-symbols/delete-outline'
@@ -85,14 +93,33 @@ export const addAction = {
 				}
 			}
 		} as TriNode
-		const newActionComponent = await api.post<Action>('components', newActionNode.spec)
+		const newActionComponent = await createComponent(newActionNode.spec)
 		newActionNode.component_id = newActionComponent.meta.id
 		newActionNode.spec = newActionComponent
 		const parentId = (addAsChild ? node.id : node.parentId) as Uuid
 		const newNodeId = crypto.randomUUID()
-		await addNode(parentId, newActionNode, newNodeId)
-
-		console.log(node, addAsChild, newActionNode, parentId)
+		addChild(parentId, newActionNode, newNodeId)
+		// Save parent
+		const parent = nodes[parentId]
+		if (parent) {
+			try {
+				await publishComponent(parent.data.trinode.spec)
+			} catch (e) {
+				console.error('Failed to publish parent component', e)
+				toast.error('Failed to publish parent component')
+				removeChild(newNodeId)
+			}
+		} else {
+			try {
+				const currentProject = project()
+				if (!currentProject) throw new Error('No project found')
+				await saveProject(currentProject)
+			} catch (e) {
+				console.error('Failed to save project', e)
+				toast.error('Failed to save project')
+				removeChild(newNodeId)
+			}
+		}
 
 		const {
 			getNodes
@@ -166,19 +193,41 @@ export const addFlow = {
 		// TODO: do this in addNode maybe so the nodes can appear on the canvas quicker
 		// and show some sort of loading state
 		const [publishedFlow, publishedAction] = await Promise.all([
-			api.post<Flow>('components', newFlowNode.spec),
-			api.post<Action>('components', newActionNode.spec)
+			createComponent(newFlowNode.spec),
+			createComponent(newActionNode.spec)
 		])
 		newFlowNode.component_id = publishedFlow.meta.id
-		newFlowNode.spec = publishedFlow
+		newFlowNode.spec = publishedFlow as Flow
 		newActionNode.component_id = publishedAction.meta.id
 		newActionNode.spec = publishedAction
 		// Add the final flow to the parent flow (or root project)
 		const parentId = (addAsChild ? node.id : node.parentId) as Uuid
-		await addNode(parentId, newFlowNode, flowNodeId)
+		addChild(parentId, newFlowNode, flowNodeId)
 		// Add the new action to the flow
 		const newNodeId = crypto.randomUUID()
-		await addNode(flowNodeId, newActionNode, newNodeId)
+		addChild(flowNodeId, newActionNode, newNodeId)
+
+		// Save parent
+		const parent = nodes[parentId]
+		if (parent) {
+			try {
+				await publishComponent(parent.data.trinode.spec)
+			} catch (e) {
+				console.error('Failed to publish parent component', e)
+				toast.error('Failed to publish parent component')
+				removeChild(newNodeId)
+			}
+		} else {
+			try {
+				const currentProject = project()
+				if (!currentProject) throw new Error('No project found')
+				await saveProject(currentProject)
+			} catch (e) {
+				console.error('Failed to save project', e)
+				toast.error('Failed to save project')
+				removeChild(newNodeId)
+			}
+		}
 
 		setTimeout(() => {
 			const {
@@ -218,11 +267,38 @@ export const deleteNode = {
 
 		// const { fitView } = useSvelteFlow
 		// Update the node to indicate that it's being deleted, and then actually delete it after a delay
-		setNodeProps(node.id, { deleted: true })
+		node.data.props.deleted = true
 		setTimeout(async () => {
-			await removeNode(node.id, node.parentId as Uuid)
-			console.log('Deleted node, saving project automatically...')
-			saveProject()
+			const previousNodes = removeChild(node.id)
+
+			const revert = () => {
+				addChild(parent.id, node.data.trinode, node.id)
+				for (const [id, previous] of previousNodes) {
+					updateNode(id, previous)
+				}
+			}
+
+			const parent = structuredClone($state.snapshot(nodes[node.parentId as Uuid]))
+			if (parent) {
+				try {
+					await publishComponent(parent.data.trinode.spec)
+				} catch (e) {
+					console.error('Failed to publish parent component', e)
+					toast.error('Failed to publish parent component')
+					revert()
+				}
+			} else {
+				try {
+					const currentProject = project()
+					if (!currentProject) throw new Error('No project found')
+					await saveProject(currentProject)
+				} catch (e) {
+					console.error('Failed to save project', e)
+					toast.error('Failed to save project')
+					revert()
+				}
+			}
+
 			// fitView({
 			// 	maxZoom: 1,
 			// 	duration: 500
@@ -263,7 +339,7 @@ actionsMapStore.set('flow-node', [
 		isDangerous: false,
 		onClick: (node: Node, _useSvelteFlow: ReturnType<typeof useSvelteFlowHook>) => {
 			if (!node) return
-			setNodeProps(node.id, { expanded: true })
+			expandFlow(node.id)
 		}
 	},
 	addAction,
@@ -279,7 +355,7 @@ actionsMapStore.set('open-flow-node', [
 		isDangerous: false,
 		onClick: (node: Node, _useSvelteFlow: ReturnType<typeof useSvelteFlowHook>) => {
 			if (!node) return
-			setNodeProps(node.id, { expanded: false })
+			collapseFlow(node.id)
 		}
 	},
 	getDebugData

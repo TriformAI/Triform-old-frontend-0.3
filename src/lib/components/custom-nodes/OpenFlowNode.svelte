@@ -5,7 +5,6 @@
 	import NodeContainer from './NodeContainer.svelte'
 	import { useSvelteFlow as useSvelteFlowHook } from '@xyflow/svelte'
 	import { getActions } from '$lib/stores/nodeActions.svelte'
-	import { getNodeProps } from '$lib/stores/canvas.svelte'
 	import ContextMenu from '$lib/components/atoms/ContextMenu.svelte'
 	import FlowHandle from './handles/FlowHandle.svelte'
 
@@ -19,8 +18,6 @@
 	}
 
 	const { id, data, selected }: Props = $props()
-
-	const nodeProps = $derived(getNodeProps(id))
 
 	const useSvelteFlow = useSvelteFlowHook()
 	const { getNode } = useSvelteFlow
@@ -49,7 +46,7 @@
 		<div
 			class={[
 				'border-main-700 flex h-full w-full justify-center rounded border text-center',
-				nodeProps?.creating && 'animate-pulse'
+				node?.data.props.creating && 'animate-pulse'
 			]}
 		>
 			<ContextMenu bind:open={contextMenuOpen}>
@@ -67,7 +64,7 @@
 						<!-- <IconNetworkNode
 					class="text-accent-400 my-auto mb-1 h-4 drop-shadow-[0px_0px_5px_var(--color-accent-600)]"
 				/> -->
-						{data.component_name}
+						{data.trinode.spec.meta.name}
 						<div
 							class="text-main-400 hover:text-main-200 flex items-center self-stretch pr-3 pl-1"
 							aria-label="Close"

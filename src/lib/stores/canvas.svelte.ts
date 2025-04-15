@@ -1,424 +1,365 @@
 import type {
-	Node as TriNode, // as to not conflict with @xyflow/svelte
+	Node as TriNode, // as to not conflict with Node (used for @xyflow/svelte)
 	Flow,
 	Action,
 	Uuid
 } from '$lib/types/agent'
-import { writable, get } from 'svelte/store'
+import { defaultProps } from '$lib/types/flow'
 import type { Project } from '$lib/types/project'
-import type { Node, NodeProps } from '$lib/types/flow'
+import type { Node, TemporaryNode } from '$lib/types/flow'
 import { type Edge } from '@xyflow/svelte'
-import type { Node as FlowNode } from '$lib/types/flow'
-import { SvelteMap } from 'svelte/reactivity'
-import { API } from '$lib/api'
-import { toast } from 'svelte-sonner'
+import { filterInPlace } from '$lib/utils/filterInPlace'
+import { arraysDiffer } from '$lib/utils/arraysDiffer'
+import { writable } from 'svelte/store'
 
-const api = new API()
+export const nodes = $state<Record<Uuid, Node>>({})
+export const edges = $state<Edge[]>([])
 
-export type ParsedGraph = {
-	nodes: Node[]
+// Whenever the nodes store changes, auto layout everything
+// Also used for updating the writable store that svelte flow requires
+export const nodesStore = writable<(Node | TemporaryNode)[]>([])
+export const edgesStore = writable<Edge[]>([])
+
+// ideally mostly just used for metadata
+// but also for updating top-level nodes, so we can basically just
+// serialize this when we need to save the full project (quite rare)
+let currentProject = $state<Project>()
+export const project = () => currentProject
+
+// Whenever updateNode is ran, these listeners will trigger
+// Primarily used to propogate updates to svelte flow's internals
+const updateNodeListeners = $state<Map<Uuid, (id: Uuid) => void>>(new Map())
+export const registerUpdateNodeListener = (listener: (id: Uuid) => void) => {
+	const id = crypto.randomUUID()
+	updateNodeListeners.set(id, listener)
+	return () => {
+		updateNodeListeners.delete(id)
+	}
+}
+
+const parseNode = (
+	node: TriNode,
+	id: Uuid,
+	parentId?: Uuid
+): {
+	node: Node
 	edges: Edge[]
+} => {
+	let newNode: Node
+	const newEdges: Edge[] = []
+
+	for (const input of node.inputs ?? []) {
+		// Flow inputs
+		if (input === 'parent') {
+			if (!parentId) continue
+			newEdges.push({
+				id: `${id}:${parentId}:input`,
+				source: parentId,
+				sourceHandle: `${parentId}:input`,
+				target: id
+			})
+			continue
+		}
+		// Normal edges
+		newEdges.push({
+			id: `${id}:${input}`,
+			source: input,
+			// Force it to connect to the right handle and not just the first one
+			sourceHandle: input,
+			target: id
+		})
+	}
+
+	if (isAction(node)) {
+		newNode = {
+			id,
+			type: 'action-node',
+			parentId,
+			draggable: false,
+			position: { x: 0, y: 0 },
+			extent: parentId ? 'parent' : undefined,
+			data: {
+				trinode: node,
+				props: { ...defaultProps }
+			}
+		}
+	} else if (isFlow(node)) {
+		newNode = {
+			id,
+			type: 'flow-node',
+			draggable: false,
+			position: { x: 0, y: 0 },
+			parentId,
+			extent: parentId ? 'parent' : undefined,
+			data: {
+				trinode: node,
+				isExpanded: false,
+				props: { ...defaultProps }
+			}
+		}
+
+		// Add edges for the flow outputs
+		for (const source of node.spec.spec.outputs) {
+			newEdges.push({
+				id: `${source}:${id}:output`,
+				source,
+				target: id,
+				targetHandle: `${id}:output`
+			})
+		}
+	} else if (isEndpoint(node)) {
+		newNode = {
+			id,
+			type: 'endpoint-node',
+			dragHandle: undefined,
+			style: undefined,
+			draggable: false,
+			position: { x: 0, y: 0 },
+			parentId,
+			extent: parentId ? 'parent' : undefined,
+			data: {
+				trinode: node,
+				props: { ...defaultProps }
+			}
+		}
+	} else throw new Error(`Unknown node type ${node.resource}`)
+
+	return {
+		node: newNode,
+		edges: newEdges
+	}
 }
 
-// The currently shown resource should always be an agent
-// The agent can have nested agents and actions, in sequence or parallel
-export interface Canvas {
-	project?: Project
-	// Visual properties of the rendered nodes (frontend-only thing)
-	nodeProps: SvelteMap<Uuid, NodeProps>
-	hasUnsavedChanges: boolean
-	// For when we want multiple tabs:
-	// id: string,
-	// label: string,
+export const parseNodes = (nodes: Record<Uuid, TriNode>, parentId?: Uuid) =>
+	Object.entries(nodes)
+		.map(([id, node]) => parseNode(node, id as Uuid, parentId))
+		.reduce(
+			(acc, curr) => ({ nodes: [...acc.nodes, curr.node], edges: [...acc.edges, ...curr.edges] }),
+			{
+				nodes: [] as Node[],
+				edges: [] as Edge[]
+			}
+		)
+
+export const loadProject = (project: Project) => {
+	console.log('loading project', project)
+	if (!project?.spec?.nodes) return
+	// Load in the top-level nodes
+	const { nodes: parsedNodes, edges: parsedEdges } = parseNodes(project.spec.nodes)
+
+	for (const node of parsedNodes) {
+		nodes[node.id] = node
+	}
+	edges.push(...parsedEdges)
+	currentProject = project
 }
 
-export const nodes = writable<FlowNode[]>([])
-export const edges = writable<Edge[]>([])
-
-const defaultProps: NodeProps = {
-	expanded: false,
-	deleted: false,
-	// TODO. rename this to loading/processing or something maybe
-	creating: false
+export const unloadProject = () => {
+	Object.assign(nodes, {})
+	edges.length = 0
+	currentProject = undefined
 }
 
-export const currentCanvas = $state<Canvas>({
-	project: undefined,
-	nodeProps: new SvelteMap(),
-	hasUnsavedChanges: false
-})
+// Expands a single flow node, adding its children to the canvas
+export const expandFlow = (id: Uuid) => {
+	const parent = nodes[id]
+	if (!parent || !isFlow(parent.data.trinode) || parent.data.isExpanded) return
 
-export const setNodeProps = (id: Uuid, props: Partial<NodeProps>) => {
-	let propsRef = currentCanvas?.nodeProps.get(id)
-	if (!propsRef) propsRef = defaultProps
-	const newProps = Object.assign({}, propsRef, props)
-	currentCanvas?.nodeProps.set(id, newProps)
+	const { nodes: parsedNodes, edges: parsedEdges } = parseNodes(
+		parent.data.trinode.spec.spec.nodes,
+		id
+	)
+
+	// Replace the closed flow node w/ the open one instead
+	const oldNode = nodes[id]
+
+	if (!oldNode) {
+		return
+	}
+
+	Object.assign(oldNode, {
+		type: 'open-flow-node',
+		data: {
+			...oldNode.data,
+			isExpanded: true
+		}
+	})
+
+	// Add all the new child nodes to the canvas
+	for (const node of parsedNodes) nodes[node.id] = node
+	edges.push(...parsedEdges)
+
+	// Add the edges for the parent flow as well (the output are defined on the parent)
+	const { edges: parentEdges } = parseNode(parent.data.trinode, id, parent.parentId)
+	const currentEdges = new Set($state.snapshot(edges).map(e => e.id))
+	edges.push(...parentEdges.filter(e => !currentEdges.has(e.id)))
 }
 
-export const getNodeProps = (id: Uuid): NodeProps | undefined => currentCanvas?.nodeProps.get(id)
+// Collapses a single flow node, removing its children from the canvas
+export const collapseFlow = (id: Uuid) => {
+	let parent = nodes[id]
+	if (!parent || !isFlow(parent.data.trinode) || !parent.data.isExpanded) return
+
+	// Delete all the children from the canvas
+	const children = Object.keys(parent.data.trinode.spec.spec.nodes)
+	for (const childId of children) {
+		delete nodes[childId as Uuid]
+		filterInPlace(edges, e => e.source !== childId && e.target !== childId)
+	}
+
+	// Replace the open flow node w/ the closed one instead
+	parent = nodes[id]
+
+	Object.assign(nodes[id], {
+		type: 'flow-node',
+		data: {
+			...parent.data,
+			isExpanded: false
+		}
+	})
+}
+
+// Updates only the TriNode data of a node
+// We can't use DeepPartial because we store nodes in an object, and assigning
+// that won't let us remove properties, so better to just pass in the full data
+export const updateNode = (id: Uuid, updatedNode: TriNode): TriNode => {
+	const node = nodes[id]
+	if (!node) throw new Error(`Tried to update non-existent node ${id}`)
+
+	const previous = structuredClone($state.snapshot(node.data.trinode))
+
+	Object.assign(node, {
+		...node,
+		data: {
+			...node.data,
+			trinode: updatedNode
+		}
+	})
+
+	// Check if we need to modify the edges in any way
+	if (
+		arraysDiffer(previous.inputs ?? [], updatedNode.inputs ?? []) ||
+		(isFlow(previous) &&
+			isFlow(updatedNode) &&
+			arraysDiffer(previous.spec.spec.outputs ?? [], updatedNode.spec.spec.outputs ?? []))
+	) {
+		// Replace the old edges with the new ones
+		// This could probably be optimised further by only replacing the edges that have actually changed
+		const { edges: oldEdges } = parseNode(previous, id, node.parentId)
+		const { edges: newEdges } = parseNode(updatedNode, id, node.parentId)
+		const oldEdgeIds = oldEdges.map(e => e.id)
+		filterInPlace(edges, e => !oldEdgeIds.includes(e.id))
+		edges.push(...newEdges)
+	}
+
+	// Trigger an update in svelte flow's internals
+	for (const listener of updateNodeListeners.values()) listener(id)
+
+	// Return the previous node so we can revert if needed
+	return previous
+}
+
+// Adds a child to a flow
+export const addChild = (
+	parentId: Uuid | 'project' = 'project',
+	child: TriNode,
+	childId_?: Uuid
+) => {
+	const childId = childId_ ?? crypto.randomUUID() // fallback to random id if none was provided
+	if (parentId === 'project') {
+		const { node: parsedNode, edges: parsedEdges } = parseNode(child, childId)
+		nodes[childId] = parsedNode
+		edges.push(...parsedEdges)
+	} else {
+		// Adding a child to a flow
+		const parent = nodes[parentId]
+
+		if (!parent || !isFlow(parent.data.trinode))
+			throw new Error('Parent does not exist or is not a flow')
+
+		parent.data.trinode.spec.spec.nodes[childId] = child
+		updateNode(parentId, parent.data.trinode)
+		// If the parent was expanded, we need to add the child as well
+		const { node: parsedNode, edges: parsedEdges } = parseNode(child, childId, parentId)
+		nodes[childId] = parsedNode
+		edges.push(...parsedEdges)
+	}
+}
+
+export const removeChild = (childId: Uuid) => {
+	const child = nodes[childId]
+	if (!child) throw new Error(`Tried to remove non-existent node ${childId}`)
+
+	// Store the previous states of all nodes so we can revert them if needed
+	const updatedNodes = new Map()
+
+	const parentId = child.parentId
+
+	// Remove all the edges that have anything to do with this node
+	// TODO: make it smarter (again) so it jumps edges when removing
+	// we can copy the code that I wrote the last time (but keeping it simple for now)
+	filterInPlace(edges, e => e.source !== childId && e.target !== childId)
+
+	let parent = parentId ? $state.snapshot(nodes[parentId]) : undefined
+	if (parent && !isFlow(parent.data.trinode)) {
+		throw new Error(`Child ${childId} does not have a flow as a parent`)
+	}
+	// Clone it so we don't modify the original before we commit the updates with updateNode
+	parent = structuredClone(parent)
+	// Find all nodes that used to depend on this node and change their inputs
+	// to this node's old input instead
+	// For now we can probably assume that all eventual dependencies are siblings, as we
+	// don't allow inter-flow connections (yet)
+	const possibleDependencies: [string, TriNode][] = parent
+		? // If parent is a flow, just use the nodes in the flow
+			Object.entries((parent.data.trinode.spec as Flow).spec.nodes)
+		: // If it's a top-level node, use the other top-level nodes in the project
+			Object.entries(nodes)
+				.filter(([_id, n]) => !n.parentId)
+				.map(([id, n]) => [id, n.data.trinode])
+	for (const [nodeId, node] of possibleDependencies) {
+		if (node.inputs?.includes(childId)) {
+			node.inputs = node.inputs.flatMap(input =>
+				input === childId ? (child.data.trinode.inputs ?? []) : input
+			)
+			const previous = updateNode(nodeId as Uuid, node)
+			updatedNodes.set(nodeId as Uuid, previous)
+		}
+	}
+
+	if (
+		!parent ||
+		// pleasing typescript:
+		!parentId
+	) {
+		// If there's no parent, it's a top-level project node
+		delete nodes[childId]
+	} else {
+		// Part of a flow
+		if (!parent || !isFlow(parent.data.trinode)) {
+			throw new Error(`Tried to remove non-existent node ${childId}`)
+		}
+
+		// If the node used to be connected to the output, we need to connect its old inputs to the output
+		const outputs = parent.data.trinode.spec.spec.outputs
+		if (outputs.includes(childId)) {
+			filterInPlace(outputs, o => o !== childId)
+			const inputs = (child.data.trinode.inputs ?? []).filter(i => i !== 'parent')
+			parent.data.trinode.spec.spec.outputs = [...new Set([...outputs, ...inputs])]
+		}
+
+		delete parent.data.trinode.spec.spec.nodes[childId]
+		const previous = updateNode(parentId, parent.data.trinode)
+		updatedNodes.set(parentId, previous)
+		delete nodes[childId]
+	}
+
+	return updatedNodes
+}
 
 const isEndpoint = (node: TriNode): node is TriNode & { spec: Action } =>
 	node.spec.resource === 'endpoint/v1'
 const isAction = (node: TriNode): node is TriNode & { spec: Action } =>
 	node.spec.resource === 'action/v1'
-const isFlow = (node: TriNode): node is TriNode & { spec: Flow } => node.spec.resource === 'flow/v1'
-
-export const parseProject = (project: Project) => {
-	// Keep selected nodes even when re-parsing the project
-	const selectedNodes = new Set(
-		get(nodes)
-			.filter(n => n.selected)
-			.map(n => n.id)
-	)
-	const parseNode = (node: TriNode, id: Uuid, parentId?: Uuid): ParsedGraph => {
-		const nodes: Node[] = []
-		const edges: Edge[] = []
-
-		for (const input of node.inputs ?? []) {
-			// Flow inputs
-			if (input === 'parent') {
-				if (!parentId) continue
-				edges.push({
-					id: `${id}:${parentId}:input`,
-					source: parentId,
-					sourceHandle: `${parentId}:input`,
-					target: id
-				})
-				continue
-			}
-			// Normal edges
-			edges.push({
-				id: `${id}:${input}`,
-				source: input,
-				// Force it to connect to the right handle and not just the first one
-				sourceHandle: input,
-				target: id
-			})
-		}
-
-		if (isAction(node)) {
-			const isOpen = parentId && getNodeProps(parentId)?.expanded
-			nodes.push({
-				id,
-				type: 'action-node',
-				parentId,
-				// Limits the movement to within the flow
-				extent: isOpen ? 'parent' : undefined,
-				draggable: false,
-				position: { x: 0, y: 0 },
-				selected: selectedNodes.has(id),
-				data: {
-					spec: {
-						...node.spec,
-						spec: {
-							// Delete checksum for now
-							// We'll need it later for the execution, but only if the requirements.txt
-							// stays constant. But for now we'll leave it out and let the backend calculate
-							// it on the fly instead...
-							checksum: '',
-							...node.spec.spec
-						}
-					},
-					inputs: node.inputs,
-					component_name: node.spec.meta.name,
-					component_id: node.component_id,
-					component_version: node.component_version ?? -1
-				}
-			})
-		} else if (isFlow(node)) {
-			const isOpen = getNodeProps(id)?.expanded
-			nodes.push({
-				id,
-				type: isOpen ? 'open-flow-node' : 'flow-node',
-				dragHandle: isOpen ? '.flow_drag-handle' : undefined,
-				style: isOpen ? 'pointer-events: none' : undefined,
-				draggable: false,
-				selected: selectedNodes.has(id),
-				position: { x: 0, y: 0 },
-				parentId,
-				extent: parentId ? 'parent' : undefined,
-				data: {
-					spec: node.spec,
-					inputs: node.inputs,
-					component_name: node.spec.meta.name,
-					component_id: node.spec.meta.id,
-					component_version: node.spec.meta.version
-				}
-			})
-
-			if (!isOpen) return { nodes, edges }
-
-			for (const [childId, child] of Object.entries(node.spec.spec.nodes)) {
-				const { nodes: childNodes, edges: childEdges } = parseNode(child, childId as Uuid, id)
-				nodes.push(...childNodes)
-				edges.push(...childEdges)
-			}
-
-			// Add edges for the flow outputs
-			for (const source of node.spec.spec.outputs) {
-				edges.push({
-					id: `${source}:${id}:output`,
-					source,
-					target: id,
-					targetHandle: `${id}:output`
-				})
-			}
-		} else if (isEndpoint(node)) {
-			nodes.push({
-				id,
-				type: 'endpoint-node',
-				dragHandle: undefined,
-				style: undefined,
-				draggable: false,
-				selected: selectedNodes.has(id),
-				position: { x: 0, y: 0 },
-				parentId,
-				extent: parentId ? 'parent' : undefined,
-				data: {
-					spec: node.spec,
-					// can't have any inputs (for now)
-					component_name: node.spec.meta.name,
-					component_id: node.spec.meta.id,
-					component_version: node.spec.meta.version
-				}
-			})
-		} else throw new Error(`Unknown node type ${node.resource}`)
-
-		return {
-			nodes,
-			edges
-		}
-	}
-
-	return Object.entries(project.spec.nodes)
-		.map(([id, node]) => parseNode(node, id as Uuid))
-		.reduce(
-			(acc, curr) => ({
-				nodes: [...acc.nodes, ...curr.nodes],
-				edges: [...acc.edges, ...curr.edges]
-			}),
-			{ nodes: [], edges: [] }
-		)
-}
-
-export const loadProject = (project: Project, initialLoad: boolean) => {
-	// Since we only support one tab for now, replace the entire store
-	currentCanvas.project = project
-	// Reset the node props
-	if (initialLoad) currentCanvas.nodeProps.clear()
-
-	console.log('Loaded project', project)
-}
-
-export const unloadProject = () => {
-	currentCanvas.project = undefined
-	currentCanvas.nodeProps.clear()
-	currentCanvas.hasUnsavedChanges = false
-}
-
-export const saveProject = async () => {
-	if (!currentCanvas.project) return
-
-	// TODO: make this return the fully resolved project so we can reload the local representation
-	const newProject = await api.put<Project>(
-		`projects/${currentCanvas.project.meta.id}`,
-		currentCanvas.project
-	)
-	// Load new project without resetting visual props
-	// loadProject(newProject, false)
-	console.log('saved project', newProject)
-	currentCanvas.hasUnsavedChanges = false
-}
-
-export const publishComponent = async (nodeId: Uuid | 'root') => {
-	// If the "root" component is being published, it's equal to saving the project
-	if (nodeId === 'root') return saveProject()
-	const node = await getNode(nodeId)
-	if (!node) return console.error('Could not find node to publish')
-	console.log('Publishing', node)
-	return await api.put<typeof node.spec>('components', node.spec)
-}
-
-// Generic function for applying a function to some node in the canvas
-const processNode = async (
-	id: Uuid,
-	fn: (node: TriNode, nodeId?: Uuid) => Promise<Partial<TriNode> | undefined>
-): Promise<TriNode | undefined> => {
-	let updatedNode: TriNode | undefined = undefined
-	const process = async (node: TriNode, nodeId: Uuid) => {
-		if (nodeId === id) {
-			Object.assign(node, await fn(node, nodeId))
-			updatedNode = node
-			return
-		}
-
-		if (isFlow(node)) {
-			if (!('spec' in node)) return
-			for (const [childId, child] of Object.entries(node.spec.spec.nodes))
-				await process(child, childId as Uuid)
-		}
-		// Currently we only support updating children of agents so don't do anything else here
-	}
-
-	for (const [nodeId, node] of Object.entries(currentCanvas.project?.spec.nodes ?? {})) {
-		await process(node, nodeId as Uuid)
-	}
-
-	return updatedNode
-}
-
-export const getNode = (id: Uuid): Promise<TriNode | undefined> =>
-	processNode(id, async node => node)
-
-export const updateNode = async (
-	id: Uuid,
-	updatedNode: Partial<TriNode>,
-	triggerUnsavedChanges = true
-) => {
-	currentCanvas.hasUnsavedChanges = currentCanvas.hasUnsavedChanges || triggerUnsavedChanges
-	// Update node "locally" too
-	nodes.update(nodes => {
-		return nodes.map(n => {
-			if (n.id !== id) return n
-			n.data = Object.assign(n.data, updatedNode)
-			return n
-		})
-	})
-	// Update it in the project
-	return await processNode(id, async () => updatedNode)
-}
-
-export const addNode = async (
-	parentId: Uuid | 'root' = 'root',
-	newNode: TriNode,
-	newNodeId?: Uuid
-) => {
-	if (!currentCanvas.project) return
-	const nodeId = newNodeId ?? crypto.randomUUID()
-
-	if (!newNode) {
-		toast.error('No node provided')
-		throw new Error('No node provided to addNode')
-	}
-
-	// If the parentId is "root", add it to the project as a root level node
-	if (parentId === 'root') {
-		currentCanvas.project.spec.nodes[nodeId] = newNode
-		// if the parent is the root, save project
-		// currentCanvas.hasUnsavedChanges = true
-		await saveProject()
-	} else {
-		const parentNode = await getNode(parentId)
-		if (!parentNode || !isFlow(parentNode)) {
-			toast.error('You can only add children to flows')
-			return
-		}
-		// Find the right parent to add the child to
-		const updatedNode = await processNode(parentId, async node => {
-			// If the parent isn't an agent, we can't add children to it
-			if (!isFlow(node)) {
-				console.error('Not a flow!')
-				toast.error('Not a flow!')
-				return
-			}
-			node.spec.spec.nodes[nodeId] = newNode
-			return node
-		})
-		// in case shit hit the fan and the node was somehow not found (really shouldnt happen cause we check for it first, but...)
-		// (should always be a flow, but for type safety)
-		if (!updatedNode || !isFlow(updatedNode)) {
-			toast.error('Failed to add child')
-			return
-		}
-		try {
-			// parent flow needs to be published now that its content has changed
-			setNodeProps(parentId, { creating: true })
-			await api.put<Flow>(`components`, updatedNode.spec)
-			setNodeProps(parentId, { creating: false })
-		} catch (e) {
-			console.error('Failed to publish flow', e)
-			toast.error('Failed to publish flow')
-			return
-		}
-	}
-}
-
-// TODO: make this update a local tree or something first before committing
-// to the real one, since this will trigger quite a few layouts of the
-// rendered tree, basically every time we update a node
-export const removeNode = async (id: Uuid, parentId: Uuid | 'root' = 'root') => {
-	if (!currentCanvas.project) return
-	// If it's a root node, remove it
-	if (parentId === 'root') {
-		if (!currentCanvas.project.spec.nodes[id]) {
-			toast.error('Node not found')
-			console.error(`Node ${id} was not found in the root of the project`)
-			return
-		}
-		const nodeToDelete = currentCanvas.project.spec.nodes[id]
-		// Update all the nodes that depended on this node
-		for (const [nodeId, node] of Object.entries(currentCanvas.project.spec.nodes)) {
-			if (node.inputs?.includes(id)) {
-				// Any node with the old node as parent, should instead get the old nodes parent(s)
-				node.inputs = node.inputs?.flatMap(i => (i === id ? (nodeToDelete.inputs ?? []) : i)) ?? []
-				// We should make some kind of generic processNodes / updateNodes that take in a predicate/filter
-				// for which nodes it should update
-				await updateNode(nodeId as Uuid, node)
-			}
-		}
-		delete currentCanvas.project.spec.nodes[id]
-	} else {
-		const oldNode = await getNode(id)
-		if (!oldNode) return
-		// Otherwise, find the right parent to remove the child from
-		const updatedNode = await processNode(parentId, async node => {
-			// Should technically always be a flow, but we need to get typescript to recognise it
-			if (!isFlow(node)) return
-			// Now we need to find all the nodes that used to depend on this node, and change their
-			// inputs to the old node's inputs
-			// I think for now we can just assume that all the nodes that might've depended on this node
-			// are siblings to this node. I don't think we allow inter-flow/inter-agent deps (yet)
-			for (const [childId, child] of Object.entries(node.spec.spec.nodes)) {
-				if (child.inputs?.includes(id)) {
-					child.inputs =
-						child.inputs?.flatMap(input => (input === id ? (oldNode.inputs ?? []) : input)) ?? []
-					await updateNode(childId as Uuid, child, false)
-				}
-			}
-			// Remove the node from the outputs array if it's there
-			node.spec.spec.outputs = node.spec.spec.outputs?.filter(o => o !== id) ?? []
-			delete node.spec.spec.nodes[id]
-			return node
-		})
-		// Publish the updated node
-		// Should always be a flow
-		if (!updatedNode || !isFlow(updatedNode)) return
-		try {
-			setNodeProps(id, { creating: true })
-			await api.put<Flow>(`components`, updatedNode.spec)
-		} catch (e) {
-			console.error('Failed to publish flow', e)
-			toast.error('Failed to publish flow')
-			return
-		} finally {
-			// Remove from node props too
-			currentCanvas.nodeProps.delete(id)
-		}
-	}
-}
-
-export const getDownstreamNodes = (id: Uuid): Set<Node> => {
-	let downstreamNodes = new Set<Node>()
-	if (!nodes) return downstreamNodes
-
-	for (const node of get(nodes)) {
-		if (node.data.inputs?.includes(id)) {
-			downstreamNodes.add(node)
-			// Get all this nodes downstream nodes as well
-			const nestedNodes = getDownstreamNodes(node.id)
-			downstreamNodes = downstreamNodes.union(nestedNodes)
-		}
-	}
-
-	return downstreamNodes
-}
+export const isFlow = (node: TriNode): node is TriNode & { spec: Flow } =>
+	node.spec.resource === 'flow/v1'

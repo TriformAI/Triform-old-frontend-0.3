@@ -2,7 +2,7 @@ import type { Node } from '$lib/types/flow'
 import type { Uuid, Flow } from '$lib/types/agent'
 import type { Execution } from '$lib/types/execution'
 
-import { getDownstreamNodes } from '$lib/stores/canvas.svelte'
+import { getDownstreamNodes } from '$lib/utils/flow'
 
 export const createExecution = (node: Node, input: Record<string, unknown>): Execution => {
 	const { spec } = node.data

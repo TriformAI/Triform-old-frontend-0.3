@@ -1,10 +1,9 @@
 <script lang="ts">
 	import NodeIcon from '$lib/components/custom-nodes/NodeIcon.svelte'
-	import { useSvelteFlow } from '@xyflow/svelte'
 
 	import { nodes } from '$lib/stores/canvas.svelte'
 
-	const selectedNode = $derived($nodes.find(n => n.selected))
+	const selectedNode = $derived(Object.values(nodes).find(n => n.selected))
 	const nodeType = $derived(selectedNode?.type?.split('-')[0] ?? 'action')
 </script>
 

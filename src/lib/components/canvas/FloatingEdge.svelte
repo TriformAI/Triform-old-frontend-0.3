@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { getBezierPath, useInternalNode, type EdgeProps } from '@xyflow/svelte'
-	import { getEdgeParams } from '$lib/utils/flow'
+	import { getEdgeParams } from '$lib/utils/svelteFlow'
 
 	const { source, target, id }: EdgeProps = $props()
 

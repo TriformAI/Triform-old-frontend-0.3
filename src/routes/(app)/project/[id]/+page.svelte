@@ -16,7 +16,7 @@
 		// removeLocalStorageListener
 	} from '$lib/stores/windows.svelte'
 
-	import { currentCanvas, loadProject, unloadProject } from '$lib/stores/canvas.svelte'
+	import { loadProject, unloadProject } from '$lib/stores/canvas.svelte'
 
 	// 👇 this is important! You need to import the styles for Svelte Flow to work
 	import '@xyflow/svelte/dist/style.css'
@@ -25,27 +25,27 @@
 
 	const { data } = $props()
 
-	// Warn if the user tries to close the page with unsaved changes
-	const beforeUnload = (event: BeforeUnloadEvent) => {
-		console.log('unloading')
-		if (currentCanvas.hasUnsavedChanges) {
-			event.preventDefault() // modern browsers
-			event.returnValue = '' // older browsers
-		}
-	}
+	// // Warn if the user tries to close the page with unsaved changes
+	// const beforeUnload = (event: BeforeUnloadEvent) => {
+	// 	console.log('unloading')
+	// 	if (currentCanvas.hasUnsavedChanges) {
+	// 		event.preventDefault() // modern browsers
+	// 		event.returnValue = '' // older browsers
+	// 	}
+	// }
 
-	beforeNavigate(async (navigation: BeforeNavigate) => {
-		// For some reason we can't use our confirmstore here, because goto doesn't work after cancelling...
-		// So need to emulate the normal browser "unsaved changes" prompt with a confirm dialog
-		if (
-			currentCanvas.hasUnsavedChanges &&
-			!window.confirm('You have unsaved changes, are you sure you want to leave?')
-		)
-			navigation.cancel()
-	})
+	// beforeNavigate(async (navigation: BeforeNavigate) => {
+	// 	// For some reason we can't use our confirmstore here, because goto doesn't work after cancelling...
+	// 	// So need to emulate the normal browser "unsaved changes" prompt with a confirm dialog
+	// 	if (
+	// 		currentCanvas.hasUnsavedChanges &&
+	// 		!window.confirm('You have unsaved changes, are you sure you want to leave?')
+	// 	)
+	// 		navigation.cancel()
+	// })
 
 	onMount(() => {
-		loadProject(data.project, true)
+		loadProject(data.project)
 		clearLocalStorage()
 		// loadWindowsFromLocalStorage()
 		// createLocalStorageListener()
@@ -65,7 +65,7 @@
 	let flowComponent = $state<Flow>()
 </script>
 
-<svelte:window onbeforeunload={beforeUnload} />
+<!-- <svelte:window onbeforeunload={beforeUnload} /> -->
 
 <SvelteFlowProvider>
 	<div class="relative flex h-full flex-col contain-paint">
@@ -89,7 +89,7 @@
 			<PropsPanel />
 		</div>
 
-		<Toolbar />
+		<!-- <Toolbar /> -->
 	</div>
 </SvelteFlowProvider>
 

@@ -2,7 +2,7 @@
 	// @ts-nocheck
 	import { useSvelteFlow } from '@xyflow/svelte'
 	import { closeWindowById, openWindow, windowIsOpen } from '$lib/stores/windows.svelte'
-	import { saveProject, currentCanvas } from '$lib/stores/canvas.svelte'
+	import { project } from '$lib/stores/canvas.svelte'
 
 	import Button from '$lib/components/atoms/Button.svelte'
 
@@ -47,14 +47,14 @@
 					duration: 500
 				})
 			}
-		},
-		{
-			icon: IconSave,
-			label: 'Save project',
-			onClick: saveProject,
-			show: () => currentCanvas.hasUnsavedChanges,
-			class: 'enabled:text-warning-400/90 hover:enabled:text-warning-500'
 		}
+		// {
+		// 	icon: IconSave,
+		// 	label: 'Save project',
+		// 	onClick: saveProject,
+		// 	show: () => currentCanvas.hasUnsavedChanges,
+		// 	class: 'enabled:text-warning-400/90 hover:enabled:text-warning-500'
+		// }
 	]
 </script>
 

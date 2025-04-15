@@ -3,21 +3,6 @@ import type { Execution } from '$lib/types/execution'
 
 const baseUrl = import.meta.env.VITE_TRICORE_URL
 
-export const publishComponent = async (component: Component) => {
-	console.log('publishing component', component)
-	const res = await fetch(`${baseUrl}/component/publish/${component.meta.id}`, {
-		method: 'PUT',
-		headers: {
-			'Content-Type': 'application/json'
-		},
-		credentials: 'include',
-		body: JSON.stringify(component)
-	})
-	const updatedComponent = await res.json()
-	console.log('published component', updatedComponent)
-	return updatedComponent
-}
-
 export const saveComponent = async (component: Component) => {
 	console.log('saving component', component)
 }

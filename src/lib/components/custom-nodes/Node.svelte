@@ -2,7 +2,6 @@
 	import type { NodeData, Node } from '$lib/types/flow'
 	import type { Snippet } from 'svelte'
 	import { useNodes } from '@xyflow/svelte'
-	import { getNodeProps } from '$lib/stores/canvas.svelte'
 	import { getActions } from '$lib/stores/nodeActions.svelte'
 	import { useSvelteFlow as useSvelteFlowHook } from '@xyflow/svelte'
 	import ContextMenu from '$lib/components/atoms/ContextMenu.svelte'
@@ -22,18 +21,17 @@
 	const props: Props = $props()
 
 	const { id, data, selected, icon, shape = 'circle', class: classes } = $derived(props)
-	const { state: nodeState } = $derived(data)
-
-	const nodeProps = $derived(getNodeProps(id))
+	// const { state: nodeState } = $derived(data)
 
 	const borderClass = $derived.by(() => {
-		if (!nodeState) return ''
+		return ''
+		// if (!nodeState) return ''
 
-		return {
-			success: 'border-emerald-500',
-			error: 'border-red-500',
-			running: 'border-accent-500'
-		}[nodeState]
+		// return {
+		// 	success: 'border-emerald-500',
+		// 	error: 'border-red-500',
+		// 	running: 'border-accent-500'
+		// }[nodeState]
 	})
 
 	const nodes = useNodes()
@@ -61,8 +59,8 @@
 				<div
 					class={[
 						'node-inner transition-[transform_opacity] duration-200 ease-(--easing-circ)',
-						nodeProps?.deleted ? 'scale-50 opacity-0' : 'scale-100',
-						nodeProps?.creating ? 'animate-pulse cursor-progress' : ''
+						node?.data.props.deleted ? 'scale-50 opacity-0' : 'scale-100',
+						node?.data.props.creating ? 'animate-pulse cursor-progress' : ''
 					]}
 				>
 					<div
@@ -71,7 +69,7 @@
 							selected ? 'text-main-300' : 'text-main-400'
 						]}
 					>
-						<span class="whitespace-nowrap">{data.component_name}</span>
+						<span class="whitespace-nowrap">{data.trinode.spec.meta.name}</span>
 					</div>
 					<button
 						class={[

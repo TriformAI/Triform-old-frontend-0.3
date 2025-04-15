@@ -1,17 +1,22 @@
 <script lang="ts">
-	import { type NodeProps } from '@xyflow/svelte'
-	import { Handle } from '@xyflow/svelte'
-	import { Position } from '@xyflow/svelte'
-	import IconFlow from '~icons/material-symbols/network-node'
-	import IconAction from '~icons/mdi/rhombus'
-	import { useSvelteFlow as useSvelteFlowHook, useEdges } from '@xyflow/svelte'
-	import { nodes, publishComponent, updateNode } from '$lib/stores/canvas.svelte'
-	import IconClose from '~icons/mdi/close'
+	import { nodes, updateNode } from '$lib/stores/canvas.svelte'
 	import { addAction, addFlow } from '$lib/stores/nodeActions.svelte'
+	import { type Node } from '$lib/types/flow'
+
 	import { clickOutside } from '$lib/utils/clickOutside'
-	import { type Node, type NodeData } from '$lib/types/flow'
-	import { get } from 'svelte/store'
+	import {
+		Handle,
+		Position,
+		useEdges,
+		useSvelteFlow as useSvelteFlowHook,
+		type NodeProps
+	} from '@xyflow/svelte'
+
 	import { onMount } from 'svelte'
+	import { get } from 'svelte/store'
+	import IconFlow from '~icons/material-symbols/network-node'
+	import IconClose from '~icons/mdi/close'
+	import IconAction from '~icons/mdi/rhombus'
 
 	const props: NodeProps = $props()
 
@@ -29,7 +34,7 @@
 			}
 		]
 
-		if ($nodes.length > 2) {
+		if (Object.keys(nodes).length > 2) {
 			components.push({
 				label: 'Action',
 				value: 'action',
@@ -41,21 +46,34 @@
 		return components
 	})
 
-	const [sourceNode, addAsChild, isSource] = $derived.by(() => {
-		const edge = get(edges).find(e => e.id.endsWith(':nodeSelector'))
-		if (!edge) return []
+	// If we should add the new node as a child of the original node or not
+	// This is basically only true if the node on the other side of the selector edge
+	// is an open flow and we want to add the node as a child as part of that node
+	const addAsChild = $derived(!!props.data.addAsChild)
+
+	// Find the node that the selector is connected to
+	const [sourceNode, isSource] = $derived.by(() => {
+		// Find the edge that connects to this selector node
+		const edge = get(edges).find(e => e.target === props.id || e.source === props.id)
+		if (!edge) return [] // maybe throw?
+
 		// Get the side of the connection that isn't this selector node
 		const node = getNode(props.id === edge.source ? edge.target : edge.source) as Node
-		if (!node) return []
-		const addUpstream = props.id === edge.source
-		return [node, !!edge.data?.addAsChild, addUpstream]
+		if (!node) return [] // again, maybe throw?
+
+		// If the selector is on the source side of the edge, we should add
+		// the new node upstream (ie above) the original node
+		const isSource = props.id === edge.source
+		return [node, isSource]
 	})
 
 	onMount(() => {
 		// If the selector is a source node, we need to move it up by its full height to make the port line up
 		if (!isSource) return
+
 		const node = getNode(props.id)
 		if (!node) return
+
 		setTimeout(() => {
 			console.log(node.position.y)
 			console.log(node.measured, node.height, node.sourcePosition, node.targetPosition)
@@ -65,18 +83,12 @@
 		}, 10)
 	})
 
-	function removeSelectorNode() {
+	async function removeSelectorNode() {
 		const node = getNode(props.id)
 		if (!node) return
-		deleteElements({ nodes: [node] })
 
-		if (!sourceNode?.parentId) return
-		const flow = getNode(sourceNode.parentId)
-		if (!flow) return
-		const extended = (flow.data as NodeData).extended?.height ?? 0
-		flow.height = (flow.measured?.height ?? 0) - extended
-		flow.data.extended = { height: 0 }
-		updateFlowNode(flow.id, flow)
+		// We cn use deleteElements here because this is a temporary node
+		const result = await deleteElements({ nodes: [node] })
 	}
 </script>
 
@@ -106,7 +118,7 @@
 	/>
 
 	<div class="eyebrow mb-4 flex justify-between">
-		<h2 class="">Create component</h2>
+		<h2 class="whitespace-nowrap">Create component</h2>
 		<button class="ms-6" type="button" onclick={removeSelectorNode}>
 			<IconClose class="size-4" />
 		</button>
@@ -128,16 +140,13 @@
 					if (!newNodeId) return
 					// Add the correct input to the old node if needed
 					if (isSource)
-						await updateNode(
-							sourceNode.id,
-							{
-								inputs: [...(sourceNode.data.inputs ?? []), newNodeId]
-							},
-							false
-						)
+						updateNode(sourceNode.id, {
+							...sourceNode.data.trinode,
+							inputs: [...(sourceNode.data.trinode.inputs ?? []), newNodeId]
+						})
 					// Publish the parent flow
 					const parentId = addAsChild ? sourceNode.id : sourceNode.parentId
-					await publishComponent(parentId ?? 'root')
+					// await publishComponent(parentId ?? 'root')
 				}}
 				type="button"
 				class="border-main-700/50 hover:bg-main-700/50 bg-main-800 place-items-center justify-center gap-2 rounded border px-4 py-2 font-medium transition-colors duration-200"

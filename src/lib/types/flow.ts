@@ -1,35 +1,48 @@
-import type { Uuid, Action, Flow, Node as TriNode, Endpoint } from './agent'
+import type { Uuid, Node as TriNode } from './agent'
 import type { Node as XyNode } from '@xyflow/svelte'
-
-// Custom data passed to each node
-export interface NodeData {
-	component_name: string
-	component_version?: number
-	component_id: Uuid
-	spec: Flow | Action | Endpoint | Record<string, never>
-	state?: 'success' | 'error' | 'running'
-	inputs?: TriNode['inputs']
-	extended?: {
-		height: number
-	}
-	[key: string]: unknown
-}
-
-export type NodeType =
-	| 'endpoint-node'
-	| 'flow-node'
-	| 'action-node'
-	| 'open-flow-node'
-	| 'selector-node'
-
-export type Node = XyNode<NodeData, NodeType> & {
-	id: Uuid
-	parentId?: Uuid
-}
 
 // Visual properties of a node
 export interface NodeProps {
 	expanded: boolean
 	deleted: boolean
 	creating: boolean
+}
+
+export const defaultProps: NodeProps = {
+	expanded: false,
+	deleted: false,
+	creating: false
+}
+
+// Custom data passed to each node
+export interface NodeData {
+	// The node that's expected on the backend
+	trinode: TriNode
+	isExpanded?: boolean
+	// Visual frontend-only props
+	props: NodeProps
+	[key: string]: unknown
+}
+
+export type TemporaryNodeData = Omit<NodeData, 'trinode'> & {
+	addAsChild: boolean
+}
+
+export type NodeType =
+	| 'endpoint-node'
+	| 'action-node'
+	| 'flow-node'
+	| 'open-flow-node'
+	| 'selector-node'
+
+export interface Node extends XyNode<NodeData, Exclude<NodeType, 'selector-node'>> {
+	id: Uuid
+	parentId?: Uuid
+	type: Exclude<NodeType, 'selector-node'>
+}
+
+export interface TemporaryNode extends XyNode<TemporaryNodeData, 'selector-node'> {
+	id: Uuid
+	parentId?: Uuid
+	type: 'selector-node'
 }

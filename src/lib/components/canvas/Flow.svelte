@@ -1,104 +1,82 @@
 <script lang="ts">
 	import ActionNode from '$lib/components/custom-nodes/ActionNode.svelte'
-	import FlowNode from '$lib/components/custom-nodes/FlowNode.svelte'
 	import EndpointNode from '$lib/components/custom-nodes/EndpointNode.svelte'
+	import FlowNode from '$lib/components/custom-nodes/FlowNode.svelte'
 	import OpenFlowNode from '$lib/components/custom-nodes/OpenFlowNode.svelte'
 	import SelectorNode from '$lib/components/custom-nodes/SelectorNode.svelte'
 
-	import { deleteNode as deleteNodeAction } from '$lib/stores/nodeActions.svelte'
+	import {
+		edges,
+		edgesStore,
+		nodes,
+		nodesStore,
+		registerUpdateNodeListener
+	} from '$lib/stores/canvas.svelte'
 	import { confirmStore } from '$lib/stores/confirm.svelte'
-	import { addNode, edges, nodes, currentCanvas } from '$lib/stores/canvas.svelte'
-	import type { Uuid } from '$lib/types/agent'
-	import { untrack } from 'svelte'
+	import { deleteNode as deleteNodeAction } from '$lib/stores/nodeActions.svelte'
+	import { type Node, type NodeType, type TemporaryNode } from '$lib/types/flow'
 	import {
 		Background,
 		BackgroundVariant,
 		SvelteFlow,
-		useUpdateNodeInternals,
 		useSvelteFlow as svelteFlowHook,
-		type OnConnectEnd,
-		type OnConnectStart,
-		type Node,
-		type NodeTypes
+		useUpdateNodeInternals
 	} from '@xyflow/svelte'
-	import { parseProject } from '$lib/stores/canvas.svelte'
 	import '@xyflow/svelte/dist/style.css'
-	import { getLayoutedNodes } from './layout.svelte'
+	import { onMount, type Component } from 'svelte'
 	import { toast } from 'svelte-sonner'
 	import { debounce } from '../../utils/debounce'
-	import { get } from 'svelte/store'
-	import { handleConnectEnd } from './FlowEvents/connectEnd'
+	import { handleConnectEnd } from './FlowEvents/connectEnd.svelte'
 	import { isValidConnection } from './FlowEvents/isValidConnection'
+	import { getLayoutedNodes } from './layout.svelte'
 
 	const useSvelteFlow = svelteFlowHook()
-	const { fitView, getNode } = useSvelteFlow
+	const { fitView } = useSvelteFlow
 
 	export { fitView }
 
 	const { onClick: deleteNode } = deleteNodeAction
 
-	const nodeTypes: NodeTypes = {
-		// @ts-expect-error type issue, not crucial but should probs be fixed
+	const nodeTypes: Record<NodeType, Component> = {
 		'endpoint-node': EndpointNode,
-		// @ts-expect-error type issue, not crucial but should probs be fixed
 		'action-node': ActionNode,
-		// @ts-expect-error type issue, not crucial but should probs be fixed
 		'flow-node': FlowNode,
-		// @ts-expect-error type issue, not crucial but should probs be fixed
+		// @ts-expect-error TODO: adjust props on component
 		'open-flow-node': OpenFlowNode,
-		// @ts-expect-error type issue, not crucial but should probs be fixed
+		// @ts-expect-error TODO: adjust props on component
 		'selector-node': SelectorNode
 	}
 
 	const updateNodeInternals = useUpdateNodeInternals()
 
-	let projectIsParsed = $state(false)
+	let projectIsLoaded = $state(false)
 
+	// Whenever the nodes store changes, auto layout everything
+	// Also used for updating the writable store that svelte flow requires
 	$effect(() => {
-		const canvas = currentCanvas
-		if (!canvas.project) return
-
-		console.time('parse project')
-		let { nodes: nodesData, edges: edgesData } = parseProject(canvas.project)
-		console.timeEnd('parse project')
-
-		untrack(async () => {
-			nodesData = nodesData.map(node => {
-				switch (node.type) {
-					case 'action-node':
-						node.data.files = undefined
-						break
-					case 'flow-node':
-						node.data.onOpen = () => setNodeProps(node.id as Uuid, { expanded: true })
-						break
-					case 'open-flow-node':
-						node.data.onOpen = () => setNodeProps(node.id as Uuid, { expanded: false })
-						node.width = 400
-						node.height = 400
-						break
-					case 'endpoint-node':
-						break
-					default:
-						throw new Error('unknown node type ' + node.type)
-				}
-				return node
-			})
-
-			console.time('layout')
-			const layoutedNodes = await getLayoutedNodes(nodesData, edgesData)
-			console.timeEnd('layout')
-
-			nodes.set(layoutedNodes)
-			edges.set(edgesData)
-
-			// TODO: smartly update only the modified nodes
-			updateNodeInternals(nodesData.map(n => n.id))
-
-			projectIsParsed = true
-		})
+		// reactivity
+		if (nodes) {
+			layoutNodes()
+		}
 	})
 
-	const flowIsEmpty = $derived($nodes.length === 0)
+	onMount(() => {
+		return registerUpdateNodeListener(updateNodeInternals)
+	})
+
+	const layoutNodes = async () => {
+		const currentEdges = $state.snapshot(edges)
+		const layoutedNodes = await getLayoutedNodes(Object.values(nodes), currentEdges)
+		nodesStore.set(layoutedNodes)
+		edgesStore.set(currentEdges)
+		// console.log('new nodes', layoutedNodes)
+
+		// TODO: smartly update only the modified noes
+		updateNodeInternals(Object.keys(nodes))
+		if (!projectIsLoaded) projectIsLoaded = true
+	}
+
+	const flowIsEmpty = $derived(!Object.keys(nodes).length)
 
 	function addFirstNode() {
 		const triggerNode = {
@@ -118,44 +96,21 @@
 			}
 		}
 
-		addNode('root', triggerNode)
+		// addNode('root', triggerNode)
 	}
 
-	const handleConnectStart: OnConnectStart = (_event, connectionState) => {
-		const nodeId = connectionState.nodeId as Uuid
-		const node = getNode(nodeId)
-		if (!node || !node.parentId) return
-
-		const flow = getNode(node.parentId)
-		if (!flow) return
-
-		// If the origin node is the furthest down of all sibling nodes, grow the flow a bit
-		const maxYPos = Math.max(
-			...get(nodes)
-				.filter(n => n.parentId === flow.id)
-				.map(n => n.position.y)
-		)
-		// Add a bit of leeway in case of rounding errors and other stuff
-		const offset = 10
-		if (node.position.y + offset < maxYPos) return
-
-		const additionalHeight = 80
-		flow.height = (flow.measured?.height ?? 0) + additionalHeight
-		flow.data.extended = { height: additionalHeight }
-		updateNodeInternals(flow.id)
-	}
-
-	const handleBeforeDelete = async ({ nodes }: { nodes: Node[] }) => {
-		const numNodes = nodes.length
+	const handleBeforeDelete = async ({ nodes }: { nodes: (Node | TemporaryNode)[] }) => {
+		const allNodes = Object.values(nodes)
+		const numNodes = allNodes.length
 		const isMultipleNodes = numNodes > 1
 
 		// Always allow deleting of selector nodes
-		if (nodes.some(node => node.type === 'selector-node')) {
+		if (allNodes.some(node => node.type === 'selector-node')) {
 			return true
 		}
 
 		// Don't allow deleting of endpoint nodes
-		if (nodes.find(node => node.type === 'endpoint-node')) {
+		if (allNodes.find(node => node.type === 'endpoint-node')) {
 			toast.error("You can't delete an endpoint node.")
 			return false
 		}
@@ -187,7 +142,7 @@
 />
 
 <div class="relative grid h-full w-full" role="application">
-	{#if projectIsParsed}
+	{#if projectIsLoaded}
 		{#if flowIsEmpty}
 			<div class="-mt-32 grid place-items-center gap-10 self-center">
 				<p class="opacity-50">Get started by adding your first component</p>
@@ -201,8 +156,8 @@
 			</div>
 		{:else}
 			<SvelteFlow
-				{nodes}
-				{edges}
+				nodes={nodesStore}
+				edges={edgesStore}
 				{nodeTypes}
 				isValidConnection={(...args) => isValidConnection(...args, useSvelteFlow)}
 				fitView
@@ -210,7 +165,6 @@
 					maxZoom: 1,
 					minZoom: 1
 				}}
-				onconnectstart={handleConnectStart}
 				onconnectend={(...args) => handleConnectEnd(...args, useSvelteFlow)}
 				snapGrid={[1, 1]}
 				proOptions={{ hideAttribution: true }}

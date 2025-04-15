@@ -166,6 +166,7 @@
 	.svelte-flow__node:not(.dragging):not(.svelte-flow__node-selector-node) {
 		transition:
 			height 0.35s var(--easing-out),
+			width 0.35s var(--easing-out),
 			transform 0.2s var(--easing-out),
 			opacity 0.5s var(--easing-out);
 		z-index: -1 !important;

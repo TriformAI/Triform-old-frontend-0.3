@@ -4,17 +4,22 @@ import type { ElkNode, ELK as ELKType } from 'elkjs'
 
 import ELK from 'elkjs'
 
+const padding = {
+	x: 40,
+	y: 80
+}
 const elkSettings = {
 	'elk.direction': 'DOWN',
 	'elk.algorithm': 'layered',
 	'elk.edgeRouting': 'SPLINES',
-	'elk.padding': '[top=60,left=50,bottom=60,right=50]',
-	'elk.spacing.nodeNode': '150',
+	'elk.padding': `[top=${padding.y},left=${padding.x},bottom=${padding.y},right=${padding.x}]`,
+	'elk.spacing.nodeNode': '50',
 	'elk.layered.spacing.edgeNodeBetweenLayers': '50',
 	'elk.layered.spacing.nodeNodeBetweenLayers': '60',
 	'elk.layered.considerModelOrder.strategy': 'PREFER_NODES',
 	'elk.layered.considerModelOrder.components': 'MODEL_ORDER',
-	'elk.alignment': 'CENTER'
+	'elk.alignment': 'CENTER',
+	'elk.hierarchyHandling': 'INCLUDE_CHILDREN'
 }
 
 const NODE_SIZE = 80
@@ -137,27 +142,23 @@ export const getLayoutedNodes = async (nodes: Node[], edges: Edge[]) => {
 		}))
 	}
 
-	console.log(graph.edges)
-
 	console.time('layout elk')
 	const layout = await elk.layout(graph)
 	console.timeEnd('layout elk')
-	console.time('flatten elk tree')
 	const flattenedTree = flattenElkTree(layout).filter(n => n.id !== 'root') ?? []
-	console.timeEnd('flatten elk tree')
 	const layoutedNodes: Node[] = flattenedTree.map(n => {
 		const node = nodes.find(node => node.id === n.id)
 		if (!node) throw new Error('Could not find node with id ' + n.id)
 
-		return {
-			...node,
+		Object.assign(node, {
 			position: {
 				x: n.x ?? 0,
 				y: n.y ?? 0
 			},
 			width: n.width,
 			height: n.height
-		}
+		})
+		return node
 	})
 
 	// Fit the groups
