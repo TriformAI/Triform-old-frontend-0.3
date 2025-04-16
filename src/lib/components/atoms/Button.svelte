@@ -24,6 +24,7 @@
 		tooltipPos?: 'up' | 'right' | 'down' | 'left'
 		type?: 'button' | 'submit' | 'reset'
 		element?: HTMLButtonElement
+		isLoading?: boolean
 	}
 
 	let {
@@ -39,12 +40,11 @@
 		tooltip,
 		tooltipPos = 'up',
 		type = 'button',
-		element = $bindable()
+		element = $bindable(),
+		isLoading = $bindable(false)
 	}: Props = $props()
 
 	const hasTextColor = ['danger'].includes(variation)
-
-	let isLoading = $state(false)
 
 	const onClick = () => {
 		if (href) {

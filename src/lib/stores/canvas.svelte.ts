@@ -15,6 +15,22 @@ import { writable } from 'svelte/store'
 export const nodes = $state<Record<Uuid, Node>>({})
 export const edges = $state<Edge[]>([])
 
+class SelectedNodeStore {
+	nodes = $derived(Object.entries(nodes).filter(([uuid, node]) => node.selected))
+	isMultiple = $derived(this.nodes.length > 1)
+
+	// Only returns if selected node is a single node
+	node = $derived.by(() => {
+		if (this.nodes.length === 1) {
+			return this.nodes[0][1]
+		}
+
+		return undefined
+	})
+}
+
+export const selected = new SelectedNodeStore()
+
 // Whenever the nodes store changes, auto layout everything
 // Also used for updating the writable store that svelte flow requires
 export const nodesStore = writable<(Node | TemporaryNode)[]>([])
@@ -344,6 +360,7 @@ export const removeChild = (childId: Uuid) => {
 		const outputs = parent.data.trinode.spec.spec.outputs
 		if (outputs.includes(childId)) {
 			filterInPlace(outputs, o => o !== childId)
+
 			const inputs = (child.data.trinode.inputs ?? []).filter(i => i !== 'parent')
 			parent.data.trinode.spec.spec.outputs = [...new Set([...outputs, ...inputs])]
 		}

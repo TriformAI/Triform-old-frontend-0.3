@@ -1,24 +1,31 @@
 <script lang="ts">
-	import type { Snippet } from 'svelte'
-	import ChevronDown from '~icons/mdi/chevron-down'
+	import { onMount, type Snippet } from 'svelte'
+	import IconChevronDown from '~icons/mdi/chevron-down'
+	import IconClose from '~icons/mdi/close'
+
+	interface Props {
+		children: Snippet
+		dialog: HTMLDialogElement | undefined
+		appearance: 'center' | 'bottom' | 'right'
+		onClose?: () => void
+		onOpen?: () => void
+		closeByClickOutside?: boolean
+		allowEscapeClose?: boolean
+		class?: string
+		open?: boolean
+	}
 
 	let {
 		children,
 		dialog = $bindable(),
 		appearance = 'center',
 		onClose,
+		onOpen,
 		closeByClickOutside = true,
 		allowEscapeClose = true,
-		class: classes
-	}: {
-		children: Snippet
-		dialog: HTMLDialogElement | undefined
-		appearance: 'center' | 'bottom'
-		onClose?: () => void
-		closeByClickOutside?: boolean
-		allowEscapeClose?: boolean
-		class?: string
-	} = $props()
+		class: classes,
+		open
+	}: Props = $props()
 
 	function clickOutside(el: HTMLDialogElement) {
 		el.addEventListener('click', e => {
@@ -27,9 +34,29 @@
 			}
 		})
 	}
+
+	let isOpen = $state(false)
+
+	$effect(() => {
+		if (isOpen && onOpen) {
+			onOpen()
+		}
+	})
+
+	onMount(() => {
+		if (dialog) {
+			const observer = new MutationObserver(() => {
+				isOpen = !!dialog?.open
+			})
+			observer.observe(dialog, { attributes: true })
+
+			return () => observer.disconnect()
+		}
+	})
 </script>
 
 <dialog
+	{open}
 	use:clickOutside
 	bind:this={dialog}
 	onclose={() => {
@@ -42,12 +69,14 @@
 	class={[
 		classes,
 		appearance,
-		`fixed m-0 overflow-visible bg-transparent`,
+		`text-main-300 fixed m-0 overflow-visible bg-transparent`,
 		appearance === 'center' && 'top-1/2 mx-auto w-full max-w-md rounded-lg md:max-w-xl',
-		appearance === 'bottom' && 'inset-x-0 top-auto bottom-0 w-full max-w-none'
+		appearance === 'bottom' && 'inset-x-0 top-auto bottom-0 w-full max-w-none',
+		appearance === 'right' &&
+			'inset-y-0 left-[calc(100vw-75vw)] grid h-dvh max-h-dvh w-[75vw] md:left-[calc(100vw-25vw)] md:w-[25vw]'
 	]}
 >
-	<div class="grid">
+	<div class={['grid', appearance === 'right' && 'bg-main-850 p-6']}>
 		{#if appearance === 'bottom'}
 			<button
 				type="button"
@@ -56,9 +85,9 @@
 					dialog?.close()
 				}}
 			>
-				<ChevronDown class="mx-auto size-6 text-white" />
+				<IconChevronDown class="mx-auto size-6 text-white" />
 			</button>
-			<!-- {:else if appearance === 'center'}
+		{:else if appearance === 'right'}
 			<button
 				type="button"
 				class="absolute end-6 top-5.5 z-10 outline-none"
@@ -66,8 +95,8 @@
 					dialog?.close()
 				}}
 			>
-				<Close class="size-5 text-white" />
-			</button> -->
+				<IconClose class="size-5 text-white" />
+			</button>
 		{/if}
 
 		{@render children()}
@@ -75,6 +104,18 @@
 </dialog>
 
 <style>
+	@starting-style {
+		dialog.center[open] {
+			opacity: 0;
+			transform: translateY(-50%) scale(0.925);
+		}
+
+		dialog.center[open]::backdrop {
+			backdrop-filter: blur(0px);
+			opacity: 0;
+		}
+	}
+
 	dialog.center {
 		transition:
 			opacity 0.2s var(--easing-circ),
@@ -111,14 +152,8 @@
 	}
 
 	@starting-style {
-		dialog.center[open] {
-			opacity: 0;
-			transform: translateY(-50%) scale(0.925);
-		}
-
-		dialog.center[open]::backdrop {
-			backdrop-filter: blur(0px);
-			opacity: 0;
+		dialog.bottom[open] {
+			transform: translateY(100%);
 		}
 	}
 
@@ -134,9 +169,44 @@
 		transform: translateY(0%);
 	}
 
+	/*   Closed state of the dialog   */
+	dialog.right {
+		transform: translateX(100%);
+		transition:
+			transform 0.5s var(--easing-circ),
+			overlay 0.3s ease-out allow-discrete,
+			display 0.3s ease-out allow-discrete;
+	}
+
+	dialog.right[open] {
+		transform: translateX(0%);
+	}
+
+	dialog.right::backdrop {
+		transition:
+			backdrop-filter 0.3s ease-out,
+			opacity 0.3s ease-out;
+		background-color: rgba(0, 0, 0, 0.5);
+		backdrop-filter: blur(0px);
+		opacity: 0;
+	}
+
+	dialog.right[open]::backdrop {
+		backdrop-filter: blur(var(--blur-xs));
+		opacity: 1;
+	}
+
+	/*   Before-open state  */
+	/* Needs to be after the previous dialog[open] rule to take effect,
+    as the specificity is the same */
 	@starting-style {
-		dialog.bottom[open] {
-			transform: translateY(100%);
+		dialog.right[open] {
+			transform: translateX(100%);
+		}
+
+		dialog.right[open]::backdrop {
+			backdrop-filter: blur(0px);
+			opacity: 0;
 		}
 	}
 </style>

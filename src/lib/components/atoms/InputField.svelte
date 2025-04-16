@@ -14,6 +14,8 @@
 		containerClass,
 		onblur,
 		onkeydown,
+		oninput,
+		onpaste,
 		use = () => {}
 	}: {
 		value?: string
@@ -28,13 +30,15 @@
 		containerClass?: string
 		onblur?: (e: FocusEvent) => void
 		onkeydown?: (e: KeyboardEvent) => void
+		oninput?: (e: Event) => void
+		onpaste?: (e: ClipboardEvent) => void
 		use?: (el: HTMLInputElement) => void
 	} = $props()
 
 	const id = Math.random().toString(36).substring(2, 15)
 </script>
 
-<div class={containerClass}>
+<div class={['grid gap-1', containerClass]}>
 	{#if label}
 		<label for={id} class="text-sm font-medium">{label}</label>
 	{/if}
@@ -47,15 +51,16 @@
 		{required}
 		bind:value
 		class={[
-			'border-main-700 text-main-200 hover:border-main-600 focus:border-main-500 rounded-md border bg-transparent',
+			'border-main-700 bg-main-800 text-main-200 hover:border-main-600 focus:border-main-600 rounded-md border text-sm',
 			'w-full transition outline-none',
-			label && 'mt-2',
-			variation === 'default' && 'px-5 py-3',
+			variation === 'default' && 'px-3 py-2',
 			variation === 'tight' && 'px-2 py-1',
 			classProp
 		]}
 		{onblur}
 		{onkeydown}
+		{oninput}
+		{onpaste}
 		use:use
 	/>
 </div>

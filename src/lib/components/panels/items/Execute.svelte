@@ -1,31 +1,16 @@
 <script lang="ts">
-	import type { Node } from '$lib/types/flow'
 	import type { ExecutionTraceData } from '$lib/types/execution'
-	import type { Window as WindowType } from '$lib/stores/windows.svelte'
 
-	import { useNodes } from '@xyflow/svelte'
 	import { toast } from 'svelte-sonner'
 	import { source } from 'sveltekit-sse'
 
 	import Window from '$lib/components/common/Window.svelte'
-	import Button from '../atoms/Button.svelte'
+	import Button from '../../atoms/Button.svelte'
 	import LightEditor from '$lib/components/atoms/LightEditor.svelte'
 
 	import IconPlay from '~icons/material-symbols/play-arrow-outline-rounded'
 	import { createExecution } from '$lib/utils/execution'
-
-	interface Props extends WindowType {}
-
-	// Just pass through all props
-	const props: Props = $props()
-
-	const nodes = useNodes()
-	// Support only one selected node for now
-	let selectedNode = $state<Node>()
-	// For some reason we can't use a derived store here, so need to susbcribe instead
-	nodes.subscribe(ns => {
-		selectedNode = ns.find(n => n.selected) as Node | undefined
-	})
+	import { selected } from '$lib/stores/canvas.svelte'
 
 	let input = $state('{\n\t"msg": "hello world"\n}')
 	let result = $state('')
@@ -33,18 +18,20 @@
 	let isRunning = $state(false)
 
 	const run = async () => {
-		if (!selectedNode) return
+		if (!selected.node) {
+			return
+		}
 
-		if (!selectedNode?.data.spec) return toast.error('This node cannot be executed')
 		if (!input) return toast.error('Please enter a test input')
 		if (!isValidJson) return toast.error('The input needs to be valid JSON')
 
 		isRunning = true
 
-		const execution = createExecution(selectedNode, JSON.parse(input))
+		const execution = createExecution(selected.node, JSON.parse(input))
 		console.log('creating execution', execution)
 
 		let stream: ReturnType<typeof source> | undefined = undefined
+
 		try {
 			stream = source(`/api/executions`, {
 				options: {
@@ -163,77 +150,54 @@
 	})
 </script>
 
-<Window padding="tight" {...props}>
-	{#snippet header()}
-		Execute {selectedNode?.data?.component_name ?? ''}
-		{selectedNode?.data ? `v${selectedNode?.data?.component_version}` : ''}
-	{/snippet}
+<!-- Execute {selectedNode?.data?.component_name ?? ''}
+{selectedNode?.data ? `v${selectedNode?.data?.component_version}` : ''} -->
 
-	{#snippet body()}
-		<div
-			class={[
-				' col-start-1 row-start-1 grid min-w-80 grid-rows-[auto_1fr_min-content] gap-y-4',
-				selectedNode ? 'visible' : 'invisible'
-			]}
+<div class={[' col-start-1 row-start-1 grid min-w-80 grid-rows-[auto_1fr_min-content] gap-y-4']}>
+	<div class="bg-main-800/50 rounded-lg p-3">
+		<p class=" eyebrow ms-3 mt-1 mb-2">Test data</p>
+		<LightEditor language="json" value={input} onUpdate={v => (input = v)} class="text-sm" />
+	</div>
+
+	<div class="bg-main-800/50 grid grid-rows-[auto_minmax(100px,1fr)] rounded-lg p-3">
+		<p
+			class="border-main-800 ms-3 mt-1 mb-2 border-b pb-2 text-xs font-semibold tracking-wide uppercase"
 		>
-			<div class="bg-main-800/50 rounded-lg p-3">
-				<p class=" eyebrow ms-3 mt-1 mb-2">Test data</p>
-				<LightEditor language="json" value={input} onUpdate={v => (input = v)} class="text-sm" />
-			</div>
-
-			<div class="bg-main-800/50 grid grid-rows-[auto_minmax(100px,1fr)] rounded-lg p-3">
-				<p
-					class="border-main-800 ms-3 mt-1 mb-2 border-b pb-2 text-xs font-semibold tracking-wide uppercase"
-				>
-					Result
-				</p>
-				<div class="relative">
-					<code class="absolute inset-0 w-full overflow-auto px-3 transition-all">
-						{#if isRunning}
-							<div
-								class={[
-									'bg-main-700 h-full min-h-16 w-full animate-pulse rounded-md transition-all',
-									!isRunning ? 'opacity-100' : 'opacity-0'
-								]}
-							></div>
-						{:else}
-							<pre class="word-break-[break-word] min-h-16 font-mono text-sm text-wrap">
+			Result
+		</p>
+		<div class="relative">
+			<code class="absolute inset-0 w-full overflow-auto px-3 transition-all">
+				{#if isRunning}
+					<div
+						class={[
+							'bg-main-700 h-full min-h-16 w-full animate-pulse rounded-md transition-all',
+							!isRunning ? 'opacity-100' : 'opacity-0'
+						]}
+					></div>
+				{:else}
+					<pre class="word-break-[break-word] min-h-16 font-mono text-sm text-wrap">
 {result}
 							</pre>
-						{/if}
-					</code>
-				</div>
-			</div>
-
-			<div
-				class="tooltip-red"
-				aria-label={!isValidJson ? 'Invalid JSON data' : undefined}
-				data-balloon-pos="up"
-			>
-				<Button
-					variation="vibrant"
-					class="w-full"
-					onClick={run}
-					autoLoad="promise"
-					disabled={!isValidJson || isRunning}
-				>
-					{#snippet icon()}
-						<IconPlay class="size-6" />
-					{/snippet}
-				</Button>
-			</div>
+				{/if}
+			</code>
 		</div>
+	</div>
 
-		<div
-			class={[
-				'col-start-1 row-start-1 flex w-full min-w-80 flex-col items-center justify-center',
-				!selectedNode ? 'visible' : 'invisible'
-			]}
+	<div
+		class="tooltip-red"
+		aria-label={!isValidJson ? 'Invalid JSON data' : undefined}
+		data-balloon-pos="up"
+	>
+		<Button
+			variation="vibrant"
+			class="w-full"
+			onClick={run}
+			autoLoad="promise"
+			disabled={!isValidJson || isRunning}
 		>
-			<p class="text-main-400 mb-1 text-center">Select a node to execute</p>
-			<p class="text-main-600 max-w-xs text-center">
-				Selecting an endpoint will execute all downstream nodes
-			</p>
-		</div>
-	{/snippet}
-</Window>
+			{#snippet icon()}
+				<IconPlay class="size-6" />
+			{/snippet}
+		</Button>
+	</div>
+</div>

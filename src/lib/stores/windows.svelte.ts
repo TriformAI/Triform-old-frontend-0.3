@@ -2,7 +2,7 @@ import type { Component } from 'svelte'
 
 import { SvelteMap } from 'svelte/reactivity'
 
-import Execution from '../components/windows/ExecutionWindow.svelte'
+import Execution from '../components/panels/items/Execute.svelte'
 import CodeEditorWindow from '../components/windows/CodeEditorWindow.svelte'
 
 export interface Window {

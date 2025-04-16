@@ -1,18 +1,27 @@
 <script lang="ts">
-	import NodeIcon from '$lib/components/custom-nodes/NodeIcon.svelte'
+	import Project from '$lib/components/panels/Project.svelte'
+	import { selected } from '$lib/stores/canvas.svelte'
+	import Action from '$lib/components/panels/Action.svelte'
+	import Flow from '$lib/components/panels/Flow.svelte'
+	import Endpoint from '$lib/components/panels/Endpoint.svelte'
 
-	import { nodes } from '$lib/stores/canvas.svelte'
+	const nodeType = $derived(selected.node?.type?.split('-')[0])
 
-	const selectedNode = $derived(Object.values(nodes).find(n => n.selected))
-	const nodeType = $derived(selectedNode?.type?.split('-')[0] ?? 'action')
+	const nodeComponents = {
+		action: Action,
+		flow: Flow,
+		endpoint: Endpoint
+	}
+
+	const NodeComponent = $derived(nodeComponents[nodeType as keyof typeof nodeComponents])
 </script>
 
-<div class="bg-main-900 p-5">
-	{#if selectedNode}
-		<p class="grid grid-cols-[auto_1fr] items-center gap-2">
-			<NodeIcon type={nodeType} class="size-5" />
-
-			{selectedNode.data.component_name}
-		</p>
+<div class="bg-main-950/60 overflow-y-auto py-4 ps-2 pe-8">
+	{#if selected.isMultiple}
+		<p>Multiple nodes selected</p>
+	{:else if NodeComponent}
+		<NodeComponent />
+	{:else}
+		<Project />
 	{/if}
 </div>

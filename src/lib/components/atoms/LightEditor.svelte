@@ -25,8 +25,8 @@
 		onUpdate?: (value: string) => void
 	}
 
-	const {
-		value,
+	let {
+		value = $bindable(),
 		language,
 		class: classes,
 		wordWrap = false,
@@ -38,7 +38,16 @@
 	export const initEditor = (el: HTMLDivElement) => {
 		editor = createEditor(
 			el,
-			{ language, value, wordWrap, onUpdate, readOnly },
+			{
+				language,
+				value,
+				wordWrap,
+				onUpdate: newValue => {
+					value = newValue
+					onUpdate?.(newValue)
+				},
+				readOnly
+			},
 			defaultCommands(),
 			matchTags(),
 			indentGuides(),
@@ -48,13 +57,13 @@
 		return editor
 	}
 
-	// Whenever the parent value changes, we need to update the editor
-	// (often its initialised as '' and then updated afterwards...)
-	$effect(() => {
-		const ref = value
-		if (!editor) return
-		editor.setOptions({ value: ref })
-	})
+	// // Whenever the parent value changes, we need to update the editor
+	// // (often its initialised as '' and then updated afterwards...)
+	// $effect(() => {
+	// 	const ref = value
+	// 	if (!editor) return
+	// 	editor.setOptions({ value: ref })
+	// })
 
 	onDestroy(() => {
 		if (editor) editor.remove()

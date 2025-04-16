@@ -121,6 +121,8 @@
 	}
 
 	dialog {
+		@apply m-0 p-0;
+
 		&:focus {
 			outline: none;
 		}
@@ -212,6 +214,6 @@
 	}
 
 	.eyebrow {
-		@apply text-main-400 border-main-800 border-b pb-2 text-xs font-semibold tracking-wide uppercase;
+		@apply text-main-300 text-xs font-semibold tracking-wide uppercase;
 	}
 }
