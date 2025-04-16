@@ -21,6 +21,8 @@
 	const nodeId = selected.node?.id
 
 	// Get files contents from node
+	// Set them when component is first loaded
+	// originalFiles will be reset to {... files} when after publish
 	let originalFiles = $state(
 		(selected.node?.data.trinode.spec.spec as typeof filenames) ?? {
 			source: '',

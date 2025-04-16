@@ -3,7 +3,6 @@ import type { Component } from 'svelte'
 import { SvelteMap } from 'svelte/reactivity'
 
 import Execution from '../components/panels/items/Execute.svelte'
-import CodeEditorWindow from '../components/windows/CodeEditorWindow.svelte'
 
 export interface Window {
 	// Some id that's unique to the window
@@ -75,8 +74,7 @@ export const windowIsOpen = (id: string) => {
 // They need to be mapped to strings so that they can be saved and recreated
 // from local storage.
 const stringToComponentMap = (): { str: string; cmp: Component }[] => [
-	{ str: 'Execution', cmp: Execution },
-	{ str: 'CodeEditor', cmp: CodeEditorWindow }
+	{ str: 'Execution', cmp: Execution }
 ]
 
 const mapStringToComponent = (str: string): Component | undefined => {

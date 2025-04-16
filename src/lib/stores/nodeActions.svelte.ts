@@ -19,8 +19,6 @@ import { confirmStore } from './confirm.svelte'
 import { toast } from 'svelte-sonner'
 import { publishComponent, createComponent } from '$lib/actions/components'
 import { saveProject } from '$lib/actions/project'
-
-import CodeEditorWindow from '$lib/components/windows/CodeEditorWindow.svelte'
 import IconTrash from '~icons/material-symbols/delete-outline'
 import IconAdd from '~icons/material-symbols/add-diamond-outline'
 import IconEditor from '~icons/material-symbols/code-blocks-outline'
@@ -309,29 +307,7 @@ export const deleteNode = {
 
 // Populate map
 actionsMapStore.set('endpoint-node', [addFlow, getDebugData])
-actionsMapStore.set('action-node', [
-	{
-		label: 'Edit',
-		icon: IconEditor,
-		isDangerous: false,
-		onClick: (node: Node, _useSvelteFlow: ReturnType<typeof useSvelteFlowHook>) => {
-			if (!node) return
-			openWindow({
-				id: `code-editor-action-${node.id}`,
-				component: CodeEditorWindow,
-				posX: 20,
-				posY: 20,
-				customProps: {
-					nodeId: node.id
-				}
-			})
-		}
-	},
-	addAction,
-	addFlow,
-	deleteNode,
-	getDebugData
-])
+actionsMapStore.set('action-node', [addAction, addFlow, deleteNode, getDebugData])
 actionsMapStore.set('flow-node', [
 	{
 		label: 'Expand',
