@@ -21,6 +21,7 @@
 		if (!selected.node) {
 			return
 		}
+		console.log({ isValidJson })
 
 		if (!input) return toast.error('Please enter a test input')
 		if (!isValidJson) return toast.error('The input needs to be valid JSON')

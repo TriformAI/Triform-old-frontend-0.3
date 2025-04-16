@@ -68,6 +68,8 @@
 		"date-fns": "^4.1.0",
 		"elkjs": "^0.9.3",
 		"fetch-event-stream": "^0.1.5",
+		"just-compare": "^2.3.0",
+		"just-pick": "^4.2.0",
 		"monaco-themes": "^0.4.4",
 		"motion": "^12.6.0",
 		"prism-code-editor": "^3.4.0",

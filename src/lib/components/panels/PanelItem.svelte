@@ -11,7 +11,7 @@
 	let { title, children, isOpen = true }: Props = $props()
 </script>
 
-<div class="grid gap-3">
+<div class="grid gap-4">
 	<button type="button" onclick={() => (isOpen = !isOpen)} class="flex items-center gap-1">
 		<IconChevronRight class={['transition-transform', isOpen ? 'rotate-90' : '']} />
 		<h2 class="eyebrow">{title}</h2>

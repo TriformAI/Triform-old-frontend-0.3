@@ -5,7 +5,7 @@
 
 	interface Props {
 		title: string
-		desc: string
+		desc?: string
 		slot: Snippet<
 			[
 				{
@@ -21,7 +21,9 @@
 <div>
 	<div class="border-b-main-700 -ms-2 -me-5 mb-6 border-b ps-3 pb-4">
 		<h2 class="font-semibold">{title}</h2>
-		<p class="text-main-400">{desc}</p>
+		{#if desc}
+			<p class="text-main-400">{desc}</p>
+		{/if}
 	</div>
 
 	<div class="grid">

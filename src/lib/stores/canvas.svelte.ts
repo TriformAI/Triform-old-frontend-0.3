@@ -27,6 +27,20 @@ class SelectedNodeStore {
 
 		return undefined
 	})
+
+	isDirty = $derived.by(() => {
+		if (!this.node) {
+			return false
+		}
+
+		return this.node.data.props.isDirty
+	})
+}
+
+export function setIsDirty(nodeId: Uuid, val: boolean) {
+	if (!nodes[nodeId]) return
+
+	nodes[nodeId].data.props.isDirty = val
 }
 
 export const selected = new SelectedNodeStore()

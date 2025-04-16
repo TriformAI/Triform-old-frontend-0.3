@@ -68,29 +68,23 @@
 <!-- <svelte:window onbeforeunload={beforeUnload} /> -->
 
 <SvelteFlowProvider>
-	<div class="relative flex h-full flex-col contain-paint">
-		{#each openWindows.entries() as [id, { component: Component, customProps, ...defaultProps }] (id)}
-			<Component {...defaultProps} {customProps} />
-		{/each}
+	<div bind:this={gridContainer} class="bg-main-800 grid h-full grid-cols-[1fr_4px_450px] pt-1">
+		<Flow bind:this={flowComponent} />
 
-		<div bind:this={gridContainer} class="bg-main-800 grid h-full grid-cols-[1fr_4px_450px] pt-1">
-			<Flow bind:this={flowComponent} />
+		<ColResizer
+			{gridContainer}
+			onResizeEnd={() =>
+				flowComponent?.fitView({
+					maxZoom: 1,
+					minZoom: 1,
+					duration: 500
+				})}
+		/>
 
-			<ColResizer
-				{gridContainer}
-				onResizeEnd={() =>
-					flowComponent?.fitView({
-						maxZoom: 1,
-						minZoom: 1,
-						duration: 500
-					})}
-			/>
-
-			<PropsPanel />
-		</div>
-
-		<!-- <Toolbar /> -->
+		<PropsPanel />
 	</div>
+
+	<!-- <Toolbar /> -->
 </SvelteFlowProvider>
 
 <Confirm />

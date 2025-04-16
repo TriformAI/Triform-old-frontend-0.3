@@ -5,7 +5,7 @@ import type { Execution } from '$lib/types/execution'
 import { getDownstreamNodes } from '$lib/utils/flow'
 
 export const createExecution = (node: Node, input: Record<string, unknown>): Execution => {
-	const { spec } = node.data
+	const spec = node.data.trinode.spec
 	let execution: Execution
 	if (spec.resource === 'endpoint/v1') {
 		// If it's an endpoint, we need to find all downstream nodes and wrap them all in a flow
@@ -24,19 +24,19 @@ export const createExecution = (node: Node, input: Record<string, unknown>): Exe
 					downstreamNodes.map(n => [
 						n.id,
 						{
-							component_id: n.data.component_id,
-							component_version: n.data.component_version,
-							inputs: n.data.inputs?.filter(i => i !== node.id).length
-								? n.data.inputs?.filter(i => i !== node.id)
+							component_id: n.data.trinode.component_id,
+							component_version: n.data.trinode.component_version,
+							inputs: n.data.trinode.inputs?.filter(i => i !== node.id).length
+								? n.data.trinode.inputs?.filter(i => i !== node.id)
 								: ['parent'],
-							spec: n.data.spec
+							spec: n.data.trinode.spec
 						}
 					])
 				),
 				// For now we'll just use the last node in the chain
 				// (ie the one that is in no other node's inputs array)
 				outputs: downstreamNodes
-					.filter(n => !downstreamNodes.some(n2 => (n2.data.inputs ?? []).includes(n.id)))
+					.filter(n => !downstreamNodes.some(n2 => (n2.data.trinode.inputs ?? []).includes(n.id)))
 					.map(n => n.id)
 			}
 		}
@@ -57,7 +57,7 @@ export const createExecution = (node: Node, input: Record<string, unknown>): Exe
 			resource: 'execution/v1',
 			input,
 			spec: {
-				spec: node.data.spec,
+				spec: node.data.trinode.spec,
 				// Dummy data just for the backend to validate
 				component_id: crypto.randomUUID(),
 				component_version: 1

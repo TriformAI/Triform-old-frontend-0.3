@@ -55,6 +55,11 @@ export interface Meta {
 	name: string
 	id: Uuid
 	version: number
+	intention?: {
+		purpose: string
+		input: string
+		output: string
+	}
 	[k: string]: unknown
 }
 export interface Flow {

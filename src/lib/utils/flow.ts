@@ -7,7 +7,7 @@ export function getDownstreamNodes(id: Uuid): Set<Node> {
 	for (const node of Object.values(nodes)) {
 		if (node.data.trinode.inputs?.includes(id)) {
 			downstreamNodes.add(node)
-			const nestedNodes = getDownStreamNodes(node.id)
+			const nestedNodes = getDownstreamNodes(node.id)
 			downstreamNodes = downstreamNodes.union(nestedNodes)
 		}
 	}
