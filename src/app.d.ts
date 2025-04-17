@@ -1,5 +1,7 @@
 import 'unplugin-icons/types/svelte'
 import type { User } from '$lib/types/auth'
+import type { Project } from '$lib/types/project'
+
 import { API } from '$lib/api'
 
 // See https://kit.svelte.dev/docs/types#app
@@ -13,6 +15,7 @@ declare global {
 		}
 		interface PageData {
 			user?: User
+			project?: Project
 		}
 		// interface PageState {}
 		// interface Platform {}

@@ -24,7 +24,7 @@
 
 		<div>
 			<span class="text-main-300 pl-5">
-				{page.data.project.meta.name ?? 'Projects'}
+				{page.data.project?.meta.name ?? 'Projects'}
 			</span>
 			<!-- <span class="text-main-500 pl-2">{currentProject.hasUnsavedChanges ? '(unsaved)' : ''}</span> -->
 		</div>
