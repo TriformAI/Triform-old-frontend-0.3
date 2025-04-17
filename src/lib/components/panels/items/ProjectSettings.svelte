@@ -34,6 +34,9 @@
 	setFormdata()
 
 	function updateNode() {
+		if (!page.data?.project) {
+			return
+		}
 		//setIsDirty(nodeId, dataIsDirty)
 		const meta = page.data.project.meta
 		page.data.project.meta = { ...meta, ...formData }
@@ -47,7 +50,7 @@
 </script>
 
 <form
-	action={`/project/${page.data.project.meta.id}?/update`}
+	action={`/project/${page.data.project?.meta.id}?/update`}
 	method="POST"
 	class="grid gap-3"
 	use:enhance={() => {

@@ -67,10 +67,14 @@
 		}
 
 		try {
-			const result = await api.put<Action>('components', selected.node?.data.trinode.spec)
+			const result = await api.put<Action>(
+				`components/${selected.node.data.trinode.spec.meta.id}`,
+				selected.node?.data.trinode.spec
+			)
 
 			// Reset original files to current files and set isDirty to false
 			updateData(false)
+			initialData = clone(formData)
 			toast.success('Component successfully published!')
 		} catch (e) {
 			console.error('Failed to publish component', e)

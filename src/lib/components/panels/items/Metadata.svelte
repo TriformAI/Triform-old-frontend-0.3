@@ -48,15 +48,15 @@
 
 	setFormdata()
 
-	function updateNode() {
+	function updateNode(isDirty: boolean) {
 		if (!nodeId) return
-		setIsDirty(nodeId, dataIsDirty)
+		setIsDirty(nodeId, isDirty)
 		const meta = nodes[nodeId].data.trinode.spec.meta
 		nodes[nodeId].data.trinode.spec.meta = { ...meta, ...formData }
 	}
 
 	onDestroy(() => {
-		updateNode()
+		updateNode(dataIsDirty)
 	})
 
 	let isLoading = $state(false)
@@ -76,7 +76,8 @@
 		try {
 			const result = await api.put<Action>(`components/${payload.meta.id}`, payload)
 			toast.success('Metadata successfully updated!')
-			updateNode()
+			updateNode(false)
+			initialData = clone(formData)
 			console.log(result)
 		} catch (error) {
 			toast.error('Failed to update metadata')
@@ -87,6 +88,8 @@
 	}
 </script>
 
+{selected.isDirty}
+{dataIsDirty}
 <form method="POST" class="grid grid-cols-2 gap-3" onsubmit={onSubmit}>
 	<InputField
 		containerClass="col-span-2"
