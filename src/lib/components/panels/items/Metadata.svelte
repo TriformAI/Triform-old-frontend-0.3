@@ -88,8 +88,6 @@
 	}
 </script>
 
-{selected.isDirty}
-{dataIsDirty}
 <form method="POST" class="grid grid-cols-2 gap-3" onsubmit={onSubmit}>
 	<InputField
 		containerClass="col-span-2"

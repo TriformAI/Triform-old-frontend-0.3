@@ -23,7 +23,7 @@
 			isOpen ? 'max-h-max ease-out' : 'h-0 overflow-hidden ease-in'
 		]}
 	>
-		<div class="pb-10">
+		<div class="pb-6">
 			{@render children()}
 		</div>
 	</div>

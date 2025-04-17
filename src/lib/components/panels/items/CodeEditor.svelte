@@ -62,14 +62,17 @@
 	})
 
 	const publishComponent = async () => {
-		if (!selected.node) {
+		if (!nodeId) {
 			return
 		}
 
+		const payload = clone(nodes[nodeId].data.trinode.spec)
+		payload.spec = { ...payload.spec, ...formData }
+
 		try {
 			const result = await api.put<Action>(
-				`components/${selected.node.data.trinode.spec.meta.id}`,
-				selected.node?.data.trinode.spec
+				`components/${nodes[nodeId].data.trinode.spec.meta.id}`,
+				payload
 			)
 
 			// Reset original files to current files and set isDirty to false
