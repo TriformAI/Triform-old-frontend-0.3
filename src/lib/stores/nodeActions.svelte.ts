@@ -207,6 +207,9 @@ export const addFlow = {
 		const newNodeId = crypto.randomUUID()
 		addChild(flowNodeId, newActionNode, newNodeId)
 
+		// Save the new flow
+		await publishComponent(nodes[flowNodeId].data.trinode.spec)
+
 		// Save parent
 		const parent = nodes[parentId]
 		if (parent) {
