@@ -23,10 +23,7 @@ export async function PUT({ request, locals }) {
 
 	if (!data.meta.id) return error(400, 'Component must have an id')
 
-	const updatedComponent = await locals.api.put<Component>(
-		`components/publish/${data.meta.id}`,
-		data
-	)
+	const updatedComponent = await locals.api.put<Component>(`components/${data.meta.id}`, data)
 
 	return json(updatedComponent)
 }
