@@ -10,7 +10,7 @@ export async function POST({ request, locals }) {
 
 	const data: Component = await request.json()
 	console.log('creating component', data)
-	const createdComponent = await locals.api.post('components/publish', data)
+	const createdComponent = await locals.api.post('components', data)
 
 	return json(createdComponent)
 }

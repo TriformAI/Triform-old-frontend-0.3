@@ -18,7 +18,7 @@ export const actions = {
 
 		// Create initial endpoint before creating project
 		// We need to give this just some random IDs for now so it validates
-		const initialEndpoint = await locals.api.post<Endpoint>('components/publish', {
+		const initialEndpoint = await locals.api.post<Endpoint>('components', {
 			resource: 'endpoint/v1',
 			meta: {
 				name: 'Endpoint',
@@ -34,7 +34,7 @@ export const actions = {
 
 		// Need to manaually update the component id in spec for now, because the API doesn't do it
 		initialEndpoint.spec.component_id = initialEndpoint.meta.id
-		await locals.api.put(`components/publish/${initialEndpoint.meta.id}`, initialEndpoint)
+		await locals.api.put(`components/${initialEndpoint.meta.id}`, initialEndpoint)
 
 		const project: DeepPartial<Project> = {
 			resource: 'project/v1',
