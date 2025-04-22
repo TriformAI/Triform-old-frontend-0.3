@@ -4,5 +4,5 @@ import type { Project } from '$lib/types/project'
 const api = new API()
 
 export const saveProject = async (project: Project) => {
-	return await api.put<Project>('projects', project)
+	return await api.put<Project>(`projects/${project.meta.id}`, project)
 }

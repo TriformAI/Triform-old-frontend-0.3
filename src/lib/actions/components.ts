@@ -4,7 +4,7 @@ import type { Component } from '$lib/types/agent'
 const api = new API()
 
 export const publishComponent = async (component: Component) => {
-	return await api.put<Component>('components', component)
+	return await api.put<Component>(`components/${component.meta.id}`, component)
 }
 
 export const createComponent = async (component: Component) => {
