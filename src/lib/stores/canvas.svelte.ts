@@ -285,6 +285,13 @@ export const updateNode = (id: Uuid, updatedNode: TriNode): TriNode => {
 	// Trigger an update in svelte flow's internals
 	for (const listener of updateNodeListeners.values()) listener(id)
 
+	// If it was a top-level node, keep the project in sync
+	const proj = project()
+	if (!proj?.spec) throw new Error('Project does not exist')
+	if (id in proj.spec.nodes) {
+		proj.spec.nodes[id] = updatedNode
+	}
+
 	// Return the previous node so we can revert if needed
 	return previous
 }
@@ -300,6 +307,10 @@ export const addChild = (
 		const { node: parsedNode, edges: parsedEdges } = parseNode(child, childId)
 		nodes[childId] = parsedNode
 		edges.push(...parsedEdges)
+		// update project
+		const proj = project()
+		if (!proj?.spec) throw new Error('Project does not exist')
+		proj.spec.nodes[childId] = child
 	} else {
 		// Adding a child to a flow
 		const parent = nodes[parentId]
@@ -364,6 +375,9 @@ export const removeChild = (childId: Uuid) => {
 	) {
 		// If there's no parent, it's a top-level project node
 		delete nodes[childId]
+		const proj = project()
+		if (!proj?.spec) throw new Error('Project does not exist')
+		delete proj.spec.nodes[childId]
 	} else {
 		// Part of a flow
 		if (!parent || !isFlow(parent.data.trinode)) {
