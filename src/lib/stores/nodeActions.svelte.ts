@@ -201,6 +201,8 @@ export const addFlow = {
 		// Add the final flow to the parent flow (or root project)
 		const parentId = (addAsChild ? node.id : node.parentId) as Uuid
 		addChild(parentId, newFlowNode, flowNodeId)
+		// expand the new flow
+		expandFlow(flowNodeId)
 		// Add the new action to the flow
 		const newNodeId = crypto.randomUUID()
 		addChild(flowNodeId, newActionNode, newNodeId)
