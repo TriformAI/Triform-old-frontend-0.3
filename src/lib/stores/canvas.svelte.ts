@@ -185,7 +185,7 @@ export const loadProject = (project: Project) => {
 }
 
 export const unloadProject = () => {
-	Object.assign(nodes, {})
+	for (const prop of Object.getOwnPropertyNames(nodes)) delete nodes[prop as Uuid]
 	edges.length = 0
 	currentProject = undefined
 }
