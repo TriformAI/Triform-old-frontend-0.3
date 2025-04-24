@@ -5,7 +5,12 @@
 	import Flow from '$lib/components/panels/Flow.svelte'
 	import Endpoint from '$lib/components/panels/Endpoint.svelte'
 
-	const nodeType = $derived(selected.node?.type?.split('-')[0])
+	const nodeType = $derived.by(() => {
+		const type = selected.node?.type
+		if (!type) return
+		if (type === 'open-flow-node') return 'flow'
+		return type.split('-')[0]
+	})
 
 	const nodeComponents = {
 		action: Action,
