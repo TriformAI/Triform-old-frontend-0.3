@@ -1,5 +1,5 @@
 import type { Node } from '$lib/types/flow'
-import type { Uuid, Flow } from '$lib/types/agent'
+import type { Flow } from '$lib/types/agent'
 import type { Execution } from '$lib/types/execution'
 
 import { getDownstreamNodes } from '$lib/utils/flow'

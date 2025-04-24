@@ -2,13 +2,12 @@
 	// @ts-nocheck
 	import { useSvelteFlow } from '@xyflow/svelte'
 	import { closeWindowById, openWindow, windowIsOpen } from '$lib/stores/windows.svelte'
-	import { project } from '$lib/stores/canvas.svelte'
 
 	import Button from '$lib/components/atoms/Button.svelte'
 
 	import IconPlay from '~icons/material-symbols/play-arrow-outline-rounded'
 	import IconFitScreen from '~icons/material-symbols/filter-center-focus-outline'
-	import IconSave from '~icons/material-symbols/save-outline-rounded'
+	// import IconSave from '~icons/material-symbols/save-outline-rounded'
 
 	import Execution from '../panels/items/Execute.svelte'
 

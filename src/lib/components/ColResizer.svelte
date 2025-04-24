@@ -8,7 +8,7 @@
 
 	let isResizing = $state(false)
 
-	function handleResize(event: MouseEvent) {
+	function handleResize(_event: MouseEvent) {
 		isResizing = true
 		document.addEventListener('mousemove', resize)
 		document.addEventListener('mouseup', () => {

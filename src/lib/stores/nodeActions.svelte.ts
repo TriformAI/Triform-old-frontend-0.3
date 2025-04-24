@@ -1,11 +1,10 @@
 import type { Node, NodeType } from '$lib/types/flow'
 import type { Component } from 'svelte'
-import type { Uuid, Node as TriNode, Action, Flow } from '$lib/types/agent'
+import type { Uuid, Node as TriNode, Flow } from '$lib/types/agent'
 
 import { dev } from '$app/environment'
 import { SvelteMap } from 'svelte/reactivity'
 import { useSvelteFlow as useSvelteFlowHook, type Edge } from '@xyflow/svelte'
-import { openWindow } from './windows.svelte'
 import {
 	addChild,
 	collapseFlow,
@@ -21,7 +20,6 @@ import { publishComponent, createComponent } from '$lib/actions/components'
 import { saveProject } from '$lib/actions/project'
 import IconTrash from '~icons/material-symbols/delete-outline'
 import IconAdd from '~icons/material-symbols/add-diamond-outline'
-import IconEditor from '~icons/material-symbols/code-blocks-outline'
 import IconExpand from '~icons/mdi/circle-expand'
 import IconNetworkNode from '~icons/material-symbols/network-node'
 import IconClose from '~icons/material-symbols/close-fullscreen-rounded'
@@ -148,8 +146,7 @@ export const addFlow = {
 		inputs?: Uuid[]
 	) => {
 		const {
-			getNodes,
-			getInternalNode
+			getNodes
 			// getZoom,
 			// setCenter
 		} = useSvelteFlow

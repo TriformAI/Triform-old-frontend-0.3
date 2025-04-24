@@ -4,7 +4,6 @@
 	import { toast } from 'svelte-sonner'
 	import { source } from 'sveltekit-sse'
 
-	import Window from '$lib/components/common/Window.svelte'
 	import Button from '../../atoms/Button.svelte'
 	import LightEditor from '$lib/components/atoms/LightEditor.svelte'
 

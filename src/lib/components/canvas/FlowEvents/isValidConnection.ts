@@ -3,7 +3,7 @@ import type { IsValidConnection as IsValidConnectionType, useSvelteFlow } from '
 export const isValidConnection: AddParameters<
 	IsValidConnectionType,
 	[ReturnType<typeof useSvelteFlow>]
-> = (connection, useSvelteFlow) => {
+> = (connection, _useSvelteFlow) => {
 	console.log(connection)
 	return true
 }

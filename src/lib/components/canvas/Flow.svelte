@@ -79,23 +79,22 @@
 	const flowIsEmpty = $derived(!Object.keys(nodes).length)
 
 	function addFirstNode() {
-		const triggerNode = {
-			component_id: crypto.randomUUID(),
-			component_version: 1,
-			spec: {
-				resource: 'endpoint/v1',
-				meta: {
-					name: 'Endpoint',
-					id: crypto.randomUUID(),
-					version: 1
-				},
-				spec: {
-					method: 'GET',
-					path: '/'
-				}
-			}
-		}
-
+		// const triggerNode = {
+		// 	component_id: crypto.randomUUID(),
+		// 	component_version: 1,
+		// 	spec: {
+		// 		resource: 'endpoint/v1',
+		// 		meta: {
+		// 			name: 'Endpoint',
+		// 			id: crypto.randomUUID(),
+		// 			version: 1
+		// 		},
+		// 		spec: {
+		// 			method: 'GET',
+		// 			path: '/'
+		// 		}
+		// 	}
+		// }
 		// addNode('root', triggerNode)
 	}
 

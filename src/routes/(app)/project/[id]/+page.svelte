@@ -1,14 +1,12 @@
 <script lang="ts">
 	import { onDestroy, onMount } from 'svelte'
 	import Flow from '$lib/components/canvas/Flow.svelte'
-	import Toolbar from '$lib/components/canvas/Toolbar.svelte'
 	import Confirm from '$lib/components/common/Confirm.svelte'
 	import { SvelteFlowProvider } from '@xyflow/svelte'
-	import { beforeNavigate } from '$app/navigation'
-	import type { BeforeNavigate } from '@sveltejs/kit'
+	// import { beforeNavigate } from '$app/navigation'
+	// import type { BeforeNavigate } from '@sveltejs/kit'
 
 	import {
-		openWindows,
 		unloadWindows,
 		// createLocalStorageListener,
 		// loadWindowsFromLocalStorage,
@@ -64,8 +62,6 @@
 	let gridContainer = $state<HTMLDivElement>()
 	let flowComponent = $state<Flow>()
 </script>
-
-<!-- <svelte:window onbeforeunload={beforeUnload} /> -->
 
 <SvelteFlowProvider>
 	<div bind:this={gridContainer} class="bg-main-800 grid h-full grid-cols-[1fr_4px_450px] pt-1">

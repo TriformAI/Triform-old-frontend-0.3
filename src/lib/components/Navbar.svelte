@@ -1,7 +1,6 @@
 <script lang="ts">
 	import logo from '$lib/images/Logo.svg'
 	import Dropdown from './common/Dropdown.svelte'
-	import { project } from '$lib/stores/canvas.svelte'
 	// import { getTolgee } from '@tolgee/svelte'
 
 	import { page } from '$app/state'

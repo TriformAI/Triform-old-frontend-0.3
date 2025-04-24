@@ -89,7 +89,7 @@
 		if (!node) return
 
 		// We cn use deleteElements here because this is a temporary node
-		const result = await deleteElements({ nodes: [node] })
+		const _result = await deleteElements({ nodes: [node] })
 	}
 </script>
 
@@ -146,7 +146,7 @@
 							inputs: [...(sourceNode.data.trinode.inputs ?? []), newNodeId]
 						})
 					// Publish the parent flow
-					const parentId = addAsChild ? sourceNode.id : sourceNode.parentId
+					const _parentId = addAsChild ? sourceNode.id : sourceNode.parentId
 					// await publishComponent(parentId ?? 'root')
 				}}
 				autoLoad="promise"

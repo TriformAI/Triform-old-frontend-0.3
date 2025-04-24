@@ -26,7 +26,7 @@ export async function POST({ request, locals }) {
 	}
 
 	try {
-		const data = await locals.api.post(`modifiers`, payload)
+		const _data = await locals.api.post(`modifiers`, payload)
 		return json({ type: 'success' })
 	} catch (error) {
 		console.error(error)

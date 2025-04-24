@@ -61,7 +61,7 @@
 				<li class="text-main-500">No variables found</li>
 			{/each}
 		</ul>
-	{:catch error}
+	{:catch _error}
 		<p>Could not load variables</p>
 	{/await}
 </div>

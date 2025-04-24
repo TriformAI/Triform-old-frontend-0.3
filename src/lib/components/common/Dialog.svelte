@@ -22,7 +22,7 @@
 		onClose,
 		onOpen,
 		closeByClickOutside = true,
-		allowEscapeClose = true,
+		// allowEscapeClose = true,
 		class: classes,
 		open
 	}: Props = $props()

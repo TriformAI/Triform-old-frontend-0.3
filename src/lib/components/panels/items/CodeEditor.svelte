@@ -70,7 +70,7 @@
 		payload.spec = { ...payload.spec, ...formData }
 
 		try {
-			const result = await api.put<Action>(
+			const _result = await api.put<Action>(
 				`components/${nodes[nodeId].data.trinode.spec.meta.id}`,
 				payload
 			)

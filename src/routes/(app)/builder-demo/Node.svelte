@@ -2,7 +2,6 @@
 	import { Handle, Position, useSvelteFlow } from '@xyflow/svelte'
 	import IconAction from '~icons/mdi/rhombus'
 	import IconTrigger from '~icons/material-symbols/bolt'
-	import IconFlow from '~icons/material-symbols/network-node'
 
 	import Status from './Status.svelte'
 	import { staticMode } from './stores.svelte'

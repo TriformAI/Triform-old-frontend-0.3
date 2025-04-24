@@ -15,7 +15,7 @@
 	const maskedValue = $derived(value.replace(/\w/g, '•').replace(/ /g, ''))
 	let showValue = $state(false)
 
-	const handleDelete: SubmitFunction = async ({ formElement, cancel }) => {
+	const handleDelete: SubmitFunction = async ({ cancel }) => {
 		const isConfirmed = await confirmStore.show({
 			title: 'Are you sure?',
 			message: `Please confirm that you want to delete this variable`

@@ -1,5 +1,5 @@
 <script lang="ts">
-	import type { Node, NodeType } from '$lib/types/flow'
+	import type { Node } from '$lib/types/flow'
 	import type { onClickFn } from '$lib/stores/nodeActions.svelte'
 	import { useSvelteFlow as useSvelteFlowHook } from '@xyflow/svelte'
 

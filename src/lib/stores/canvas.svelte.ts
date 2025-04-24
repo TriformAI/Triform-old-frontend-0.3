@@ -16,7 +16,7 @@ export const nodes = $state<Record<Uuid, Node>>({})
 export const edges = $state<Edge[]>([])
 
 class SelectedNodeStore {
-	nodes = $derived(Object.entries(nodes).filter(([uuid, node]) => node.selected))
+	nodes = $derived(Object.entries(nodes).filter(([_uuid, node]) => node.selected))
 	isMultiple = $derived(this.nodes.length > 1)
 
 	// Only returns if selected node is a single node

@@ -28,8 +28,8 @@
 		height = 0,
 		zIndex = 1,
 		isClosing,
-		disableDrag = false,
-		customProps
+		disableDrag = false
+		// customProps
 	}: Props = $props()
 
 	let element: HTMLDivElement

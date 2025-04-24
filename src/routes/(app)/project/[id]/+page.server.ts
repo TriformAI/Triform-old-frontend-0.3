@@ -32,7 +32,7 @@ export const actions = {
 		}
 	},
 
-	async delete({ request }) {
+	async delete() {
 		// Send a delete request to the API
 		console.log('delete project')
 
