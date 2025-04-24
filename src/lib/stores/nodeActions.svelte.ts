@@ -316,7 +316,7 @@ export const deleteNode = {
 
 // Populate map
 actionsMapStore.set('endpoint-node', [addFlow, getDebugData])
-actionsMapStore.set('action-node', [addAction, addFlow, deleteNode, getDebugData])
+actionsMapStore.set('action-node', [addAction, addFlow, getDebugData, deleteNode])
 actionsMapStore.set('flow-node', [
 	{
 		label: 'Expand',
@@ -329,8 +329,8 @@ actionsMapStore.set('flow-node', [
 	},
 	addAction,
 	addFlow,
-	deleteNode,
-	getDebugData
+	getDebugData,
+	deleteNode
 ])
 actionsMapStore.set('open-flow-node', [
 	{
@@ -343,5 +343,6 @@ actionsMapStore.set('open-flow-node', [
 			collapseFlow(node.id)
 		}
 	},
-	getDebugData
+	getDebugData,
+	deleteNode
 ])
