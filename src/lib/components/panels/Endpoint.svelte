@@ -7,7 +7,7 @@
 
 {#key selected.node?.id}
 	<Panel
-		title={selected.node?.data.trinode.spec.meta.name || 'Action'}
+		title={selected.node?.data.trinode.spec.meta.name ?? 'Action'}
 		desc={selected.node?.data.trinode.spec.meta.intention?.purpose}
 	>
 		{#snippet slot({ PanelItem })}

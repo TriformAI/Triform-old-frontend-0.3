@@ -8,7 +8,6 @@
 	import { onDestroy } from 'svelte'
 	import compare from 'just-compare'
 	import { clone } from '$lib/utils/clone'
-	import { page } from '$app/state'
 	import { API } from '$lib/api'
 
 	const api = new API()

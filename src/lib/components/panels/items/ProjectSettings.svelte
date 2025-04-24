@@ -19,11 +19,11 @@
 	let formData = $state<FormData>()!
 
 	function setFormdata() {
-		const meta = page.data.project.meta
+		const meta = page.data.project?.meta
 
 		initialData = {
-			name: meta.name,
-			intention: (meta.intention as FormData['intention']) ?? {
+			name: meta?.name ?? '',
+			intention: (meta?.intention as FormData['intention']) ?? {
 				purpose: ''
 			}
 		}
@@ -39,7 +39,15 @@
 		}
 		//setIsDirty(nodeId, dataIsDirty)
 		const meta = page.data.project.meta
-		page.data.project.meta = { ...meta, ...formData }
+		page.data.project.meta = {
+			...meta,
+			...formData,
+			intention: {
+				// just to please typescript
+				...meta.intention,
+				...formData.intention
+			}
+		}
 	}
 
 	onDestroy(() => {
