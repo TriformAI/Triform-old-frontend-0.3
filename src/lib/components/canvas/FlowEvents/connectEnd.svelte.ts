@@ -1,17 +1,10 @@
 import { type OnConnectEnd, useSvelteFlow as svelteFlowHook, type Edge } from '@xyflow/svelte'
-import { type TemporaryNode } from '$lib/types/flow'
-import {
-	nodes,
-	updateNode,
-	nodesStore,
-	edgesStore,
-	isFlow,
-	project
-} from '$lib/stores/canvas.svelte'
+import { nodes, updateNode, isFlow, project } from '$lib/stores/canvas.svelte'
 import type { Flow, Uuid } from '$lib/types/agent'
 import { toast } from 'svelte-sonner'
 import { publishComponent } from '$lib/actions/components'
 import { saveProject } from '$lib/actions/project'
+import { addNodeSelector } from '$lib/utils/addNodeSelector'
 
 type ConnectEnd = AddParameters<OnConnectEnd, [ReturnType<typeof svelteFlowHook>]>
 
@@ -164,7 +157,7 @@ const createNodeSelector: ConnectEnd = async (event, connectionState, useSvelteF
 	if (!fromNode) return
 
 	const sourceNodeId = fromNode.id as Uuid
-	const id = crypto.randomUUID()
+	const nodeSelectorId = crypto.randomUUID()
 	const { clientX, clientY } = 'changedTouches' in event ? event.changedTouches[0] : event
 
 	let newEdge: Edge | undefined
@@ -177,7 +170,7 @@ const createNodeSelector: ConnectEnd = async (event, connectionState, useSvelteF
 		newEdge = {
 			source: sourceNodeId,
 			sourceHandle: fromHandle.id,
-			target: id,
+			target: nodeSelectorId,
 			id: `${sourceNodeId}:nodeSelector`
 		}
 	}
@@ -185,11 +178,13 @@ const createNodeSelector: ConnectEnd = async (event, connectionState, useSvelteF
 	// 2. The origin handle is an output handle
 	// In this case I think we need to check where the user dropped the handle, and if it's within the flow, create a node within the flow connected to the output
 	// But if it's dropped outside, we should create a downstream node of this flow, so a sibling basically
+	// TODO: the edge bends in the wrong way here, so we'll have to make the drag event start from the regular handle
+	// and not the output handle (small visual thing)
 	else if (fromHandle?.id?.endsWith(':output')) {
 		// For now I think it's enough that we create it outside of the flow, ie as a sibling
 		newEdge = {
 			source: sourceNodeId,
-			target: id,
+			target: nodeSelectorId,
 			sourceHandle: sourceNodeId,
 			id: `${sourceNodeId}:nodeSelector`
 		}
@@ -199,9 +194,9 @@ const createNodeSelector: ConnectEnd = async (event, connectionState, useSvelteF
 	else if (fromHandle?.type === 'target') {
 		console.log('target')
 		newEdge = {
-			source: id,
+			source: nodeSelectorId,
 			target: sourceNodeId,
-			id: `${id}:nodeSelector`
+			id: `${nodeSelectorId}:nodeSelector`
 		}
 	}
 
@@ -209,7 +204,7 @@ const createNodeSelector: ConnectEnd = async (event, connectionState, useSvelteF
 	else if (fromHandle?.type === 'source') {
 		newEdge = {
 			source: sourceNodeId,
-			target: id,
+			target: nodeSelectorId,
 			id: `${sourceNodeId}:nodeSelector`
 		}
 	}
@@ -219,21 +214,10 @@ const createNodeSelector: ConnectEnd = async (event, connectionState, useSvelteF
 		throw new Error('Unknown handle type')
 	}
 
-	const newNode: TemporaryNode = {
-		id,
-		type: 'selector-node',
-		data: {
-			addAsChild
-		},
-		// project the screen coordinates to pane coordinates
-		position: screenToFlowPosition({
-			x: clientX,
-			y: clientY
-		}),
-		// set the origin of the new node so it is centered
-		origin: [0.5, 0.0]
-	}
+	const position = screenToFlowPosition({
+		x: clientX,
+		y: clientY
+	})
 
-	nodesStore.update(n => [...n, newNode])
-	edgesStore.update(n => [...n, newEdge])
+	addNodeSelector(newEdge, position, nodeSelectorId, addAsChild)
 }

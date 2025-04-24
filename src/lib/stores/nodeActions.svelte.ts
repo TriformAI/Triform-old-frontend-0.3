@@ -4,7 +4,7 @@ import type { Uuid, Node as TriNode, Action, Flow } from '$lib/types/agent'
 
 import { dev } from '$app/environment'
 import { SvelteMap } from 'svelte/reactivity'
-import { useSvelteFlow as useSvelteFlowHook } from '@xyflow/svelte'
+import { useSvelteFlow as useSvelteFlowHook, type Edge } from '@xyflow/svelte'
 import { openWindow } from './windows.svelte'
 import {
 	addChild,
@@ -26,6 +26,7 @@ import IconExpand from '~icons/mdi/circle-expand'
 import IconNetworkNode from '~icons/material-symbols/network-node'
 import IconClose from '~icons/material-symbols/close-fullscreen-rounded'
 import IconBug from '~icons/material-symbols/bug-report-outline-rounded'
+import { addNodeSelector } from '$lib/utils/addNodeSelector'
 
 export type onClickFn = (
 	node: Node,
@@ -146,6 +147,13 @@ export const addFlow = {
 		addAsChild: boolean = false,
 		inputs?: Uuid[]
 	) => {
+		const {
+			getNodes,
+			getInternalNode
+			// getZoom,
+			// setCenter
+		} = useSvelteFlow
+
 		const flowNodeId = crypto.randomUUID()
 		const newFlowNode = {
 			component_id: crypto.randomUUID(), // so it validates
@@ -167,48 +175,47 @@ export const addFlow = {
 		} as {
 			spec: Flow
 		} & TriNode
-		// Add an action to the flow
-		const newActionNode = {
-			component_id: crypto.randomUUID(), // so it validates
-			component_version: null,
-			inputs: ['parent'],
-			spec: {
-				resource: 'action/v1',
-				meta: {
-					name: 'Action',
-					id: crypto.randomUUID(),
-					version: 1
-				},
-				spec: {
-					source: '@triform.entrypoint\ndef action(input):\n  return input',
-					readme: '',
-					deps: '',
-					streaming: false
-				}
-			}
-		} as TriNode
 		// Create components
 		// TODO: do this in addNode maybe so the nodes can appear on the canvas quicker
 		// and show some sort of loading state
-		const [publishedFlow, publishedAction] = await Promise.all([
-			createComponent(newFlowNode.spec),
-			createComponent(newActionNode.spec)
-		])
+		const publishedFlow = await createComponent(newFlowNode.spec)
 		newFlowNode.component_id = publishedFlow.meta.id
 		newFlowNode.spec = publishedFlow as Flow
-		newActionNode.component_id = publishedAction.meta.id
-		newActionNode.spec = publishedAction
 		// Add the final flow to the parent flow (or root project)
 		const parentId = (addAsChild ? node.id : node.parentId) as Uuid
 		addChild(parentId, newFlowNode, flowNodeId)
+
 		// expand the new flow
 		expandFlow(flowNodeId)
-		// Add the new action to the flow
-		const newNodeId = crypto.randomUUID()
-		addChild(flowNodeId, newActionNode, newNodeId)
 
-		// Save the new flow
-		await publishComponent(nodes[flowNodeId].data.trinode.spec)
+		// Show node selector once everything has been created
+		// We can defer this and publish the parent in the background,
+		// so no need to await it
+		setTimeout(() => {
+			const nodeSelectorId = crypto.randomUUID()
+			const selectorEdge = {
+				source: flowNodeId,
+				sourceHandle: `${flowNodeId}:input`,
+				target: nodeSelectorId
+			} as Edge
+			const flowNode = nodes[flowNodeId]
+
+			const position = {
+				x: flowNode.position.x + (flowNode.measured?.width ?? 0) / 2,
+				y: flowNode.position.y + (flowNode.measured?.height ?? 0) / 6
+			}
+
+			addNodeSelector(
+				selectorEdge,
+				position,
+				nodeSelectorId,
+				true,
+				// Make sure the node selector is bounded within the same context as the new flow
+				// so the position matches
+				// Alternatively we could calculate the position manually, but I think this might be good for now
+				flowNode.parentId
+			)
+		}, 100)
 
 		// Save parent
 		const parent = nodes[parentId]
@@ -218,7 +225,8 @@ export const addFlow = {
 			} catch (e) {
 				console.error('Failed to publish parent component', e)
 				toast.error('Failed to publish parent component')
-				removeChild(newNodeId)
+				removeChild(flowNodeId)
+				// might be good to delete the flow component here too
 			}
 		} else {
 			try {
@@ -228,16 +236,12 @@ export const addFlow = {
 			} catch (e) {
 				console.error('Failed to save project', e)
 				toast.error('Failed to save project')
-				removeChild(newNodeId)
+				removeChild(flowNodeId)
+				// might be good to delete the flow component here too
 			}
 		}
 
 		setTimeout(() => {
-			const {
-				getNodes
-				// getZoom,
-				// setCenter
-			} = useSvelteFlow
 			const nodes = getNodes()
 			const pos = nodes[nodes.length - 1].position
 			if (!pos) return
@@ -245,7 +249,7 @@ export const addFlow = {
 			// setCenter(pos.x + 40, pos.y + 100, { zoom: currentZoom, duration: 500 })
 		}, 100)
 
-		return newNodeId
+		return flowNodeId
 	}
 }
 

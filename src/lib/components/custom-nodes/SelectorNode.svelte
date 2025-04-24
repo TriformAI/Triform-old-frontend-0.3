@@ -17,6 +17,7 @@
 	import IconFlow from '~icons/material-symbols/network-node'
 	import IconClose from '~icons/mdi/close'
 	import IconAction from '~icons/mdi/rhombus'
+	import Button from '$lib/components/atoms/Button.svelte'
 
 	const props: NodeProps = $props()
 
@@ -126,8 +127,8 @@
 
 	<div class="grid auto-cols-fr grid-flow-col gap-3">
 		{#each componentTypes as type}
-			<button
-				onclick={async () => {
+			<Button
+				onClick={async () => {
 					if (!sourceNode) return
 					console.log('sourcenode', sourceNode)
 					const newNodeId = await type.handler(
@@ -148,12 +149,15 @@
 					const parentId = addAsChild ? sourceNode.id : sourceNode.parentId
 					// await publishComponent(parentId ?? 'root')
 				}}
-				type="button"
-				class="border-main-700/50 hover:bg-main-700/50 bg-main-800 place-items-center justify-center gap-2 rounded border px-4 py-2 font-medium transition-colors duration-200"
+				autoLoad="promise"
 			>
-				<type.icon class="size-5" />
-				<span>{type.label}</span>
-			</button>
+				{#snippet icon()}
+					<type.icon class="size-5" />
+				{/snippet}
+				{#snippet body()}
+					<span>{type.label}</span>
+				{/snippet}
+			</Button>
 		{/each}
 	</div>
 

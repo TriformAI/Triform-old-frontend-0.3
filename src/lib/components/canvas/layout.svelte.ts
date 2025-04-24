@@ -26,6 +26,8 @@ const NODE_SIZE = 80
 
 let elk: ELKType
 
+type NodeTypeMap = Record<Node['id'], Node['type']>
+
 const buildElkTree = (allNodes: Node[]): ElkNode[] => {
 	// First get all root nodes (nodes without a parent)
 	const rootNodes = allNodes.filter(node => !node.parentId)
@@ -57,7 +59,8 @@ const buildElkTree = (allNodes: Node[]): ElkNode[] => {
 const calculateGroupDimensions = async (
 	node: ElkNode,
 	childNodes: ElkNode[],
-	edges: Edge[]
+	edges: Edge[],
+	nodeTypes: NodeTypeMap
 ): Promise<{
 	width: number
 	height: number
@@ -79,21 +82,52 @@ const calculateGroupDimensions = async (
 			targets: [e.target]
 		}))
 	}
+
+	// If it's an open flow, but without any children, default to a set width & height so the node selector fits
+	console.log(node.id, childNodes.length, nodeTypes[node.id as Node['id']])
+	if (!childNodes.length && nodeTypes[node.id as Node['id']] === 'open-flow-node') {
+		console.log('empty at', node.id)
+		return {
+			width: NODE_SIZE * 3,
+			height: NODE_SIZE * 3
+		}
+	}
+
 	const { width = NODE_SIZE, height = NODE_SIZE } = await elk.layout(graph)
 	return { width, height }
 }
 
 // Calculate the sizes of all groups
-const updateGroupSizes = async (node: ElkNode, edges: Edge[]): Promise<ElkNode> => {
-	if (!node.children?.length) return node
+const updateGroupSizes = async (
+	node: ElkNode,
+	edges: Edge[],
+	nodeTypes: NodeTypeMap
+): Promise<ElkNode> => {
+	if (!node.children?.length) {
+		// If it's an open flow, but without any children, default to a set width & height so the node selector fits
+		if (nodeTypes[node.id as Node['id']] === 'open-flow-node') {
+			return {
+				...node,
+				width: NODE_SIZE * 2,
+				height: NODE_SIZE * 2
+			}
+		}
+		// otherwise, just return the node as usual
+		return node
+	}
 
 	// Process children first
 	const processedChildren = await Promise.all(
-		node.children.map(async n => await updateGroupSizes(n, edges))
+		node.children.map(async n => await updateGroupSizes(n, edges, nodeTypes))
 	)
 
 	// Calculate the new dimensions once the children have been processed
-	const { width, height } = await calculateGroupDimensions(node, processedChildren, edges)
+	const { width, height } = await calculateGroupDimensions(
+		node,
+		processedChildren,
+		edges,
+		nodeTypes
+	)
 
 	return {
 		...node,
@@ -127,8 +161,9 @@ export const getLayoutedNodes = async (nodes: Node[], edges: Edge[]) => {
 	)
 
 	// Go through the graph in a post-order fashion to calculate the correct size of all groups
+	const nodeTypes: NodeTypeMap = Object.fromEntries(nodes.map(n => [n.id, n.type]))
 	console.time('update group sizes')
-	children = await Promise.all(children.map(c => updateGroupSizes(c, filteredEdges)))
+	children = await Promise.all(children.map(c => updateGroupSizes(c, filteredEdges, nodeTypes)))
 	console.timeEnd('update group sizes')
 
 	const graph = {
