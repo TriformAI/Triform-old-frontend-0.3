@@ -7,7 +7,7 @@ export async function load({ locals, params, depends }) {
 	const project = await locals.api.get<Project>(`projects/${params.id}?depth=999`)
 	console.log(JSON.stringify(project))
 
-	const modifiers = await locals.api.get(`modifiers?depth=999`)
+	const modifiers = await locals.api.get(`modifiers?type=variable`)
 
 	return {
 		project,
