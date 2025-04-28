@@ -1,6 +1,5 @@
 import { json, error } from '@sveltejs/kit'
 import type { Project } from '$lib/types/project'
-import { saveProject } from '$lib/actions/project'
 
 export async function DELETE({ request, locals, params, url }) {
 	const nodePath = url.searchParams.get('nodePath')!

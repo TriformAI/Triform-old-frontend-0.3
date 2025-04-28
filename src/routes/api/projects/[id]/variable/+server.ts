@@ -1,6 +1,5 @@
 import { json } from '@sveltejs/kit'
-import type { Variable, Project } from '$lib/types/project'
-import { saveProject } from '$lib/actions/project'
+import type { Project } from '$lib/types/project'
 
 export async function POST({ request, locals, params }) {
 	const { nodePath, modifierId } = await request.json()
