@@ -9,6 +9,7 @@
 	import compare from 'just-compare'
 	import { clone } from '$lib/utils/clone'
 	import { API } from '$lib/api'
+	import PanelItem from '../PanelItem.svelte'
 
 	const api = new API()
 
@@ -87,46 +88,48 @@
 	}
 </script>
 
-<form method="POST" class="grid grid-cols-2 gap-3" onsubmit={onSubmit}>
-	<InputField
-		containerClass="col-span-2"
-		required
-		label="Name"
-		name="name"
-		bind:value={formData.name}
-	/>
+<PanelItem title="Metadata">
+	<form method="POST" class="grid grid-cols-2 gap-3" onsubmit={onSubmit}>
+		<InputField
+			containerClass="col-span-2"
+			required
+			label="Name"
+			name="name"
+			bind:value={formData.name}
+		/>
 
-	<TextField
-		rows={3}
-		class="col-span-2"
-		label="Intention"
-		name="intention"
-		bind:value={formData.intention.purpose}
-	/>
+		<TextField
+			rows={3}
+			class="col-span-2"
+			label="Intention"
+			name="intention"
+			bind:value={formData.intention.purpose}
+		/>
 
-	<TextField
-		rows={2}
-		label="Expected input"
-		name="intention"
-		bind:value={formData.intention.input}
-	/>
+		<TextField
+			rows={2}
+			label="Expected input"
+			name="intention"
+			bind:value={formData.intention.input}
+		/>
 
-	<TextField
-		rows={2}
-		label="Expected output"
-		name="intention"
-		bind:value={formData.intention.output}
-	/>
+		<TextField
+			rows={2}
+			label="Expected output"
+			name="intention"
+			bind:value={formData.intention.output}
+		/>
 
-	<div class="col-span-2 flex justify-between">
-		{#if dataIsDirty}
-			<p class="text-main-400 text-sm">You have unsaved changes</p>
-		{/if}
+		<div class="col-span-2 flex justify-between">
+			{#if dataIsDirty}
+				<p class="text-main-400 text-sm">You have unsaved changes</p>
+			{/if}
 
-		<Button variation="vibrant" type="submit" class="ms-auto py-2" {isLoading}>
-			{#snippet body()}
-				Save
-			{/snippet}
-		</Button>
-	</div>
-</form>
+			<Button variation="vibrant" type="submit" class="ms-auto py-2" {isLoading}>
+				{#snippet body()}
+					Save
+				{/snippet}
+			</Button>
+		</div>
+	</form>
+</PanelItem>

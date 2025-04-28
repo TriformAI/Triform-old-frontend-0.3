@@ -7,6 +7,7 @@
 	import { selected } from '$lib/stores/canvas.svelte'
 	import Item from './Item.svelte'
 	import Selector from './Selector.svelte'
+	import PanelItem from '../../PanelItem.svelte'
 
 	let variableDialog = $state<HTMLDialogElement>()
 
@@ -52,13 +53,12 @@
 		isAttaching = false
 		invalidate('project')
 		newVariable = ''
-
-		console.log(result)
 	}
 </script>
 
-<div>
-	<!-- {#if variables.length > 0}
+<PanelItem title="Variables">
+	<div>
+		<!-- {#if variables.length > 0}
 		<div class=" mb-2 grid grid-cols-[1fr_auto] items-end gap-4">
 			<label class="-ms-3 block">
 				<span class="sr-only">Filter</span>
@@ -72,43 +72,44 @@
 		</div>
 	{/if} -->
 
-	<div class={['-ms-1', newVariable && ' grid grid-cols-[1fr_auto] gap-2']}>
-		{#key variables.length}
-			<Selector
-				bind:value={newVariable}
-				items={page.data.variables?.map(v => ({ value: v.meta.id, label: v.spec.key })) ?? []}
-				onCreateTrigger={() => {
-					variableDialog?.showModal()
-				}}
-			/>
-		{/key}
+		<div class={['-ms-1', newVariable && ' grid grid-cols-[1fr_auto] gap-2']}>
+			{#key variables.length}
+				<Selector
+					bind:value={newVariable}
+					items={page.data.variables?.map(v => ({ value: v.meta.id, label: v.spec.key })) ?? []}
+					onCreateTrigger={() => {
+						variableDialog?.showModal()
+					}}
+				/>
+			{/key}
 
-		{#if newVariable}
-			<Button
-				isLoading={isAttaching}
-				class="py-1 text-sm font-medium"
-				variation="vibrant"
-				type="button"
-				onClick={async () => {
-					await attachVariable()
-				}}
-			>
-				{#snippet body()}
-					Add
-				{/snippet}
-			</Button>
-		{/if}
-	</div>
-
-	<ul class="mt-2 font-medium">
-		{#each variables as variable (variable.meta.id)}
-			{#if variable.spec.key.toLowerCase().includes(query.toLowerCase())}
-				<Item {variable} onEdit={() => variableDialog?.showModal()} />
+			{#if newVariable}
+				<Button
+					isLoading={isAttaching}
+					class="py-1 text-sm font-medium"
+					variation="vibrant"
+					type="button"
+					onClick={async () => {
+						await attachVariable()
+					}}
+				>
+					{#snippet body()}
+						Add
+					{/snippet}
+				</Button>
 			{/if}
-		{:else}
-			<li class="pt-2 text-sm text-main-500">No added variables</li>
-		{/each}
-	</ul>
-</div>
+		</div>
+
+		<ul class="mt-2 font-medium">
+			{#each variables as variable (variable.meta.id)}
+				{#if variable.spec.key.toLowerCase().includes(query.toLowerCase())}
+					<Item {variable} onEdit={() => variableDialog?.showModal()} />
+				{/if}
+			{:else}
+				<li class="pt-2 text-sm text-main-500">No added variables</li>
+			{/each}
+		</ul>
+	</div>
+</PanelItem>
 
 <VariableForm bind:dialog={variableDialog} />

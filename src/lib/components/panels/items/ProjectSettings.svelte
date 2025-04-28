@@ -7,6 +7,7 @@
 	import { enhance } from '$app/forms'
 	import { clone } from '$lib/utils/clone'
 	import { onDestroy } from 'svelte'
+	import PanelItem from '../PanelItem.svelte'
 
 	interface FormData {
 		name: string
@@ -57,35 +58,37 @@
 	let isLoading = $state(false)
 </script>
 
-<form
-	action={`/project/${page.data.project?.meta.id}?/update`}
-	method="POST"
-	class="grid gap-3"
-	use:enhance={() => {
-		isLoading = true
-		return async ({ update, result }) => {
-			if (result.type === 'success') {
-				toast.success('Project updated!')
+<PanelItem title="Project Settings" forceOpen={true}>
+	<form
+		action={`/project/${page.data.project?.meta.id}?/update`}
+		method="POST"
+		class="grid gap-3"
+		use:enhance={() => {
+			isLoading = true
+			return async ({ update, result }) => {
+				if (result.type === 'success') {
+					toast.success('Project updated!')
+				}
+
+				if (result.type === 'error') {
+					toast.error('Could not update project')
+				}
+
+				await update({ reset: false })
+				isLoading = false
 			}
+		}}
+	>
+		<InputField required label="Name" name="name" value={formData.name} />
 
-			if (result.type === 'error') {
-				toast.error('Could not update project')
-			}
+		<TextField required label="Intention" name="intention" value={formData.intention.purpose} />
 
-			await update({ reset: false })
-			isLoading = false
-		}
-	}}
->
-	<InputField required label="Name" name="name" value={formData.name} />
-
-	<TextField required label="Intention" name="intention" value={formData.intention.purpose} />
-
-	<div class="flex justify-end">
-		<Button variation="vibrant" type="submit" class="py-2" {isLoading}>
-			{#snippet body()}
-				Save
-			{/snippet}
-		</Button>
-	</div>
-</form>
+		<div class="flex justify-end">
+			<Button variation="vibrant" type="submit" class="py-2" {isLoading}>
+				{#snippet body()}
+					Save
+				{/snippet}
+			</Button>
+		</div>
+	</form>
+</PanelItem>

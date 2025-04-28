@@ -10,6 +10,7 @@
 	import IconPlay from '~icons/material-symbols/play-arrow-outline-rounded'
 	import { createExecution } from '$lib/utils/execution'
 	import { selected } from '$lib/stores/canvas.svelte'
+	import PanelItem from '../PanelItem.svelte'
 
 	let input = $state('{\n\t"msg": "hello world"\n}')
 	let result = $state('')
@@ -153,51 +154,53 @@
 <!-- Execute {selectedNode?.data?.component_name ?? ''}
 {selectedNode?.data ? `v${selectedNode?.data?.component_version}` : ''} -->
 
-<div class={[' col-start-1 row-start-1 grid min-w-80 grid-rows-[auto_1fr_min-content] gap-y-4']}>
-	<div class="bg-main-800/50 rounded-lg p-3">
-		<p class=" eyebrow ms-3 mt-1 mb-2">Test data</p>
-		<LightEditor language="json" value={input} onUpdate={v => (input = v)} class="text-sm" />
-	</div>
+<PanelItem title="Execute">
+	<div class={[' col-start-1 row-start-1 grid min-w-80 grid-rows-[auto_1fr_min-content] gap-y-4']}>
+		<div class="bg-main-800/50 rounded-lg p-3">
+			<p class=" eyebrow ms-3 mt-1 mb-2">Test data</p>
+			<LightEditor language="json" value={input} onUpdate={v => (input = v)} class="text-sm" />
+		</div>
 
-	<div class="bg-main-800/50 grid grid-rows-[auto_minmax(100px,1fr)] rounded-lg p-3">
-		<p
-			class="border-main-800 ms-3 mt-1 mb-2 border-b pb-2 text-xs font-semibold tracking-wide uppercase"
-		>
-			Result
-		</p>
-		<div class="relative">
-			<code class="absolute inset-0 w-full overflow-auto px-3 transition-all">
-				{#if isRunning}
-					<div
-						class={[
-							'bg-main-700 h-full min-h-16 w-full animate-pulse rounded-md transition-all',
-							!isRunning ? 'opacity-100' : 'opacity-0'
-						]}
-					></div>
-				{:else}
-					<pre class="word-break-[break-word] min-h-16 font-mono text-sm text-wrap">
+		<div class="bg-main-800/50 grid grid-rows-[auto_minmax(100px,1fr)] rounded-lg p-3">
+			<p
+				class="border-main-800 ms-3 mt-1 mb-2 border-b pb-2 text-xs font-semibold tracking-wide uppercase"
+			>
+				Result
+			</p>
+			<div class="relative">
+				<code class="absolute inset-0 w-full overflow-auto px-3 transition-all">
+					{#if isRunning}
+						<div
+							class={[
+								'bg-main-700 h-full min-h-16 w-full animate-pulse rounded-md transition-all',
+								!isRunning ? 'opacity-100' : 'opacity-0'
+							]}
+						></div>
+					{:else}
+						<pre class="word-break-[break-word] min-h-16 font-mono text-sm text-wrap">
 {result}
 							</pre>
-				{/if}
-			</code>
+					{/if}
+				</code>
+			</div>
+		</div>
+
+		<div
+			class="tooltip-red"
+			aria-label={!isValidJson ? 'Invalid JSON data' : undefined}
+			data-balloon-pos="up"
+		>
+			<Button
+				variation="vibrant"
+				class="w-full"
+				onClick={run}
+				autoLoad="promise"
+				disabled={!isValidJson || isRunning}
+			>
+				{#snippet icon()}
+					<IconPlay class="size-6" />
+				{/snippet}
+			</Button>
 		</div>
 	</div>
-
-	<div
-		class="tooltip-red"
-		aria-label={!isValidJson ? 'Invalid JSON data' : undefined}
-		data-balloon-pos="up"
-	>
-		<Button
-			variation="vibrant"
-			class="w-full"
-			onClick={run}
-			autoLoad="promise"
-			disabled={!isValidJson || isRunning}
-		>
-			{#snippet icon()}
-				<IconPlay class="size-6" />
-			{/snippet}
-		</Button>
-	</div>
-</div>
+</PanelItem>

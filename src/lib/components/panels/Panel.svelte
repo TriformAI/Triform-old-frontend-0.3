@@ -1,14 +1,30 @@
 <script lang="ts">
-	import type { Component } from 'svelte'
-	import PanelItem from './PanelItem.svelte'
+	import type { Component, Snippet } from 'svelte'
+
+	import CodeEditor from './items/CodeEditor.svelte'
+	import Execute from './items/Execute.svelte'
+	import Metadata from './items/Metadata.svelte'
+	import ProjectSettings from './items/ProjectSettings.svelte'
+	import Variables from './items/Variables/Root.svelte'
+
 	import { selected } from '$lib/stores/canvas.svelte'
 
 	interface Props {
-		items: { title: string; component: Component }[]
-		Icon: Component
+		Icon?: Component
+		panels: Snippet<
+			[
+				{
+					CodeEditor: Component
+					Execute: Component
+					Metadata: Component
+					ProjectSettings: Component
+					Variables: Component
+				}
+			]
+		>
 	}
 
-	const { items, Icon }: Props = $props()
+	const { Icon, panels }: Props = $props()
 
 	const title = $derived(selected.node?.data.trinode.spec.meta.name ?? 'Project')
 	const desc = $derived(selected.node?.data.trinode.spec.meta.intention?.purpose)
@@ -18,7 +34,9 @@
 	<div>
 		<div class="border-b-main-800 mb-2 border-b px-3 pb-4">
 			<h2 class="flex items-center gap-2 text-lg font-semibold">
-				<Icon class="size-5" />
+				{#if Icon}
+					<Icon class="size-5" />
+				{/if}
 				{title}
 			</h2>
 
@@ -28,13 +46,7 @@
 		</div>
 
 		<div class="divide-main-800 grid divide-y">
-			{#each items as panelItem}
-				<PanelItem title={panelItem.title} forceOpen={items.length === 1}>
-					{#snippet children()}
-						<panelItem.component />
-					{/snippet}
-				</PanelItem>
-			{/each}
+			{@render panels({ CodeEditor, Execute, Metadata, ProjectSettings, Variables })}
 		</div>
 	</div>
 {/key}

@@ -12,6 +12,7 @@
 	import compare from 'just-compare'
 	import pick from 'just-pick'
 	import { clone } from '$lib/utils/clone'
+	import PanelItem from '../PanelItem.svelte'
 
 	const api = new API()
 
@@ -99,43 +100,45 @@
 	})
 </script>
 
-<Tabs {tabs} bind:activeTab />
+<PanelItem title="Code">
+	<Tabs {tabs} bind:activeTab />
 
-<div class="relative mt-2.5 grid h-[300px]">
-	{#each Object.entries(formData) as [key, value], idx (key)}
-		{@const language = filenames[key as FileType].split('.').pop() as 'py' | 'md' | 'txt'}
+	<div class="relative mt-2.5 grid h-[300px]">
+		{#each Object.entries(formData) as [key, value], idx (key)}
+			{@const language = filenames[key as FileType].split('.').pop() as 'py' | 'md' | 'txt'}
 
-		{#if language === 'py'}
-			<Editor
-				bind:code={formData[key as FileType]}
-				class={`${idx === activeTab ? 'block' : 'hidden'} absolute h-full w-full rounded-md`}
-			/>
-		{:else}
-			<LightEditor
-				{language}
-				bind:value={formData[key as FileType]}
-				wordWrap={true}
-				class={`${idx === activeTab ? 'block' : 'hidden'} bg-main-800 absolute h-full w-full rounded-md ps-6 pt-2.5 text-sm`}
-			/>
+			{#if language === 'py'}
+				<Editor
+					bind:code={formData[key as FileType]}
+					class={`${idx === activeTab ? 'block' : 'hidden'} absolute h-full w-full rounded-md`}
+				/>
+			{:else}
+				<LightEditor
+					{language}
+					bind:value={formData[key as FileType]}
+					wordWrap={true}
+					class={`${idx === activeTab ? 'block' : 'hidden'} bg-main-800 absolute h-full w-full rounded-md ps-6 pt-2.5 text-sm`}
+				/>
+			{/if}
+		{/each}
+	</div>
+
+	<div class="mt-4 flex items-center justify-between">
+		{#if dataIsDirty}
+			<p class="text-main-400 text-sm">You have unsaved changes</p>
 		{/if}
-	{/each}
-</div>
 
-<div class="mt-4 flex items-center justify-between">
-	{#if dataIsDirty}
-		<p class="text-main-400 text-sm">You have unsaved changes</p>
-	{/if}
-
-	<Button
-		class="ms-auto"
-		type="button"
-		onClick={publishComponent}
-		autoLoad="promise"
-		disabled={!dataIsDirty}
-		variation="vibrant"
-	>
-		{#snippet body()}
-			Save
-		{/snippet}
-	</Button>
-</div>
+		<Button
+			class="ms-auto"
+			type="button"
+			onClick={publishComponent}
+			autoLoad="promise"
+			disabled={!dataIsDirty}
+			variation="vibrant"
+		>
+			{#snippet body()}
+				Save
+			{/snippet}
+		</Button>
+	</div>
+</PanelItem>

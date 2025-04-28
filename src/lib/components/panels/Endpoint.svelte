@@ -1,19 +1,11 @@
 <script lang="ts">
 	import Panel from './Panel.svelte'
-	import Execute from './items/Execute.svelte'
-	import Metadata from './items/Metadata.svelte'
-	import Icon from '~icons/material-symbols/bolt'
-
-	const items = [
-		{
-			title: 'Execute',
-			component: Execute
-		},
-		{
-			title: 'Metadata',
-			component: Metadata
-		}
-	]
+	import Icon from '~icons/mdi/rhombus'
 </script>
 
-<Panel {items} {Icon} />
+<Panel {Icon}>
+	{#snippet panels({ Execute, Metadata })}
+		<Execute />
+		<Metadata />
+	{/snippet}
+</Panel>
