@@ -135,7 +135,7 @@
 		variation="vibrant"
 	>
 		{#snippet body()}
-			Publish
+			Save
 		{/snippet}
 	</Button>
 </div>
