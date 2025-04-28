@@ -1,4 +1,6 @@
 replicas: 2
+nodeSelector:
+  cloud.google.com/machine-family: c4
 httpproxy:
   fqdn: tricore.dev
   tls:

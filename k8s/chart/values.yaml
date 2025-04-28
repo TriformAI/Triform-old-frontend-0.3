@@ -13,6 +13,7 @@ image:
   repository: triform-app
   tag: v0.0.1
   imagePullPolicy: IfNotPresent
+nodeSelector: {}
 resources:
   requests:
     cpu: 50m
