@@ -1,16 +1,22 @@
 <script lang="ts">
 	import type { Snippet } from 'svelte'
 	import IconChevronRight from '~icons/material-symbols/chevron-right'
+	import { selected, setOpenPanel as setSelectedOpenPanel } from '$lib/stores/canvas.svelte'
 
 	export interface Props {
 		title: string
 		children: Snippet
-		openPanel: string
-		setOpenPanel: (panel: string) => void
 		forceOpen?: boolean
 	}
 
-	let { title, children, openPanel, setOpenPanel, forceOpen }: Props = $props()
+	let { title, children, forceOpen }: Props = $props()
+
+	let openPanel = $derived(selected.openPanel)
+
+	const setOpenPanel = (panel: string) => {
+		const newVal = openPanel === panel ? '' : panel
+		setSelectedOpenPanel(selected.node?.id, newVal)
+	}
 
 	const isOpen = $derived(openPanel === title || forceOpen)
 </script>

@@ -13,8 +13,8 @@
 	})
 
 	const nodeComponents = {
-		action: Action,
 		flow: Flow,
+		action: Action,
 		endpoint: Endpoint
 	}
 
@@ -23,7 +23,7 @@
 
 <div class="bg-main-950/60 overflow-y-auto py-4">
 	{#if selected.isMultiple}
-		<p>Multiple nodes selected</p>
+		<p class="mx-3">Multiple nodes selected</p>
 	{:else if NodeComponent}
 		<NodeComponent />
 	{:else}
