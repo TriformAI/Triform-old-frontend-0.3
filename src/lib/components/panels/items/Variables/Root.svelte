@@ -1,69 +1,114 @@
 <script lang="ts">
 	import { page } from '$app/state'
 	import VariableForm from '$lib/components/forms/Variable.svelte'
-	import { onMount } from 'svelte'
-	import IconAdd from '~icons/mdi/plus-circle'
+	import { invalidate } from '$app/navigation'
+	import { API } from '$lib/api'
 	import Button from '$lib/components/atoms/Button.svelte'
-
+	import { selected } from '$lib/stores/canvas.svelte'
 	import Item from './Item.svelte'
+	import Selector from './Selector.svelte'
 
 	let variableDialog = $state<HTMLDialogElement>()
 
 	let query = $state('')
 
-	let filteredModifiers = $derived(
-		page.data.modifiers.filter(modifier => {
-			return modifier.name.toLowerCase().includes(query.toLowerCase())
-		})
-	)
+	const variables = $derived.by(() => {
+		const allModifiers = page.data.project?.spec.modifiers
+		if (!allModifiers) {
+			return []
+		}
 
-	onMount(() => {
-		//variableDialog?.showModal()
+		const path = selected.node?.data.path.join('/')
+
+		if (!path) {
+			return []
+		}
+
+		const variableIds = allModifiers[path]
+
+		if (!variableIds) {
+			return []
+		}
+
+		return page.data.variables?.filter(variable => variableIds.includes(variable.meta.id)) ?? []
 	})
+
+	let newVariable = $state('')
+
+	const projectId = page.data.project?.meta.id
+
+	const api = new API()
+
+	let isAttaching = $state(false)
+
+	async function attachVariable() {
+		isAttaching = true
+
+		const result = await api.post(`projects/${projectId}/variable`, {
+			nodePath: selected.node?.data.path.join('/'),
+			modifierId: newVariable
+		})
+
+		isAttaching = false
+		invalidate('project')
+		newVariable = ''
+
+		console.log(result)
+	}
 </script>
 
 <div>
-	{#await page.data.modifiers}
-		<p>Loading modifiers…</p>
-	{:then modifiers}
+	<!-- {#if variables.length > 0}
 		<div class=" mb-2 grid grid-cols-[1fr_auto] items-end gap-4">
-			{#if modifiers.length > 0}
-				<label class="-ms-3 block">
-					<span class="sr-only">Filter</span>
-					<input
-						type="text"
-						placeholder="Filter variables"
-						class="bg-main-800 w-full rounded-md px-3 py-1.5 outline-0"
-						bind:value={query}
-					/>
-				</label>
-			{/if}
+			<label class="-ms-3 block">
+				<span class="sr-only">Filter</span>
+				<input
+					type="text"
+					placeholder="Filter variables"
+					class="bg-main-800 w-full rounded-md px-3 py-1.5 outline-0"
+					bind:value={query}
+				/>
+			</label>
+		</div>
+	{/if} -->
 
-			<Button
-				class="btn hover:text-main-200 !px-1 py-1 text-sm font-semibold"
-				type="button"
-				variation="link"
-				onClick={() => {
+	<div class={['-ms-1', newVariable && ' grid grid-cols-[1fr_auto] gap-2']}>
+		{#key variables.length}
+			<Selector
+				bind:value={newVariable}
+				items={page.data.variables?.map(v => ({ value: v.meta.id, label: v.spec.key })) ?? []}
+				onCreateTrigger={() => {
 					variableDialog?.showModal()
+				}}
+			/>
+		{/key}
+
+		{#if newVariable}
+			<Button
+				isLoading={isAttaching}
+				class="py-1 text-sm font-medium"
+				variation="vibrant"
+				type="button"
+				onClick={async () => {
+					await attachVariable()
 				}}
 			>
 				{#snippet body()}
-					<span class="text-accent-300 flex items-center gap-x-1">
-						<IconAdd class="size-[20px]" /> Create
-					</span>
+					Add
 				{/snippet}
 			</Button>
-		</div>
-		<ul class="text-sm font-medium">
-			{#each filteredModifiers as modifier}
-				<Item {modifier} />
-			{:else}
-				<li class="text-main-500">No variables found</li>
-			{/each}
-		</ul>
-	{:catch _error}
-		<p>Could not load variables</p>
-	{/await}
+		{/if}
+	</div>
+
+	<ul class="mt-2 font-medium">
+		{#each variables as variable (variable.meta.id)}
+			{#if variable.spec.key.toLowerCase().includes(query.toLowerCase())}
+				<Item {variable} onEdit={() => variableDialog?.showModal()} />
+			{/if}
+		{:else}
+			<li class="pt-2 text-sm text-main-500">No added variables</li>
+		{/each}
+	</ul>
 </div>
 
 <VariableForm bind:dialog={variableDialog} />

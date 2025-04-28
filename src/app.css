@@ -202,7 +202,7 @@
 	}
 
 	.list-btn {
-		@apply text-main-300 hover:bg-main-800 hover:text-main-200 flex origin-center items-center gap-2 rounded px-3 py-2 whitespace-nowrap transition-all;
+		@apply text-main-300 hover:bg-main-800 hover:text-main-200 flex w-full origin-center items-center gap-2 rounded px-3 py-2 whitespace-nowrap transition-all;
 	}
 
 	.list-btn--danger {
@@ -215,5 +215,9 @@
 
 	.eyebrow {
 		@apply text-main-300 text-xs font-semibold tracking-wide uppercase;
+	}
+
+	.input-text {
+		@apply border-main-700 bg-main-800 text-main-200 hover:border-main-600 focus:border-main-600 w-full rounded-md border px-3 py-2 text-sm transition outline-none;
 	}
 }

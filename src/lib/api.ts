@@ -1,4 +1,6 @@
 import { stream } from 'fetch-event-stream'
+import { getRequestEvent } from '$app/server'
+import { browser } from '$app/environment'
 
 type RequestMethod = 'GET' | 'POST' | 'PUT' | 'DELETE'
 
@@ -20,8 +22,11 @@ export class API {
 		data?: unknown,
 		headers: Record<string, string> = {}
 	): Promise<T> {
+		let fetchFunc = browser ? fetch : getRequestEvent().fetch
+
 		console.debug(`-> ${method} ${this.#baseURL}/${endpoint}`, data ?? '')
-		const res = await fetch(`${this.#baseURL}/${endpoint}`, {
+
+		const res = await fetchFunc(`${this.#baseURL}/${endpoint}`, {
 			method,
 			headers: {
 				'Content-Type': 'application/json',
@@ -30,6 +35,8 @@ export class API {
 			},
 			body: data ? JSON.stringify(data) : undefined
 		})
+
+		console.log(res)
 
 		if (!res.ok) {
 			throw new Error(`API Error: ${res.status} ${res.statusText} ${await res.text()}`)

@@ -40,7 +40,7 @@
 
 <div class={['grid gap-1', containerClass]}>
 	{#if label}
-		<label for={id} class="text-sm font-medium">{label}</label>
+		<label data-label for={id} class="text-sm font-medium">{label}</label>
 	{/if}
 	<input
 		{name}
@@ -51,8 +51,7 @@
 		{required}
 		bind:value
 		class={[
-			'border-main-700 bg-main-800 text-main-200 hover:border-main-600 focus:border-main-600 rounded-md border text-sm',
-			'w-full transition outline-none',
+			'input-text',
 			variation === 'default' && 'px-3 py-2',
 			variation === 'tight' && 'px-2 py-1',
 			classProp

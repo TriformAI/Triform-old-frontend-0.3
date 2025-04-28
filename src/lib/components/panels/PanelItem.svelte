@@ -5,22 +5,26 @@
 	export interface Props {
 		title: string
 		children: Snippet
-		isOpen?: boolean
+		openPanel: string
+		setOpenPanel: (panel: string) => void
+		forceOpen?: boolean
 	}
 
-	let { title, children, isOpen = true }: Props = $props()
+	let { title, children, openPanel, setOpenPanel, forceOpen }: Props = $props()
+
+	const isOpen = $derived(openPanel === title || forceOpen)
 </script>
 
-<div class="grid gap-4">
-	<button type="button" onclick={() => (isOpen = !isOpen)} class="flex items-center gap-1">
+<div class="grid py-2 ps-2 pe-8">
+	<button type="button" onclick={() => setOpenPanel(title)} class="me-auto flex items-center gap-1">
 		<IconChevronRight class={['transition-transform', isOpen ? 'rotate-90' : '']} />
-		<h2 class="eyebrow">{title}</h2>
+		<h2 class="eyebrow inline-flex">{title}</h2>
 	</button>
 
 	<div
 		class={[
 			'overflow-y-hidden ps-6 transition-all duration-300',
-			isOpen ? 'max-h-max ease-out' : 'h-0 overflow-hidden ease-in'
+			isOpen ? 'max-h-max pt-4 ease-out' : 'h-0 overflow-hidden ease-in'
 		]}
 	>
 		<div class="pb-6">

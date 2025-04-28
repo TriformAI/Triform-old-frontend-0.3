@@ -102,7 +102,7 @@
 <Tabs {tabs} bind:activeTab />
 
 <div class="relative mt-2.5 grid h-[300px]">
-	{#each Object.entries(formData) as [key, value], idx}
+	{#each Object.entries(formData) as [key, value], idx (key)}
 		{@const language = filenames[key as FileType].split('.').pop() as 'py' | 'md' | 'txt'}
 
 		{#if language === 'py'}

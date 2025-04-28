@@ -25,8 +25,9 @@
 			{/snippet}
 		</Button>
 	</div>
+
 	<div class="mt-4 grid grid-cols-2 gap-5 md:grid-cols-3 lg:grid-cols-4">
-		{#each projects as project}
+		{#each projects as project (project.id)}
 			<div
 				class="group/project bg-main-850 border-main-800 hover:border-main-700 hover:bg-main-800 relative rounded-lg border transition"
 			>
@@ -63,6 +64,7 @@
 								method="POST"
 								use:enhance={() => {
 									return async ({ update, result }) => {
+										console.log(result)
 										if (result.type === 'success') {
 											await update()
 										}

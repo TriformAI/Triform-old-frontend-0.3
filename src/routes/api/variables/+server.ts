@@ -1,35 +1,27 @@
-import { json } from '@sveltejs/kit'
+import { error, json } from '@sveltejs/kit'
+import type { Variable } from '$lib/types/project'
 
 export async function POST({ request, locals }) {
-	const formData = await request.formData()
-	const name = formData.get('name') as string
-	const intention = formData.get('intention') as string
-	const keys = formData.getAll('key[]')
-	const values = formData.getAll('value[]')
-
-	const env = Object.fromEntries(keys.map((key, idx) => [key, values[idx]]))
+	const { name, key, value } = await request.json()
 
 	const payload = {
-		resource: 'variables/v1',
+		resource: 'variable/v1',
 		meta: {
-			id: crypto.randomUUID(),
-			name,
-			intention: {
-				purpose: intention,
-				input: '',
-				output: ''
-			}
+			name
 		},
 		spec: {
-			env
+			key,
+			secret: false,
+			value
 		}
 	}
 
 	try {
-		const _data = await locals.api.post(`modifiers`, payload)
-		return json({ type: 'success' })
-	} catch (error) {
-		console.error(error)
-		return json({ type: 'error' }, { status: 500 })
+		// Save variable
+		const variable = await locals.api.post<Variable>(`modifiers`, payload)
+		return json(variable)
+	} catch (e) {
+		console.error(e)
+		return error(500, 'Could not create variable')
 	}
 }

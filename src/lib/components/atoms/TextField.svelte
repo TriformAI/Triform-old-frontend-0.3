@@ -36,9 +36,6 @@
 		{rows}
 		{required}
 		bind:value
-		class={[
-			'border-main-700 bg-main-800 text-main-200 hover:border-main-600 focus:border-main-600 rounded-md border px-3 py-2 text-sm outline-none',
-			useMonoFont && 'font-mono'
-		]}
+		class={['input-text', useMonoFont && 'font-mono']}
 	></textarea>
 </label>

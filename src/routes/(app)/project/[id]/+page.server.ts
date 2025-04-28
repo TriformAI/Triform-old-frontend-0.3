@@ -1,17 +1,16 @@
-import type { Project } from '$lib/types/project'
+import type { Project, Variable } from '$lib/types/project'
 import { fail } from '@sveltejs/kit'
 
 export async function load({ locals, params, depends }) {
 	depends('project')
 
 	const project = await locals.api.get<Project>(`projects/${params.id}?depth=999`)
-	console.log(JSON.stringify(project))
 
-	const modifiers = await locals.api.get(`modifiers?type=variable`)
+  const variables = await locals.api.get<Variable[]>(`modifiers?full=true&type=variable`)
 
 	return {
 		project,
-		modifiers
+		variables
 	}
 }
 
@@ -32,11 +31,15 @@ export const actions = {
 		}
 	},
 
-	async delete() {
+	async delete({ request, locals, params }) {
 		// Send a delete request to the API
-		console.log('delete project')
-
-		return true
+		try {
+			const data = await locals.api.delete<Project>(`projects/${params.id}`)
+			return data
+		} catch (error) {
+			console.error(error)
+			return fail(500, { message: 'Could not delete project' })
+		}
 	},
 
 	async createModifier({ request, locals }) {

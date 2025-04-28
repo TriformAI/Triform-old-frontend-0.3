@@ -7,13 +7,15 @@ export interface NodeProps {
 	deleted: boolean
 	creating: boolean
 	isDirty: boolean
+	openPanel: string
 }
 
 export const defaultProps: NodeProps = {
 	expanded: false,
 	deleted: false,
 	creating: false,
-	isDirty: false
+	isDirty: false,
+	openPanel: ''
 }
 
 // Custom data passed to each node
@@ -23,6 +25,7 @@ export interface NodeData {
 	isExpanded?: boolean
 	// Visual frontend-only props
 	props: NodeProps
+	path: Uuid[]
 	[key: string]: unknown
 }
 

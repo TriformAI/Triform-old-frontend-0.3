@@ -21,7 +21,7 @@
 	const NodeComponent = $derived(nodeComponents[nodeType as keyof typeof nodeComponents])
 </script>
 
-<div class="bg-main-950/60 overflow-y-auto py-4 ps-2 pe-8">
+<div class="bg-main-950/60 overflow-y-auto py-4">
 	{#if selected.isMultiple}
 		<p>Multiple nodes selected</p>
 	{:else if NodeComponent}

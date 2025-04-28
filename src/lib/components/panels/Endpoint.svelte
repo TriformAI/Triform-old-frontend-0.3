@@ -1,23 +1,19 @@
 <script lang="ts">
 	import Panel from './Panel.svelte'
-	import Execute from '$lib/components/panels/items/Execute.svelte'
+	import Execute from './items/Execute.svelte'
 	import Metadata from './items/Metadata.svelte'
-	import { selected } from '$lib/stores/canvas.svelte'
+	import Icon from '~icons/material-symbols/bolt'
+
+	const items = [
+		{
+			title: 'Execute',
+			component: Execute
+		},
+		{
+			title: 'Metadata',
+			component: Metadata
+		}
+	]
 </script>
 
-{#key selected.node?.id}
-	<Panel
-		title={selected.node?.data.trinode.spec.meta.name ?? 'Action'}
-		desc={selected.node?.data.trinode.spec.meta.intention?.purpose}
-	>
-		{#snippet slot({ PanelItem })}
-			<PanelItem title="Metadata" isOpen={false}>
-				<Metadata />
-			</PanelItem>
-
-			<PanelItem title="Execute">
-				<Execute />
-			</PanelItem>
-		{/snippet}
-	</Panel>
-{/key}
+<Panel {items} {Icon} />

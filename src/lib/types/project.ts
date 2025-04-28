@@ -14,8 +14,28 @@ export interface Project {
 		intention: Intention
 	}
 	spec: {
+		modifiers?: {
+			[k: string]: Uuid[]
+		}
 		nodes: {
 			[k: Uuid]: Node
+		}
+	}
+}
+
+export interface Variable {
+	resource: 'variable/v1'
+	meta: {
+		id: Uuid
+		name: string
+	}
+	spec: {
+		key: string
+		secret: boolean
+		value: {
+			dev: string
+			stage: string
+			prod: string
 		}
 	}
 }

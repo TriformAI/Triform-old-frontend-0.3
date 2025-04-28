@@ -97,7 +97,7 @@
 	/>
 
 	<TextField
-		rows={2}
+		rows={3}
 		class="col-span-2"
 		label="Intention"
 		name="intention"

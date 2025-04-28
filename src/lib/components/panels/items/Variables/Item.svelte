@@ -1,74 +1,54 @@
 <script lang="ts">
+	import type { Variable } from '$lib/types/project'
 	import { page } from '$app/state'
-	import IconEye from '~icons/mdi/eye-outline'
-	import IconEyeOff from '~icons/mdi/eye-off-outline'
+
+	import IconDetach from '~icons/mdi/link-variant-off'
+	import IconVariable from '~icons/mdi/application-variable-outline'
 	import { enhance } from '$app/forms'
 	import { toast } from 'svelte-sonner'
 	import { invalidate } from '$app/navigation'
 	import { confirmStore } from '$lib/stores/confirm.svelte'
-	import { type SubmitFunction } from '@sveltejs/kit'
-	import IconTrash from '~icons/material-symbols/delete-outline'
+	import { API } from '$lib/api'
+	import { selected } from '$lib/stores/canvas.svelte'
 
-	let { modifier } = $props()
+	let { variable, onEdit }: { variable: Variable; onEdit: () => void } = $props()
 
-	const value = 'This is a value'
-	const maskedValue = $derived(value.replace(/\w/g, '•').replace(/ /g, ''))
-	let showValue = $state(false)
+	let isDetaching = $state(false)
 
-	const handleDelete: SubmitFunction = async ({ cancel }) => {
-		const isConfirmed = await confirmStore.show({
-			title: 'Are you sure?',
-			message: `Please confirm that you want to delete this variable`
-		})
+	const projectId = page.data.project?.meta.id
+	const nodePath = selected.node?.data.path.join('/')
 
-		if (!isConfirmed) {
-			cancel()
-		}
+	async function handleDetach() {
+		const api = new API()
+		isDetaching = true
 
-		return async ({ update, result }) => {
-			console.log(result)
-
-			if (result.type === 'success') {
-				invalidate('project')
-				toast.success('Variable deleted!')
-			} else if (result.type === 'failure') {
-				toast.error('Could not delete variable')
-			}
-
-			await update()
+		try {
+			await api.delete(`projects/${projectId}/variable/${variable.meta.id}?nodePath=${nodePath}`)
+			toast.success('Variable detached')
+			invalidate('project')
+		} catch (error) {
+			toast.error('Failed to detach variable')
+		} finally {
+			isDetaching = false
 		}
 	}
 </script>
 
 <li
-	class="border-main-800 group animate-fade-in grid grid-cols-12 items-center gap-3 border-b py-2"
+	class="border-main-800 group animate-fade-in grid grid-cols-[1fr_1fr_auto] items-start justify-between gap-3 border-b py-1.5 text-sm"
 >
-	<span class="col-span-5 truncate font-medium uppercase" title={modifier.name.toUpperCase()}>
-		{modifier.name}
+	<span class="inline-flex items-center gap-2 truncate font-normal uppercase">
+		<IconVariable class="size-4" />
+		<span class="text-main-400">{variable.spec.key}</span>
 	</span>
 
-	<span class="text-main-400 col-span-5 flex items-center gap-2">
-		<button type="button" onclick={() => (showValue = !showValue)}>
-			{#if showValue}
-				<IconEyeOff class="size-[20px]" />
-			{:else}
-				<IconEye class="size-[20px]" />
-			{/if}
-		</button>
-		<span>
-			{showValue ? value : maskedValue}
-		</span>
+	<span>
+		{variable.spec.value.dev}
 	</span>
 
-	<form
-		class="invisible col-span-2 ms-auto group-hover:visible"
-		action={`${page.url.pathname}?/deleteModifier`}
-		method="post"
-		use:enhance={handleDelete}
-	>
-		<input type="hidden" name="id" value={modifier.id} />
-		<button type="submit" title="Delete variable">
-			<IconTrash class="text-main-400 size-[20px]" />
+	<div class="invisible ms-auto flex items-center gap-2 group-hover:visible">
+		<button type="button" title="Detach" onclick={handleDetach} disabled={isDetaching}>
+			<IconDetach class={['text-main-400 size-5', isDetaching && 'animate-pulse']} />
 		</button>
-	</form>
+	</div>
 </li>

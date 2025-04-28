@@ -15,35 +15,41 @@ import { writable } from 'svelte/store'
 export const nodes = $state<Record<Uuid, Node>>({})
 export const edges = $state<Edge[]>([])
 
-class SelectedNodeStore {
-	nodes = $derived(Object.entries(nodes).filter(([_uuid, node]) => node.selected))
-	isMultiple = $derived(this.nodes.length > 1)
+export const selected = {
+	get node() {
+		return Object.values(nodes).filter(node => node.selected)[0]
+	},
 
-	// Only returns if selected node is a single node
-	node = $derived.by(() => {
-		if (this.nodes.length === 1) {
-			return this.nodes[0][1]
-		}
+	get isMultiple() {
+		return Object.values(nodes).filter(node => node.selected).length > 1
+	},
 
-		return undefined
-	})
-
-	isDirty = $derived.by(() => {
+	get isDirty() {
 		if (!this.node) {
 			return false
 		}
 
 		return this.node.data.props.isDirty
-	})
+	},
+
+	get openPanel() {
+		if (!this.node) {
+			return ''
+		}
+
+		return this.node.data.props.openPanel
+	}
 }
 
 export function setIsDirty(nodeId: Uuid, val: boolean) {
 	if (!nodes[nodeId]) return
-
 	nodes[nodeId].data.props.isDirty = val
 }
 
-export const selected = new SelectedNodeStore()
+export function setOpenPanel(nodeId: Uuid, val: string) {
+	if (!nodes[nodeId]) return
+	nodes[nodeId].data.props.openPanel = val
+}
 
 // Whenever the nodes store changes, auto layout everything
 // Also used for updating the writable store that svelte flow requires
@@ -100,6 +106,14 @@ const parseNode = (
 		})
 	}
 
+	const pathHistory = parentId ? (nodes[parentId].data.path as Uuid[]) : []
+
+	const data = {
+		trinode: node,
+		props: { ...defaultProps },
+		path: [...pathHistory, id]
+	}
+
 	if (isAction(node)) {
 		newNode = {
 			id,
@@ -108,10 +122,7 @@ const parseNode = (
 			draggable: false,
 			position: { x: 0, y: 0 },
 			extent: parentId ? 'parent' : undefined,
-			data: {
-				trinode: node,
-				props: { ...defaultProps }
-			}
+			data: { ...data }
 		}
 	} else if (isFlow(node)) {
 		newNode = {
@@ -121,11 +132,7 @@ const parseNode = (
 			position: { x: 0, y: 0 },
 			parentId,
 			extent: parentId ? 'parent' : undefined,
-			data: {
-				trinode: node,
-				isExpanded: false,
-				props: { ...defaultProps }
-			}
+			data: { ...data, isExpanded: false }
 		}
 
 		// Add edges for the flow outputs
@@ -147,10 +154,7 @@ const parseNode = (
 			position: { x: 0, y: 0 },
 			parentId,
 			extent: parentId ? 'parent' : undefined,
-			data: {
-				trinode: node,
-				props: { ...defaultProps }
-			}
+			data: { ...data }
 		}
 	} else throw new Error(`Unknown node type ${node.resource}`)
 
@@ -174,12 +178,14 @@ export const parseNodes = (nodes: Record<Uuid, TriNode>, parentId?: Uuid) =>
 export const loadProject = (project: Project) => {
 	console.log('loading project', project)
 	if (!project?.spec?.nodes) return
+
 	// Load in the top-level nodes
 	const { nodes: parsedNodes, edges: parsedEdges } = parseNodes(project.spec.nodes)
 
 	for (const node of parsedNodes) {
 		nodes[node.id] = node
 	}
+
 	edges.push(...parsedEdges)
 	currentProject = project
 }

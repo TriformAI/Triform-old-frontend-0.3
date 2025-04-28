@@ -10,7 +10,8 @@
 		edgesStore,
 		nodes,
 		nodesStore,
-		registerUpdateNodeListener
+		registerUpdateNodeListener,
+		selected
 	} from '$lib/stores/canvas.svelte'
 	import { confirmStore } from '$lib/stores/confirm.svelte'
 	import { deleteNode as deleteNodeAction } from '$lib/stores/nodeActions.svelte'

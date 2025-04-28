@@ -2,22 +2,23 @@
 	import Panel from './Panel.svelte'
 	import Execute from '$lib/components/panels/items/Execute.svelte'
 	import Metadata from './items/Metadata.svelte'
-	import { selected } from '$lib/stores/canvas.svelte'
+	import Variables from '$lib/components/panels/items/Variables/Root.svelte'
+	import Icon from '~icons/material-symbols/network-node'
+
+	const items = [
+		{
+			title: 'Execute',
+			component: Execute
+		},
+		{
+			title: 'Metadata',
+			component: Metadata
+		},
+		{
+			title: 'Variables',
+			component: Variables
+		}
+	]
 </script>
 
-{#key selected.node?.id}
-	<Panel
-		title={selected.node?.data.trinode.spec.meta.name ?? 'Action'}
-		desc={selected.node?.data.trinode.spec.meta.intention?.purpose}
-	>
-		{#snippet slot({ PanelItem })}
-			<PanelItem title="Metadata" isOpen={false}>
-				<Metadata />
-			</PanelItem>
-
-			<PanelItem title="Execute">
-				<Execute />
-			</PanelItem>
-		{/snippet}
-	</Panel>
-{/key}
+<Panel {items} {Icon} />
