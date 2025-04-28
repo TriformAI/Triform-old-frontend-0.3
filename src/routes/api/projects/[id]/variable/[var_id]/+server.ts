@@ -22,7 +22,7 @@ export async function DELETE({ request, locals, params, url }) {
 		}
 
 		// Save updated project
-		await saveProject(project)
+		await locals.api.put<Project>(`projects/${project.meta.id}`, project)
 
 		return json({ type: 'success' })
 	} catch (err) {
