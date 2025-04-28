@@ -1,15 +1,15 @@
 import { stream } from 'fetch-event-stream'
-import { getRequestEvent } from '$app/server'
-import { browser } from '$app/environment'
 
 type RequestMethod = 'GET' | 'POST' | 'PUT' | 'DELETE'
 
 export class API {
 	#baseURL: string
 	#authToken?: string
+	#fetchFunc: typeof fetch
 
 	// This API class can be used for both internal requests and to our external API
-	constructor(baseURL: string = '/api', authToken?: string) {
+	constructor(baseURL: string = '/api', authToken?: string, fetchFunc = fetch) {
+		this.#fetchFunc = fetchFunc
 		this.#baseURL = baseURL
 		if (authToken) {
 			this.#authToken = authToken
@@ -22,11 +22,9 @@ export class API {
 		data?: unknown,
 		headers: Record<string, string> = {}
 	): Promise<T> {
-		let fetchFunc = browser ? fetch : getRequestEvent().fetch
-
 		console.debug(`-> ${method} ${this.#baseURL}/${endpoint}`, data ?? '')
 
-		const res = await fetchFunc(`${this.#baseURL}/${endpoint}`, {
+		const res = await this.#fetchFunc(`${this.#baseURL}/${endpoint}`, {
 			method,
 			headers: {
 				'Content-Type': 'application/json',

@@ -16,7 +16,7 @@ const authHandle: Handle = async ({ event, resolve }) => {
 
 	const authApi = new API(authUrl, authToken)
 	// Initialize API instance and make available to locals
-	const api = new API(baseUrl, authToken)
+	const api = new API(baseUrl, authToken, event.fetch)
 	event.locals.api = api
 
 	// Try to fetch the user
