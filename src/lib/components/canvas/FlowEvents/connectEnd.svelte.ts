@@ -1,5 +1,6 @@
-import { type OnConnectEnd, useSvelteFlow as svelteFlowHook, type Edge } from '@xyflow/svelte'
+import { type OnConnectEnd, useSvelteFlow as svelteFlowHook } from '@xyflow/svelte'
 import { nodes, updateNode, isFlow, project } from '$lib/stores/canvas.svelte'
+import { type Edge, defaultEdgeProps } from '$lib/types/flow'
 import type { Flow, Uuid } from '$lib/types/agent'
 import { toast } from 'svelte-sonner'
 import { publishComponent } from '$lib/actions/components'
@@ -44,7 +45,7 @@ const handleNewPortConnection: ConnectEnd = async (_event, connectionState, _use
 		} catch (e) {
 			console.error('Failed to publish component', e)
 			toast.error('Failed to publish component')
-			updateNode(parentId, previous)
+			for (const [id, node] of Object.entries(previous)) updateNode(id as Uuid, node)
 		}
 	}
 
@@ -74,7 +75,7 @@ const handleNewPortConnection: ConnectEnd = async (_event, connectionState, _use
 		} catch (e) {
 			console.error('Failed to publish component', e)
 			toast.error('Failed to publish component')
-			updateNode(parentId, previous)
+			for (const [id, node] of Object.entries(previous)) updateNode(id as Uuid, node)
 		}
 	}
 
@@ -100,7 +101,7 @@ const handleNewPortConnection: ConnectEnd = async (_event, connectionState, _use
 			} catch (e) {
 				console.error('Failed to publish component', e)
 				toast.error('Failed to publish component')
-				updateNode(originId, previous)
+				for (const [id, node] of Object.entries(previous)) updateNode(id as Uuid, node)
 			}
 		} else {
 			try {
@@ -110,7 +111,7 @@ const handleNewPortConnection: ConnectEnd = async (_event, connectionState, _use
 			} catch (e) {
 				console.error('Failed to save project', e)
 				toast.error('Failed to save project')
-				updateNode(originId, previous)
+				for (const [id, node] of Object.entries(previous)) updateNode(id as Uuid, node)
 			}
 		}
 	}
@@ -137,7 +138,7 @@ const handleNewPortConnection: ConnectEnd = async (_event, connectionState, _use
 			} catch (e) {
 				console.error('Failed to save project', e)
 				toast.error('Failed to save project')
-				updateNode(targetId, previous)
+				for (const [id, node] of Object.entries(previous)) updateNode(id as Uuid, node)
 			}
 		} else {
 			try {
@@ -145,7 +146,7 @@ const handleNewPortConnection: ConnectEnd = async (_event, connectionState, _use
 			} catch (e) {
 				console.error('Failed to publish component', e)
 				toast.error('Failed to publish component')
-				updateNode(targetId, previous)
+				for (const [id, node] of Object.entries(previous)) updateNode(id as Uuid, node)
 			}
 		}
 	}
@@ -169,9 +170,10 @@ const createNodeSelector: ConnectEnd = async (event, connectionState, useSvelteF
 		addAsChild = true
 		newEdge = {
 			source: sourceNodeId,
-			sourceHandle: fromHandle.id,
+			sourceHandle: fromHandle.id as Uuid,
 			target: nodeSelectorId,
-			id: `${sourceNodeId}:nodeSelector`
+			id: `${sourceNodeId}:nodeSelector`,
+			data: { props: defaultEdgeProps }
 		}
 	}
 
@@ -186,7 +188,8 @@ const createNodeSelector: ConnectEnd = async (event, connectionState, useSvelteF
 			source: sourceNodeId,
 			target: nodeSelectorId,
 			sourceHandle: sourceNodeId,
-			id: `${sourceNodeId}:nodeSelector`
+			id: `${sourceNodeId}:nodeSelector`,
+			data: { props: defaultEdgeProps }
 		}
 	}
 
@@ -196,7 +199,8 @@ const createNodeSelector: ConnectEnd = async (event, connectionState, useSvelteF
 		newEdge = {
 			source: nodeSelectorId,
 			target: sourceNodeId,
-			id: `${nodeSelectorId}:nodeSelector`
+			id: `${nodeSelectorId}:nodeSelector`,
+			data: { props: defaultEdgeProps }
 		}
 	}
 
@@ -205,7 +209,8 @@ const createNodeSelector: ConnectEnd = async (event, connectionState, useSvelteF
 		newEdge = {
 			source: sourceNodeId,
 			target: nodeSelectorId,
-			id: `${sourceNodeId}:nodeSelector`
+			id: `${sourceNodeId}:nodeSelector`,
+			data: { props: defaultEdgeProps }
 		}
 	}
 
@@ -213,6 +218,8 @@ const createNodeSelector: ConnectEnd = async (event, connectionState, useSvelteF
 	else {
 		throw new Error('Unknown handle type')
 	}
+
+	if (!newEdge) return
 
 	const position = screenToFlowPosition({
 		x: clientX,

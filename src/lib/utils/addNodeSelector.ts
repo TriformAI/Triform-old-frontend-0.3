@@ -1,6 +1,6 @@
 import { nodesStore, edgesStore } from '$lib/stores/canvas.svelte'
-import type { Node, TemporaryNode } from '$lib/types/flow'
-import type { Edge, XYPosition } from '@xyflow/svelte'
+import type { Node, TemporaryNode, Edge } from '$lib/types/flow'
+import type { XYPosition } from '@xyflow/svelte'
 
 export const addNodeSelector = (
 	edge: Edge,

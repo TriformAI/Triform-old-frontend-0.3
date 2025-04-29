@@ -179,6 +179,16 @@
 		transition: opacity 0.5s var(--easing-out);
 	}
 
+	/* Pass through clicks through open flow containers */
+	.svelte-flow__node-open-flow-node {
+		pointer-events: none !important;
+	}
+
+	/* Make hover work on the full edge interaction bound and not just the visible stroke */
+	.svelte-flow__edge {
+		pointer-events: stroke;
+	}
+
 	@starting-style {
 		.svelte-flow__node {
 			opacity: 0;

@@ -6,13 +6,14 @@
 		open: boolean
 		trigger: Snippet
 		content: Snippet
+		triggerClass?: string
 	}
 
-	let { open = $bindable(), trigger, content }: Props = $props()
+	let { open = $bindable(), trigger, content, triggerClass }: Props = $props()
 </script>
 
 <ContextMenu.Root bind:open>
-	<ContextMenu.Trigger>
+	<ContextMenu.Trigger class={triggerClass}>
 		{@render trigger()}
 	</ContextMenu.Trigger>
 

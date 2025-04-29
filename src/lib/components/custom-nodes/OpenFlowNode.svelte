@@ -49,7 +49,7 @@
 				node?.data.props.creating && 'animate-pulse'
 			]}
 		>
-			<ContextMenu bind:open={contextMenuOpen}>
+			<ContextMenu bind:open={contextMenuOpen} triggerClass="h-0">
 				{#snippet trigger()}
 					<button
 						class={[

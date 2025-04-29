@@ -1,5 +1,5 @@
 import type { Uuid, Node as TriNode } from './agent'
-import type { Node as XyNode } from '@xyflow/svelte'
+import type { Node as XyNode, Edge as XyEdge, EdgeProps as XyEdgeProps } from '@xyflow/svelte'
 
 // Visual properties of a node
 export interface NodeProps {
@@ -50,4 +50,30 @@ export interface TemporaryNode extends XyNode<TemporaryNodeData, 'selector-node'
 	id: Uuid
 	parentId?: Uuid
 	type: 'selector-node'
+}
+
+export interface EdgeData {
+	props: {
+		deleted: boolean
+	}
+	[key: string]: unknown
+}
+
+export const defaultEdgeProps: EdgeData['props'] = {
+	deleted: false
+}
+
+export interface Edge extends XyEdge {
+	id: `${Uuid}:${Uuid | 'nodeSelector'}${':input' | ':output' | ''}`
+	type?: 'default'
+	source: Uuid
+	target: Uuid
+	sourceHandle?: `${Uuid}${':input' | ''}`
+	targetHandle?: `${Uuid}${':output' | ''}`
+	data: EdgeData
+}
+
+export interface EdgeProps extends XyEdgeProps {
+	id: Edge['id']
+	data: EdgeData
 }

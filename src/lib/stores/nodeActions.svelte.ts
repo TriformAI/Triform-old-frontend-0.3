@@ -1,10 +1,9 @@
-import type { Node, NodeType } from '$lib/types/flow'
 import type { Component } from 'svelte'
 import type { Uuid, Node as TriNode, Flow } from '$lib/types/agent'
-
 import { dev } from '$app/environment'
 import { SvelteMap } from 'svelte/reactivity'
-import { useSvelteFlow as useSvelteFlowHook, type Edge } from '@xyflow/svelte'
+import { useSvelteFlow as useSvelteFlowHook } from '@xyflow/svelte'
+import { type Node, type NodeType, type Edge, defaultEdgeProps } from '$lib/types/flow'
 import {
 	addChild,
 	collapseFlow,
@@ -191,9 +190,11 @@ export const addFlow = {
 		setTimeout(() => {
 			const nodeSelectorId = crypto.randomUUID()
 			const selectorEdge = {
+				id: `${flowNodeId}:nodeSelector`,
 				source: flowNodeId,
 				sourceHandle: `${flowNodeId}:input`,
-				target: nodeSelectorId
+				target: nodeSelectorId,
+				data: { props: defaultEdgeProps }
 			} as Edge
 			const flowNode = nodes[flowNodeId]
 

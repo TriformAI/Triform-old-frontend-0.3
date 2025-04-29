@@ -5,6 +5,8 @@
 	import OpenFlowNode from '$lib/components/custom-nodes/OpenFlowNode.svelte'
 	import SelectorNode from '$lib/components/custom-nodes/SelectorNode.svelte'
 
+	import Edge from './Edge.svelte'
+
 	import {
 		edges,
 		edgesStore,
@@ -15,13 +17,14 @@
 	} from '$lib/stores/canvas.svelte'
 	import { confirmStore } from '$lib/stores/confirm.svelte'
 	import { deleteNode as deleteNodeAction } from '$lib/stores/nodeActions.svelte'
-	import { type Node, type NodeType, type TemporaryNode } from '$lib/types/flow'
+	import { type Node, type NodeType, type TemporaryNode, defaultEdgeProps } from '$lib/types/flow'
 	import {
 		Background,
 		BackgroundVariant,
 		SvelteFlow,
 		useSvelteFlow as svelteFlowHook,
-		useUpdateNodeInternals
+		useUpdateNodeInternals,
+		type EdgeTypes
 	} from '@xyflow/svelte'
 	import '@xyflow/svelte/dist/style.css'
 	import { onMount, type Component } from 'svelte'
@@ -46,6 +49,10 @@
 		'open-flow-node': OpenFlowNode,
 		// @ts-expect-error TODO: adjust props on component
 		'selector-node': SelectorNode
+	}
+	const edgeTypes: EdgeTypes = {
+		// @ts-expect-error TODO: adjust props on component
+		default: Edge
 	}
 
 	const updateNodeInternals = useUpdateNodeInternals()
@@ -159,6 +166,8 @@
 				nodes={nodesStore}
 				edges={edgesStore}
 				{nodeTypes}
+				{edgeTypes}
+				defaultEdgeOptions={{ data: { props: defaultEdgeProps } }}
 				isValidConnection={(...args) => isValidConnection(...args, useSvelteFlow)}
 				fitView
 				fitViewOptions={{
@@ -168,7 +177,6 @@
 				onconnectend={(...args) => handleConnectEnd(...args, useSvelteFlow)}
 				snapGrid={[1, 1]}
 				proOptions={{ hideAttribution: true }}
-				defaultEdgeOptions={{}}
 				zoomOnDoubleClick={false}
 				onbeforedelete={handleBeforeDelete}
 				ondelete={handleDelete}

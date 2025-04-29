@@ -4,10 +4,9 @@ import type {
 	Action,
 	Uuid
 } from '$lib/types/agent'
-import { defaultProps } from '$lib/types/flow'
 import type { Project } from '$lib/types/project'
-import type { Node, TemporaryNode } from '$lib/types/flow'
-import { type Edge } from '@xyflow/svelte'
+import type { Node, Edge, TemporaryNode } from '$lib/types/flow'
+import { defaultProps, defaultEdgeProps } from '$lib/types/flow'
 import { filterInPlace } from '$lib/utils/filterInPlace'
 import { arraysDiffer } from '$lib/utils/arraysDiffer'
 import { writable } from 'svelte/store'
@@ -89,20 +88,28 @@ const parseNode = (
 		if (input === 'parent') {
 			if (!parentId) continue
 			newEdges.push({
+				type: 'default',
 				id: `${id}:${parentId}:input`,
 				source: parentId,
 				sourceHandle: `${parentId}:input`,
-				target: id
+				target: id,
+				data: {
+					props: defaultEdgeProps
+				}
 			})
 			continue
 		}
 		// Normal edges
 		newEdges.push({
+			type: 'default',
 			id: `${id}:${input}`,
 			source: input,
 			// Force it to connect to the right handle and not just the first one
 			sourceHandle: input,
-			target: id
+			target: id,
+			data: {
+				props: defaultEdgeProps
+			}
 		})
 	}
 
@@ -138,10 +145,14 @@ const parseNode = (
 		// Add edges for the flow outputs
 		for (const source of node.spec.spec.outputs) {
 			newEdges.push({
+				type: 'default',
 				id: `${source}:${id}:output`,
 				source,
 				target: id,
-				targetHandle: `${id}:output`
+				targetHandle: `${id}:output`,
+				data: {
+					props: defaultEdgeProps
+				}
 			})
 		}
 	} else if (isEndpoint(node)) {
@@ -258,11 +269,16 @@ export const collapseFlow = (id: Uuid) => {
 // Updates only the TriNode data of a node
 // We can't use DeepPartial because we store nodes in an object, and assigning
 // that won't let us remove properties, so better to just pass in the full data
-export const updateNode = (id: Uuid, updatedNode: TriNode): TriNode => {
+export const updateNode = (id: Uuid, updatedNode: TriNode): Record<Uuid, TriNode> => {
 	const node = nodes[id]
 	if (!node) throw new Error(`Tried to update non-existent node ${id}`)
 
 	const previous = structuredClone($state.snapshot(node.data.trinode))
+	const previousNodes: {
+		[id: Uuid]: TriNode
+	} = {
+		[id]: previous
+	}
 
 	Object.assign(node, {
 		...node,
@@ -288,6 +304,18 @@ export const updateNode = (id: Uuid, updatedNode: TriNode): TriNode => {
 		edges.push(...newEdges)
 	}
 
+	// If any of the inputs changed and the flow has a parent, update the parent
+	if (node.parentId && arraysDiffer(previous.inputs ?? [], updatedNode.inputs ?? [])) {
+		const parent = nodes[node.parentId]
+		if (!parent || !isFlow(parent.data.trinode)) throw new Error('Parent node not found')
+		const updatedParent = structuredClone($state.snapshot(parent.data.trinode))
+		updatedParent.spec.spec.nodes[id] = $state.snapshot(updatedNode)
+		const previousParent = updateNode(node.parentId, updatedParent)
+		// add all the previous nodes to the previous nodes map
+		// so we can revert everything if needed
+		for (const [id, node] of Object.entries(previousParent)) previousNodes[id as Uuid] = node
+	}
+
 	// Trigger an update in svelte flow's internals
 	for (const listener of updateNodeListeners.values()) listener(id)
 
@@ -299,7 +327,7 @@ export const updateNode = (id: Uuid, updatedNode: TriNode): TriNode => {
 	}
 
 	// Return the previous node so we can revert if needed
-	return previous
+	return previousNodes
 }
 
 // Adds a child to a flow
@@ -406,6 +434,59 @@ export const removeChild = (childId: Uuid) => {
 	}
 
 	return updatedNodes
+}
+
+export const removeEdge = (edgeId: Edge['id']) => {
+	const edge = edges.find(e => e.id === edgeId)
+	if (!edge) throw new Error(`Tried to remove non-existent edge ${edgeId}`)
+	console.debug('removing edge', edgeId, edge)
+
+	let previous: ReturnType<typeof updateNode>
+	// The resource that needs to be saved/published after performing the deletion
+	let toSave: Node['id'] | 'project'
+
+	// If id ends with :input, it's an edge to the parent input/ingress handle,
+	// so we need to remove the 'parent' input from the target node
+	if (edgeId.endsWith(':input')) {
+		const nodeId = edge.target
+		const node = nodes[nodeId]
+		// TODO: maybe ignore this case and just delete the edge from the array?
+		if (!node) throw new Error(`Tried to remove input from non-existent node ${nodeId}`)
+		const trinode = structuredClone($state.snapshot(node.data.trinode))
+		trinode.inputs = trinode.inputs?.filter(i => i !== 'parent')
+		previous = updateNode(nodeId, trinode)
+		toSave = edge.source // parent flow ID
+		console.log('removing input', edgeId, trinode.inputs)
+	}
+	// If id ends with :output, it's an edge to the parent output/egress handle,
+	// so we need to remove the node from the flows 'outputs' array
+	else if (edgeId.endsWith(':output')) {
+		const flowId = edge.target
+		const flow = nodes[flowId]
+		if (!flow) throw new Error(`Tried to remove output from non-existent flow ${flowId}`)
+		// prettier-ignore
+		if (!isFlow(flow.data.trinode)) throw new Error(`Tried to remove output from non-flow node ${flowId}`)
+		const trinode = structuredClone($state.snapshot(flow.data.trinode))
+		trinode.spec.spec.outputs = trinode.spec.spec.outputs?.filter(o => o !== edge.source)
+		previous = updateNode(flowId, trinode)
+		toSave = flowId
+	}
+	// Otherwise, it's just a normal edge between two nodes, so we need to remove
+	// it from the target node's 'inputs' array
+	else {
+		const nodeId = edge.target
+		const node = nodes[nodeId]
+		if (!node) throw new Error(`Tried to remove edge from non-existent node ${nodeId}`)
+		const trinode = structuredClone($state.snapshot(node.data.trinode))
+		trinode.inputs = trinode.inputs?.filter(i => i !== edge.source)
+		previous = updateNode(nodeId, trinode)
+		toSave = node.parentId ?? 'project'
+	}
+
+	return {
+		previous,
+		toSave
+	}
 }
 
 const isEndpoint = (node: TriNode): node is TriNode & { spec: Action } =>
