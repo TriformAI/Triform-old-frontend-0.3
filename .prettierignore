@@ -5,3 +5,4 @@ yarn.lock
 # Deployment YAML files
 k8s/
 .github/
+.vscode/
