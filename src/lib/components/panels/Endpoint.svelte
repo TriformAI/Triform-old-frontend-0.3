@@ -5,7 +5,7 @@
 
 <Panel {Icon}>
 	{#snippet panels({ Execute, Metadata })}
-		<Execute />
 		<Metadata />
+		<Execute />
 	{/snippet}
 </Panel>

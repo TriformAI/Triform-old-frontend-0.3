@@ -5,8 +5,8 @@
 
 <Panel {Icon}>
 	{#snippet panels({ Execute, Metadata, Variables })}
-		<Execute />
 		<Metadata />
+		<Execute />
 		<Variables />
 	{/snippet}
 </Panel>

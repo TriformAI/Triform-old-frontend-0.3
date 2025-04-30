@@ -5,9 +5,9 @@
 
 <Panel {Icon}>
 	{#snippet panels({ CodeEditor, Execute, Metadata, Variables })}
+		<Metadata />
 		<CodeEditor />
 		<Variables />
 		<Execute />
-		<Metadata />
 	{/snippet}
 </Panel>
