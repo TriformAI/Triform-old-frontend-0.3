@@ -1,7 +1,7 @@
 <script lang="ts">
 	import type { Snippet } from 'svelte'
 	import IconChevronRight from '~icons/material-symbols/chevron-right'
-	import { selected, setOpenPanel as setSelectedOpenPanel } from '$lib/stores/canvas.svelte'
+	import { selected, toggleOpenPanelItem } from '$lib/stores/canvas.svelte'
 
 	export interface Props {
 		title: string
@@ -11,18 +11,15 @@
 
 	let { title, children, forceOpen }: Props = $props()
 
-	let openPanel = $derived(selected.openPanel)
-
-	const setOpenPanel = (panel: string) => {
-		const newVal = openPanel === panel ? '' : panel
-		setSelectedOpenPanel(selected.node?.id, newVal)
-	}
-
-	const isOpen = $derived(openPanel === title || forceOpen)
+	const isOpen = $derived(selected.openPanelItems.includes(title) || forceOpen)
 </script>
 
 <div class="grid py-2 ps-2 pe-8">
-	<button type="button" onclick={() => setOpenPanel(title)} class="me-auto flex items-center gap-1">
+	<button
+		type="button"
+		onclick={() => toggleOpenPanelItem(selected.node?.id, title)}
+		class="me-auto flex items-center gap-1"
+	>
 		<IconChevronRight class={['transition-transform', isOpen ? 'rotate-90' : '']} />
 		<h2 class="eyebrow inline-flex">{title}</h2>
 	</button>

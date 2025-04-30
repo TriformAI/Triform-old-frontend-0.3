@@ -7,7 +7,7 @@ export interface NodeProps {
 	deleted: boolean
 	creating: boolean
 	isDirty: boolean
-	openPanel: string
+	openPanelItems: string[]
 }
 
 export const defaultProps: NodeProps = {
@@ -15,7 +15,7 @@ export const defaultProps: NodeProps = {
 	deleted: false,
 	creating: false,
 	isDirty: false,
-	openPanel: ''
+	openPanelItems: []
 }
 
 // Custom data passed to each node

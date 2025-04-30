@@ -31,12 +31,12 @@ export const selected = {
 		return this.node.data.props.isDirty
 	},
 
-	get openPanel() {
+	get openPanelItems() {
 		if (!this.node) {
-			return ''
+			return []
 		}
 
-		return this.node.data.props.openPanel
+		return this.node.data.props.openPanelItems
 	}
 }
 
@@ -45,9 +45,12 @@ export function setIsDirty(nodeId: Uuid, val: boolean) {
 	nodes[nodeId].data.props.isDirty = val
 }
 
-export function setOpenPanel(nodeId: Uuid, val: string) {
+export function toggleOpenPanelItem(nodeId: Uuid, val: string) {
 	if (!nodes[nodeId]) return
-	nodes[nodeId].data.props.openPanel = val
+	const { openPanelItems } = nodes[nodeId].data.props
+	nodes[nodeId].data.props.openPanelItems = openPanelItems.includes(val)
+		? [...openPanelItems.filter(id => id !== val)]
+		: [...openPanelItems, val]
 }
 
 // Whenever the nodes store changes, auto layout everything
