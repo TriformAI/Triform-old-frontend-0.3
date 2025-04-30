@@ -45,12 +45,29 @@ export function setIsDirty(nodeId: Uuid, val: boolean) {
 	nodes[nodeId].data.props.isDirty = val
 }
 
-export function toggleOpenPanelItem(nodeId: Uuid, val: string) {
-	if (!nodes[nodeId]) return
+// Updates the open panel items for a node
+function updateNodeOpenPanelItems(nodeId: Uuid, val: string) {
 	const { openPanelItems } = nodes[nodeId].data.props
-	nodes[nodeId].data.props.openPanelItems = openPanelItems.includes(val)
+	const updatedOpenPanelItems = openPanelItems.includes(val)
 		? [...openPanelItems.filter(id => id !== val)]
 		: [...openPanelItems, val]
+
+	nodes[nodeId].data.props.openPanelItems = updatedOpenPanelItems
+}
+
+// Persists open panel items to localStorage
+function persistOpenPanelItems(nodeId: Uuid) {
+	const rawOpenPanelItems = localStorage.getItem('openPanelItems') || '{}'
+	const openPanelItems: Record<Uuid, string[]> = JSON.parse(rawOpenPanelItems)
+	openPanelItems[nodeId] = nodes[nodeId].data.props.openPanelItems
+	localStorage.setItem('openPanelItems', JSON.stringify(openPanelItems))
+}
+
+export function toggleOpenPanelItem(nodeId: Uuid, val: string) {
+	if (!nodes[nodeId]) return
+
+	updateNodeOpenPanelItems(nodeId, val)
+	persistOpenPanelItems(nodeId)
 }
 
 // Whenever the nodes store changes, auto layout everything
@@ -196,7 +213,15 @@ export const loadProject = (project: Project) => {
 	// Load in the top-level nodes
 	const { nodes: parsedNodes, edges: parsedEdges } = parseNodes(project.spec.nodes)
 
+	// Get the open panel items from localStorage, if any
+	const rawOpenPanelItems: Record<Uuid, string[]> = JSON.parse(
+		localStorage.getItem('openPanelItems') || '{}'
+	)
+
 	for (const node of parsedNodes) {
+		// Get the open panel items for the node, or default to empty array
+		node.data.props.openPanelItems = rawOpenPanelItems[node.id] || []
+
 		nodes[node.id] = node
 	}
 
