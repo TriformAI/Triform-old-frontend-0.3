@@ -8,6 +8,7 @@
 	import LightEditor from '$lib/components/atoms/LightEditor.svelte'
 
 	import IconPlay from '~icons/material-symbols/play-arrow-outline-rounded'
+	import IconCopy from '~icons/mdi/content-copy'
 	import { createExecution } from '$lib/utils/execution'
 	import { selected } from '$lib/stores/canvas.svelte'
 	import PanelItem from '../PanelItem.svelte'
@@ -149,6 +150,11 @@
 		}
 		return true
 	})
+
+	async function copyResult() {
+		await navigator.clipboard.writeText(result)
+		toast.success('Result copied to clipboard')
+	}
 </script>
 
 <!-- Execute {selectedNode?.data?.component_name ?? ''}
@@ -163,9 +169,13 @@
 
 		<div class="bg-main-800/50 grid grid-rows-[auto_minmax(100px,1fr)] rounded-lg p-3">
 			<p
-				class="border-main-800 ms-3 mt-1 mb-2 border-b pb-2 text-xs font-semibold tracking-wide uppercase"
+				class="border-main-800 ms-3 mt-1 mb-2 flex items-center border-b pb-2 text-xs font-semibold tracking-wide uppercase"
 			>
 				Result
+
+				{#if result}
+					<button class="ms-auto" onclick={() => copyResult()}><IconCopy class="size-4" /></button>
+				{/if}
 			</p>
 			<div class="relative">
 				<code class="absolute inset-0 w-full overflow-auto px-3 transition-all">
