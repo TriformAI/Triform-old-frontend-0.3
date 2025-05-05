@@ -82,7 +82,15 @@ export const addAction = {
 					version: 1
 				},
 				spec: {
-					source: '@triform.entrypoint\ndef action(input):\n  return input',
+					source: `from pydantic import BaseModel
+
+class Model(BaseModel):
+    msg: str
+
+@triform.entrypoint
+def simple(input: Model) -> Model:
+    return input
+					`,
 					readme: '',
 					deps: '',
 					streaming: false
