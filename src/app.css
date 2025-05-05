@@ -104,7 +104,7 @@
 	}
 
 	body {
-		@apply text-main-200 antialiased;
+		@apply text-main-200 bg-main-900 antialiased;
 
 		/* Prevent scrolling of body when a modal is open */
 		&:has(dialog[open]) {
