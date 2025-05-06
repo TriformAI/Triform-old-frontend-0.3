@@ -53,7 +53,7 @@
 >
 	<div
 		class={[
-			'bg-main-850 flex flex-row items-center justify-between pr-4',
+			'bg-main-850 flex flex-row items-start justify-between pr-4',
 			'border-main-700/75 rounded-t-md border border-x-0 border-t-0 border-b',
 			'group/card-header'
 		]}
@@ -83,7 +83,7 @@
 		{#if typeof onClose === 'function'}
 			<Button
 				variation="link"
-				class={[padding === 'tight' ? '-me-3' : '-me-0.5']}
+				class={['mt-2', padding === 'tight' ? '-me-3' : '-me-0.5']}
 				onClick={onClose}
 			>
 				{#snippet icon()}
