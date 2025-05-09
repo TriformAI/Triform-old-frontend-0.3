@@ -7,6 +7,8 @@
 	import type { Payload } from '$lib/types/project'
 	import TextField from '$lib/components/atoms/TextField.svelte'
 	import LightEditor from '$lib/components/atoms/LightEditor.svelte'
+	import { toast } from 'svelte-sonner'
+	import { invalidate } from '$app/navigation'
 
 	interface Props {
 		dialog?: HTMLDialogElement
@@ -21,8 +23,13 @@
 
 	async function onSubmit(e: Event) {
 		e.preventDefault()
-		const result = await api.post<Payload>('payloads', { payload, name })
-		console.log(result)
+		try {
+			const result = await api.post<Payload>('payloads', { payload, name })
+			toast.success('Payload saved successfully')
+			invalidate('project')
+		} catch (error) {
+			toast.error('Failed to save payload')
+		}
 		dialog?.close()
 	}
 
