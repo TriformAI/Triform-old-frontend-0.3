@@ -6,8 +6,8 @@
 	import Button from '$lib/components/atoms/Button.svelte'
 	import { selected } from '$lib/stores/canvas.svelte'
 	import Item from './Item.svelte'
-	import Selector from './Selector.svelte'
 	import PanelItem from '../../PanelItem.svelte'
+	import ComboBox from '$lib/components/atoms/ComboBox.svelte'
 
 	let variableDialog = $state<HTMLDialogElement>()
 
@@ -74,11 +74,15 @@
 
 		<div class={['-ms-1', newVariable && ' grid grid-cols-[1fr_auto] gap-2']}>
 			{#key variables.length}
-				<Selector
+				<ComboBox
 					bind:value={newVariable}
+					placeholder="Add variable"
 					items={page.data.variables?.map(v => ({ value: v.meta.id, label: v.spec.key })) ?? []}
-					onCreateTrigger={() => {
-						variableDialog?.showModal()
+					createNew={{
+						label: 'Create new variable',
+						trigger: () => {
+							variableDialog?.showModal()
+						}
 					}}
 				/>
 			{/key}

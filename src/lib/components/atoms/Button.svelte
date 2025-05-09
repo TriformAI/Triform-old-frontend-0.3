@@ -16,7 +16,7 @@
 		autoLoad?: 'promise'
 		// If it returns a promise, show loading indicator until it resolves
 		onClick?: () => unknown | Promise<unknown>
-		class?: string
+		class?: string | string[]
 		href?: string
 		target?: '_blank'
 		disabled?: boolean

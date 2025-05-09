@@ -3,7 +3,7 @@
 	import type { onClickFn } from '$lib/stores/nodeActions.svelte'
 	import { useSvelteFlow as useSvelteFlowHook } from '@xyflow/svelte'
 	import CodeEditor from './items/CodeEditor.svelte'
-	import Execute from './items/Execute.svelte'
+	import Execute from './items/Execute/Root.svelte'
 	import Metadata from './items/Metadata.svelte'
 	import ProjectSettings from './items/ProjectSettings.svelte'
 	import Variables from './items/Variables/Root.svelte'

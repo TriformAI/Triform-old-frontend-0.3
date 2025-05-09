@@ -7,7 +7,8 @@
 	import IconDrag from '~icons/mdi/drag'
 
 	interface Props {
-		header?: Snippet
+		title?: Snippet
+		subtitle?: Snippet
 		body: Snippet
 		footer?: Snippet
 		padding?: 'default' | 'tight'
@@ -18,7 +19,8 @@
 	}
 
 	let {
-		header,
+		title,
+		subtitle,
 		body,
 		footer,
 		padding = 'default',
@@ -35,6 +37,7 @@
 		window.addEventListener('mouseup', onDragEnd)
 		isDragging = true
 	}
+
 	const onDragEnd = (e: MouseEvent) => {
 		onDragEndProp?.(e)
 		window.removeEventListener('mouseup', onDragEnd)
@@ -51,13 +54,12 @@
 	<div
 		class={[
 			'bg-main-850 flex flex-row items-center justify-between pr-4',
-			'rounded-t-md border border-x-0 border-t-0 border-b border-inherit',
+			'border-main-700/75 rounded-t-md border border-x-0 border-t-0 border-b',
 			'group/card-header'
 		]}
 	>
 		<div
 			class={[
-				'flex w-full items-center gap-1 font-medium',
 				padding === 'default' && 'px-5 py-4',
 				padding === 'tight' && 'px-4 py-3',
 				isDraggable && 'cursor-grab select-none',
@@ -71,11 +73,19 @@
 				<IconDrag class="h-[1.25rem] w-[1.25rem] opacity-50" />
 			{/if}
 
-			<span class="text-lg font-semibold">{@render header?.()}</span>
+			<h2 class="text-lg font-semibold">{@render title?.()}</h2>
+
+			{#if subtitle}
+				<p class="text-main-400 mt-1 w-full">{@render subtitle?.()}</p>
+			{/if}
 		</div>
 
 		{#if typeof onClose === 'function'}
-			<Button variation="link" class={padding === 'tight' ? '-me-3' : '-me-0.5'} onClick={onClose}>
+			<Button
+				variation="link"
+				class={[padding === 'tight' ? '-me-3' : '-me-0.5']}
+				onClick={onClose}
+			>
 				{#snippet icon()}
 					<IconClose />
 				{/snippet}
@@ -85,7 +95,7 @@
 
 	<div
 		class={[
-			'text-main-400 grid w-full',
+			'text-main-300 grid w-full',
 			padding === 'default' && 'px-5 py-5',
 			padding === 'tight' && 'px-4 py-4'
 		]}

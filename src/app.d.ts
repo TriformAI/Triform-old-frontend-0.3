@@ -1,6 +1,6 @@
 import 'unplugin-icons/types/svelte'
 import type { User } from '$lib/types/auth'
-import type { Project, Variable } from '$lib/types/project'
+import type { Payload, Project, Variable } from '$lib/types/project'
 
 import { API } from '$lib/api'
 
@@ -17,6 +17,7 @@ declare global {
 			user?: User
 			project?: Project
 			variables?: Variable[]
+			payloads?: Payload[]
 		}
 		// interface PageState {}
 		// interface Platform {}

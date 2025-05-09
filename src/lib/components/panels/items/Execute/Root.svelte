@@ -3,18 +3,23 @@
 
 	import { toast } from 'svelte-sonner'
 	import { source } from 'sveltekit-sse'
-
-	import Button from '../../atoms/Button.svelte'
+	import IconAdd from '~icons/mdi/plus-circle-outline'
+	import Button from '../../../atoms/Button.svelte'
 	import LightEditor from '$lib/components/atoms/LightEditor.svelte'
 
 	import IconPlay from '~icons/material-symbols/play-arrow-outline-rounded'
 	import IconCopy from '~icons/mdi/content-copy'
 	import { createExecution } from '$lib/utils/execution'
 	import { selected } from '$lib/stores/canvas.svelte'
-	import PanelItem from '../PanelItem.svelte'
+	import PanelItem from '../../PanelItem.svelte'
+	import PayloadDialog from './PayloadDialog.svelte'
+	import ComboBox from '$lib/components/atoms/ComboBox.svelte'
+	import { page } from '$app/state'
 
-	let input = $state('{\n\t"msg": "hello world"\n}')
+	let payload = $state(selected.payload || '{\n\t"msg": "hello world"\n}')
 	let result = $state('')
+
+	let payloadDialog = $state<HTMLDialogElement>()
 
 	let isRunning = $state(false)
 
@@ -24,12 +29,12 @@
 		}
 		console.log({ isValidJson })
 
-		if (!input) return toast.error('Please enter a test input')
-		if (!isValidJson) return toast.error('The input needs to be valid JSON')
+		if (!payload) return toast.error('Please enter a payload')
+		if (!isValidJson) return toast.error('The payload needs to be valid JSON')
 
 		isRunning = true
 
-		const execution = createExecution(selected.node, JSON.parse(input))
+		const execution = createExecution(selected.node, JSON.parse(payload))
 		console.log('creating execution', execution)
 
 		let stream: ReturnType<typeof source> | undefined = undefined
@@ -143,9 +148,8 @@
 
 	const isValidJson = $derived.by(() => {
 		try {
-			JSON.parse(input)
+			JSON.parse(payload)
 		} catch (e) {
-			console.error(e)
 			return false
 		}
 		return true
@@ -155,6 +159,20 @@
 		await navigator.clipboard.writeText(result)
 		toast.success('Result copied to clipboard')
 	}
+
+	let newPayload = $state('')
+
+	$effect(() => {
+		if (newPayload) {
+			payload = page.data.payloads?.find(p => p.meta.id === newPayload)?.spec.payload ?? ''
+			newPayload = ''
+		}
+	})
+
+	function setPayload(val: string) {
+		payload = val
+		selected.payload = val
+	}
 </script>
 
 <!-- Execute {selectedNode?.data?.component_name ?? ''}
@@ -162,36 +180,68 @@
 
 <PanelItem title="Execute">
 	<div class={[' col-start-1 row-start-1 grid min-w-80 grid-rows-[auto_1fr_min-content] gap-y-4']}>
+		<ComboBox
+			bind:value={newPayload}
+			placeholder="Use saved payload"
+			items={page.data.payloads?.map(v => ({ value: v.meta.id, label: v.spec.name })) ?? []}
+		/>
+
 		<div class="bg-main-800/50 rounded-lg p-3">
-			<p class=" eyebrow ms-3 mt-1 mb-2">Test data</p>
-			<LightEditor language="json" value={input} onUpdate={v => (input = v)} class="text-sm" />
+			<div class=" -mt-1 mb-4 flex items-end justify-between">
+				<p class="text-sm font-medium">
+					<span class="text-main-300">Payload</span>
+				</p>
+				<button
+					aria-label="Save payload"
+					data-balloon-pos="left"
+					class="text-main-400 hover:text-main-300 -mt-1 transition-colors"
+					type="button"
+					onclick={() => payloadDialog?.showModal()}
+				>
+					<IconAdd class="size-5" />
+				</button>
+			</div>
+			{#key newPayload}
+				<LightEditor
+					wordWrap={true}
+					language="json"
+					bind:value={payload}
+					onUpdate={v => setPayload(v)}
+					class="text-sm"
+				/>
+			{/key}
 		</div>
 
 		<div class="bg-main-800/50 grid grid-rows-[auto_minmax(100px,1fr)] rounded-lg p-3">
-			<p
-				class="border-main-800 ms-3 mt-1 mb-2 flex items-center border-b pb-2 text-xs font-semibold tracking-wide uppercase"
-			>
-				Result
-
+			<div class=" -mt-1 mb-4 flex items-end justify-between">
+				<p class="text-sm font-medium">
+					<span class="text-main-300">Result</span>
+				</p>
 				{#if result}
-					<button class="ms-auto" onclick={() => copyResult()}><IconCopy class="size-4" /></button>
+					<button
+						class="text-main-400 hover:text-main-300 ms-auto -mt-1 transition-colors"
+						onclick={() => copyResult()}><IconCopy class="size-4.5" /></button
+					>
 				{/if}
-			</p>
+			</div>
+
 			<div class="relative">
-				<code class="absolute inset-0 w-full overflow-auto px-3 transition-all">
-					{#if isRunning}
-						<div
-							class={[
-								'bg-main-700 h-full min-h-16 w-full animate-pulse rounded-md transition-all',
-								!isRunning ? 'opacity-100' : 'opacity-0'
-							]}
-						></div>
-					{:else}
-						<pre class="word-break-[break-word] min-h-16 font-mono text-sm text-wrap">
-{result}
-							</pre>
-					{/if}
-				</code>
+				{#if isRunning}
+					<div
+						class={[
+							'bg-main-700 h-full min-h-16 w-full animate-pulse rounded-md transition-all',
+							!isRunning ? 'opacity-100' : 'opacity-0'
+						]}
+					></div>
+				{:else if result}
+					<LightEditor
+						readOnly={true}
+						wordWrap={true}
+						language="json"
+						bind:value={result}
+						class="text-sm"
+					/>
+				{/if}
 			</div>
 		</div>
 
@@ -214,3 +264,7 @@
 		</div>
 	</div>
 </PanelItem>
+
+{#key payload}
+	<PayloadDialog {payload} bind:dialog={payloadDialog} />
+{/key}

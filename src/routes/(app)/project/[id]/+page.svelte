@@ -63,6 +63,10 @@
 	let flowComponent = $state<Flow>()
 </script>
 
+<svelte:head>
+	<title>{data.project.meta.name} | Triform</title>
+</svelte:head>
+
 <SvelteFlowProvider>
 	<div bind:this={gridContainer} class="bg-main-800 grid h-full grid-cols-[1fr_4px_450px] pt-1">
 		<Flow bind:this={flowComponent} />

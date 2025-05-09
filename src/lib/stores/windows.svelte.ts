@@ -2,7 +2,7 @@ import type { Component } from 'svelte'
 
 import { SvelteMap } from 'svelte/reactivity'
 
-import Execution from '../components/panels/items/Execute.svelte'
+import Execution from '../components/panels/items/Execute/Root.svelte'
 
 export interface Window {
 	// Some id that's unique to the window

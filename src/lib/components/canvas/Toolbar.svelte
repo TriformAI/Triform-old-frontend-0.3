@@ -9,7 +9,7 @@
 	import IconFitScreen from '~icons/material-symbols/filter-center-focus-outline'
 	// import IconSave from '~icons/material-symbols/save-outline-rounded'
 
-	import Execution from '../panels/items/Execute.svelte'
+	import Execution from '../panels/items/Execute/Root.svelte'
 
 	const { fitView } = useSvelteFlow()
 

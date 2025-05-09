@@ -39,6 +39,10 @@
 	})
 </script>
 
+<svelte:head>
+	<title>Login | Triform</title>
+</svelte:head>
+
 <div class="bg-main-900 flex h-screen w-screen grid-rows-[auto_1fr] flex-col justify-center">
 	<figure class="mx-auto mt-6">
 		<img src={logo} alt="Triform logo" class="size-12" />

@@ -26,7 +26,7 @@
 >
 	{#if confirmStore}
 		<Card>
-			{#snippet header()}
+			{#snippet title()}
 				{confirmStore.title}
 			{/snippet}
 

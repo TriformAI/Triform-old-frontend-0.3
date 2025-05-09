@@ -150,7 +150,7 @@
 	`}
 	bind:this={element}
 >
-	<Card bind:isDragging {header} {body} {footer} {padding} {onClose} {onDragStart} {onDragEnd} />
+	<Card bind:isDragging {title} {body} {footer} {padding} {onClose} {onDragStart} {onDragEnd} />
 </div>
 
 <style>

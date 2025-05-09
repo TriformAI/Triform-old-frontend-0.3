@@ -37,6 +37,29 @@ export const selected = {
 		}
 
 		return this.node.data.props.openPanelItems
+	},
+
+	get payload() {
+		if (!this.node) {
+			return ''
+		}
+
+		return this.node.data.props.payload
+	},
+
+	set payload(val: string) {
+		if (!this.node) {
+			return
+		}
+
+		this.node.data.props.payload = val
+		localStorage.setItem(
+			'payloads',
+			JSON.stringify({
+				...JSON.parse(localStorage.getItem('payloads') || '{}'),
+				[this.node.id]: val
+			})
+		)
 	}
 }
 
@@ -217,10 +240,13 @@ export const loadProject = (project: Project) => {
 	const rawOpenPanelItems: Record<Uuid, string[]> = JSON.parse(
 		localStorage.getItem('openPanelItems') || '{}'
 	)
+	// Get the open panel items from localStorage, if any
+	const rawPayloads: Record<Uuid, string> = JSON.parse(localStorage.getItem('payloads') || '{}')
 
 	for (const node of parsedNodes) {
 		// Get the open panel items for the node, or default to empty array
 		node.data.props.openPanelItems = rawOpenPanelItems[node.id] || []
+		node.data.props.payload = rawPayloads[node.id] || '{"apa":"hej"}'
 
 		nodes[node.id] = node
 	}

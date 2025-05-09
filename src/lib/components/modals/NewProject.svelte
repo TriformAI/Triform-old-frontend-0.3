@@ -7,34 +7,37 @@
 	import { enhance } from '$app/forms'
 	import { toast } from 'svelte-sonner'
 	import { goto } from '$app/navigation'
+	import TextField from '../atoms/TextField.svelte'
 
-	let {
-		dialog = $bindable()
-	}: {
-		dialog: HTMLDialogElement | undefined
-	} = $props()
+	interface Props {
+		dialog?: HTMLDialogElement
+	}
+
+	let { dialog = $bindable() }: Props = $props()
+
+	let isLoading = $state(false)
 </script>
 
 <Dialog bind:dialog appearance="center">
 	<Card onClose={() => dialog?.close()}>
-		{#snippet header()}
+		{#snippet title()}
 			New Project
 		{/snippet}
 
-		{#snippet body()}
-			<p class="text-main-300 mb-5 w-full">
-				A project is a discrete collection of nodes that are connected into a flow
-			</p>
+		{#snippet subtitle()}
+			A project is a discrete collection of nodes that are connected into a flow
+		{/snippet}
 
+		{#snippet body()}
 			<form
 				action="/project?/create"
 				method="POST"
 				class="flex flex-col gap-y-4"
 				use:enhance={() => {
+					isLoading = true
 					return async ({ update, result }) => {
 						if (result.type === 'success') {
 							toast.success('Project created!')
-							console.log('result', result)
 							await goto(`project/${result.data?.meta?.id}`)
 						}
 
@@ -42,14 +45,16 @@
 							toast.error('Could not create project')
 						}
 
+						isLoading = false
+
 						await update()
 					}
 				}}
 			>
 				<InputField name="name" label="Project Name" required />
-				<InputField name="intention" label="Project Intention" required />
+				<TextField name="intention" label="Project Intention" required />
 
-				<Button variation="primary" type="submit" class="mt-5 w-full">
+				<Button variation="vibrant" type="submit" class="mt-5 w-full" {isLoading}>
 					{#snippet body()}
 						Create
 					{/snippet}

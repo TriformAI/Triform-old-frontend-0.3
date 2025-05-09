@@ -7,12 +7,17 @@
 	import IconDots from '~icons/material-symbols/more-horiz'
 	import IconTrash from '~icons/material-symbols/delete-outline'
 	import { enhance } from '$app/forms'
+	import { toast } from 'svelte-sonner'
 
 	let { data } = $props()
 	const { projects } = $derived(data)
 
 	let projectDialog = $state<HTMLDialogElement>()
 </script>
+
+<svelte:head>
+	<title>Projects | Triform</title>
+</svelte:head>
 
 <div class="container">
 	<NewProject bind:dialog={projectDialog} />
@@ -66,7 +71,10 @@
 									return async ({ update, result }) => {
 										console.log(result)
 										if (result.type === 'success') {
+											toast.success(`Project "${project.name}" deleted`)
 											await update()
+										} else {
+											toast.error('Project could not be deleted')
 										}
 									}
 								}}

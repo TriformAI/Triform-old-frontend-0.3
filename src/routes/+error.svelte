@@ -4,6 +4,10 @@
 	import Button from '$lib/components/atoms/Button.svelte'
 </script>
 
+<svelte:head>
+	<title>Error | Triform</title>
+</svelte:head>
+
 <section class="bg-main-900 flex h-screen flex-col items-center justify-center text-white">
 	<div class="mx-auto px-4 py-8 lg:px-6 lg:py-16">
 		<div class="mx-auto flex flex-col gap-y-4 text-center">

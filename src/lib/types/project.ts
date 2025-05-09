@@ -39,3 +39,15 @@ export interface Variable {
 		}
 	}
 }
+
+export interface Payload {
+	resource: 'payload/v1'
+	meta: {
+		id: Uuid
+		name: string
+	}
+	spec: {
+		name: string
+		payload: string
+	}
+}

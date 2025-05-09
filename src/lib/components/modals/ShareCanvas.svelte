@@ -22,7 +22,7 @@
 </script>
 
 <Card>
-	{#snippet header()}
+	{#snippet title()}
 		<T keyName="share-canvas-button" defaultValue="Share Canvas" />
 	{/snippet}
 
