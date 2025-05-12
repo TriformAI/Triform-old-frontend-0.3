@@ -17,6 +17,33 @@ services:
 
   redis:
     image: redis:8-alpine
+    # hide logs
+    logging:
+      driver: none
+
+  # small container that forwards ports to the tricore cluster
+  cluster-proxy:
+    build:
+      context: ./cluster-proxy
+      dockerfile: Dockerfile
+    # technically not strictly needed, but easier to debug
+    ports:
+      - 8081:8081
+      - 8082:8082
+    volumes:
+      - ./cluster-proxy/tricore-cluster-svckey.json:/tricore-cluster-svckey.json
+    environment:
+      GOOGLE_APPLICATION_CREDENTIALS: /tricore-cluster-svckey.json
+      GKE_PROJECT_ID: triformcloud
+      GKE_CLUSTER_NAME: stage
+      GKE_REGION: europe-west3
+    # mark as healthy only when the port forwards are established
+    healthcheck:
+      test: ["CMD", "sh", "-c", "curl http://localhost:8081 && curl http://localhost:8082"]
+      interval: 30s
+      timeout: 15s
+      retries: 10
+      start_period: 10s
 
   proxy:
     image: europe-docker.pkg.dev/triformcloud/k8s/proxy:v0.6.0-07e0694
@@ -27,8 +54,8 @@ services:
       RUST_BACKTRACE: 1
       HMAC_SECRET: sunras-cihkyP-1wovky
       PORT: 8080
-      AGENT_WORKER_SVC: host.docker.internal:8081
-      TRIBUILDER_SVC: host.docker.internal:8082
+      AGENT_WORKER_SVC: cluster-proxy:8081
+      TRIBUILDER_SVC: cluster-proxy:8082
       REDIS_URL: redis://redis:6379
       JWT_SECRET: ${PROXY_JWT_SECRET}
       DOMAIN: localhost
@@ -51,4 +78,7 @@ services:
       GITHUB_SCOPES: read:user,user:email
       ALLOWED_ORIGINS: http://localhost:8080,http://localhost:5173
     depends_on:
-      - redis
+      cluster-proxy:
+        condition: service_healthy
+      redis:
+        condition: service_started
