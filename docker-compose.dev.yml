@@ -12,9 +12,14 @@ services:
       AGENT_WORKER_DIR: agent-worker
     ports:
       - 5173:5173
+    depends_on:
+      - proxy
+
+  redis:
+    image: redis:8-alpine
 
   proxy:
-    image: europe-docker.pkg.dev/triformcloud/k8s/proxy:v0.5.0-212b4d3
+    image: europe-docker.pkg.dev/triformcloud/k8s/proxy:v0.6.0-07e0694
     ports:
       - 8080:8080
     environment:
@@ -22,6 +27,9 @@ services:
       RUST_BACKTRACE: 1
       HMAC_SECRET: sunras-cihkyP-1wovky
       PORT: 8080
+      AGENT_WORKER_SVC: host.docker.internal:8081
+      TRIBUILDER_SVC: host.docker.internal:8082
+      REDIS_URL: redis://redis:6379
       JWT_SECRET: ${PROXY_JWT_SECRET}
       DOMAIN: localhost
       DATABASE_URL: ${PROXY_DATABASE_URL}
@@ -42,3 +50,5 @@ services:
       GITHUB_TOKEN_URL: https://github.com/login/oauth/access_token
       GITHUB_SCOPES: read:user,user:email
       ALLOWED_ORIGINS: http://localhost:8080,http://localhost:5173
+    depends_on:
+      - redis
