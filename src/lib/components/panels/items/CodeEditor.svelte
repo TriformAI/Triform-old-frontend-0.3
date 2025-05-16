@@ -3,16 +3,18 @@
 	import Editor from '$lib/components/atoms/Editor.svelte'
 	import LightEditor from '$lib/components/atoms/LightEditor.svelte'
 	import Tabs from '$lib/components/atoms/Tabs.svelte'
-	import { selected } from '$lib/stores/canvas.svelte'
+	import { selected, isAction } from '$lib/stores/canvas.svelte'
 	import Button from '$lib/components/atoms/Button.svelte'
 	import { nodes, setIsDirty } from '$lib/stores/canvas.svelte'
 	import type { Action } from '$lib/types/agent'
-	import { onDestroy } from 'svelte'
+	import { onDestroy, untrack } from 'svelte'
 	import { toast } from 'svelte-sonner'
 	import compare from 'just-compare'
 	import pick from 'just-pick'
 	import { clone } from '$lib/utils/clone'
 	import PanelItem from '../PanelItem.svelte'
+	import { inProgressComponents } from '$lib/stores/builder.svelte'
+	import { blur } from 'svelte/transition'
 
 	const api = new API()
 
@@ -23,6 +25,13 @@
 		readme: string
 		deps: string
 	}
+	const filenames = {
+		source: 'action.py',
+		readme: 'README.md',
+		deps: 'requirements.txt'
+	}
+
+	type FileType = keyof typeof initialData
 
 	let initialData = $state<FormData>()!
 	let formData = $state<FormData>()!
@@ -31,20 +40,33 @@
 
 	function setFormdata() {
 		if (!nodeId) return
+		const spec = nodes[nodeId].data.trinode.spec as Action
 
-		initialData = pick(nodes[nodeId].data.trinode.spec.spec, ['source', 'readme', 'deps'])
+		initialData = pick(spec.spec, ['source', 'readme', 'deps'])
 		formData = clone(initialData)
 	}
 
 	setFormdata()
 
-	const filenames = {
-		source: 'action.py',
-		readme: 'README.md',
-		deps: 'requirements.txt'
-	}
+	// if we're building, we need to sync the component that's being bult to our
+	// local form data, so it's as if we've written it ourselves
+	$effect(() => {
+		const newComponent = inProgressComponents[componentId]?.component as Action
+		if (!newComponent) return
 
-	type FileType = keyof typeof initialData
+		// important that this is in the same order as the tabs
+		const newData: FormData = {
+			source: newComponent.spec.source,
+			readme: newComponent.spec.readme,
+			deps: newComponent.spec.deps
+		}
+		// switch tab depending on which file was updated
+		const idx = Object.keys(newData).findIndex(
+			key => newData[key as FileType] !== formData[key as FileType]
+		)
+		if (idx > -1) activeTab = idx
+		Object.assign(formData, newData)
+	})
 
 	function updateData(isDirty: boolean) {
 		if (!nodeId) return
@@ -98,29 +120,63 @@
 			label: filenames[key as FileType]
 		}))
 	})
+
+	const componentId = $derived(nodes[nodeId].data.trinode.spec.meta.id)
+	const isBuilding = $derived(componentId in inProgressComponents)
 </script>
 
 <PanelItem title="Code">
-	<Tabs {tabs} bind:activeTab />
+	<div class="relative">
+		<Tabs {tabs} bind:activeTab />
+		<div
+			class={[
+				'relative mt-2.5 grid h-[300px] transition-all',
+				isBuilding && 'opacity-50 grayscale-75'
+			]}
+		>
+			{#each Object.entries(formData) as [key, value], idx (key)}
+				{@const language = filenames[key as FileType].split('.').pop() as 'py' | 'md' | 'txt'}
+				{#if language === 'py'}
+					<Editor
+						bind:code={formData[key as FileType]}
+						class={`${idx === activeTab ? 'block' : 'hidden'} absolute h-full w-full rounded-md`}
+						readOnly={isBuilding}
+					/>
+				{:else}
+					<LightEditor
+						{language}
+						bind:value={formData[key as FileType]}
+						wordWrap={true}
+						class={`${idx === activeTab ? 'block' : 'hidden'} bg-main-800 absolute h-full w-full rounded-md ps-6 pt-2.5 text-sm`}
+						readOnly={isBuilding}
+					/>
+				{/if}
+			{/each}
+		</div>
 
-	<div class="relative mt-2.5 grid h-[300px]">
-		{#each Object.entries(formData) as [key, value], idx (key)}
-			{@const language = filenames[key as FileType].split('.').pop() as 'py' | 'md' | 'txt'}
-
-			{#if language === 'py'}
-				<Editor
-					bind:code={formData[key as FileType]}
-					class={`${idx === activeTab ? 'block' : 'hidden'} absolute h-full w-full rounded-md`}
-				/>
-			{:else}
-				<LightEditor
-					{language}
-					bind:value={formData[key as FileType]}
-					wordWrap={true}
-					class={`${idx === activeTab ? 'block' : 'hidden'} bg-main-800 absolute h-full w-full rounded-md ps-6 pt-2.5 text-sm`}
-				/>
-			{/if}
-		{/each}
+		{#if isBuilding}
+			{@const message = inProgressComponents[componentId].message}
+			{#key message}
+				<div
+					class="pointer-events-none absolute inset-0 flex items-center justify-center px-6 py-4 opacity-100 transition starting:opacity-0"
+				>
+					<div
+						class="bg-main-950/40 animate-border h-fit w-fit rounded px-8 py-4 backdrop-blur-2xl"
+					>
+						<span
+							class="text-main-200 truncate-lines-5 text-center"
+							transition:blur={{
+								duration: 800,
+								opacity: 0,
+								amount: 5
+							}}
+						>
+							{message}
+						</span>
+					</div>
+				</div>
+			{/key}
+		{/if}
 	</div>
 
 	<div class="mt-4 flex items-center justify-between">
@@ -133,7 +189,7 @@
 			type="button"
 			onClick={publishComponent}
 			autoLoad="promise"
-			disabled={!dataIsDirty}
+			disabled={!dataIsDirty || isBuilding}
 			variation="vibrant"
 		>
 			{#snippet body()}

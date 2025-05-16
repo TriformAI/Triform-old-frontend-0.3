@@ -11,9 +11,10 @@
 		code: string
 		class: string
 		onUpdate?: (code: string) => void
+		readOnly?: boolean
 	}
 
-	let { code = $bindable(), class: classes, onUpdate }: Props = $props()
+	let { code = $bindable(), class: classes, onUpdate, readOnly }: Props = $props()
 
 	let editorInitialized = $state(false)
 	const initEditor = (el: HTMLDivElement) => {
@@ -32,7 +33,8 @@
 				language: 'python',
 				automaticLayout: true,
 				fontSize: 14,
-				minimap: { enabled: false }
+				minimap: { enabled: false },
+				readOnly
 			})
 
 			editor.onDidChangeModelContent(_e => {
@@ -54,6 +56,18 @@
 		for (const model of monaco?.editor.getModels() ?? []) {
 			if (model.id === editor?.getId()) model.dispose()
 		}
+	})
+
+	// Update readOnly if it's changed after the editor is initialized
+	$effect(() => {
+		if (!editor) return
+		editor.updateOptions({ readOnly })
+	})
+	// update the editor value if it's changed after the editor is initialized
+	$effect(() => {
+		const ref = code
+		if (!editor) return
+		editor.setValue(ref)
 	})
 </script>
 

@@ -68,6 +68,17 @@
 	onDestroy(() => {
 		if (editor) editor.remove()
 	})
+
+	// Update readOnly if it's changed after the editor is initialized
+	$effect(() => {
+		if (!editor) return
+		editor.setOptions({ readOnly })
+	})
+	// update the editor value if it's changed after the editor is initialized
+	$effect(() => {
+		if (!editor) return
+		editor.setOptions({ value })
+	})
 </script>
 
 <div use:initEditor class={['overflow-auto', classes]}></div>

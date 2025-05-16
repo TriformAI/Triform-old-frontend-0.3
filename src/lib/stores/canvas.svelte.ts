@@ -545,7 +545,7 @@ export const removeEdge = (edgeId: Edge['id']) => {
 
 const isEndpoint = (node: TriNode): node is TriNode & { spec: Action } =>
 	node.spec.resource === 'endpoint/v1'
-const isAction = (node: TriNode): node is TriNode & { spec: Action } =>
+export const isAction = (node: TriNode): node is TriNode & { spec: Action } =>
 	node.spec.resource === 'action/v1'
 export const isFlow = (node: TriNode): node is TriNode & { spec: Flow } =>
 	node.spec.resource === 'flow/v1'

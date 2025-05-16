@@ -1,5 +1,11 @@
 @import 'tailwindcss';
 
+@property --border-gradient-angle {
+	syntax: '<angle>';
+	initial-value: 0deg;
+	inherits: false;
+}
+
 @theme {
 	--font-sans: 'Figtree Variable', sans-serif;
 	--font-mono: 'Space Mono', monospace;
@@ -96,6 +102,12 @@
 			opacity: 1;
 		}
 	}
+
+	@keyframes border {
+		100% {
+			--border-gradient-angle: 360deg;
+		}
+	}
 }
 
 @layer base {
@@ -142,6 +154,31 @@
 @utility container {
 	margin-inline: auto;
 	padding: 1.5rem;
+}
+
+@utility animate-border {
+	animation: border 6s linear infinite;
+	--border-gradient-angle: 0deg;
+	border: 1px solid transparent;
+	border-image: conic-gradient(
+			from var(--border-gradient-angle),
+			color-mix(in oklab, var(--color-main-800) 0%, transparent) 0%,
+			color-mix(in oklab, var(--color-main-800) 20%, transparent) 22%,
+			color-mix(in oklab, var(--color-main-100) 80%, transparent) 25%,
+			color-mix(in oklab, var(--color-main-800) 20%, transparent) 28%,
+			color-mix(in oklab, var(--color-main-800) 0%, transparent) 72%,
+			color-mix(in oklab, var(--color-main-100) 80%, transparent) 75%,
+			color-mix(in oklab, var(--color-main-800) 20%, transparent) 78%,
+			color-mix(in oklab, var(--color-main-800) 0%, transparent) 100%
+		) 1 round;
+}
+
+@utility truncate-lines-* {
+	display: -webkit-box;
+	-webkit-box-orient: vertical;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	-webkit-line-clamp: --value(integer);
 }
 
 @layer overrides {
