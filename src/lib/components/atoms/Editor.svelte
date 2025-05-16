@@ -66,8 +66,8 @@
 	// update the editor value if it's changed after the editor is initialized
 	$effect(() => {
 		const ref = code
-		if (!editor) return
-		editor.setValue(ref)
+		if (!editorInitialized || !editor) return
+		if (ref !== editor.getValue()) editor.setValue(ref)
 	})
 </script>
 
