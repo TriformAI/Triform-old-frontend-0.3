@@ -107,6 +107,7 @@
 							}
 						}
 					}}
+					class="font-mono"
 				/>
 
 				<p class="mt-2 font-medium opacity-60">Values</p>
@@ -114,7 +115,7 @@
 					{#each ['Dev', 'Stage', 'Prod'] as item}
 						<InputField
 							containerClass="grid items-center grid-cols-6"
-							class="col-span-5"
+							class="col-span-5 font-mono"
 							name={`value_${item.toLowerCase()}`}
 							label={item}
 							bind:value={payload.value[item.toLowerCase() as keyof typeof payload.value]}
