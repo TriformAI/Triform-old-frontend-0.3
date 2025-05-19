@@ -35,20 +35,35 @@
 </script>
 
 <li
-	class="border-main-800 group animate-fade-in grid grid-cols-[1fr_1fr_auto] items-start justify-between gap-3 border-b py-1.5 text-sm"
+	class={[
+		'group animate-fade-in grid grid-cols-[1fr_1fr_auto] items-center justify-between gap-3 py-1.5 text-sm',
+		isDetaching && 'animate-pulse'
+	]}
 >
-	<span class="inline-flex items-center gap-2 truncate font-normal uppercase">
-		<IconVariable class="size-4" />
-		<span class="text-main-400">{variable.spec.key}</span>
+	<span
+		class={[
+			'text-main-300 w-fit max-w-full truncate font-mono uppercase',
+			'bg-main-800 rounded-md px-2 py-1',
+			'border-main-700 border'
+		]}
+	>
+		{variable.spec.key}
 	</span>
 
-	<span>
-		{variable.spec.value.dev}
+	<span class="text-main-400 truncate">
+		{variable.meta.name}
 	</span>
 
-	<div class="invisible ms-auto flex items-center gap-2 group-hover:visible">
+	<div
+		class={[
+			'pointer-events-none ms-auto flex transform items-center gap-2 opacity-0 transition',
+			'group-hover:pointer-events-auto group-hover:opacity-100',
+			'hover:text-main-200 text-main-500 active:scale-95',
+			'disabled:cursor-wait disabled:opacity-50'
+		]}
+	>
 		<button type="button" title="Detach" onclick={handleDetach} disabled={isDetaching}>
-			<IconDetach class={['text-main-400 size-5', isDetaching && 'animate-pulse']} />
+			<IconDetach class={'size-5'} />
 		</button>
 	</div>
 </li>

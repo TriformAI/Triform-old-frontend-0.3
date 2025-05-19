@@ -72,7 +72,7 @@
 		</div>
 	{/if} -->
 
-		<div class={['-ms-1', newVariable && ' grid grid-cols-[1fr_auto] gap-2']}>
+		<div class={[newVariable && 'grid grid-cols-[1fr_auto] gap-2']}>
 			{#key variables.length}
 				<ComboBox
 					bind:value={newVariable}
