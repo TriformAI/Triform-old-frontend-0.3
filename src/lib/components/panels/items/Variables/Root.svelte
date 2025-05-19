@@ -56,7 +56,7 @@
 	}
 </script>
 
-<PanelItem title="Variables">
+<PanelItem title="Environment Variables">
 	<div>
 		<!-- {#if variables.length > 0}
 		<div class=" mb-2 grid grid-cols-[1fr_auto] items-end gap-4">
@@ -79,7 +79,7 @@
 					placeholder="Add variable"
 					items={page.data.variables?.map(v => ({ value: v.meta.id, label: v.spec.key })) ?? []}
 					createNew={{
-						label: 'Create new variable',
+						label: 'Create new environment variable',
 						trigger: () => {
 							variableDialog?.showModal()
 						}
