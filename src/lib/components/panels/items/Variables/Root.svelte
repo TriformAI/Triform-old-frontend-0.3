@@ -77,7 +77,9 @@
 				<ComboBox
 					bind:value={newVariable}
 					placeholder="Add variable"
-					items={page.data.variables?.map(v => ({ value: v.meta.id, label: v.spec.key })) ?? []}
+					items={page.data.variables
+						?.filter(v => !variables.includes(v))
+						.map(v => ({ value: v.meta.id, label: v.spec.key })) ?? []}
 					createNew={{
 						label: 'Create new environment variable',
 						trigger: () => {
