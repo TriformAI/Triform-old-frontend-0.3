@@ -111,12 +111,12 @@
 			{@const transitionSize = 0.25}
 			{@const transitionDuration = 400}
 			<div
-				out:scale={{
+				in:scale={{
 					start: isGoingDeeper ? 1 - transitionSize : 1 + transitionSize,
 					opacity: 0,
 					duration: transitionDuration
 				}}
-				in:scale={{
+				out:scale={{
 					start: isGoingDeeper ? 1 + transitionSize : 1 - transitionSize,
 					opacity: 0,
 					duration: transitionDuration
