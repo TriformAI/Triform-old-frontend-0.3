@@ -3,22 +3,31 @@
 	import { page } from '$app/state'
 
 	import IconDetach from '~icons/mdi/link-variant-off'
-	import IconVariable from '~icons/mdi/application-variable-outline'
-	import { enhance } from '$app/forms'
+	import IconExpand from '~icons/material-symbols/expand-all-rounded'
+	import IconCollapse from '~icons/material-symbols/collapse-all-rounded'
 	import { toast } from 'svelte-sonner'
 	import { invalidate } from '$app/navigation'
 	import { confirmStore } from '$lib/stores/confirm.svelte'
 	import { API } from '$lib/api'
 	import { selected } from '$lib/stores/canvas.svelte'
+	import { Collapsible } from 'bits-ui'
 
 	let { variable, onEdit }: { variable: Variable; onEdit: () => void } = $props()
 
 	let isDetaching = $state(false)
+	let isExpanded = $state(false)
 
 	const projectId = page.data.project?.meta.id
 	const nodePath = selected.node?.data.path.join('/')
 
 	async function handleDetach() {
+		const confirmed = await confirmStore.show({
+			title: 'Are you sure?',
+			message: 'This will detach the variable from the node immediately'
+		})
+
+		if (!confirmed) return
+
 		const api = new API()
 		isDetaching = true
 
@@ -34,36 +43,75 @@
 	}
 </script>
 
-<li
-	class={[
-		'group animate-fade-in grid grid-cols-[1fr_1fr_auto] items-center justify-between gap-3 py-1.5 text-sm',
-		isDetaching && 'animate-pulse'
-	]}
->
-	<span
+<Collapsible.Root bind:open={isExpanded}>
+	<li
 		class={[
-			'text-main-300 w-fit max-w-full truncate font-mono uppercase',
-			'bg-main-800 rounded-md px-2 py-1',
-			'border-main-700 border'
+			'group animate-fade-in flex flex-row items-start justify-between gap-3 py-1.5 text-sm',
+			isDetaching && 'animate-pulse'
 		]}
 	>
-		{variable.spec.key}
-	</span>
+		<div class="grid grid-cols-[auto_auto_auto] items-center gap-2">
+			<span
+				class={[
+					'text-main-300 w-fit max-w-full truncate font-mono',
+					'bg-main-800 rounded-md px-2 py-1',
+					'border-main-700 border'
+				]}
+			>
+				{variable.spec.key}
+			</span>
+			<span class="text-main-300 font-medium"> = </span>
+			<span
+				class={[
+					'text-main-300 w-fit max-w-full truncate font-mono',
+					'bg-main-800 rounded-md px-2 py-1',
+					'border-main-700 border'
+				]}
+			>
+				{variable.spec.value.dev}
+			</span>
 
-	<span class="text-main-400 truncate">
-		{variable.meta.name}
-	</span>
+			<Collapsible.Content class="contents">
+				{#each Object.entries(variable.spec.value)
+					.filter(([key]) => key !== 'dev')
+					.sort(([a], [b]) => b.localeCompare(a)) as [key, value]}
+					<span class="text-main-300 text-right capitalize">
+						{key}
+					</span>
+					<div></div>
+					<span
+						class={[
+							'text-main-300 w-fit max-w-full truncate font-mono',
+							'bg-main-800 rounded-md px-2 py-1',
+							'border-main-700 border'
+						]}
+					>
+						{value}
+					</span>
+				{/each}
+			</Collapsible.Content>
+		</div>
 
-	<div
-		class={[
-			'pointer-events-none ms-auto flex transform items-center gap-2 opacity-0 transition',
-			'group-hover:pointer-events-auto group-hover:opacity-100',
-			'hover:text-main-200 text-main-500 active:scale-95',
-			'disabled:cursor-wait disabled:opacity-50'
-		]}
-	>
-		<button type="button" title="Detach" onclick={handleDetach} disabled={isDetaching}>
-			<IconDetach class={'size-5'} />
-		</button>
-	</div>
-</li>
+		<div
+			class={[
+				'pointer-events-none ms-auto flex transform items-center gap-2 opacity-0 *:transition',
+				'group-hover:pointer-events-auto group-hover:opacity-100',
+				'*:hover:text-main-200 text-main-500 *:active:scale-95',
+				'*:disabled:cursor-wait *:disabled:opacity-50'
+			]}
+		>
+			<Collapsible.Trigger>
+				<button type="button" title="Collapse">
+					{#if !isExpanded}
+						<IconExpand class={'size-5'} />
+					{:else}
+						<IconCollapse class={'size-5'} />
+					{/if}
+				</button>
+			</Collapsible.Trigger>
+			<button type="button" title="Detach" onclick={handleDetach} disabled={isDetaching}>
+				<IconDetach class={'size-5'} />
+			</button>
+		</div>
+	</li>
+</Collapsible.Root>

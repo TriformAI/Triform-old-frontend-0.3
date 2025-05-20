@@ -76,7 +76,7 @@
 			{#key variables.length}
 				<ComboBox
 					bind:value={newVariable}
-					placeholder="Add variable"
+					placeholder="Attach variable"
 					items={page.data.variables
 						?.filter(v => !variables.includes(v))
 						.map(v => ({ value: v.meta.id, label: v.spec.key })) ?? []}
