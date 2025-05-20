@@ -16,26 +16,6 @@ export const actions = {
 			return fail(400, { message: 'Invalid input' })
 		}
 
-		// Create initial endpoint before creating project
-		// We need to give this just some random IDs for now so it validates
-		const initialEndpoint = await locals.api.post<Endpoint>('components', {
-			resource: 'endpoint/v1',
-			meta: {
-				name: 'Endpoint',
-				id: crypto.randomUUID(),
-				version: 1
-			},
-			spec: {
-				// gets overwritten by the backend, just needs to validate
-				component_id: crypto.randomUUID(),
-				component_version: 1
-			}
-		})
-
-		// Need to manaually update the component id in spec for now, because the API doesn't do it
-		initialEndpoint.spec.component_id = initialEndpoint.meta.id
-		await locals.api.put(`components/${initialEndpoint.meta.id}`, initialEndpoint)
-
 		const project: DeepPartial<Project> = {
 			resource: 'project/v1',
 			meta: {
@@ -47,13 +27,7 @@ export const actions = {
 				}
 			},
 			spec: {
-				nodes: {
-					[crypto.randomUUID()]: {
-						inputs: [],
-						component_id: initialEndpoint.meta.id,
-						component_version: 1
-					}
-				}
+				nodes: {}
 			}
 		}
 

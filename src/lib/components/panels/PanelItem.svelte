@@ -1,7 +1,7 @@
 <script lang="ts">
 	import type { Snippet } from 'svelte'
 	import IconChevronRight from '~icons/material-symbols/chevron-right'
-	import { selected, toggleOpenPanelItem } from '$lib/stores/canvas.svelte'
+	import { selected, toggleOpenPanelItem } from '$lib/stores/panel.svelte'
 
 	export interface Props {
 		title: string

@@ -1,13 +1,12 @@
 <script lang="ts">
 	import type { Component, Snippet } from 'svelte'
 	import type { onClickFn } from '$lib/stores/nodeActions.svelte'
-	import { useSvelteFlow as useSvelteFlowHook } from '@xyflow/svelte'
 	import CodeEditor from './items/CodeEditor.svelte'
 	import Execute from './items/Execute/Root.svelte'
 	import Metadata from './items/Metadata.svelte'
 	import ProjectSettings from './items/ProjectSettings.svelte'
 	import Variables from './items/Variables/Root.svelte'
-	import { selected } from '$lib/stores/canvas.svelte'
+	import { selected } from '$lib/stores/panel.svelte'
 	import { getActions } from '$lib/stores/nodeActions.svelte'
 
 	interface Props {
@@ -27,16 +26,14 @@
 
 	const actions = $derived(getActions(selected.node?.type ?? ''))
 
-	const useSvelteFlow = useSvelteFlowHook()
-
 	const handleActionClick = (fn: onClickFn) => {
-		fn(selected.node!, useSvelteFlow)
+		fn(selected.node!)
 	}
 
 	const { Icon, panels }: Props = $props()
 
-	const title = $derived(selected.node?.data.trinode.spec.meta.name ?? 'Project')
-	const desc = $derived(selected.node?.data.trinode.spec.meta.intention?.purpose)
+	const title = $derived(selected.node?.data?.trinode?.spec?.meta?.name ?? 'Project')
+	const desc = $derived(selected.node?.data?.trinode?.spec?.meta?.intention?.purpose)
 </script>
 
 {#key selected.node?.id}

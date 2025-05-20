@@ -1,7 +1,6 @@
 <script lang="ts">
 	import type { Node } from '$lib/types/flow'
 	import type { onClickFn } from '$lib/stores/nodeActions.svelte'
-	import { useSvelteFlow as useSvelteFlowHook } from '@xyflow/svelte'
 
 	import { getActions } from '$lib/stores/nodeActions.svelte'
 
@@ -14,11 +13,9 @@
 
 	const actions = $derived(getActions(node?.type!))
 
-	const useSvelteFlow = useSvelteFlowHook()
-
 	const handleActionClick = (fn: onClickFn) => {
 		onActionClick?.()
-		fn(node!, useSvelteFlow)
+		fn(node!)
 	}
 </script>
 

@@ -11,7 +11,6 @@
 	import { sleep } from './utils'
 	import '@xyflow/svelte/dist/style.css'
 	import { animate } from 'motion'
-	import { writable } from 'svelte/store'
 	import Loader from './Loader2.svelte'
 	import CustomNode from './Node.svelte'
 	import { edges as AllEdges, nodes as AllNodes } from './nodes'
@@ -32,8 +31,8 @@
 		node: CustomNode
 	}
 
-	const nodes = writable<Node[]>([])
-	const edges = writable<Edge[]>(AllEdges)
+	let nodes = $state.raw<Node[]>([])
+	let edges = $state.raw<Edge[]>(AllEdges)
 
 	let step = $state(0)
 	let allNodesAreRendered = $state(false)
@@ -74,7 +73,7 @@
 	async function startBuilder() {
 		await animate('#status-loader', { opacity: 0 }, { duration: 0.3 })
 		step = 0
-		$nodes = []
+		nodes = []
 		await sleep(500)
 		showNextNode()
 	}
@@ -84,13 +83,13 @@
 
 		testsAreRunning = true
 
-		let step = $nodes.length - 1
+		let step = nodes.length - 1
 
 		const MIN_TIME = 1000
 		const MAX_TIME = 2000
 
 		function updateBool(propName: string) {
-			$nodes = $nodes.map((node, idx) => {
+			nodes = nodes.map((node, idx) => {
 				return {
 					...node,
 					data: {
@@ -163,7 +162,7 @@
 				}
 			}
 
-			$nodes = [...$nodes, obj]
+			nodes = [...nodes, obj]
 		}
 
 		if (Array.isArray(nextNode)) {
@@ -194,7 +193,7 @@
 		buildHasFinished = false
 		testsAreRunning = false
 		testsAreFinished = false
-		$nodes = []
+		nodes = []
 
 		FlowStatus?.play()
 	}

@@ -27,31 +27,30 @@ export interface NodeData {
 	isExpanded?: boolean
 	// Visual frontend-only props
 	props: NodeProps
-	path: Uuid[]
 	[key: string]: unknown
 }
 
-export type TemporaryNodeData = Omit<NodeData, 'trinode'> & {
-	addAsChild: boolean
-}
+export type TemporaryNodeData = Omit<NodeData, 'trinode'>
 
 export type NodeType =
 	| 'endpoint-node'
 	| 'action-node'
 	| 'flow-node'
-	| 'open-flow-node'
 	| 'selector-node'
+	| 'loading-node'
 
-export interface Node extends XyNode<NodeData, Exclude<NodeType, 'selector-node'>> {
+export interface Node
+	extends XyNode<NodeData, Exclude<NodeType, 'selector-node' | 'loading-node'>> {
 	id: Uuid
 	parentId?: Uuid
-	type: Exclude<NodeType, 'selector-node'>
+	type: Exclude<NodeType, 'selector-node' | 'loading-node'>
 }
 
-export interface TemporaryNode extends XyNode<TemporaryNodeData, 'selector-node'> {
+export interface TemporaryNode
+	extends XyNode<TemporaryNodeData, 'selector-node' | 'loading-node' | 'parent-node'> {
 	id: Uuid
 	parentId?: Uuid
-	type: 'selector-node'
+	type: 'selector-node' | 'loading-node' | 'parent-node'
 }
 
 export interface EdgeData {

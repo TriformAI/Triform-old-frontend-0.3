@@ -170,7 +170,8 @@
 			color-mix(in oklab, var(--color-main-100) 80%, transparent) 75%,
 			color-mix(in oklab, var(--color-main-800) 20%, transparent) 78%,
 			color-mix(in oklab, var(--color-main-800) 0%, transparent) 100%
-		) 1 round;
+		)
+		1 round;
 }
 
 @utility truncate-lines-* {
@@ -216,14 +217,18 @@
 		transition: opacity 0.5s var(--easing-out);
 	}
 
-	/* Pass through clicks through open flow containers */
-	.svelte-flow__node-open-flow-node {
-		pointer-events: none !important;
-	}
-
 	/* Make hover work on the full edge interaction bound and not just the visible stroke */
 	.svelte-flow__edge {
 		pointer-events: stroke;
+	}
+
+	/* Make sure node labels are above edges */
+	.svelte-flow__edges {
+		z-index: -1;
+	}
+
+	.svelte-flow__edge-label {
+		display: contents;
 	}
 
 	@starting-style {

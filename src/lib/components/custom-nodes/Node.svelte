@@ -1,13 +1,12 @@
 <script lang="ts">
-	import type { NodeData, Node } from '$lib/types/flow'
-	import type { Snippet } from 'svelte'
-	import { useNodes } from '@xyflow/svelte'
-	import { getActions } from '$lib/stores/nodeActions.svelte'
-	import { useSvelteFlow as useSvelteFlowHook } from '@xyflow/svelte'
 	import ContextMenu from '$lib/components/atoms/ContextMenu.svelte'
+	import { getNodes, getCurrentFlow } from '$lib/stores/canvas.svelte'
+	import { getActions } from '$lib/stores/nodeActions.svelte'
+	import type { Node, NodeData } from '$lib/types/flow'
+	import type { Snippet } from 'svelte'
 
-	import NodeContainer from './NodeContainer.svelte'
 	import NodeActions from './NodeActions.svelte'
+	import NodeContainer from './NodeContainer.svelte'
 
 	interface Props {
 		id: Node['id']
@@ -20,8 +19,9 @@
 
 	const props: Props = $props()
 
-	const { id, data, selected, icon, shape = 'circle', class: classes } = $derived(props)
-	// const { state: nodeState } = $derived(data)
+	const { id, data, selected, icon, shape = 'circle', class: classes }: Props = $derived(props)
+
+	const node = $derived(getNodes().find(node => node.id === id))
 
 	const borderClass = $derived.by(() => {
 		return ''
@@ -34,25 +34,27 @@
 		// }[nodeState]
 	})
 
-	const nodes = useNodes()
-	let node: Node | undefined = $state()
-	nodes.subscribe(nodes => {
-		const n = nodes.find(n => n.id === id)
-		if (n) node = n as Node
-	})
-
-	const useSvelteFlow = useSvelteFlowHook()
 	const openFn = () => {
 		// Whenever a node is double clicked, run the first action menu item
 		if (!node?.type) return
 		const actions = getActions(node.type)
-		actions[0]?.onClick?.(node, useSvelteFlow)
+		actions[0]?.onClick?.(node)
 	}
 
 	let contextIsOpen = $state(false)
+
+	const isRootLevelAndFlowNode = $derived(!getCurrentFlow() && node?.type === 'flow-node')
+
+	let showTargetHandle = $derived.by(() => {
+		return node?.type !== 'endpoint-node' && !isRootLevelAndFlowNode
+	})
+
+	let showSourceHandle = $derived.by(() => {
+		return !isRootLevelAndFlowNode
+	})
 </script>
 
-<NodeContainer {...props} showTargetHandle={node?.type !== 'endpoint-node'}>
+<NodeContainer {...props} {showTargetHandle} {showSourceHandle}>
 	{#snippet body()}
 		<ContextMenu bind:open={contextIsOpen}>
 			{#snippet trigger()}
@@ -65,11 +67,11 @@
 				>
 					<div
 						class={[
-							'bg-main-900 absolute inset-x-0 -top-1 -translate-y-full truncate rounded py-0.5 text-center text-sm font-semibold transition',
+							'bg-main-900 absolute -inset-x-[25%] -top-1  -translate-y-full truncate rounded py-0.5 text-center text-sm font-semibold transition',
 							selected ? 'text-main-300' : 'text-main-400'
 						]}
 					>
-						<span class="whitespace-nowrap">{data.trinode.spec.meta.name}</span>
+						<span class="bg-main-900 whitespace-nowrap">{data.trinode.spec.meta.name}</span>
 					</div>
 					<button
 						class={[
@@ -90,6 +92,7 @@
 					</button>
 				</div>
 			{/snippet}
+
 			{#snippet content()}
 				<NodeActions {node} onActionClick={() => (contextIsOpen = false)} />
 			{/snippet}

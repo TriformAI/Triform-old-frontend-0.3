@@ -4,10 +4,11 @@
 	import { invalidate } from '$app/navigation'
 	import { API } from '$lib/api'
 	import Button from '$lib/components/atoms/Button.svelte'
-	import { selected } from '$lib/stores/canvas.svelte'
+	import { selected } from '$lib/stores/panel.svelte'
 	import Item from './Item.svelte'
 	import PanelItem from '../../PanelItem.svelte'
 	import ComboBox from '$lib/components/atoms/ComboBox.svelte'
+	import { getBreadcrumbs, getNodePath } from '$lib/stores/canvas.svelte'
 
 	let variableDialog = $state<HTMLDialogElement>()
 
@@ -19,7 +20,7 @@
 			return []
 		}
 
-		const path = selected.node?.data.path.join('/')
+		const path = getNodePath()
 
 		if (!path) {
 			return []
@@ -45,8 +46,10 @@
 	async function attachVariable() {
 		isAttaching = true
 
+		const nodePath = getNodePath()
+
 		const result = await api.post(`projects/${projectId}/variable`, {
-			nodePath: selected.node?.data.path.join('/'),
+			nodePath,
 			modifierId: newVariable
 		})
 

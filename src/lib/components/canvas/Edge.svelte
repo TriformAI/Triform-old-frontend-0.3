@@ -1,12 +1,13 @@
 <script lang="ts">
-	import { getBezierPath, BaseEdge, EdgeLabelRenderer } from '@xyflow/svelte'
-	import { type EdgeProps, type Node } from '$lib/types/flow'
-	import { nodes, edges, project, removeEdge, updateNode } from '$lib/stores/canvas.svelte'
-	import { toast } from 'svelte-sonner'
+	import { getBezierPath, BaseEdge, EdgeLabel } from '@xyflow/svelte'
+	import { type EdgeProps } from '$lib/types/flow'
+	import { removeEdge } from '$lib/stores/canvas.svelte'
 	import IconCloseRounded from '~icons/material-symbols/close-rounded'
 	import { saveProject } from '$lib/actions/project'
-	import { publishComponent } from '$lib/actions/components'
+	import { updateComponent } from '$lib/actions/components'
 	import { confirmStore } from '$lib/stores/confirm.svelte'
+	import { page } from '$app/state'
+	import { getNodes, getEdges } from '$lib/stores/canvas.svelte'
 
 	const {
 		id,
@@ -55,7 +56,7 @@
 		if (!confirmed) return
 
 		// Mark the edge as deleted and then delete it after a little delay
-		const edge = edges.find(e => e.id === id)
+		const edge = getEdges().find(e => e.id === id)
 		if (edge) edge.data.props.deleted = true
 
 		setTimeout(async () => {
@@ -64,22 +65,16 @@
 				removeEdgeReturn = removeEdge(id)
 				const { toSave } = removeEdgeReturn
 				if (toSave === 'project') {
-					const proj = project()
+					const proj = page.data.project
 					if (!proj) throw new Error('Project not loaded')
 					await saveProject(proj)
 				} else {
-					const node = nodes[toSave]
+					const node = getNodes().find(n => n.id === toSave)
 					if (!node) throw new Error('Node not found')
-					await publishComponent(node.data.trinode.spec)
+					await updateComponent(node.data.trinode.spec)
 				}
 			} catch (e) {
 				console.error(e)
-				if (e instanceof Error) toast.error(e.message)
-				else toast.error('Failed to delete edge')
-				// this should always be defined... but just to appease typescript
-				if (!removeEdgeReturn) return console.error('Failed to remove edge')
-				const { previous } = removeEdgeReturn
-				for (const [id, node] of Object.entries(previous)) updateNode(id as Node['id'], node)
 			}
 		}, 150)
 	}
@@ -90,7 +85,8 @@
 	interactionWidth={40}
 	class={[data.props.deleted ? 'opacity-0' : '', 'transition-opacity'].filter(Boolean).join(' ')}
 />
-<EdgeLabelRenderer>
+
+<EdgeLabel>
 	<div
 		style:transform="translate(-50%, -{pathIsStraight ? 60 : 50}%) translate({midX}px, {midY}px)"
 		class="absolute"
@@ -109,7 +105,7 @@
 			<IconCloseRounded />
 		</button>
 	</div>
-</EdgeLabelRenderer>
+</EdgeLabel>
 
 <svelte:head>
 	{@html style}

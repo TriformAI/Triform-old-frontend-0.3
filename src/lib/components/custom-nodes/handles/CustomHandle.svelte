@@ -16,12 +16,7 @@
 </script>
 
 <div class="relative">
-	<Handle
-		{id}
-		{type}
-		{position}
-		class={['z-10 !border-none !bg-transparent p-3', classes].join(' ')}
-	>
+	<Handle {id} {type} {position} class={['z-10 !border-none !bg-transparent p-3', classes]}>
 		<div
 			style="border-color: color-mix(in oklab, var(--node-color) 80%, transparent)"
 			class="bg-main-950/80 pointer-events-none absolute size-2 -translate-x-1/2 -translate-y-1/2 rounded-full border"

@@ -1,18 +1,9 @@
 <script lang="ts">
 	import logo from '$lib/images/Logo.svg'
 	import Dropdown from './common/Dropdown.svelte'
-	// import { getTolgee } from '@tolgee/svelte'
-
 	import { page } from '$app/state'
 
-	// const tolgee = getTolgee(['language'])
-	// const lang = $derived($tolgee.getLanguage())
-
-	// todo: add more languages and change the way this language selector works
-	// const toggleLanguage = () => {
-	// 	if (lang === 'en') $tolgee.changeLanguage('sv')
-	// 	else $tolgee.changeLanguage('en')
-	// }
+	const { children } = $props()
 </script>
 
 <header class="bg-main-900 sticky top-0 flex w-full items-center justify-between px-5 py-2">
@@ -21,11 +12,14 @@
 			<img alt="Triform logo" src={logo} class="w-10" />
 		</a>
 
-		<div>
-			<span class="text-main-300 pl-5">
-				{page.data.project?.meta.name ?? 'Projects'}
-			</span>
-			<!-- <span class="text-main-500 pl-2">{currentProject.hasUnsavedChanges ? '(unsaved)' : ''}</span> -->
+		<div class="flex items-center pl-5">
+			{#if page.data.project}
+				{#if children}
+					{@render children()}
+				{/if}
+			{:else}
+				<span class="font-medium">Projects</span>
+			{/if}
 		</div>
 	</div>
 

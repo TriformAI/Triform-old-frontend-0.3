@@ -4,11 +4,11 @@
 	import IconVariable from '~icons/mdi/key'
 	import Dialog from '$lib/components/common/Dialog.svelte'
 	import { toast } from 'svelte-sonner'
-	import { selected } from '$lib/stores/canvas.svelte'
 	import { page } from '$app/state'
 	import { API } from '$lib/api'
 	import type { Variable, Project } from '$lib/types/project'
 	import { invalidate } from '$app/navigation'
+	import { getNodePath } from '$lib/stores/canvas.svelte'
 
 	interface Props {
 		dialog: HTMLDialogElement | undefined
@@ -25,8 +25,10 @@
 			prod: ''
 		},
 		projectId: page.data.project?.meta.id,
-		nodePath: selected.node?.data.path.join('/')
+		nodePath: getNodePath()
 	})
+
+	$inspect(payload)
 
 	let isCreating = $state(false)
 

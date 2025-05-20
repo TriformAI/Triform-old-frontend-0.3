@@ -19,7 +19,7 @@
 	interface Props {
 		value?: string
 		language: 'json' | 'md' | 'txt'
-		class: string
+		class: string | string[]
 		wordWrap?: boolean
 		readOnly?: boolean
 		onUpdate?: (value: string) => void
@@ -28,12 +28,16 @@
 	let {
 		value = $bindable(),
 		language,
-		class: classes,
+		class: rawClasses,
 		wordWrap = false,
 		onUpdate,
 		readOnly = false
 	}: Props = $props()
 
+	const classes = $derived.by(() => {
+		if (Array.isArray(rawClasses)) return rawClasses.join(' ')
+		return rawClasses
+	})
 	let editor: ReturnType<typeof createEditor>
 	export const initEditor = (el: HTMLDivElement) => {
 		editor = createEditor(

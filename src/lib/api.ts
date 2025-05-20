@@ -22,7 +22,7 @@ export class API {
 		data?: unknown,
 		headers: Record<string, string> = {}
 	): Promise<T> {
-		console.debug(`-> ${method} ${this.#baseURL}/${endpoint}`, data ?? '')
+		//console.debug(`-> ${method} ${this.#baseURL}/${endpoint}`, data ?? '')
 
 		const res = await this.#fetchFunc(`${this.#baseURL}/${endpoint}`, {
 			method,
@@ -34,11 +34,11 @@ export class API {
 			body: data ? JSON.stringify(data) : undefined
 		})
 
-		console.log(res)
-
 		if (!res.ok) {
 			throw new Error(`API Error: ${res.status} ${res.statusText} ${await res.text()}`)
 		}
+
+		console.log(res)
 
 		return res.json() as Promise<T>
 	}

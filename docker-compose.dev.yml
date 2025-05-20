@@ -39,7 +39,7 @@ services:
       GKE_REGION: europe-west3
     # mark as healthy only when the port forwards are established
     healthcheck:
-      test: ["CMD", "sh", "-c", "curl http://localhost:8081 && curl http://localhost:8082"]
+      test: ['CMD', 'sh', '-c', 'curl http://localhost:8081 && curl http://localhost:8082']
       interval: 30s
       timeout: 30s
       retries: 10

@@ -10,11 +10,12 @@
 	import IconPlay from '~icons/material-symbols/play-arrow-outline-rounded'
 	import IconCopy from '~icons/mdi/content-copy'
 	import { createExecution } from '$lib/utils/execution'
-	import { selected } from '$lib/stores/canvas.svelte'
+	import { selected } from '$lib/stores/panel.svelte'
 	import PanelItem from '../../PanelItem.svelte'
 	import PayloadDialog from './PayloadDialog.svelte'
 	import ComboBox from '$lib/components/atoms/ComboBox.svelte'
 	import { page } from '$app/state'
+	import { blur } from 'svelte/transition'
 
 	let payload = $state(selected.payload || '{\n\t"msg": "hello world"\n}')
 	let result = $state('')
@@ -22,6 +23,11 @@
 	let payloadDialog = $state<HTMLDialogElement>()
 
 	let isRunning = $state(false)
+	let executionState = $state('')
+	const formattedExecutionState = $derived.by(() => {
+		const state = executionState.split('_').join(' ')
+		return state.substring(0, 1).toUpperCase() + state.substring(1)
+	})
 
 	const run = async () => {
 		if (!selected.node) {
@@ -52,6 +58,7 @@
 				cache: false
 			})
 			console.log('stream', stream)
+			executionState = 'Starting execution'
 
 			const extractErrorMessage = (msg: string): string => {
 				let data: ExecutionTraceData
@@ -137,6 +144,8 @@
 			for (const [event, handler] of Object.entries(eventHandlers))
 				stream.select(event).subscribe(msg => {
 					if (!msg) return
+					console.log('got event', event)
+					if (!['close', 'ping'].includes(event)) executionState = event
 					return handler(msg)
 				})
 		} catch (e) {
@@ -231,19 +240,45 @@
 				{#if isRunning}
 					<div
 						class={[
-							'bg-main-700 h-full min-h-16 w-full animate-pulse rounded-md transition-all',
-							!isRunning ? 'opacity-100' : 'opacity-0'
+							'h-full min-h-16 w-full rounded-md transition-all',
+							'opacity-100 starting:opacity-0',
+							'flex items-center justify-center',
+							'absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2'
 						]}
-					></div>
-				{:else if result}
-					<LightEditor
-						readOnly={true}
-						wordWrap={true}
-						language="json"
-						bind:value={result}
-						class="text-sm"
-					/>
+						out:blur={{
+							duration: 400,
+							opacity: 0,
+							amount: 3
+						}}
+					>
+						{#key executionState}
+							<span
+								class={[
+									'text-main-200 h-fit w-fit truncate text-center',
+									'bg-main-950/20 animate-border rounded px-4 py-2',
+									'absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2'
+								]}
+								transition:blur={{
+									duration: 800,
+									opacity: 0,
+									amount: 5
+								}}
+							>
+								{formattedExecutionState}
+							</span>
+						{/key}
+					</div>
 				{/if}
+				<LightEditor
+					readOnly={true}
+					wordWrap={true}
+					language="json"
+					bind:value={result}
+					class={[
+						'text-sm transition-all duration-300',
+						isRunning ? 'blur-xs grayscale-75' : 'blur-[0px] grayscale-0'
+					]}
+				/>
 			</div>
 		</div>
 

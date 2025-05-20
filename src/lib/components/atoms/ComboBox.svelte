@@ -125,7 +125,7 @@
 			</Combobox.ScrollUpButton>
 
 			<Combobox.Viewport>
-				{#each filteredItems as item, i (item.value)}
+				{#each filteredItems as item, _i (item.value)}
 					<Combobox.Item
 						class="rounded-button data-highlighted:bg-main-850 flex h-10 w-full items-center py-3 pr-1.5 pl-5 text-sm outline-hidden select-none hover:cursor-pointer data-highlighted:rounded"
 						value={item.value}

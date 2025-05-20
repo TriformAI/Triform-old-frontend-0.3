@@ -3,16 +3,16 @@
 	import Editor from '$lib/components/atoms/Editor.svelte'
 	import LightEditor from '$lib/components/atoms/LightEditor.svelte'
 	import Tabs from '$lib/components/atoms/Tabs.svelte'
-	import { selected, isAction } from '$lib/stores/canvas.svelte'
+	import { selected } from '$lib/stores/panel.svelte'
 	import Button from '$lib/components/atoms/Button.svelte'
-	import { nodes, setIsDirty } from '$lib/stores/canvas.svelte'
 	import type { Action } from '$lib/types/agent'
-	import { onDestroy, untrack } from 'svelte'
+	import { onDestroy } from 'svelte'
 	import { toast } from 'svelte-sonner'
 	import compare from 'just-compare'
 	import pick from 'just-pick'
 	import { clone } from '$lib/utils/clone'
 	import PanelItem from '../PanelItem.svelte'
+	import { getNodes, isAction } from '$lib/stores/canvas.svelte'
 	import { inProgressComponents } from '$lib/stores/builder.svelte'
 	import { blur } from 'svelte/transition'
 
@@ -39,10 +39,13 @@
 	const dataIsDirty = $derived(selected.isDirty || !compare(initialData, formData))
 
 	function setFormdata() {
-		if (!nodeId) return
-		const spec = nodes[nodeId].data.trinode.spec as Action
+		const node = selected.node
 
-		initialData = pick(spec.spec, ['source', 'readme', 'deps'])
+		if (!node || !isAction(node.data.trinode)) {
+			return
+		}
+
+		initialData = pick(node.data.trinode.spec.spec, ['source', 'readme', 'deps'])
 		formData = clone(initialData)
 	}
 
@@ -69,32 +72,34 @@
 	})
 
 	function updateData(isDirty: boolean) {
-		if (!nodeId) return
-		// Save current state to node when panel is closing
-		setIsDirty(nodeId, isDirty)
-		const spec = nodes[nodeId].data.trinode.spec.spec
+		const node = getNodes().find(n => n.id === selected.node.id)
+		if (!node) {
+			return
+		}
 
-		nodes[nodeId].data.trinode.spec.spec = {
+		const spec = node.data.trinode.spec.spec
+		node.data.trinode.spec.spec = {
 			...spec,
 			...formData
 		}
+		node.data.props.isDirty = isDirty
 	}
 
 	onDestroy(() => {
 		updateData(dataIsDirty)
 	})
 
-	const publishComponent = async () => {
+	const updateComponent = async () => {
 		if (!nodeId) {
 			return
 		}
 
-		const payload = clone(nodes[nodeId].data.trinode.spec)
+		const payload = clone(selected.node.data.trinode.spec)
 		payload.spec = { ...payload.spec, ...formData }
 
 		try {
 			const _result = await api.put<Action>(
-				`components/${nodes[nodeId].data.trinode.spec.meta.id}`,
+				`components/${selected.node.data.trinode.spec.meta.id}`,
 				payload
 			)
 
@@ -121,7 +126,7 @@
 		}))
 	})
 
-	const componentId = $derived(nodes[nodeId].data.trinode.spec.meta.id)
+	const componentId = $derived(selected.node.data.trinode.spec.meta.id)
 	const isBuilding = $derived(componentId in inProgressComponents)
 </script>
 
@@ -134,7 +139,7 @@
 				isBuilding && 'opacity-50 grayscale-75'
 			]}
 		>
-			{#each Object.entries(formData) as [key, value], idx (key)}
+			{#each Object.entries(formData) as [key, _value], idx (key)}
 				{@const language = filenames[key as FileType].split('.').pop() as 'py' | 'md' | 'txt'}
 				{#if language === 'py'}
 					<Editor
@@ -187,7 +192,7 @@
 		<Button
 			class="ms-auto"
 			type="button"
-			onClick={publishComponent}
+			onClick={updateComponent}
 			autoLoad="promise"
 			disabled={!dataIsDirty || isBuilding}
 			variation="vibrant"

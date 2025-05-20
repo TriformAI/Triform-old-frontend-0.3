@@ -9,11 +9,18 @@
 		id: Uuid
 		body: Snippet
 		showTargetHandle?: boolean
+		showSourceHandle?: boolean
 		invisibleHandles?: Array<'source' | 'target'>
 	}
 
 	const props: Props = $props()
-	const { id, body, showTargetHandle = true, invisibleHandles = [] } = $derived(props)
+	const {
+		id,
+		body,
+		showTargetHandle = true,
+		showSourceHandle = true,
+		invisibleHandles = []
+	} = $derived(props)
 </script>
 
 <div class="group/container relative h-full w-full">
@@ -28,10 +35,12 @@
 
 	{@render body()}
 
-	<CustomHandle
-		{id}
-		type="source"
-		position={Position.Bottom}
-		class={[invisibleHandles.includes('source') ? 'pointer-events-none invisible' : '']}
-	/>
+	{#if showSourceHandle}
+		<CustomHandle
+			{id}
+			type="source"
+			position={Position.Bottom}
+			class={[invisibleHandles.includes('source') ? 'pointer-events-none invisible' : '']}
+		/>
+	{/if}
 </div>

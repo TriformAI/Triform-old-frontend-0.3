@@ -35,7 +35,7 @@
 
 <button
 	type="button"
-	class="hover:bg-main-500 bg-main-600 my-auto h-10 cursor-ew-resize rounded-full border-0 transition-all hover:h-20"
+	class="hover:bg-main-500 bg-main-600 row-span-2 my-auto h-10 cursor-ew-resize rounded-full border-0 transition-all hover:h-20"
 	onmousedown={handleResize}
 	role="slider"
 	aria-orientation="horizontal"

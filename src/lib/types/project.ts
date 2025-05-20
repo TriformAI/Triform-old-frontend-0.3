@@ -14,12 +14,8 @@ export interface Project {
 		intention: Intention
 	}
 	spec: {
-		modifiers?: {
-			[k: string]: Uuid[]
-		}
-		nodes: {
-			[k: Uuid]: Node
-		}
+		modifiers?: Record<string, Uuid[]>
+		nodes: Record<Uuid, Node>
 	}
 }
 

@@ -1,0 +1,28 @@
+<script lang="ts">
+	import { Position } from '@xyflow/svelte'
+	import IconArrow from '~icons/material-symbols/arrow-downward-alt'
+	import CustomHandle from '$lib/components/custom-nodes/handles/CustomHandle.svelte'
+	import { page } from '$app/state'
+
+	const props = $props()
+
+	const parentUrl = $derived.by(() => {
+		return `/project/${page.params.id.split('/').slice(0, -1).join('/')}`
+	})
+</script>
+
+<div class="relative grid size-20 items-end justify-center pb-1 transition-all">
+	<a href={parentUrl}>
+		<div class="border-accent-300 grid size-12 place-items-center rounded-full border">
+			<IconArrow class="text-accent-400 size-6" />
+		</div>
+	</a>
+
+	<CustomHandle
+		--node-color="var(--color-accent-300)"
+		class="mx-auto -translate-y-3.5"
+		id={props.id}
+		type="source"
+		position={Position.Bottom}
+	/>
+</div>

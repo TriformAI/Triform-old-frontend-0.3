@@ -1,15 +1,14 @@
 <script lang="ts">
 	import type { Variable } from '$lib/types/project'
 	import { page } from '$app/state'
-
+	import { confirmStore } from '$lib/stores/confirm.svelte'
 	import IconDetach from '~icons/mdi/link-variant-off'
 	import IconExpand from '~icons/material-symbols/expand-all-rounded'
 	import IconCollapse from '~icons/material-symbols/collapse-all-rounded'
 	import { toast } from 'svelte-sonner'
 	import { invalidate } from '$app/navigation'
-	import { confirmStore } from '$lib/stores/confirm.svelte'
 	import { API } from '$lib/api'
-	import { selected } from '$lib/stores/canvas.svelte'
+	import { getNodePath } from '$lib/stores/canvas.svelte'
 	import { Collapsible } from 'bits-ui'
 
 	let { variable, onEdit }: { variable: Variable; onEdit: () => void } = $props()
@@ -18,7 +17,7 @@
 	let isExpanded = $state(false)
 
 	const projectId = page.data.project?.meta.id
-	const nodePath = selected.node?.data.path.join('/')
+	const nodePath = getNodePath()
 
 	async function handleDetach() {
 		const confirmed = await confirmStore.show({

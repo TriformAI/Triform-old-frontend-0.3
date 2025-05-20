@@ -37,6 +37,7 @@ export async function POST({ request, locals }) {
 	return produce(async function start({ emit, lock }) {
 		const msgHandler = (evt: Event) => {
 			const msg = evt as CustomEvent<ServerSentEventMessage>
+			console.log('got execution msg', msg.detail.event, msg.detail.data)
 			emit(
 				msg.detail.event as ExecutionTraceEvent,
 				msg.detail.data! // ExecutionTraceData stringified

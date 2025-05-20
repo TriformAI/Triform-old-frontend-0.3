@@ -1,17 +1,17 @@
 <script lang="ts">
-	import { page } from '$app/state'
 	import Navbar from '$lib/components/Navbar.svelte'
+	import BreadCrumbs from '$lib/components/canvas/Breadcrumbs.svelte'
 	import 'balloon-css'
 
 	const { children } = $props()
-
-	const hideOverflow = $derived(page.url.pathname.startsWith('/project') && page.params.id) // On a project page
 </script>
 
 <div class="grid h-dvh grid-rows-[auto_1fr]">
-	<Navbar />
+	<Navbar>
+		<BreadCrumbs />
+	</Navbar>
 
-	<main class={[hideOverflow && 'overflow-hidden']}>
+	<main class="overflow-hidden">
 		{@render children()}
 	</main>
 </div>
