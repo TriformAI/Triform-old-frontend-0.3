@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { getBreadcrumbs } from '$lib/stores/canvas.svelte'
 	import { page } from '$app/state'
-
+	import { fly } from 'svelte/transition'
 	const projectUrl = $derived(`/project/${page.data.project?.meta.id}`)
 
 	const breadcrumbs = $derived.by(() => {
@@ -27,10 +27,10 @@
 
 {#if breadcrumbs}
 	<ul class="flex gap-2 font-medium">
-		{#each breadcrumbs as { path, name }, idx}
-			<li>
+		{#each breadcrumbs as { path, name }, idx (path)}
+			<li in:fly={{ duration: 300, opacity: 0, x: -5 }}>
 				{#if idx === breadcrumbs.length - 1}
-					<span class="">
+					<span>
 						{name}
 					</span>
 				{:else}
@@ -42,7 +42,7 @@
 					</a>
 				{/if}
 				{#if idx < breadcrumbs.length - 1}
-					<span class="text-main-600 px-1 transition">›</span>
+					<span class="text-main-600 px-1 transition starting:opacity-0">›</span>
 				{/if}
 			</li>
 		{/each}
