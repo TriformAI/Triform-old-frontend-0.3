@@ -37,12 +37,12 @@ export const getLayoutedNodes = async (nodes: Node[], edges: Edge[]) => {
 		disableOptimalOrderHeuristic: true
 	})
 
-	const layoutedNodes = nodes.map(node => {
+	nodes.forEach(node => {
 		const positionedNode = graph.node(node.id)
 		node.targetPosition = Position.Top
 		node.sourcePosition = Position.Bottom
 		// svelte flow anchors at top-left, but dagre at center, so we need to update the position to match
-		return Object.assign(node, {
+		Object.assign(node, {
 			position: {
 				x: positionedNode.x - NODE_SIZE / 2,
 				y: positionedNode.y - NODE_SIZE / 2
@@ -51,19 +51,18 @@ export const getLayoutedNodes = async (nodes: Node[], edges: Edge[]) => {
 	})
 
 	// Center the nodes on the canvas
-	const maxX = Math.max(...layoutedNodes.map(n => n.position.x))
-	const maxY = Math.max(...layoutedNodes.map(n => n.position.y))
-	const minX = Math.min(...layoutedNodes.map(n => n.position.x))
-	const minY = Math.min(...layoutedNodes.map(n => n.position.y))
+	const maxX = Math.max(...nodes.map(n => n.position.x))
+	const maxY = Math.max(...nodes.map(n => n.position.y))
+	const minX = Math.min(...nodes.map(n => n.position.x))
+	const minY = Math.min(...nodes.map(n => n.position.y))
 
 	const centerX = (maxX + minX) / 2
 	const centerY = (maxY + minY) / 2
 
-	layoutedNodes.forEach(node => {
+	nodes.forEach(node => {
 		node.position.x -= centerX
 		node.position.y -= centerY
 	})
 
-	// Fit the groups
-	return layoutedNodes
+	return nodes
 }

@@ -177,32 +177,26 @@ function addParentFlowNode(nodes: Node[], edges: Edge[], id?: Uuid) {
 	const newId = id ?? crypto.randomUUID()
 	for (const item of nodes) {
 		if (item.data.trinode.inputs?.[0] === 'parent') {
-			edges = [
-				...edges,
-				{
-					id: `${newId}:${item.id}`,
-					source: newId,
-					type: 'default',
-					target: item.id,
-					data: {
-						props: {
-							deleted: false
-						}
+			edges.push({
+				id: `${newId}:${item.id}`,
+				source: newId,
+				type: 'default',
+				target: item.id,
+				data: {
+					props: {
+						deleted: false
 					}
 				}
-			]
+			})
 		}
 	}
 
-	nodes = [
-		...nodes,
-		{
-			id: newId,
-			draggable: false,
-			type: 'parent-node',
-			position: { x: 0, y: 0 }
-		}
-	]
+	nodes.push({
+		id: newId,
+		draggable: false,
+		type: 'parent-node',
+		position: { x: 0, y: 0 }
+	})
 
 	return { nodes, edges }
 }
