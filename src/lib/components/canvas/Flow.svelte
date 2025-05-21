@@ -61,13 +61,13 @@
 
 	let isGoingDeeper = $state(false)
 
-	// Save selected node to localStorage when selection changes
+	// Add or remove from url hash when selection changes
 	useOnSelectionChange(({ nodes }) => {
 		if (nodes.length === 0) {
-			localStorage.removeItem('selectedNode')
+			history.replaceState(null, '', location.pathname + location.search)
 			return
 		} else if (nodes.length === 1) {
-			localStorage.setItem('selectedNode', nodes[0].id)
+			window.location.hash = nodes[0].id
 		}
 	})
 

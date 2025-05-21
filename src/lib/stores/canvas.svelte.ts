@@ -81,9 +81,9 @@ export async function initFlow(project: Project) {
 	edgesStore = flow.edges
 }
 
-// Get selected node from local storage, if any, and set as selected
+// Get selected node from url hash, if any, and set as selected
 function setSelected(nodes: Node[]) {
-	const selectedNodeId = localStorage.getItem('selectedNode')
+	const selectedNodeId = window.location.hash.replace('#', '')
 	if (!selectedNodeId) return nodes
 
 	return nodes.map(node => {
