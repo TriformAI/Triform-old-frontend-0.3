@@ -71,11 +71,27 @@ export async function initFlow(project: Project) {
 	// Add data from local storage (open panels & payload)
 	nodes = addPersistedDataToNodes(nodes)
 
+	// Set selected node from local storage
+	nodes = setSelected(nodes)
+
 	// Add the parent node (for visualisation)
 	const flow = addParentFlowNode(nodes, edges, currentFlow?.component_id)
 
 	nodesStore = await getLayoutedNodes(flow.nodes, flow.edges)
 	edgesStore = flow.edges
+}
+
+// Get selected node from local storage, if any, and set as selected
+function setSelected(nodes: Node[]) {
+	const selectedNodeId = localStorage.getItem('selectedNode')
+	if (!selectedNodeId) return nodes
+
+	return nodes.map(node => {
+		if (node.id === selectedNodeId) {
+			node.selected = true
+		}
+		return node
+	})
 }
 
 // Get nodes from project

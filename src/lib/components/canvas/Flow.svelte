@@ -26,6 +26,7 @@
 		SvelteFlow,
 		useSvelteFlow as svelteFlowHook,
 		useUpdateNodeInternals,
+		useOnSelectionChange,
 		type EdgeTypes
 	} from '@xyflow/svelte'
 	import '@xyflow/svelte/dist/style.css'
@@ -59,6 +60,16 @@
 	const flowIsEmpty = $derived(!getNodes().length)
 
 	let isGoingDeeper = $state(false)
+
+	// Save selected node to localStorage when selection changes
+	useOnSelectionChange(({ nodes }) => {
+		if (nodes.length === 0) {
+			localStorage.removeItem('selectedNode')
+			return
+		} else if (nodes.length === 1) {
+			localStorage.setItem('selectedNode', nodes[0].id)
+		}
+	})
 
 	onNavigate(async (navigation: OnNavigate) => {
 		if (!navigation.to || !navigation.from) return
