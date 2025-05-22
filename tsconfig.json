@@ -11,7 +11,8 @@
 		"strict": true,
 		"moduleResolution": "bundler",
 		"types": ["unplugin-icons/types/svelte", "fetch-event-stream/types"]
-	}
+	},
+	"exclude": ["node_modules"]
 	// Path aliases are handled by https://kit.svelte.dev/docs/configuration#alias
 	// except $lib which is handled by https://kit.svelte.dev/docs/configuration#files
 	//
