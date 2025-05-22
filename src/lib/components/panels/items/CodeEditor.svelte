@@ -22,6 +22,9 @@
 
 	const api = new API()
 
+	const nodeId = $derived(selected.node?.id ?? getCurrentFlowId())
+	const node = $derived(getNodes().find(n => n.id === nodeId))
+
 	interface FormData {
 		source: string
 		readme: string
@@ -73,20 +76,17 @@
 	})
 
 	function updateData(isDirty: boolean) {
-		const node = getNodes().find(n => n.id === selected.node.id)
-		if (!node || !node.data) {
+		if (!node || !node.data || !node.data.trinode || !componentData) {
 			return
 		}
 
-		node.data.trinode.spec = {
-			...node.data.trinode.spec,
-			...formData
-		}
+		const meta = componentData.meta
+		node.data.trinode.spec.meta = { ...meta, ...formData }
 		node.data.props.isDirty = isDirty
 	}
 
 	onDestroy(() => {
-		updateData(dataIsDirty)
+		//updateData(dataIsDirty)
 	})
 
 	const updateComponent = async () => {

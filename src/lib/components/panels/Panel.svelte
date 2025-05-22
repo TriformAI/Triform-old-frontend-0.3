@@ -42,45 +42,43 @@
 	const desc = $derived(componentData.meta.intention?.purpose)
 </script>
 
-{#key componentData?.meta.id}
-	<div class="overflow-x-hidden">
-		<div class="border-b-main-800 mb-2 border-b px-3 pb-4">
-			<div class="flex items-center gap-4">
-				<h2 class="flex items-center gap-2 truncate text-lg font-semibold">
-					{#if Icon}
-						<Icon class="size-5" />
-					{/if}
-					<span class="truncate">{title}</span>
-				</h2>
+<div class="overflow-x-hidden">
+	<div class="border-b-main-800 mb-2 border-b px-3 pb-4">
+		<div class="flex items-center gap-4">
+			<h2 class="flex items-center gap-2 truncate text-lg font-semibold">
+				{#if Icon}
+					<Icon class="size-5" />
+				{/if}
+				<span class="truncate">{title}</span>
+			</h2>
 
-				<ul class="ms-auto flex items-center gap-1">
-					{#each actions as action}
-						<li>
-							<button
-								aria-label={action.label}
-								data-balloon-pos="down"
-								onclick={() => handleActionClick(action.onClick)}
-								class={[
-									'rounded p-1 transition-colors',
-									action.isDangerous
-										? 'list-btn--danger hover:bg-danger-600/25'
-										: 'hover:bg-main-700 text-main-400 hover:text-main-200'
-								]}
-							>
-								<action.icon class="size-5" />
-							</button>
-						</li>
-					{/each}
-				</ul>
-			</div>
-
-			{#if desc}
-				<p class="text-main-400 mt-1 line-clamp-2">{desc}</p>
-			{/if}
+			<ul class="ms-auto flex items-center gap-1">
+				{#each actions as action}
+					<li>
+						<button
+							aria-label={action.label}
+							data-balloon-pos="down"
+							onclick={() => handleActionClick(action.onClick)}
+							class={[
+								'rounded p-1 transition-colors',
+								action.isDangerous
+									? 'list-btn--danger hover:bg-danger-600/25'
+									: 'hover:bg-main-700 text-main-400 hover:text-main-200'
+							]}
+						>
+							<action.icon class="size-5" />
+						</button>
+					</li>
+				{/each}
+			</ul>
 		</div>
 
-		<div class="divide-main-800 grid divide-y">
-			{@render panels({ CodeEditor, Execute, Metadata, ProjectSettings, Variables })}
-		</div>
+		{#if desc}
+			<p class="text-main-400 mt-1 line-clamp-2">{desc}</p>
+		{/if}
 	</div>
-{/key}
+
+	<div class="divide-main-800 grid divide-y">
+		{@render panels({ CodeEditor, Execute, Metadata, ProjectSettings, Variables })}
+	</div>
+</div>

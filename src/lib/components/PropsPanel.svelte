@@ -16,6 +16,8 @@
 		return undefined
 	})
 
+	$inspect('PropsPanel', componentData)
+
 	const nodeType = $derived.by(() => {
 		const type = selected.node?.type
 		if (!type) return
@@ -31,14 +33,16 @@
 	const NodeComponent = $derived(nodeComponents[nodeType as keyof typeof nodeComponents])
 </script>
 
-<div class="bg-main-950/60 row-span-2 overflow-y-auto py-4">
-	{#if selected.isMultiple}
-		<p class="mx-3">Multiple nodes selected</p>
-	{:else if NodeComponent}
-		<NodeComponent componentData={componentData!} />
-	{:else if getCurrentFlow()}
-		<Flow componentData={componentData!} />
-	{:else}
-		<Project />
-	{/if}
-</div>
+{#key componentData}
+	<div class="bg-main-950/60 row-span-2 overflow-y-auto py-4">
+		{#if selected.isMultiple}
+			<p class="mx-3">Multiple nodes selected</p>
+		{:else if NodeComponent}
+			<NodeComponent componentData={componentData!} />
+		{:else if getCurrentFlow()}
+			<Flow componentData={componentData!} />
+		{:else}
+			<Project />
+		{/if}
+	</div>
+{/key}

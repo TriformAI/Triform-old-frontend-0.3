@@ -53,7 +53,7 @@
 	}
 
 	onDestroy(() => {
-		updateData()
+		//updateData()
 	})
 
 	let isLoading = $state(false)

@@ -33,7 +33,7 @@
 
 	const api = new API()
 
-	const nodeId = $derived(selected.node?.id || getCurrentFlowId())
+	const nodeId = $derived(selected.node?.id ?? getCurrentFlowId())
 	const node = $derived(getNodes().find(n => n.id === nodeId))
 
 	interface FormData {
@@ -44,8 +44,6 @@
 			output: string
 		}
 	}
-
-	$inspect(componentData)
 
 	let initialData = $state<FormData>()!
 	let formData = $state<FormData>()!
@@ -74,11 +72,11 @@
 	setFormdata()
 
 	function updateData(isDirty: boolean) {
-		if (!node || !node.data) {
+		console.log({ nodeId })
+
+		if (!node || !node.data || !node.data.trinode || !componentData) {
 			return
 		}
-
-		console.log('updateData', isDirty)
 
 		const meta = componentData.meta
 		node.data.trinode.spec.meta = { ...meta, ...formData }
@@ -86,7 +84,7 @@
 	}
 
 	onDestroy(() => {
-		updateData(dataIsDirty)
+		//updateData(dataIsDirty)
 	})
 
 	let isLoading = $state(false)
@@ -99,6 +97,7 @@
 
 		let payload = clone(componentData)
 		payload.meta = { ...payload.meta, ...formData }
+		console.log(payload)
 
 		try {
 			const result = await api.put<Action>(`components/${componentData.meta.id}`, payload)
