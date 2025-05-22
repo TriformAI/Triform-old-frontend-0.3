@@ -11,8 +11,6 @@ export const isValidConnection: AddParameters<
 > = (connection, _useSvelteFlow) => {
 	// no self-loops
 	if (connection.target === connection.source) return false
-	// always allow connections to the output handle in flows
-	if (connection.targetHandle?.endsWith(':output')) return true
 	// prevent cycles with union find
 	const { getNodes, getEdges } = _useSvelteFlow
 	const nodes = getNodes()
