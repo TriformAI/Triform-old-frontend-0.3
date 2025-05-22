@@ -28,7 +28,7 @@
 </script>
 
 <svelte:head>
-	<title>{data.project.meta.name} | Triform</title>
+	<title>{data.project?.meta?.name || 'Project'} | Triform</title>
 </svelte:head>
 
 <SvelteFlowProvider>
