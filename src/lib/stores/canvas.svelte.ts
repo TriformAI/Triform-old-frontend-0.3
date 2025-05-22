@@ -278,6 +278,17 @@ export async function deleteNode(id: Uuid) {
 	await invalidateAll()
 }
 
+export const addEdge = async (target: Node, source: Uuid | 'parent') => {
+	if (!currentFlow) throw new Error('No flow found')
+	const node = target.data.trinode
+	if (!node.inputs) node.inputs = []
+	node.inputs.push(source)
+	currentFlow.spec.spec.nodes[target.id] = node
+	if (isRootLevel) await saveProject(page.data.project!)
+	else await updateComponent(currentFlow.spec)
+	await invalidateAll()
+}
+
 export const deleteEdge = async (edgeId: Edge['id']) => {
 	if (!currentFlow) throw new Error('No flow found')
 	const edge = edgesStore.find(e => e.id === edgeId)
