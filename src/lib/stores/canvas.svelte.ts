@@ -15,6 +15,7 @@ import { page } from '$app/state'
 import { getLayoutedNodes } from '$lib/components/canvas/layout.svelte'
 import { clone } from '$lib/utils/clone'
 import { selected } from '$lib/stores/panel.svelte'
+import { getLeafNodes } from '$lib/utils/getLeafNodes'
 
 let nodesStore = $state<Node[]>([])
 let edgesStore = $state<Edge[]>([])
@@ -217,6 +218,11 @@ function addParentFlowNode(nodes: Node[], edges: Edge[], id?: Uuid) {
 	return { nodes, edges }
 }
 
+const onFlowUpdate = (flow: Flow) => {
+	const leafNodes = getLeafNodes(flow)
+	flow.spec.outputs = Object.keys(leafNodes) as Uuid[]
+}
+
 export async function addNode(type: 'action' | 'flow', sourceId?: Uuid | 'parent') {
 	const project = page.data.project
 
@@ -246,6 +252,10 @@ export async function addNode(type: 'action' | 'flow', sourceId?: Uuid | 'parent
 	else if (currentFlow) {
 		const updatedFlow = clone(currentFlow) as typeof currentFlow
 		updatedFlow.spec.spec.nodes[newNodeId] = newNode
+
+		console.log(updatedFlow.spec)
+		onFlowUpdate(updatedFlow.spec)
+
 		await updateComponent(updatedFlow.spec)
 	}
 
@@ -269,6 +279,7 @@ export async function deleteNode(id: Uuid) {
 	// Delete node from flow
 	else if (currentFlow) {
 		delete currentFlow.spec.spec.nodes[id]
+		onFlowUpdate(currentFlow.spec)
 		await updateComponent(currentFlow.spec)
 	}
 
