@@ -4,8 +4,17 @@
 	import Action from '$lib/components/panels/Action.svelte'
 	import Flow from '$lib/components/panels/Flow.svelte'
 	import Endpoint from '$lib/components/panels/Endpoint.svelte'
-	import { page } from '$app/state'
 	import { getCurrentFlow } from '$lib/stores/canvas.svelte'
+
+	const componentData = $derived.by(() => {
+		if (selected.node && selected.node.data && selected.node.data.trinode) {
+			return selected.node.data.trinode.spec
+		} else if (getCurrentFlow()) {
+			return getCurrentFlow()!.spec
+		}
+
+		return undefined
+	})
 
 	const nodeType = $derived.by(() => {
 		const type = selected.node?.type
@@ -26,12 +35,9 @@
 	{#if selected.isMultiple}
 		<p class="mx-3">Multiple nodes selected</p>
 	{:else if NodeComponent}
-		<NodeComponent />
+		<NodeComponent componentData={componentData!} />
 	{:else if getCurrentFlow()}
-		<div class="px-3">
-			<p class="mb-2 text-lg">Current flow</p>
-			<p class="text-main-400">More props here soon</p>
-		</div>
+		<Flow componentData={componentData!} />
 	{:else}
 		<Project />
 	{/if}

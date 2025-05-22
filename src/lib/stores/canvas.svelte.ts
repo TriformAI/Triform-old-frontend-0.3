@@ -2,7 +2,8 @@ import type {
 	Node as TriNode, // as to not conflict with Node (used for @xyflow/svelte)
 	Flow,
 	Action,
-	Uuid
+	Uuid,
+	Component
 } from '$lib/types/agent'
 import { getActionModel, getFlowModel } from '$lib/nodeModels'
 import type { Project } from '$lib/types/project'
@@ -52,20 +53,22 @@ const currentFlow = $derived.by(() => {
 })
 
 export const getCurrentFlow = () => currentFlow
+export const getCurrentFlowId = () => currentFlowId
 
-export const isEndpoint = (node: TriNode): node is TriNode & { spec: Action } =>
-	node.spec.resource === 'endpoint/v1'
-export const isAction = (node: TriNode): node is TriNode & { spec: Action } =>
-	node.spec.resource === 'action/v1'
-export const isFlow = (node: TriNode): node is TriNode & { spec: Flow } =>
-	node.spec.resource === 'flow/v1'
+export const isEndpoint = (component: Component): component is Action =>
+	component.resource === 'endpoint/v1'
+export const isAction = (component: Component): component is Action =>
+	component.resource === 'action/v1'
+export const isFlow = (component: Component): component is Flow => component.resource === 'flow/v1'
 
 // Initialize the nodes on project or flow level
 export async function initFlow(project: Project) {
 	console.log('loading flow', project)
+	console.time('initFlow')
 
 	// Get nodes from project or current flow
 	const triNodes = currentFlow ? currentFlow.spec.spec.nodes : project.spec.nodes
+	console.log({ triNodes })
 
 	// Turn trinodes into Svelteflow nodes and edges
 	// eslint-disable-next-line prefer-const
@@ -74,7 +77,7 @@ export async function initFlow(project: Project) {
 	// Add data from local storage (open panels & payload)
 	nodes = addPersistedDataToNodes(nodes)
 
-	// Set selected node from local storage
+	// Set selected node from url hash
 	nodes = setSelected(nodes)
 
 	if (currentFlow && !isRootLevel) {
@@ -113,11 +116,11 @@ function setSelected(nodes: Node[]) {
 export function parseNodes(nodes: Record<Uuid, TriNode>) {
 	function getNode(node: TriNode, id: Uuid): Node {
 		let type: Node['type']
-		if (isAction(node)) {
+		if (isAction(node.spec)) {
 			type = 'action-node'
-		} else if (isFlow(node)) {
+		} else if (isFlow(node.spec)) {
 			type = 'flow-node'
-		} else if (isEndpoint(node)) {
+		} else if (isEndpoint(node.spec)) {
 			type = 'endpoint-node'
 		} else {
 			type = 'parent-node'
@@ -398,10 +401,13 @@ export const getNodePath = () => {
 	if (!breadcrumbs || !selected) {
 		return undefined
 	}
+	let path = getBreadcrumbs()
+		?.map(node => node.id)
+		.join('/')
 
-	return (
-		getBreadcrumbs()
-			?.map(node => node.id)
-			.join('/') + `/${selected.node.id}`
-	)
+	if (selected.node) {
+		path += `/${selected.node.id}`
+	}
+
+	return path
 }

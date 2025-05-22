@@ -12,19 +12,22 @@
 	import pick from 'just-pick'
 	import { clone } from '$lib/utils/clone'
 	import PanelItem from '../PanelItem.svelte'
-	import { getNodes, isAction } from '$lib/stores/canvas.svelte'
+	import { getCurrentFlowId, getNodes, isAction } from '$lib/stores/canvas.svelte'
 	import { inProgressComponents } from '$lib/stores/builder.svelte'
 	import { blur } from 'svelte/transition'
+	import { type Component } from '$lib/types/agent'
+	import { invalidate } from '$app/navigation'
+
+	const { componentData }: { componentData: Component } = $props()
 
 	const api = new API()
-
-	const nodeId = selected.node?.id
 
 	interface FormData {
 		source: string
 		readme: string
 		deps: string
 	}
+
 	const filenames = {
 		source: 'action.py',
 		readme: 'README.md',
@@ -34,18 +37,16 @@
 	type FileType = keyof typeof initialData
 
 	let initialData = $state<FormData>()!
-	let formData = $state<FormData>()!
+	let formData = $state<FormData>()
 
 	const dataIsDirty = $derived(selected.isDirty || !compare(initialData, formData))
 
 	function setFormdata() {
-		const node = selected.node
-
-		if (!node || !isAction(node.data.trinode)) {
+		if (!isAction(componentData)) {
 			return
 		}
 
-		initialData = pick(node.data.trinode.spec.spec, ['source', 'readme', 'deps'])
+		initialData = pick(componentData.spec, ['source', 'readme', 'deps'])
 		formData = clone(initialData)
 	}
 
@@ -73,13 +74,12 @@
 
 	function updateData(isDirty: boolean) {
 		const node = getNodes().find(n => n.id === selected.node.id)
-		if (!node) {
+		if (!node || !node.data) {
 			return
 		}
 
-		const spec = node.data.trinode.spec.spec
-		node.data.trinode.spec.spec = {
-			...spec,
+		node.data.trinode.spec = {
+			...node.data.trinode.spec,
 			...formData
 		}
 		node.data.props.isDirty = isDirty
@@ -90,22 +90,21 @@
 	})
 
 	const updateComponent = async () => {
+		const nodeId = selected.node?.id ?? getCurrentFlowId()
+
 		if (!nodeId) {
-			return
+			return toast.error('No node selected')
 		}
 
-		const payload = clone(selected.node.data.trinode.spec)
+		const payload = clone(componentData)
 		payload.spec = { ...payload.spec, ...formData }
 
 		try {
-			const _result = await api.put<Action>(
-				`components/${selected.node.data.trinode.spec.meta.id}`,
-				payload
-			)
+			const _result = await api.put<Action>(`components/${componentData.meta.id}`, payload)
 
 			// Reset original files to current files and set isDirty to false
 			updateData(false)
-			initialData = clone(formData)
+			invalidate('project')
 			toast.success('Component successfully published!')
 		} catch (e) {
 			console.error('Failed to publish component', e)
@@ -126,11 +125,11 @@
 		}))
 	})
 
-	const componentId = $derived(selected.node.data.trinode.spec.meta.id)
+	const componentId = $derived(componentData.meta.id)
 	const isBuilding = $derived(componentId in inProgressComponents)
 </script>
 
-<PanelItem title="Code">
+<PanelItem title="Code" {componentData}>
 	<div class="relative">
 		<Tabs {tabs} bind:activeTab />
 		<div
@@ -139,24 +138,26 @@
 				isBuilding && 'opacity-50 grayscale-75'
 			]}
 		>
-			{#each Object.entries(formData) as [key, _value], idx (key)}
-				{@const language = filenames[key as FileType].split('.').pop() as 'py' | 'md' | 'txt'}
-				{#if language === 'py'}
-					<Editor
-						bind:code={formData[key as FileType]}
-						class={`${idx === activeTab ? 'block' : 'hidden'} absolute h-full w-full rounded-md`}
-						readOnly={isBuilding}
-					/>
-				{:else}
-					<LightEditor
-						{language}
-						bind:value={formData[key as FileType]}
-						wordWrap={true}
-						class={`${idx === activeTab ? 'block' : 'hidden'} bg-main-800 absolute h-full w-full rounded-md ps-6 pt-2.5 text-sm`}
-						readOnly={isBuilding}
-					/>
-				{/if}
-			{/each}
+			{#if formData}
+				{#each Object.entries(formData) as [key, _value], idx (key)}
+					{@const language = filenames[key as FileType].split('.').pop() as 'py' | 'md' | 'txt'}
+					{#if language === 'py'}
+						<Editor
+							bind:code={formData[key as FileType]}
+							class={`${idx === activeTab ? 'block' : 'hidden'} absolute h-full w-full rounded-md`}
+							readOnly={isBuilding}
+						/>
+					{:else}
+						<LightEditor
+							{language}
+							bind:value={formData[key as FileType]}
+							wordWrap={true}
+							class={`${idx === activeTab ? 'block' : 'hidden'} bg-main-800 absolute h-full w-full rounded-md ps-6 pt-2.5 text-sm`}
+							readOnly={isBuilding}
+						/>
+					{/if}
+				{/each}
+			{/if}
 		</div>
 
 		{#if isBuilding}

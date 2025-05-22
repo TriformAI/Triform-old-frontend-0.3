@@ -27,6 +27,10 @@
 	import { isAction } from '$lib/stores/canvas.svelte'
 	import { toggleOpenPanelItem } from '$lib/stores/panel.svelte'
 
+	import { type Component } from '$lib/types/agent'
+	import { invalidate } from '$app/navigation'
+	const { componentData }: { componentData: Component } = $props()
+
 	const api = new API()
 
 	const nodeId = selected.node?.id
@@ -46,11 +50,11 @@
 	const dataIsDirty = $derived(selected.isDirty || !compare(formData, initialData))
 
 	function setFormdata() {
-		if (!selected.node) {
+		if (!componentData) {
 			return
 		}
 
-		const meta = selected.node.data.trinode.spec.meta
+		const meta = componentData.meta
 
 		initialData = {
 			name: meta.name,
@@ -68,11 +72,11 @@
 
 	function updateData(isDirty: boolean) {
 		const node = getNodes().find(n => n.id === selected.node?.id)
-		if (!node) {
+		if (!node || !node.data) {
 			return
 		}
 
-		const meta = node.data.trinode.spec.meta
+		const meta = componentData.meta
 		node.data.trinode.spec.meta = { ...meta, ...formData }
 		node.data.props.isDirty = isDirty
 	}
@@ -82,26 +86,21 @@
 	})
 
 	let isLoading = $state(false)
-	const isBuilding = $derived(selected.node.data.trinode.spec.meta.id in inProgressComponents)
+	const isBuilding = $derived(componentData.meta.id in inProgressComponents)
 
 	async function onSubmit(e: SubmitEvent) {
 		e.preventDefault()
 
-		if (!selected.node) {
-			return
-		}
-
 		isLoading = true
 
-		const payload = clone(selected.node.data.trinode.spec)
+		let payload = clone(componentData)
 		payload.meta = { ...payload.meta, ...formData }
 
 		try {
-			const result = await api.put<Action>(`components/${payload.meta.id}`, payload)
+			const result = await api.put<Action>(`components/${componentData.meta.id}`, payload)
 			toast.success('Metadata successfully updated!')
 			updateData(false)
-			initialData = clone(formData)
-			console.log(result)
+			invalidate('project')
 		} catch (error) {
 			toast.error('Failed to update metadata')
 			console.error(error)
@@ -115,8 +114,7 @@
 	const buildComponent = async () => {
 		// currently we only allow building actions
 		// this should never happen (for now) cause the button is disabled if the node is not an action
-		if (!isAction(selected.node.data.trinode))
-			return toast.error('Only actions can be built right now')
+		if (!isAction(componentData)) return toast.error('Only actions can be built right now')
 		// Make sure all the metadata is filled out
 		const missingFields = []
 		if (!formData.name) missingFields.push('name')
@@ -128,22 +126,21 @@
 
 		const confirmed = await confirmStore.show({
 			title: 'This will overwrite your current component',
-			message:
-				selected.node.type === 'action-node'
-					? 'Any code written in the action will be overwritten by the new component. Are you sure?'
-					: 'Any flows created within this flow will be overwritten by new components. Are you sure?'
+			message: componentData.resource.startsWith('action/')
+				? 'Any code written in the action will be overwritten by the new component. Are you sure?'
+				: 'Any flows created within this flow will be overwritten by new components. Are you sure?'
 		})
 
 		if (!confirmed) return
 
 		// make sure the code tab is open
-		if (!selected.openPanelItems.includes('Code')) {
+		if (!selected?.openPanelItems.includes('Code')) {
 			toggleOpenPanelItem(nodeId, 'Code')
 		}
 
-		const componentId = selected.node.data.trinode.spec.meta.id
+		const componentId = componentData.meta.id
 		// clone the component so we can modify it without affecting the original
-		const component = structuredClone($state.snapshot(selected.node.data.trinode.spec))
+		const component = structuredClone($state.snapshot(componentData))
 		inProgressComponents[componentId] = {
 			component,
 			message: 'Queuing build...'
@@ -151,14 +148,14 @@
 
 		let stream
 		try {
-			stream = source(`/api/components/${selected.node.data.trinode.spec.meta.id}/build`, {
+			stream = source(`/api/components/${componentId}/build`, {
 				options: {
 					body: JSON.stringify({
 						payload: {
 							component: {
-								resource: selected.node.data.trinode.spec.resource,
+								resource: componentData.resource,
 								meta: {
-									...selected.node.data.trinode.spec.meta,
+									...componentData.meta,
 									...formData
 								},
 								spec: {
@@ -189,7 +186,7 @@
 		}
 
 		inProgressComponents[componentId] = {
-			component: selected.node.data.trinode.spec,
+			component: componentData,
 			message: 'Build queued...'
 		}
 
@@ -265,7 +262,7 @@
 	}
 </script>
 
-<PanelItem title="Metadata">
+<PanelItem {componentData} title="Metadata">
 	<form method="POST" class="grid grid-cols-2 gap-3" onsubmit={onSubmit}>
 		<InputField
 			containerClass="col-span-2"
@@ -305,7 +302,7 @@
 			</p>
 
 			<div class="flex flex-row justify-end gap-x-4">
-				{#if selected.node.type === 'action-node'}
+				{#if componentData.resource.startsWith('action/')}
 					<Button variation="primary" type="button" onClick={buildComponent} isLoading={isBuilding}>
 						{#snippet icon()}
 							<IconMagic />

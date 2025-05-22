@@ -2,12 +2,14 @@
 	import InputField from '$lib/components/atoms/InputField.svelte'
 	import TextField from '$lib/components/atoms/TextField.svelte'
 	import Button from '$lib/components/atoms/Button.svelte'
-	import { page } from '$app/state'
 	import { toast } from 'svelte-sonner'
 	import { enhance } from '$app/forms'
 	import { clone } from '$lib/utils/clone'
 	import { onDestroy } from 'svelte'
 	import PanelItem from '../PanelItem.svelte'
+	import { type Component } from '$lib/types/agent'
+
+	const { componentData }: { componentData: Component } = $props()
 
 	interface FormData {
 		name: string
@@ -20,11 +22,11 @@
 	let formData = $state<FormData>()!
 
 	function setFormdata() {
-		const meta = page.data.project?.meta
+		const meta = componentData.meta
 
 		initialData = {
-			name: meta?.name ?? '',
-			intention: (meta?.intention as FormData['intention']) ?? {
+			name: meta.name,
+			intention: (meta.intention as FormData['intention']) ?? {
 				purpose: ''
 			}
 		}
@@ -34,17 +36,16 @@
 
 	setFormdata()
 
-	function updateNode() {
-		if (!page.data?.project) {
+	function updateData() {
+		if (!componentData) {
 			return
 		}
 		//setIsDirty(nodeId, dataIsDirty)
-		const meta = page.data.project.meta
-		page.data.project.meta = {
+		const meta = componentData.meta
+		componentData.meta = {
 			...meta,
 			...formData,
 			intention: {
-				// just to please typescript
 				...meta.intention,
 				...formData.intention
 			}
@@ -52,15 +53,15 @@
 	}
 
 	onDestroy(() => {
-		updateNode()
+		updateData()
 	})
 
 	let isLoading = $state(false)
 </script>
 
-<PanelItem title="Project Settings" forceOpen={true}>
+<PanelItem {componentData} title="Project Settings" forceOpen={true}>
 	<form
-		action={`/project/${page.data.project?.meta.id}?/update`}
+		action={`/project/${componentData.meta.id}?/update`}
 		method="POST"
 		class="grid gap-3"
 		use:enhance={() => {

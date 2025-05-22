@@ -28,8 +28,6 @@
 		nodePath: getNodePath()
 	})
 
-	$inspect(payload)
-
 	let isCreating = $state(false)
 
 	const handleSubmit = async (e: SubmitEvent) => {

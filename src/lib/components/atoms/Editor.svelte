@@ -47,7 +47,7 @@
 			monaco.editor.setTheme('GithubDark')
 
 			editorInitialized = true
-			console.log('Created monaco', editor.getId())
+			//console.log('Created monaco', editor.getId())
 		})()
 	}
 

@@ -4,11 +4,13 @@
 	import { invalidate } from '$app/navigation'
 	import { API } from '$lib/api'
 	import Button from '$lib/components/atoms/Button.svelte'
-	import { selected } from '$lib/stores/panel.svelte'
 	import Item from './Item.svelte'
 	import PanelItem from '../../PanelItem.svelte'
 	import ComboBox from '$lib/components/atoms/ComboBox.svelte'
-	import { getBreadcrumbs, getNodePath } from '$lib/stores/canvas.svelte'
+	import { getNodePath } from '$lib/stores/canvas.svelte'
+	import { type Component } from '$lib/types/agent'
+
+	const { componentData }: { componentData: Component } = $props()
 
 	let variableDialog = $state<HTMLDialogElement>()
 
@@ -59,7 +61,7 @@
 	}
 </script>
 
-<PanelItem title="Environment Variables">
+<PanelItem {componentData} title="Environment Variables">
 	<div>
 		<!-- {#if variables.length > 0}
 		<div class=" mb-2 grid grid-cols-[1fr_auto] items-end gap-4">

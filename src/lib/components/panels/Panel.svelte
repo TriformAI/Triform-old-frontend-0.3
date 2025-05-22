@@ -1,42 +1,48 @@
 <script lang="ts">
-	import type { Component, Snippet } from 'svelte'
+	import type { Component as SvelteComponent, Snippet } from 'svelte'
 	import type { onClickFn } from '$lib/stores/nodeActions.svelte'
 	import CodeEditor from './items/CodeEditor.svelte'
 	import Execute from './items/Execute/Root.svelte'
 	import Metadata from './items/Metadata.svelte'
 	import ProjectSettings from './items/ProjectSettings.svelte'
 	import Variables from './items/Variables/Root.svelte'
-	import { selected } from '$lib/stores/panel.svelte'
 	import { getActions } from '$lib/stores/nodeActions.svelte'
 
+	import { type Component } from '$lib/types/agent'
+	import { type Project } from '$lib/types/project'
+
 	interface Props {
-		Icon?: Component
+		componentData: Component | Project
+		Icon?: SvelteComponent
 		panels: Snippet<
 			[
 				{
-					CodeEditor: Component
-					Execute: Component
-					Metadata: Component
-					ProjectSettings: Component
-					Variables: Component
+					CodeEditor: SvelteComponent
+					Execute: SvelteComponent
+					Metadata: SvelteComponent
+					ProjectSettings: SvelteComponent
+					Variables: SvelteComponent
 				}
 			]
 		>
 	}
 
-	const actions = $derived(getActions(selected.node?.type ?? ''))
+	const actions = $derived.by(() => {
+		const type = 'flow-node'
+		getActions(type)
+	})
 
 	const handleActionClick = (fn: onClickFn) => {
-		fn(selected.node!)
+		fn(componentData)
 	}
 
-	const { Icon, panels }: Props = $props()
+	const { componentData, Icon, panels }: Props = $props()
 
-	const title = $derived(selected.node?.data?.trinode?.spec?.meta?.name ?? 'Project')
-	const desc = $derived(selected.node?.data?.trinode?.spec?.meta?.intention?.purpose)
+	const title = $derived(componentData.meta.name ?? 'Project')
+	const desc = $derived(componentData.meta.intention?.purpose)
 </script>
 
-{#key selected.node?.id}
+{#key componentData?.meta.id}
 	<div class="overflow-x-hidden">
 		<div class="border-b-main-800 mb-2 border-b px-3 pb-4">
 			<div class="flex items-center gap-4">

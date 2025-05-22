@@ -17,30 +17,40 @@
 	import { page } from '$app/state'
 	import { blur } from 'svelte/transition'
 
-	let payload = $state(selected.payload || '{\n\t"msg": "hello world"\n}')
+	import { type Component } from '$lib/types/agent'
+	import { getCurrentFlowId } from '$lib/stores/canvas.svelte'
+	const { componentData }: { componentData: Component } = $props()
+
+	let payload = $state('{\n\t"msg": "hello world"\n}')
+	if (selected.payload) {
+		payload = selected.payload
+	}
+
 	let result = $state('')
 
 	let payloadDialog = $state<HTMLDialogElement>()
 
 	let isRunning = $state(false)
 	let executionState = $state('')
+
 	const formattedExecutionState = $derived.by(() => {
 		const state = executionState.split('_').join(' ')
 		return state.substring(0, 1).toUpperCase() + state.substring(1)
 	})
 
 	const run = async () => {
-		if (!selected.node) {
-			return
-		}
-		console.log({ isValidJson })
-
 		if (!payload) return toast.error('Please enter a payload')
 		if (!isValidJson) return toast.error('The payload needs to be valid JSON')
 
+		const nodeId = selected.node?.id ?? getCurrentFlowId()
+
+		if (!nodeId) {
+			return toast.error('No node selected')
+		}
+
 		isRunning = true
 
-		const execution = createExecution(selected.node, JSON.parse(payload))
+		const execution = createExecution(nodeId, JSON.parse(payload), componentData)
 		console.log('creating execution', execution)
 
 		let stream: ReturnType<typeof source> | undefined = undefined
@@ -187,7 +197,7 @@
 <!-- Execute {selectedNode?.data?.component_name ?? ''}
 {selectedNode?.data ? `v${selectedNode?.data?.component_version}` : ''} -->
 
-<PanelItem title="Execute">
+<PanelItem {componentData} title="Execute">
 	<div class={[' col-start-1 row-start-1 grid min-w-80 grid-rows-[auto_1fr_min-content] gap-y-4']}>
 		{#if page.data.payloads?.length}
 			<ComboBox

@@ -12,7 +12,7 @@ import IconExpand from '~icons/mdi/circle-expand'
 import { confirmStore } from './confirm.svelte'
 import { deleteNode as deleteNodeFn } from './canvas.svelte'
 
-export type onClickFn = (node: Node) => Promise<Uuid | void> | void
+export type onClickFn = (node: Component) => Promise<Uuid | void> | void
 
 interface ActionItem {
 	// For when we access the items programmatically
