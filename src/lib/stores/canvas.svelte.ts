@@ -16,6 +16,7 @@ import { getLayoutedNodes } from '$lib/components/canvas/layout.svelte'
 import { clone } from '$lib/utils/clone'
 import { selected } from '$lib/stores/panel.svelte'
 import { getLeafNodes } from '$lib/utils/getLeafNodes'
+import { getNodeSelector } from '$lib/utils/getNodeSelector'
 
 let nodesStore = $state<Node[]>([])
 let edgesStore = $state<Edge[]>([])
@@ -76,9 +77,17 @@ export async function initFlow(project: Project) {
 	// Set selected node from local storage
 	nodes = setSelected(nodes)
 
-	// Add the parent/input node (for visualisation)
-	if (currentFlow) {
-		nodes.push(getInputNode(currentFlow) as Node)
+	if (currentFlow && !isRootLevel) {
+		const hasNodes = !!nodes.length
+		// Add the parent/input node (for visualisation)
+		nodes.push(getInputNode() as Node)
+		// Add the node selector if the flow has no nodes
+		if (!hasNodes) {
+			const { node, edge } = getNodeSelector(nodes[0].id, { x: 0, y: 0 }, true)
+			node.origin = [0.3, 0] // small "hack" to get it to align in the middle
+			nodes.push(node)
+			edges.push(edge)
+		}
 	}
 
 	nodesStore = await getLayoutedNodes(nodes, edges)

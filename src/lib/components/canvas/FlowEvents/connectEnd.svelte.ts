@@ -2,7 +2,8 @@ import { type OnConnectEnd, useSvelteFlow as svelteFlowHook } from '@xyflow/svel
 import { addTemporaryNode } from '$lib/utils/temporaryNode'
 import { defaultEdgeProps, type Node } from '$lib/types/flow'
 import type { Uuid } from '$lib/types/agent'
-import { addEdge } from '$lib/stores/canvas.svelte'
+import { addEdge, getEdges, getNodes, setEdges, setNodes } from '$lib/stores/canvas.svelte'
+import { getNodeSelector } from '$lib/utils/getNodeSelector'
 
 type ConnectEnd = AddParameters<OnConnectEnd, [ReturnType<typeof svelteFlowHook>]>
 
@@ -28,7 +29,6 @@ export const handleConnectEnd: ConnectEnd = async (event, connectionState, useSv
 
 	const newEdge = {
 		source: sourceNodeId,
-		sourceHandle: fromHandle.id as Uuid,
 		target: nodeSelectorId,
 		id: `${sourceNodeId}:nodeSelector`,
 		data: { props: defaultEdgeProps }
@@ -43,12 +43,8 @@ export const handleConnectEnd: ConnectEnd = async (event, connectionState, useSv
 
 	console.info(fromNode.type)
 
-	addTemporaryNode({
-		type: 'selector',
-		position,
-		nodeId: nodeSelectorId,
-		sourceNodeId,
-		sourceIsParent: fromNode.type === 'parent-node',
-		edge: newEdge
-	})
+	const { node, edge } = getNodeSelector(sourceNodeId, position, fromNode.type === 'parent-node')
+
+	setNodes([...getNodes(), node])
+	setEdges([...getEdges(), edge])
 }
