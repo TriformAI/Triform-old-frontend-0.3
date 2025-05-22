@@ -27,8 +27,6 @@ export const getEdges = () => edgesStore
 export const setNodes = (newNodes: Node[]) => (nodesStore = newNodes)
 export const setEdges = (newEdges: Edge[]) => (edgesStore = newEdges)
 
-const getNode = (id: Uuid) => nodesStore.find(node => node.id === id)
-
 // True if we're in the root level (Have not entered a flow)
 const isRootLevel = $derived(page.params.id.split('/').length === 1)
 
@@ -303,10 +301,10 @@ export const deleteEdge = async (edgeId: Edge['id']) => {
 	currentFlow.spec.spec.nodes[edge.target].inputs = target.inputs?.filter(i => i !== source)
 
 	// Update parent component
-	if (currentFlow) {
+	if (isRootLevel) {
+		await saveProject(page.data.project!)
+	} else if (currentFlow) {
 		await updateComponent(currentFlow.spec)
-	} else if (page.data.project) {
-		await saveProject(page.data.project)
 	} else {
 		throw new Error('No project or flow found')
 	}
