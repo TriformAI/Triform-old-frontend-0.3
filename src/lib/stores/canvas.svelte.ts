@@ -27,6 +27,8 @@ export const getEdges = () => edgesStore
 export const setNodes = (newNodes: Node[]) => (nodesStore = newNodes)
 export const setEdges = (newEdges: Edge[]) => (edgesStore = newEdges)
 
+const getNode = (id: Uuid) => nodesStore.find(node => node.id === id)
+
 // True if we're in the root level (Have not entered a flow)
 const isRootLevel = $derived(page.params.id.split('/').length === 1)
 
@@ -67,6 +69,7 @@ export async function initFlow(project: Project) {
 	const triNodes = currentFlow ? currentFlow.spec.spec.nodes : project.spec.nodes
 
 	// Turn trinodes into Svelteflow nodes and edges
+	// eslint-disable-next-line prefer-const
 	let { nodes, edges } = parseNodes(triNodes)
 
 	// Add data from local storage (open panels & payload)
@@ -75,11 +78,13 @@ export async function initFlow(project: Project) {
 	// Set selected node from local storage
 	nodes = setSelected(nodes)
 
-	// Add the parent node (for visualisation)
-	const flow = addParentFlowNode(nodes, edges, currentFlow?.component_id)
+	// Add the parent/input node (for visualisation)
+	if (currentFlow) {
+		nodes.push(getInputNode(currentFlow) as Node)
+	}
 
-	nodesStore = await getLayoutedNodes(flow.nodes, flow.edges)
-	edgesStore = flow.edges
+	nodesStore = await getLayoutedNodes(nodes, edges)
+	edgesStore = edges
 }
 
 // Get selected node from url hash, if any, and set as selected
@@ -128,6 +133,15 @@ export function parseNodes(nodes: Record<Uuid, TriNode>) {
 		for (const input of node.inputs ?? []) {
 			// Flow inputs
 			if (input === 'parent') {
+				newEdges.push({
+					type: 'default',
+					id: `${id}:input`,
+					source: 'input',
+					target: id,
+					data: {
+						props: { ...defaultEdgeProps }
+					}
+				})
 				continue
 			}
 
@@ -185,37 +199,15 @@ function getPersistedPayloads(): Record<Uuid, string> {
 	return JSON.parse(localStorage.getItem('payloads') || '{}')
 }
 
-function addParentFlowNode(nodes: Node[], edges: Edge[], id?: Uuid) {
-	//const isRootAndEmpty = !currentFlow && !nodes.length
-	if (!currentFlow) {
-		return { nodes, edges }
-	}
+function getInputNode() {
+	if (!currentFlow) return
 
-	const newId = id ?? crypto.randomUUID()
-	for (const item of nodes) {
-		if (item.data.trinode.inputs?.[0] === 'parent') {
-			edges.push({
-				id: `${newId}:${item.id}`,
-				source: newId,
-				type: 'default',
-				target: item.id,
-				data: {
-					props: {
-						deleted: false
-					}
-				}
-			})
-		}
-	}
-
-	nodes.push({
-		id: newId,
+	return {
+		id: 'input',
 		draggable: false,
 		type: 'parent-node',
 		position: { x: 0, y: 0 }
-	})
-
-	return { nodes, edges }
+	}
 }
 
 const onFlowUpdate = (flow: Flow) => {
@@ -281,6 +273,31 @@ export async function deleteNode(id: Uuid) {
 		delete currentFlow.spec.spec.nodes[id]
 		onFlowUpdate(currentFlow.spec)
 		await updateComponent(currentFlow.spec)
+	}
+
+	await invalidateAll()
+}
+
+export const deleteEdge = async (edgeId: Edge['id']) => {
+	if (!currentFlow) throw new Error('No flow found')
+	const edge = edgesStore.find(e => e.id === edgeId)
+	if (!edge) throw new Error(`Tried to remove non-existent edge ${edgeId}`)
+	console.debug('removing edge', edgeId, edge)
+
+	// Remove the input from the node (edges are defined on the target side)
+	const target = currentFlow.spec.spec.nodes[edge.target]
+	if (!target) throw new Error(`Tried to remove edge from non-existent node ${edge.target}`)
+	const source = edge.source === 'input' ? 'parent' : edge.source
+	// prettier-ignore
+	currentFlow.spec.spec.nodes[edge.target].inputs = target.inputs?.filter(i => i !== source)
+
+	// Update parent component
+	if (currentFlow) {
+		await updateComponent(currentFlow.spec)
+	} else if (page.data.project) {
+		await saveProject(page.data.project)
+	} else {
+		throw new Error('No project or flow found')
 	}
 
 	await invalidateAll()
@@ -369,58 +386,4 @@ export const getNodePath = () => {
 			?.map(node => node.id)
 			.join('/') + `/${selected.node.id}`
 	)
-}
-
-// Remove an edge
-export const removeEdge = (edgeId: Edge['id']) => {
-	const edge = edges.find(e => e.id === edgeId)
-	if (!edge) throw new Error(`Tried to remove non-existent edge ${edgeId}`)
-	console.debug('removing edge', edgeId, edge)
-
-	let previous: ReturnType<typeof updateNode>
-	// The resource that needs to be saved/published after performing the deletion
-	let toSave: Node['id'] | 'project'
-
-	// If id ends with :input, it's an edge to the parent input/ingress handle,
-	// so we need to remove the 'parent' input from the target node
-	if (edgeId.endsWith(':input')) {
-		const nodeId = edge.target
-		const node = nodes[nodeId]
-		// TODO: maybe ignore this case and just delete the edge from the array?
-		if (!node) throw new Error(`Tried to remove input from non-existent node ${nodeId}`)
-		const trinode = structuredClone($state.snapshot(node.data.trinode))
-		trinode.inputs = trinode.inputs?.filter(i => i !== 'parent')
-		previous = updateNode(nodeId, trinode)
-		toSave = edge.source // parent flow ID
-		console.log('removing input', edgeId, trinode.inputs)
-	}
-	// If id ends with :output, it's an edge to the parent output/egress handle,
-	// so we need to remove the node from the flows 'outputs' array
-	else if (edgeId.endsWith(':output')) {
-		const flowId = edge.target
-		const flow = nodes[flowId]
-		if (!flow) throw new Error(`Tried to remove output from non-existent flow ${flowId}`)
-		// prettier-ignore
-		if (!isFlow(flow.data.trinode)) throw new Error(`Tried to remove output from non-flow node ${flowId}`)
-		const trinode = structuredClone($state.snapshot(flow.data.trinode))
-		trinode.spec.spec.outputs = trinode.spec.spec.outputs?.filter(o => o !== edge.source)
-		previous = updateNode(flowId, trinode)
-		toSave = flowId
-	}
-	// Otherwise, it's just a normal edge between two nodes, so we need to remove
-	// it from the target node's 'inputs' array
-	else {
-		const nodeId = edge.target
-		const node = nodes[nodeId]
-		if (!node) throw new Error(`Tried to remove edge from non-existent node ${nodeId}`)
-		const trinode = structuredClone($state.snapshot(node.data.trinode))
-		trinode.inputs = trinode.inputs?.filter(i => i !== edge.source)
-		previous = updateNode(nodeId, trinode)
-		toSave = node.parentId ?? 'project'
-	}
-
-	return {
-		previous,
-		toSave
-	}
 }

@@ -1,13 +1,9 @@
 <script lang="ts">
 	import { getBezierPath, BaseEdge, EdgeLabel } from '@xyflow/svelte'
 	import { type EdgeProps } from '$lib/types/flow'
-	import { removeEdge } from '$lib/stores/canvas.svelte'
+	import { deleteEdge } from '$lib/stores/canvas.svelte'
 	import IconCloseRounded from '~icons/material-symbols/close-rounded'
-	import { saveProject } from '$lib/actions/project'
-	import { updateComponent } from '$lib/actions/components'
 	import { confirmStore } from '$lib/stores/confirm.svelte'
-	import { page } from '$app/state'
-	import { getNodes, getEdges } from '$lib/stores/canvas.svelte'
 
 	const {
 		id,
@@ -48,35 +44,13 @@
       </style>
     `
 
-	const deleteEdge = async () => {
+	const removeEdge = async () => {
 		const confirmed = await confirmStore.show({
 			title: 'Are you sure?',
 			message: 'Please confirm that you want to delete this edge'
 		})
 		if (!confirmed) return
-
-		// Mark the edge as deleted and then delete it after a little delay
-		const edge = getEdges().find(e => e.id === id)
-		if (edge) edge.data.props.deleted = true
-
-		setTimeout(async () => {
-			let removeEdgeReturn: ReturnType<typeof removeEdge> | undefined
-			try {
-				removeEdgeReturn = removeEdge(id)
-				const { toSave } = removeEdgeReturn
-				if (toSave === 'project') {
-					const proj = page.data.project
-					if (!proj) throw new Error('Project not loaded')
-					await saveProject(proj)
-				} else {
-					const node = getNodes().find(n => n.id === toSave)
-					if (!node) throw new Error('Node not found')
-					await updateComponent(node.data.trinode.spec)
-				}
-			} catch (e) {
-				console.error(e)
-			}
-		}, 150)
+		await deleteEdge(id)
 	}
 </script>
 
@@ -100,7 +74,7 @@
 				'edge-delete-btn'
 			]}
 			data-id={id}
-			onclick={deleteEdge}
+			onclick={removeEdge}
 		>
 			<IconCloseRounded />
 		</button>

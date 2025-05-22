@@ -65,12 +65,10 @@ export const defaultEdgeProps: EdgeData['props'] = {
 }
 
 export interface Edge extends XyEdge {
-	id: `${Uuid}:${Uuid | 'nodeSelector'}${':input' | ':output' | ''}`
+	id: `${Uuid}:${Uuid | 'nodeSelector' | 'input'}`
 	type?: 'default'
-	source: Uuid
+	source: Uuid | 'input'
 	target: Uuid
-	sourceHandle?: `${Uuid}${':input' | ''}`
-	targetHandle?: `${Uuid}${':output' | ''}`
 	data: EdgeData
 }
 
