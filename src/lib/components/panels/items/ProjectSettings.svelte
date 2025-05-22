@@ -40,7 +40,7 @@
 		if (!componentData) {
 			return
 		}
-		//setIsDirty(nodeId, dataIsDirty)
+
 		const meta = componentData.meta
 		componentData.meta = {
 			...meta,

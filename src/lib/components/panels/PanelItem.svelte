@@ -1,11 +1,9 @@
 <script lang="ts">
-	import { onMount, type Snippet } from 'svelte'
+	import type { Snippet } from 'svelte'
 	import IconChevronRight from '~icons/material-symbols/chevron-right'
-	import { selected } from '$lib/stores/panel.svelte'
+	import { openPanelItems, toggleOpenPanelItem, selected } from '$lib/stores/panel.svelte'
 	import { getCurrentFlowId } from '$lib/stores/canvas.svelte'
-	import { type Component } from '$lib/types/agent'
-	import { browser } from '$app/environment'
-	import { clone } from '$lib/utils/clone'
+	import type { Component } from '$lib/types/agent'
 
 	export interface Props {
 		componentData: Component
@@ -31,57 +29,14 @@
 		return undefined
 	})
 
-	function getOpenPanelItems() {
-		const persistedOpenPanelItems = browser ? localStorage.getItem('openPanelItems') : undefined
-		if (!persistedOpenPanelItems) return {}
-		const openPanelItems: Record<string, string[]> = JSON.parse(persistedOpenPanelItems)
-		return openPanelItems
-	}
-
-	let isOpen = $state(forceOpen)
-
-	const openPanelItems = getOpenPanelItems()
-	isOpen = nodeType ? openPanelItems[nodeType]?.includes(title) || forceOpen : forceOpen
-
-	function toggleOpenPanelItem() {
-		isOpen = !isOpen
-
-		if (!nodeType) return
-
-		const savedPanelItems = clone(getOpenPanelItems())
-		let currentPanelItem = nodeType in savedPanelItems ? savedPanelItems[nodeType] : []
-
-		const newPanelItem = isOpen
-			? [...currentPanelItem, title]
-			: currentPanelItem.filter(item => item !== title)
-
-		const newPanelItems = {
-			...savedPanelItems,
-			[nodeType]: newPanelItem
-		}
-
-		localStorage.setItem('openPanelItems', JSON.stringify(newPanelItems))
-	}
-
-	const panelId = $derived.by(() => {
-		if (selected.node) {
-			return selected.node.id
-		}
-
-		const currentFlowId = getCurrentFlowId()
-		if (currentFlowId) {
-			return currentFlowId
-		}
-
-		return undefined
-	})
+	const isOpen = $derived(nodeType ? openPanelItems[nodeType]?.includes(title) : forceOpen)
 </script>
 
 <div class="grid py-2 ps-2 pe-8">
-	{#if panelId}
+	{#if selected.node || getCurrentFlowId()}
 		<button
 			type="button"
-			onclick={() => toggleOpenPanelItem()}
+			onclick={() => toggleOpenPanelItem(nodeType!, title)}
 			class="me-auto flex items-center gap-1"
 		>
 			<IconChevronRight class={['transition-transform', isOpen ? 'rotate-90' : '']} />

@@ -7,7 +7,7 @@ const isRegularNode = (node: Node | TemporaryNode): node is Node =>
 
 export const selected = {
 	get node() {
-		return getNodes().filter(node => node.selected)[0]
+		return getNodes().filter(node => node.selected)[0] as Node | undefined
 	},
 
 	get isMultiple() {
@@ -20,14 +20,6 @@ export const selected = {
 		}
 
 		return this.node.data.props.isDirty
-	},
-
-	get openPanelItems() {
-		if (!this.node || !isRegularNode(this.node)) {
-			return []
-		}
-
-		return this.node.data.props.openPanelItems
 	},
 
 	get payload() {
@@ -54,60 +46,35 @@ export const selected = {
 	}
 }
 
-export function setIsDirty(nodeId: Uuid, val: boolean) {
-	// const node = getNodes().find(node => node.id === nodeId)
-	// if (!node || !isRegularNode(node)) {
-	// 	return
-	// }
-	// node.data.props.isDirty = val
-	// // Update nodes array with the updated node
-	// setNodes([...getNodes().filter(node => node.id !== nodeId), node])
+interface OpenPanelItems {
+	flow: string[]
+	action: string[]
+	endpoint: string[]
 }
 
-// export function updateNodeData(nodeId: Uuid, node: Node['data']) {
-// 	const node = getNodes().find(node => node.id === nodeId)
-// 	if (!node || !isRegularNode(node)) {
-// 		return
-// 	}
-// }
-
-export function toggleOpenPanelItem(nodeId: Uuid, val: string) {
-	const node = getNodes().find(node => node.id === nodeId)
-	if (!node || !isRegularNode(node)) {
-		return
-	}
-
-	updateNodeOpenPanelItems(nodeId, val)
-	persistOpenPanelItems(nodeId)
+const defaultOpenPanelItems: OpenPanelItems = {
+	flow: [],
+	action: [],
+	endpoint: []
 }
 
-// Updates the open panel items for a node
-function updateNodeOpenPanelItems(nodeId: Uuid, val: string) {
-	const node = getNodes().find(node => node.id === nodeId)
-	if (!node || !isRegularNode(node)) {
-		return
-	}
-
-	const { openPanelItems } = node.data.props
-	const updatedOpenPanelItems = openPanelItems.includes(val)
-		? [...openPanelItems.filter(id => id !== val)]
-		: [...openPanelItems, val]
-
-	node.data.props.openPanelItems = updatedOpenPanelItems
-
-	// Update nodes array with the updated node
-	setNodes([...getNodes().filter(node => node.id !== nodeId), node])
+function getPersistedOpenPanelItems(): OpenPanelItems {
+	const persistedOpenPanelItems = localStorage.getItem('openPanelItems')
+	if (!persistedOpenPanelItems) return { ...defaultOpenPanelItems }
+	const openPanelItems = JSON.parse(persistedOpenPanelItems)
+	return openPanelItems
 }
 
-// Persists open panel items to localStorage
-function persistOpenPanelItems(nodeId: Uuid) {
-	const node = getNodes().find(node => node.id === nodeId)
-	if (!node || !isRegularNode(node)) {
-		return
-	}
+export const openPanelItems = $state<OpenPanelItems>(getPersistedOpenPanelItems())
 
-	const rawOpenPanelItems = localStorage.getItem('openPanelItems') || '{}'
-	const openPanelItems: Record<Uuid, string[]> = JSON.parse(rawOpenPanelItems)
-	openPanelItems[nodeId] = node.data.props.openPanelItems
+export function toggleOpenPanelItem(nodeType: keyof typeof openPanelItems, title: string) {
+	console.log('toggleOpenPanelItem', nodeType, title)
+
+	const openItemsForType = openPanelItems[nodeType]
+
+	openPanelItems[nodeType] = openItemsForType.includes(title)
+		? openItemsForType.filter(item => item !== title)
+		: [...openItemsForType, title]
+
 	localStorage.setItem('openPanelItems', JSON.stringify(openPanelItems))
 }

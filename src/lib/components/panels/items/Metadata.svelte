@@ -10,7 +10,7 @@
 	import { clone } from '$lib/utils/clone'
 	import { API } from '$lib/api'
 	import PanelItem from '../PanelItem.svelte'
-	import { getNodes } from '$lib/stores/canvas.svelte'
+	import { getCurrentFlowId, getNodes } from '$lib/stores/canvas.svelte'
 	import IconMagic from '~icons/material-symbols/magic-button'
 	import { confirmStore } from '$lib/stores/confirm.svelte'
 	import { source } from 'sveltekit-sse'
@@ -25,7 +25,7 @@
 		type CodeDocumentCompleted
 	} from '$lib/stores/builder.svelte'
 	import { isAction } from '$lib/stores/canvas.svelte'
-	import { toggleOpenPanelItem } from '$lib/stores/panel.svelte'
+	import { openPanelItems, toggleOpenPanelItem } from '$lib/stores/panel.svelte'
 
 	import { type Component } from '$lib/types/agent'
 	import { invalidate } from '$app/navigation'
@@ -33,7 +33,8 @@
 
 	const api = new API()
 
-	const nodeId = selected.node?.id
+	const nodeId = $derived(selected.node?.id || getCurrentFlowId())
+	const node = $derived(getNodes().find(n => n.id === nodeId))
 
 	interface FormData {
 		name: string
@@ -44,10 +45,12 @@
 		}
 	}
 
+	$inspect(componentData)
+
 	let initialData = $state<FormData>()!
 	let formData = $state<FormData>()!
 
-	const dataIsDirty = $derived(selected.isDirty || !compare(formData, initialData))
+	const dataIsDirty = $derived(node?.data?.props.isDirty || !compare(formData, initialData))
 
 	function setFormdata() {
 		if (!componentData) {
@@ -71,10 +74,11 @@
 	setFormdata()
 
 	function updateData(isDirty: boolean) {
-		const node = getNodes().find(n => n.id === selected.node?.id)
 		if (!node || !node.data) {
 			return
 		}
+
+		console.log('updateData', isDirty)
 
 		const meta = componentData.meta
 		node.data.trinode.spec.meta = { ...meta, ...formData }
@@ -134,8 +138,9 @@
 		if (!confirmed) return
 
 		// make sure the code tab is open
-		if (!selected?.openPanelItems.includes('Code')) {
-			toggleOpenPanelItem(nodeId, 'Code')
+		const nodeType = componentData.resource.startsWith('action/') ? 'action' : 'flow'
+		if (!openPanelItems[nodeType].includes('Code')) {
+			toggleOpenPanelItem(nodeType, 'Code')
 		}
 
 		const componentId = componentData.meta.id

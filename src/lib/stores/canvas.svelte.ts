@@ -68,7 +68,6 @@ export async function initFlow(project: Project) {
 
 	// Get nodes from project or current flow
 	const triNodes = currentFlow ? currentFlow.spec.spec.nodes : project.spec.nodes
-	console.log({ triNodes })
 
 	// Turn trinodes into Svelteflow nodes and edges
 	// eslint-disable-next-line prefer-const
@@ -189,19 +188,12 @@ export function parseNodes(nodes: Record<Uuid, TriNode>) {
 }
 
 function addPersistedDataToNodes(nodes: Node[]) {
-	const rawOpenPanelItems = getPersistedPanelItems()
 	const rawPayloads = getPersistedPayloads()
 
 	return nodes.map(node => {
-		node.data.props.openPanelItems = rawOpenPanelItems[node.id] || []
 		node.data.props.payload = rawPayloads[node.id] || '{"msg":"Hello world"}'
 		return node
 	})
-}
-
-// Get the open panel items from localStorage, if any
-function getPersistedPanelItems(): Record<Uuid, string[]> {
-	return JSON.parse(localStorage.getItem('openPanelItems') || '{}')
 }
 
 // Get the open panel items from localStorage, if any

@@ -7,7 +7,6 @@ export interface NodeProps {
 	deleted: boolean
 	creating: boolean
 	isDirty: boolean
-	openPanelItems: string[]
 	payload: string
 }
 
@@ -16,7 +15,6 @@ export const defaultProps: NodeProps = {
 	deleted: false,
 	creating: false,
 	isDirty: false,
-	openPanelItems: [],
 	payload: ''
 }
 
