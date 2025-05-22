@@ -22,7 +22,8 @@
 		type CodeEditStarted,
 		type CodeEditCompleted,
 		type CodeDocumentStarted,
-		type CodeDocumentCompleted
+		type CodeDocumentCompleted,
+		type ActionBuildCompleted
 	} from '$lib/stores/builder.svelte'
 	import { isAction } from '$lib/stores/canvas.svelte'
 	import { openPanelItems, toggleOpenPanelItem } from '$lib/stores/panel.svelte'
@@ -200,13 +201,7 @@
 			},
 			'code:install_packages:started': (payload: CodeInstallPackagesStarted) => {
 				inProgressComponents[componentId].message =
-					`Installing packages: ${payload.details.requirements.split('\n').join(', ')}`
-				Object.assign(inProgressComponents[componentId].component, {
-					spec: {
-						...inProgressComponents[componentId].component.spec,
-						requirements: payload.details.requirements
-					}
-				})
+					`Installing packages: ${payload.details.input?.split('\n').join(', ')}`
 			},
 			'code:install_packages:completed': (payload: CodeInstallPackagesCompleted) => {
 				inProgressComponents[componentId].message = 'Packages installed'
@@ -233,6 +228,18 @@
 						readme: payload.details.description
 					}
 				})
+			},
+			'action:build:completed': (payload: ActionBuildCompleted) => {
+				inProgressComponents[componentId].message = 'Finished building action'
+				const comp = payload.details.result[0]
+				Object.assign(inProgressComponents[componentId].component, {
+					spec: comp.spec
+				})
+				console.log(
+					'finished',
+					$state.snapshot(inProgressComponents[componentId].component),
+					comp.spec
+				)
 			}
 		}
 		// where the data isnt parsed
@@ -279,22 +286,17 @@
 		<TextField
 			rows={3}
 			class="col-span-2"
-			label="Intention"
-			name="intention"
+			label="Purpose"
+			name="Purpose"
 			bind:value={formData.intention.purpose}
 		/>
 
-		<TextField
-			rows={2}
-			label="Expected input"
-			name="intention"
-			bind:value={formData.intention.input}
-		/>
+		<TextField rows={2} label="Expected input" name="input" bind:value={formData.intention.input} />
 
 		<TextField
 			rows={2}
 			label="Expected output"
-			name="intention"
+			name="output"
 			bind:value={formData.intention.output}
 		/>
 

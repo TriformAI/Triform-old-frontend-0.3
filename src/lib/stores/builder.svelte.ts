@@ -15,7 +15,7 @@ interface BaseEvent {
 }
 interface CompletedEvent extends BaseEvent {
 	success: boolean
-	details: Record<string, string>
+	details: Record<string, unknown>
 }
 
 // Per-event types
@@ -36,7 +36,7 @@ export interface CodeEditCompleted extends CompletedEvent {
 }
 export interface CodeInstallPackagesStarted extends BaseEvent {
 	details: {
-		requirements: string
+		input: string
 	}
 }
 export type CodeInstallPackagesCompleted = CompletedEvent
@@ -44,6 +44,14 @@ export type CodeDocumentStarted = BaseEvent
 export interface CodeDocumentCompleted extends CompletedEvent {
 	details: {
 		description: string
+	}
+}
+export interface ActionBuildCompleted extends CompletedEvent {
+	details: {
+		task_id: string
+		status: string
+		message: string
+		result: Component[]
 	}
 }
 
