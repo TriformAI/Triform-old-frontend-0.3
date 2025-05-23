@@ -134,7 +134,7 @@
 		<Tabs {tabs} bind:activeTab />
 		<div
 			class={[
-				'relative mt-2.5 grid h-[300px] transition-all',
+				'relative mt-2.5 grid h-[65vh] transition-all',
 				isBuilding && 'opacity-50 grayscale-75'
 			]}
 		>
