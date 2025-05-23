@@ -280,11 +280,11 @@ export async function deleteNode(id: Uuid) {
 	await invalidateAll()
 }
 
-export const addEdge = async (target: Node, source: Uuid | 'parent') => {
+export const addEdge = async (target: Node, source: Uuid | 'input') => {
 	if (!currentFlow) throw new Error('No flow found')
 	const node = target.data.trinode
 	if (!node.inputs) node.inputs = []
-	node.inputs.push(source)
+	node.inputs.push(source === 'input' ? 'parent' : source)
 	currentFlow.spec.spec.nodes[target.id] = node
 	if (isRootLevel) await saveProject(page.data.project!)
 	else await updateComponent(currentFlow.spec)

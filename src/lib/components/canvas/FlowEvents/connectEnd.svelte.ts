@@ -15,7 +15,7 @@ export const handleConnectEnd: ConnectEnd = async (event, connectionState, useSv
 		const source = fromIsTarget ? connectionState.toNode : connectionState.fromNode
 		const target = fromIsTarget ? connectionState.fromNode : connectionState.toNode
 
-		await addEdge(target as unknown as Node, source!.id as Uuid | 'parent')
+		await addEdge(target as unknown as Node, source!.id as Uuid | 'input')
 
 		return
 	}
