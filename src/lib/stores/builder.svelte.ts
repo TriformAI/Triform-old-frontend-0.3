@@ -54,6 +54,12 @@ export interface ActionBuildCompleted extends CompletedEvent {
 		result: Component[]
 	}
 }
+export type CodeReviewStarted = BaseEvent
+export interface CodeReviewCompleted extends CompletedEvent {
+	details: {
+		output: string
+	}
+}
 
 type InProgressData = {
 	component: Component

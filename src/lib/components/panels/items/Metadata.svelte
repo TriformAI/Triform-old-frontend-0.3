@@ -23,7 +23,9 @@
 		type CodeEditCompleted,
 		type CodeDocumentStarted,
 		type CodeDocumentCompleted,
-		type ActionBuildCompleted
+		type ActionBuildCompleted,
+		type CodeReviewStarted,
+		type CodeReviewCompleted
 	} from '$lib/stores/builder.svelte'
 	import { isAction } from '$lib/stores/canvas.svelte'
 	import { openPanelItems, toggleOpenPanelItem } from '$lib/stores/panel.svelte'
@@ -228,6 +230,12 @@
 						readme: payload.details.description
 					}
 				})
+			},
+			'code:review:started': (payload: CodeReviewStarted) => {
+				inProgressComponents[componentId].message = 'Reviewing code...'
+			},
+			'code:review:completed': (payload: CodeReviewCompleted) => {
+				inProgressComponents[componentId].message = 'Finished reviewing code, considering changes...'
 			},
 			'action:build:completed': (payload: ActionBuildCompleted) => {
 				inProgressComponents[componentId].message = 'Finished building action'
