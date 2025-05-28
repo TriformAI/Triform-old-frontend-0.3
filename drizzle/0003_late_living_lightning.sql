@@ -1,0 +1,1 @@
+ALTER TABLE "node_positions" ALTER COLUMN "parent_id" SET NOT NULL;
