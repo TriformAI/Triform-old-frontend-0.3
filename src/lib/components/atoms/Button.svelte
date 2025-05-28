@@ -81,7 +81,7 @@
 		variation === 'primary' &&
 			'border-main-700 bg-main-800 hover:enabled:border-main-600 hover:enabled:bg-main-700 border',
 		variation === 'vibrant' &&
-			'bg-accent-700 inset-shadow-accent-500/40 hover:enabled:bg-accent-600 inset-shadow-xs',
+			'bg-accent-700 inset-shadow-accent-500/40 hover:enabled:bg-accent-600 border-accent-600 border inset-shadow-xs',
 		variation === 'link' && 'text-main-200 hover:enabled:bg-main-800',
 		variation === 'danger' &&
 			'bg-danger-200 text-danger-600 hover:enabled:text-danger-700 hover:enabled:bg-danger-300',

@@ -181,6 +181,9 @@
 	text-overflow: ellipsis;
 	-webkit-line-clamp: --value(integer);
 }
+@utility scroll-gutter-stable {
+	scrollbar-gutter: stable;
+}
 
 @layer overrides {
 	.prism-code-editor {
@@ -266,7 +269,7 @@
 	}
 
 	.eyebrow {
-		@apply text-main-300 text-xs font-semibold tracking-wide uppercase;
+		@apply text-xs font-semibold tracking-wide uppercase;
 	}
 
 	.input-text {

@@ -9,7 +9,8 @@
 	import {
 		handleBeforeDelete,
 		handleDelete,
-		handleConnectEnd
+		handleConnectEnd,
+		handleDragStop
 	} from '$lib/components/canvas/FlowEvents'
 	import {
 		addNode,
@@ -36,9 +37,12 @@
 	import { scale } from 'svelte/transition'
 	import { type OnNavigate } from '@sveltejs/kit'
 	import { onNavigate } from '$app/navigation'
+	import { getComponent, createComponent } from '$lib/actions/components'
+	import { isFlow, type Uuid } from '$lib/types/agent'
+	import { getFlowModel } from '$lib/nodeModels'
 
 	const useSvelteFlow = svelteFlowHook()
-	const { fitView } = useSvelteFlow
+	const { fitView, screenToFlowPosition } = useSvelteFlow
 	export { fitView }
 	const updateNodeInternals = useUpdateNodeInternals()
 
@@ -91,6 +95,30 @@
 
 		return
 	})
+
+	function handleDragOver(event: DragEvent) {
+		event.preventDefault()
+		if (event.dataTransfer) {
+			event.dataTransfer.dropEffect = 'copy'
+		}
+	}
+
+	async function handleDrop(event: DragEvent) {
+		event.preventDefault()
+		if (!event.dataTransfer) return
+
+		const componentId = event.dataTransfer.getData('text/plain')
+		const component = await getComponent(componentId as Uuid)
+
+		const position = screenToFlowPosition({ x: event.clientX, y: event.clientY })
+
+		await addNode(component, position, [])
+	}
+
+	const createInitialFlow = async () => {
+		const newComponent = await createComponent(getFlowModel().spec)
+		addNode(newComponent, { x: 0, y: 0 }, [])
+	}
 </script>
 
 <svelte:window
@@ -102,7 +130,12 @@
 	}, 400)}
 />
 
-<div class="relative grid h-full w-full overflow-hidden" role="application">
+<div
+	class="relative grid h-full w-full overflow-hidden"
+	role="application"
+	ondragover={handleDragOver}
+	ondrop={handleDrop}
+>
 	{#if flowIsEmpty}
 		<div class="-mt-32 grid place-items-center gap-10 self-center">
 			<p class="opacity-50">
@@ -110,7 +143,7 @@
 				{!getCurrentFlow() ? 'flow' : 'action'}
 			</p>
 			<button
-				onclick={() => addNode(!getCurrentFlow() ? 'flow' : 'action')}
+				onclick={createInitialFlow}
 				type="button"
 				class="bg-main-300 text-main-800 grid size-20 place-content-center rounded-full text-4xl leading-none transition-transform duration-300 ease-(--easing-circ) hover:scale-105"
 			>
@@ -148,11 +181,12 @@
 					}}
 					disableKeyboardA11y={true}
 					onconnectend={(...args) => handleConnectEnd(...args, useSvelteFlow)}
-					snapGrid={[1, 1]}
+					snapGrid={[10, 10]}
 					proOptions={{ hideAttribution: true }}
 					zoomOnDoubleClick={false}
 					onbeforedelete={handleBeforeDelete}
 					ondelete={handleDelete}
+					onnodedragstop={handleDragStop}
 				>
 					<Background
 						bgColor="#18181b"

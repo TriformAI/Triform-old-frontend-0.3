@@ -1,5 +1,4 @@
 import { getNodes, setNodes } from './canvas.svelte'
-import { type Uuid } from '$lib/types/agent'
 import type { Node, TemporaryNode } from '$lib/types/flow'
 
 const isRegularNode = (node: Node | TemporaryNode): node is Node =>

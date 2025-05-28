@@ -9,6 +9,7 @@
 		rows?: number
 		required?: boolean
 		useMonoFont?: boolean
+		oninput?: (e: Event) => void
 	}
 
 	let {
@@ -19,7 +20,8 @@
 		class: classes,
 		rows = 4,
 		useMonoFont = false,
-		required
+		required,
+		oninput
 	}: Props = $props()
 
 	const id = Math.random().toString(36).substring(2, 15)
@@ -36,6 +38,7 @@
 		{rows}
 		{required}
 		bind:value
+		{oninput}
 		class={['input-text', useMonoFont && 'font-mono']}
 	></textarea>
 </label>

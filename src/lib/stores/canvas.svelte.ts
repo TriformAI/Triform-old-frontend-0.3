@@ -3,13 +3,13 @@ import type {
 	Flow,
 	Action,
 	Uuid,
-	Component
+	Component,
+	Source
 } from '$lib/types/agent'
-import { getActionModel, getFlowModel } from '$lib/nodeModels'
 import type { Project } from '$lib/types/project'
 import type { Node, Edge } from '$lib/types/flow'
 import { defaultProps, defaultEdgeProps } from '$lib/types/flow'
-import { createComponent, updateComponent } from '$lib/actions/components'
+import { updateComponent, updateComponentPositions } from '$lib/actions/components'
 import { invalidateAll } from '$app/navigation'
 import { saveProject } from '$lib/actions/project'
 import { page } from '$app/state'
@@ -29,13 +29,31 @@ export const getEdges = () => edgesStore
 export const setNodes = (newNodes: Node[]) => (nodesStore = newNodes)
 export const setEdges = (newEdges: Edge[]) => (edgesStore = newEdges)
 
+export const drafts = $state<Record<Uuid, Component>>({})
+export const loadDrafts = (allDrafts: { component_id: Uuid; spec: Component }[]) => {
+	// Path meta.intention which does not always exist
+	// TODO: Clean this up
+	for (const draft of allDrafts) {
+		const meta = draft.spec.meta
+		if (!('intention' in meta)) {
+			meta.intention = {
+				purpose: '',
+				input: '',
+				output: ''
+			}
+		}
+		draft.spec.meta = meta
+		drafts[draft.component_id as Uuid] = draft.spec
+	}
+}
+
 // True if we're in the root level (Have not entered a flow)
 const isRootLevel = $derived(page.params.id.split('/').length === 1)
 
 // The current flow ID - last uuid in the path (if any)
 const currentFlowId = $derived.by(() => {
-	const ids = page.params.id.split('/')
-	if (ids.length === 1) return undefined
+	const ids = page?.params?.id?.split('/') ?? []
+	if (ids.length <= 1) return undefined
 	return ids.pop()
 }) as Uuid | undefined
 
@@ -62,7 +80,10 @@ export const isAction = (component: Component): component is Action =>
 export const isFlow = (component: Component): component is Flow => component.resource === 'flow/v1'
 
 // Initialize the nodes on project or flow level
-export async function initFlow(project: Project) {
+export async function initFlow(
+	project: Project,
+	allPositions: Record<Uuid, Record<Uuid, { x: number; y: number }>> = {}
+) {
 	console.log('loading flow', project)
 	console.time('initFlow')
 
@@ -70,8 +91,10 @@ export async function initFlow(project: Project) {
 	const triNodes = currentFlow ? currentFlow.spec.spec.nodes : project.spec.nodes
 
 	// Turn trinodes into Svelteflow nodes and edges
+	// @ts-expect-error - we know the id is defined
+	const positions = allPositions[isRootLevel ? project.meta.id : currentFlow?.spec.meta.id] ?? {}
 	// eslint-disable-next-line prefer-const
-	let { nodes, edges } = parseNodes(triNodes)
+	let { nodes, edges } = parseNodes(triNodes, positions)
 
 	// Add data from local storage (open panels & payload)
 	nodes = addPersistedDataToNodes(nodes)
@@ -81,18 +104,30 @@ export async function initFlow(project: Project) {
 
 	if (currentFlow && !isRootLevel) {
 		const hasNodes = !!nodes.length
+		// find where to place the input node
+		const minY = Math.min(...nodes.map(node => node.position.y)) ?? 0
+		const minX = Math.min(...nodes.map(node => node.position.x)) ?? 0
+		const maxX = Math.max(...nodes.map(node => node.position.x)) ?? 0
 		// Add the parent/input node (for visualisation)
-		nodes.push(getInputNode() as Node)
+		nodes.push(getInputNode((minX + maxX) / 2, minY - 150) as Node)
 		// Add the node selector if the flow has no nodes
 		if (!hasNodes) {
 			const { node, edge } = getNodeSelector(nodes[0].id, { x: 0, y: 0 }, true)
 			node.origin = [0.3, 0] // small "hack" to get it to align in the middle
+			console.log('adding node selector', node, edge)
 			nodes.push(node)
 			edges.push(edge)
 		}
 	}
 
-	nodesStore = await getLayoutedNodes(nodes, edges)
+	// use nodes w/ positions if we can, otherwise auto-layout
+	const validPositions = new Set(Object.keys(positions)).intersection(
+		new Set(nodes.map(node => node.id))
+	)
+	nodesStore =
+		validPositions.size >= nodes.length - 1 // -1 for the input node
+			? nodes
+			: await getLayoutedNodes(nodes, edges)
 	edgesStore = edges
 }
 
@@ -112,7 +147,10 @@ function setSelected(nodes: Node[]) {
 // Get nodes from project
 // Enrich node with additional data
 // Create edges
-export function parseNodes(nodes: Record<Uuid, TriNode>) {
+export function parseNodes(
+	nodes: Record<Uuid, TriNode>,
+	positions: Record<Uuid, { x: number; y: number }>
+) {
 	function getNode(node: TriNode, id: Uuid): Node {
 		let type: Node['type']
 		if (isAction(node.spec)) {
@@ -128,8 +166,8 @@ export function parseNodes(nodes: Record<Uuid, TriNode>) {
 		return {
 			id,
 			type,
-			draggable: false,
-			position: { x: 0, y: 0 },
+			draggable: true,
+			position: positions[id] ?? { x: 0, y: 0 },
 			data: {
 				trinode: node,
 				props: { ...defaultProps }
@@ -201,14 +239,14 @@ function getPersistedPayloads(): Record<Uuid, string> {
 	return JSON.parse(localStorage.getItem('payloads') || '{}')
 }
 
-function getInputNode() {
+function getInputNode(x: number, y: number) {
 	if (!currentFlow) return
 
 	return {
 		id: 'input',
 		draggable: false,
 		type: 'parent-node',
-		position: { x: 0, y: 0 }
+		position: { x, y }
 	}
 }
 
@@ -217,31 +255,36 @@ const onFlowUpdate = (flow: Flow) => {
 	flow.spec.outputs = Object.keys(leafNodes) as Uuid[]
 }
 
-export async function addNode(type: 'action' | 'flow', sourceId?: Uuid | 'parent') {
+export async function addNode(
+	component: Component,
+	position: { x: number; y: number },
+	inputs: Source[]
+) {
 	const project = page.data.project
 
 	if (!project) {
 		throw new Error('No project found')
 	}
 
-	// Get the node model
-	const newNode = type === 'action' ? getActionModel() : getFlowModel()
-	newNode.inputs = [sourceId ?? 'parent']
-
-	// Create the component and set props to newNode
-	const newComponent = await createComponent(newNode.spec)
-	newNode.component_id = newComponent.meta.id
-	newNode.spec = newComponent
-
 	const newNodeId = crypto.randomUUID()
+	const newNode = {
+		component_id: component.meta.id,
+		spec: component,
+		inputs,
+		component_version: null //component.meta.version
+	}
 
 	// Top-level flows - Update project with new node
 	if (isRootLevel) {
 		const updatedProject = clone(project)
 		updatedProject.spec.nodes[newNodeId] = newNode
-		await saveProject(updatedProject)
+		await Promise.all([
+			saveProject(updatedProject),
+			updateComponentPositions(project.meta.id, {
+				[newNodeId]: position
+			})
+		])
 	}
-
 	// Nested flows - Update component with new node
 	else if (currentFlow) {
 		const updatedFlow = clone(currentFlow) as typeof currentFlow
@@ -250,7 +293,12 @@ export async function addNode(type: 'action' | 'flow', sourceId?: Uuid | 'parent
 		console.log(updatedFlow.spec)
 		onFlowUpdate(updatedFlow.spec)
 
-		await updateComponent(updatedFlow.spec)
+		await Promise.all([
+			await updateComponent(updatedFlow.spec),
+			updateComponentPositions(currentFlow.component_id, {
+				[newNodeId]: position
+			})
+		])
 	}
 
 	await invalidateAll()

@@ -2,13 +2,13 @@ FROM oven/bun:1-alpine
 
 WORKDIR /app
 
-RUN apk add --no-cache git
+RUN apk add --no-cache git python3 make g++
 
 RUN bun install -g onchange
 
 COPY package.json bun.lockb .
 
-RUN bun install
+RUN bun install --verbose
 
 COPY . .
 

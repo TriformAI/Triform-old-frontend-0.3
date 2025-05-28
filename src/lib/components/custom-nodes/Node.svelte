@@ -1,12 +1,14 @@
 <script lang="ts">
 	import ContextMenu from '$lib/components/atoms/ContextMenu.svelte'
-	import { getNodes, getCurrentFlow } from '$lib/stores/canvas.svelte'
+	import { getNodes, getCurrentFlow, drafts } from '$lib/stores/canvas.svelte'
 	import { getActions } from '$lib/stores/nodeActions.svelte'
 	import type { Node, NodeData } from '$lib/types/flow'
 	import type { Snippet } from 'svelte'
 
 	import NodeActions from './NodeActions.svelte'
 	import NodeContainer from './NodeContainer.svelte'
+	import compare from 'just-compare'
+	import { scale } from 'svelte/transition'
 
 	interface Props {
 		id: Node['id']
@@ -52,6 +54,9 @@
 	let showSourceHandle = $derived.by(() => {
 		return !isRootLevelAndFlowNode
 	})
+
+	const draftData = $derived(drafts[data.trinode.spec.meta.id])
+	const isDirty = $derived(!compare(data.trinode.spec, draftData))
 </script>
 
 <NodeContainer {...props} {showTargetHandle} {showSourceHandle}>
@@ -67,11 +72,21 @@
 				>
 					<div
 						class={[
-							'bg-main-900 absolute -inset-x-[25%] -top-1  -translate-y-full truncate rounded py-0.5 text-center text-sm font-semibold transition',
+							' absolute -inset-x-[25%] -top-1  -translate-y-full truncate rounded py-0.5 text-center text-sm font-semibold transition',
 							selected ? 'text-main-300' : 'text-main-400'
 						]}
 					>
-						<span class="bg-main-900 whitespace-nowrap">{data.trinode.spec.meta.name}</span>
+						<span
+							class={['bg-main-900 text-main-200 inline-flex items-center gap-1 whitespace-nowrap']}
+						>
+							{draftData?.meta.name}
+							<span
+								class={[
+									'bg-warning-600 block size-1.5 -translate-y-0.5 rounded-full transition-transform',
+									isDirty ? 'scale-100' : 'scale-0'
+								]}
+							></span>
+						</span>
 					</div>
 					<button
 						class={[

@@ -1,6 +1,6 @@
 import { stream } from 'fetch-event-stream'
 
-type RequestMethod = 'GET' | 'POST' | 'PUT' | 'DELETE'
+type RequestMethod = 'GET' | 'POST' | 'PUT' | 'DELETE' | 'PATCH'
 
 export class API {
 	#baseURL: string
@@ -38,7 +38,7 @@ export class API {
 			throw new Error(`API Error: ${res.status} ${res.statusText} ${await res.text()}`)
 		}
 
-		console.log(res)
+		//console.log(res)
 
 		return res.json() as Promise<T>
 	}
@@ -53,6 +53,10 @@ export class API {
 
 	put<T>(endpoint: string, data: unknown, headers?: Record<string, string>) {
 		return this.#request<T>('PUT', endpoint, data, headers)
+	}
+
+	patch<T>(endpoint: string, data: unknown, headers?: Record<string, string>) {
+		return this.#request<T>('PATCH', endpoint, data, headers)
 	}
 
 	delete<T>(endpoint: string, headers?: Record<string, string>) {

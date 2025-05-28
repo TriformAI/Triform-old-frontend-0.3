@@ -4,13 +4,10 @@
 	import Button from '$lib/components/atoms/Button.svelte'
 	import type { Action } from '$lib/types/agent'
 	import { toast } from 'svelte-sonner'
-	import { selected } from '$lib/stores/panel.svelte'
-	import { onDestroy } from 'svelte'
 	import compare from 'just-compare'
-	import { clone } from '$lib/utils/clone'
+	import { debounce } from '$lib/utils/debounce'
 	import { API } from '$lib/api'
 	import PanelItem from '../PanelItem.svelte'
-	import { getCurrentFlowId, getNodes } from '$lib/stores/canvas.svelte'
 	import IconMagic from '~icons/material-symbols/magic-button'
 	import { confirmStore } from '$lib/stores/confirm.svelte'
 	import { source } from 'sveltekit-sse'
@@ -29,90 +26,64 @@
 	} from '$lib/stores/builder.svelte'
 	import { isAction } from '$lib/stores/canvas.svelte'
 	import { openPanelItems, toggleOpenPanelItem } from '$lib/stores/panel.svelte'
-
+	import { drafts } from '$lib/stores/canvas.svelte'
 	import { type Component } from '$lib/types/agent'
 	import { invalidate } from '$app/navigation'
+	import DirtyNote from '$lib/components/DirtyNote.svelte'
+
 	const { componentData }: { componentData: Component } = $props()
 
 	const api = new API()
 
-	const nodeId = $derived(selected.node?.id ?? getCurrentFlowId())
-	const node = $derived(getNodes().find(n => n.id === nodeId))
-
-	interface FormData {
-		name: string
-		intention: {
-			purpose: string
-			input: string
-			output: string
-		}
-	}
-
-	let initialData = $state<FormData>()!
-	let formData = $state<FormData>()!
-
-	const dataIsDirty = $derived(node?.data?.props.isDirty || !compare(formData, initialData))
-
-	function setFormdata() {
-		if (!componentData) {
-			return
-		}
-
-		const meta = componentData.meta
-
-		initialData = {
-			name: meta.name,
-			intention: (meta.intention as FormData['intention']) ?? {
-				purpose: '',
-				input: '',
-				output: ''
-			}
-		}
-
-		formData = clone(initialData)
-	}
-
-	setFormdata()
-
-	function updateData(isDirty: boolean) {
-		console.log({ nodeId })
-
-		if (!node || !node.data || !node.data.trinode || !componentData) {
-			return
-		}
-
-		const meta = componentData.meta
-		node.data.trinode.spec.meta = { ...meta, ...formData }
-		node.data.props.isDirty = isDirty
-	}
-
-	onDestroy(() => {
-		//updateData(dataIsDirty)
+	const draftData = $derived.by(() => {
+		return drafts[componentData.meta.id]
 	})
+
+	const dataIsDirty = $derived(draftData ? !compare(componentData.meta, draftData.meta) : false)
 
 	let isLoading = $state(false)
 	const isBuilding = $derived(componentData.meta.id in inProgressComponents)
 
-	async function onSubmit(e: SubmitEvent) {
+	async function publishMetadata(e: SubmitEvent) {
 		e.preventDefault()
 
 		isLoading = true
 
-		let payload = clone(componentData)
-		payload.meta = { ...payload.meta, ...formData }
-		console.log(payload)
-
 		try {
+			const payload = {
+				...componentData,
+				meta: draftData.meta
+			}
+
 			const result = await api.put<Action>(`components/${componentData.meta.id}`, payload)
-			toast.success('Metadata successfully updated!')
-			updateData(false)
+
+			// If spec is not dirty, delete draft
+			// Else, update draft with published meta
+			if (compare(componentData.spec, draftData.spec)) {
+				await api.delete<Action>(`components/${componentData.meta.id}/draft`)
+			} else {
+				await saveDraft({
+					...draftData,
+					meta: { ...result.meta }
+				})
+			}
+
 			invalidate('project')
+			toast.success('Metadata successfully updated!')
 		} catch (error) {
 			toast.error('Failed to update metadata')
 			console.error(error)
 		}
 
 		isLoading = false
+	}
+
+	async function saveDraft(data?: Component) {
+		if (!data) {
+			data = draftData
+		}
+
+		await api.patch<Action>(`components/${componentData.meta.id}/draft`, data)
 	}
 
 	// TODO: perhaps move this to the builder store, or some util function, but this will
@@ -123,16 +94,16 @@
 		if (!isAction(componentData)) return toast.error('Only actions can be built right now')
 		// Make sure all the metadata is filled out
 		const missingFields = []
-		if (!formData.name) missingFields.push('name')
-		if (!formData.intention.purpose) missingFields.push('intention')
-		if (!formData.intention.input) missingFields.push('input')
-		if (!formData.intention.output) missingFields.push('output')
+		if (!draftData.meta.name) missingFields.push('name')
+		if (!draftData.meta.intention?.purpose) missingFields.push('intention')
+		if (!draftData.meta.intention?.input) missingFields.push('input')
+		if (!draftData.meta.intention?.output) missingFields.push('output')
 		if (missingFields.length)
 			return toast.error(`Missing required fields: ${missingFields.join(', ')}`)
 
 		const confirmed = await confirmStore.show({
 			title: 'This will overwrite your current component',
-			message: componentData.resource.startsWith('action/')
+			message: isAction(componentData)
 				? 'Any code written in the action will be overwritten by the new component. Are you sure?'
 				: 'Any flows created within this flow will be overwritten by new components. Are you sure?'
 		})
@@ -140,7 +111,7 @@
 		if (!confirmed) return
 
 		// make sure the code tab is open
-		const nodeType = componentData.resource.startsWith('action/') ? 'action' : 'flow'
+		const nodeType = isAction(componentData) ? 'action' : 'flow'
 		if (!openPanelItems[nodeType].includes('Code')) {
 			toggleOpenPanelItem(nodeType, 'Code')
 		}
@@ -160,11 +131,8 @@
 					body: JSON.stringify({
 						payload: {
 							component: {
-								resource: componentData.resource,
-								meta: {
-									...componentData.meta,
-									...formData
-								},
+								resource: draftData.resource,
+								meta: draftData.meta,
 								spec: {
 									source: '',
 									readme: ''
@@ -235,7 +203,8 @@
 				inProgressComponents[componentId].message = 'Reviewing code...'
 			},
 			'code:review:completed': (payload: CodeReviewCompleted) => {
-				inProgressComponents[componentId].message = 'Finished reviewing code, considering changes...'
+				inProgressComponents[componentId].message =
+					'Finished reviewing code, considering changes...'
 			},
 			'action:build:completed': (payload: ActionBuildCompleted) => {
 				inProgressComponents[componentId].message = 'Finished building action'
@@ -281,58 +250,76 @@
 	}
 </script>
 
-<PanelItem {componentData} title="Metadata">
-	<form method="POST" class="grid grid-cols-2 gap-3" onsubmit={onSubmit}>
-		<InputField
-			containerClass="col-span-2"
-			required
-			label="Name"
-			name="name"
-			bind:value={formData.name}
-		/>
+{#if draftData}
+	<PanelItem {componentData} title="Metadata" isDirty={dataIsDirty}>
+		<form method="POST" class="grid grid-cols-2 gap-3" onsubmit={publishMetadata}>
+			<InputField
+				containerClass="col-span-2"
+				required
+				label="Name"
+				name="name"
+				oninput={debounce(saveDraft, 500)}
+				bind:value={draftData.meta.name}
+			/>
 
-		<TextField
-			rows={3}
-			class="col-span-2"
-			label="Purpose"
-			name="Purpose"
-			bind:value={formData.intention.purpose}
-		/>
+			<TextField
+				rows={3}
+				class="col-span-2"
+				label="Purpose"
+				name="Purpose"
+				oninput={debounce(saveDraft, 500)}
+				bind:value={draftData.meta.intention.purpose}
+			/>
 
-		<TextField rows={2} label="Expected input" name="input" bind:value={formData.intention.input} />
+			<TextField
+				rows={2}
+				label="Expected input"
+				name="input"
+				oninput={debounce(saveDraft, 500)}
+				bind:value={draftData.meta.intention.input}
+			/>
 
-		<TextField
-			rows={2}
-			label="Expected output"
-			name="output"
-			bind:value={formData.intention.output}
-		/>
+			<TextField
+				rows={2}
+				label="Expected output"
+				name="output"
+				oninput={debounce(saveDraft, 500)}
+				bind:value={draftData.meta.intention.output}
+			/>
 
-		<div class="col-span-2 flex justify-between">
-			<p class="text-main-400 text-sm">
-				{#if dataIsDirty}
-					You have unsaved changes
-				{/if}
-			</p>
+			<div class="col-span-2 flex">
+				<DirtyNote show={dataIsDirty} />
 
-			<div class="flex flex-row justify-end gap-x-4">
-				{#if componentData.resource.startsWith('action/')}
-					<Button variation="primary" type="button" onClick={buildComponent} isLoading={isBuilding}>
-						{#snippet icon()}
-							<IconMagic />
-						{/snippet}
+				<div class="ms-auto flex flex-row justify-end gap-x-4">
+					{#if isAction(componentData)}
+						<Button
+							variation="primary"
+							type="button"
+							onClick={buildComponent}
+							isLoading={isBuilding}
+						>
+							{#snippet icon()}
+								<IconMagic />
+							{/snippet}
+							{#snippet body()}
+								Build
+							{/snippet}
+						</Button>
+					{/if}
+
+					<Button
+						variation="vibrant"
+						type="submit"
+						class="ms-auto"
+						disabled={!dataIsDirty || isLoading}
+						{isLoading}
+					>
 						{#snippet body()}
-							Build
+							Update
 						{/snippet}
 					</Button>
-				{/if}
-
-				<Button variation="vibrant" type="submit" class="ms-auto py-2" {isLoading}>
-					{#snippet body()}
-						Save
-					{/snippet}
-				</Button>
+				</div>
 			</div>
-		</div>
-	</form>
-</PanelItem>
+		</form>
+	</PanelItem>
+{/if}

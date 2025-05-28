@@ -9,6 +9,8 @@
 	import IconAction from '~icons/mdi/rhombus'
 	import Button from '$lib/components/atoms/Button.svelte'
 	import type { Uuid } from '$lib/types/agent'
+	import { getFlowModel, getActionModel } from '$lib/nodeModels'
+	import { createComponent } from '$lib/actions/components'
 
 	interface Props {
 		id: Uuid
@@ -24,27 +26,30 @@
 	const { getNode, deleteElements } = useSvelteFlow
 
 	const componentTypes = $derived.by(() => {
-		const components = [
+		return [
 			{
 				label: 'Flow',
 				value: 'flow',
 				icon: IconFlow,
-				handler: () => {
-					addNode('flow', data.sourceIsParent ? 'parent' : data.sourceNodeId)
+				handler: async () => {
+					const newComponent = await createComponent(getFlowModel().spec)
+					addNode(newComponent, getNode(id)!.position, [
+						data.sourceIsParent ? 'parent' : data.sourceNodeId
+					])
+				}
+			},
+			{
+				label: 'Action',
+				value: 'action',
+				icon: IconAction,
+				handler: async () => {
+					const newComponent = await createComponent(getActionModel().spec)
+					addNode(newComponent, getNode(id)!.position, [
+						data.sourceIsParent ? 'parent' : data.sourceNodeId
+					])
 				}
 			}
 		]
-
-		components.push({
-			label: 'Action',
-			value: 'action',
-			icon: IconAction,
-			handler: () => {
-				addNode('action', data.sourceIsParent ? 'parent' : data.sourceNodeId)
-			}
-		})
-
-		return components
 	})
 
 	async function removeSelectorNode() {

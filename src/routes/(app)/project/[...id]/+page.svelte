@@ -4,16 +4,30 @@
 	import Confirm from '$lib/components/common/Confirm.svelte'
 	import PropsPanel from '$lib/components/PropsPanel.svelte'
 	import Spinner from '$lib/components/Spinner.svelte'
-	import { initFlow } from '$lib/stores/canvas.svelte'
+	import { initFlow, loadDrafts } from '$lib/stores/canvas.svelte'
 	import { SvelteFlowProvider } from '@xyflow/svelte'
 	import { sleep } from '$lib/utils/sleep'
+	import { onMount } from 'svelte'
+	import type { Component } from '$lib/types/agent'
+	import { loadComponents } from '$lib/stores/library.svelte.js'
 
 	const { data } = $props()
 	let isLoaded = $state(false)
 
 	$effect(() => {
+		if (data.drafts) {
+			loadDrafts(data.drafts)
+		}
+	})
+
+	onMount(() => {
+		loadComponents(data.components ?? [])
+	})
+
+	$effect(() => {
 		;(async () => {
-			await initFlow(data.project)
+			if (!data.project) return
+			await initFlow(data.project, data.positions)
 			flowComponent?.fitView({
 				maxZoom: 1,
 				minZoom: 1

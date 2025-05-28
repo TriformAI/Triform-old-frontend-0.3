@@ -27,3 +27,11 @@ export async function PUT({ request, locals }) {
 
 	return json(updatedComponent)
 }
+
+export async function GET({ params, locals }) {
+	const { id } = params
+
+	const component = await locals.api.get<Component>(`components/${id}`)
+
+	return json(component)
+}

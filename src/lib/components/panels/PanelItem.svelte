@@ -4,15 +4,17 @@
 	import { openPanelItems, toggleOpenPanelItem, selected } from '$lib/stores/panel.svelte'
 	import { getCurrentFlowId } from '$lib/stores/canvas.svelte'
 	import type { Component } from '$lib/types/agent'
+	import IconAlert from '~icons/mdi/liquid-spot'
 
 	export interface Props {
 		componentData: Component
 		title: string
 		children: Snippet
+		isDirty?: boolean
 		forceOpen?: boolean
 	}
 
-	let { componentData, title, children, forceOpen = false }: Props = $props()
+	let { componentData, title, children, isDirty = false, forceOpen = false }: Props = $props()
 
 	const nodeType = $derived.by(() => {
 		if (!componentData) return
@@ -37,10 +39,22 @@
 		<button
 			type="button"
 			onclick={() => toggleOpenPanelItem(nodeType!, title)}
-			class="me-auto flex items-center gap-1"
+			class={['me-auto flex w-full items-center gap-1']}
 		>
-			<IconChevronRight class={['transition-transform', isOpen ? 'rotate-90' : '']} />
-			<h2 class="eyebrow inline-flex">{title}</h2>
+			<IconChevronRight class={[' transition-transform', isOpen ? 'rotate-90' : '']} />
+
+			<h2 class={['eyebrow  text-main-300 transition-colors']}>
+				{title}
+			</h2>
+
+			<div
+				class={[
+					'bg-warning-600 size-1.5 -translate-y-0.5 rounded-full transition-all',
+					isDirty ? 'scale-100' : 'scale-0'
+				]}
+				aria-label="Unsaved changes"
+				data-balloon-pos="right"
+			></div>
 		</button>
 	{/if}
 

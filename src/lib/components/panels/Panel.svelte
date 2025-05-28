@@ -17,15 +17,17 @@
 		panels: Snippet<
 			[
 				{
-					CodeEditor: SvelteComponent
-					Execute: SvelteComponent
-					Metadata: SvelteComponent
-					ProjectSettings: SvelteComponent
-					Variables: SvelteComponent
+					CodeEditor: typeof CodeEditor
+					Execute: typeof Execute
+					Metadata: typeof Metadata
+					ProjectSettings: typeof ProjectSettings
+					Variables: typeof Variables
 				}
 			]
 		>
 	}
+
+	const { componentData, Icon, panels }: Props = $props()
 
 	const actions = $derived.by(() => {
 		const type = 'flow-node'
@@ -36,10 +38,8 @@
 		fn(componentData)
 	}
 
-	const { componentData, Icon, panels }: Props = $props()
-
-	const title = $derived(componentData.meta.name ?? 'Project')
-	const desc = $derived(componentData.meta.intention?.purpose)
+	const title = $derived(componentData?.meta?.name ?? 'Project')
+	const desc = $derived(componentData?.meta?.intention?.purpose)
 </script>
 
 <div class="overflow-x-hidden">
@@ -78,7 +78,9 @@
 		{/if}
 	</div>
 
-	<div class="divide-main-800 grid divide-y">
-		{@render panels({ CodeEditor, Execute, Metadata, ProjectSettings, Variables })}
-	</div>
+	{#if componentData}
+		<div class="divide-main-800 grid divide-y">
+			{@render panels({ CodeEditor, Execute, Metadata, ProjectSettings, Variables })}
+		</div>
+	{/if}
 </div>

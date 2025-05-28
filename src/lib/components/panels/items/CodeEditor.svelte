@@ -3,57 +3,38 @@
 	import Editor from '$lib/components/atoms/Editor.svelte'
 	import LightEditor from '$lib/components/atoms/LightEditor.svelte'
 	import Tabs from '$lib/components/atoms/Tabs.svelte'
-	import { selected } from '$lib/stores/panel.svelte'
 	import Button from '$lib/components/atoms/Button.svelte'
 	import type { Action } from '$lib/types/agent'
-	import { onDestroy } from 'svelte'
 	import { toast } from 'svelte-sonner'
 	import compare from 'just-compare'
-	import pick from 'just-pick'
-	import { clone } from '$lib/utils/clone'
 	import PanelItem from '../PanelItem.svelte'
-	import { getCurrentFlowId, getNodes, isAction } from '$lib/stores/canvas.svelte'
+	import { drafts } from '$lib/stores/canvas.svelte'
 	import { inProgressComponents } from '$lib/stores/builder.svelte'
 	import { blur } from 'svelte/transition'
 	import { type Component } from '$lib/types/agent'
 	import { invalidate } from '$app/navigation'
+	import DirtyNote from '$lib/components/DirtyNote.svelte'
+	import { debounce } from '$lib/utils/debounce'
 
 	const { componentData }: { componentData: Component } = $props()
 
 	const api = new API()
 
-	const nodeId = $derived(selected.node?.id ?? getCurrentFlowId())
-	const node = $derived(getNodes().find(n => n.id === nodeId))
+	const draftData = $derived.by(() => {
+		return drafts[componentData.meta.id] as Action
+	})
 
-	interface FormData {
-		source: string
-		readme: string
-		deps: string
-	}
+	const dataIsDirty = $derived.by(() => {
+		return draftData ? !compare(componentData.spec, draftData.spec) : false
+	})
 
 	const filenames = {
 		source: 'action.py',
 		readme: 'README.md',
 		deps: 'requirements.txt'
-	}
+	} as const
 
-	type FileType = keyof typeof initialData
-
-	let initialData = $state<FormData>()!
-	let formData = $state<FormData>()
-
-	const dataIsDirty = $derived(selected.isDirty || !compare(initialData, formData))
-
-	function setFormdata() {
-		if (!isAction(componentData)) {
-			return
-		}
-
-		initialData = pick(componentData.spec, ['source', 'readme', 'deps'])
-		formData = clone(initialData)
-	}
-
-	setFormdata()
+	type FileType = keyof typeof filenames
 
 	// if we're building, we need to sync the component that's being bult to our
 	// local form data, so it's as if we've written it ourselves
@@ -62,53 +43,48 @@
 		if (!newComponent) return
 
 		// important that this is in the same order as the tabs
-		const newData: FormData = {
+		const newData = {
 			source: newComponent.spec.source,
 			readme: newComponent.spec.readme,
 			deps: newComponent.spec.deps
 		}
 		// switch tab depending on which file was updated
 		const idx = Object.keys(newData).findIndex(
-			key => newData[key as FileType] !== formData[key as FileType]
+			key => newData[key as FileType] !== draftData.spec[key]
 		)
+
 		if (idx > -1) activeTab = idx
-		Object.assign(formData, newData)
+
+		draftData.spec = {
+			...draftData.spec,
+			...newData
+		}
 	})
 
-	function updateData(isDirty: boolean) {
-		if (!node || !node.data || !node.data.trinode || !componentData) {
-			return
-		}
-
-		const meta = componentData.meta
-		node.data.trinode.spec.meta = { ...meta, ...formData }
-		node.data.props.isDirty = isDirty
-	}
-
-	onDestroy(() => {
-		//updateData(dataIsDirty)
-	})
-
-	const updateComponent = async () => {
-		const nodeId = selected.node?.id ?? getCurrentFlowId()
-
-		if (!nodeId) {
-			return toast.error('No node selected')
-		}
-
-		const payload = clone(componentData)
-		payload.spec = { ...payload.spec, ...formData }
-
+	const publishSpec = async () => {
 		try {
-			const _result = await api.put<Action>(`components/${componentData.meta.id}`, payload)
+			const payload = {
+				...componentData,
+				spec: draftData.spec
+			}
 
-			// Reset original files to current files and set isDirty to false
-			updateData(false)
+			const result = await api.put<Action>(`components/${componentData.meta.id}`, payload)
+			// If meta is not dirty, delete draft
+			// Else, update draft with published spec
+			if (compare(componentData.meta, draftData.meta)) {
+				await api.delete<Action>(`components/${componentData.meta.id}/draft`)
+			} else {
+				await saveDraft({
+					...draftData,
+					spec: { ...result.spec }
+				})
+			}
+
 			invalidate('project')
-			toast.success('Component successfully published!')
+			toast.success('Code successfully published!')
 		} catch (e) {
-			console.error('Failed to publish component', e)
-			toast.error('Failed to publish component')
+			console.error('Failed to publish code', e)
+			toast.error('Failed to publish code')
 		}
 	}
 
@@ -116,20 +92,25 @@
 
 	// Get the keys from files as dynamic tabs
 	const tabs = $derived.by(() => {
-		if (!formData) {
-			return []
-		}
-		return Object.keys(formData).map(key => ({
-			key: key as FileType,
-			label: filenames[key as FileType]
+		return Object.entries(filenames).map(([key, label]) => ({
+			key,
+			label
 		}))
 	})
 
 	const componentId = $derived(componentData.meta.id)
 	const isBuilding = $derived(componentId in inProgressComponents)
+
+	async function saveDraft(data?: Component) {
+		if (!data) {
+			data = draftData
+		}
+
+		await api.patch<Action>(`components/${componentData.meta.id}/draft`, data)
+	}
 </script>
 
-<PanelItem title="Code" {componentData}>
+<PanelItem title="Code" {componentData} isDirty={dataIsDirty}>
 	<div class="relative">
 		<Tabs {tabs} bind:activeTab />
 		<div
@@ -138,22 +119,24 @@
 				isBuilding && 'opacity-50 grayscale-75'
 			]}
 		>
-			{#if formData}
-				{#each Object.entries(formData) as [key, _value], idx (key)}
-					{@const language = filenames[key as FileType].split('.').pop() as 'py' | 'md' | 'txt'}
+			{#if draftData}
+				{#each Object.entries(filenames) as [key, value], idx (key)}
+					{@const language = value.split('.').pop() as 'py' | 'md' | 'txt'}
 					{#if language === 'py'}
 						<Editor
-							bind:code={formData[key as FileType]}
+							bind:code={draftData.spec[key as FileType]}
 							class={`${idx === activeTab ? 'block' : 'hidden'} absolute h-full w-full rounded-md`}
 							readOnly={isBuilding}
+							onUpdate={debounce(saveDraft, 500)}
 						/>
 					{:else}
 						<LightEditor
 							{language}
-							bind:value={formData[key as FileType]}
+							bind:value={draftData.spec[key as FileType]}
 							wordWrap={true}
 							class={`${idx === activeTab ? 'block' : 'hidden'} bg-main-800 absolute h-full w-full rounded-md ps-6 pt-2.5 text-sm`}
 							readOnly={isBuilding}
+							onUpdate={debounce(saveDraft, 500)}
 						/>
 					{/if}
 				{/each}
@@ -186,20 +169,18 @@
 	</div>
 
 	<div class="mt-4 flex items-center justify-between">
-		{#if dataIsDirty}
-			<p class="text-main-400 text-sm">You have unsaved changes</p>
-		{/if}
+		<!-- <DirtyNote show={dataIsDirty} /> -->
 
 		<Button
 			class="ms-auto"
 			type="button"
-			onClick={updateComponent}
+			onClick={publishSpec}
 			autoLoad="promise"
 			disabled={!dataIsDirty || isBuilding}
 			variation="vibrant"
 		>
 			{#snippet body()}
-				Save
+				Publish
 			{/snippet}
 		</Button>
 	</div>
