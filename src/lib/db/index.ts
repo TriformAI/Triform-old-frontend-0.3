@@ -6,6 +6,8 @@ import ws from 'ws'
 
 neonConfig.webSocketConstructor = ws
 
+console.log('POSTGRES_URL', POSTGRES_URL)
+
 const pool = new Pool({
 	connectionString: POSTGRES_URL
 })
