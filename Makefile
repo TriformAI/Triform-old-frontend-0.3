@@ -12,6 +12,7 @@ VERSION ?= $(GIT_TAG)-$(GIT_SHORT_SHA)
 image:
 	@docker build \
 		--load \
+		--env "POSTGRES_URL=hello" \
 		-t $(IMAGE):$(VERSION) .
 
 .PHONY: image-amd64

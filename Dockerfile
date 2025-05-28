@@ -8,8 +8,6 @@ RUN bun install
 
 COPY . .
 
-ENV POSTGRES_URL=""
-
 RUN bun run build
 
 
