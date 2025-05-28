@@ -46,7 +46,10 @@ spec:
         - name: HOST_HEADER
           value: x-forwarded-host
         - name: POSTGRES_URL
-          value: {{ .Values.postgresUrl | quote }}
+          valueFrom:
+            secretKeyRef:
+              name: {{ .Release.Name }}
+              key: postgres_url
         ports:
         - containerPort: {{ .Values.port }}
           name: http
