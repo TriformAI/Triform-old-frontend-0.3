@@ -33,6 +33,7 @@ deploy:
 	fi
 	@helm secrets upgrade --install $(PKG_NAME) \
 		--values k8s/$(GKE_CLUSTER)/values.yaml \
+		--values k8s/chart/secrets.enc.yaml \
 		--set image.tag=$(VERSION) \
 		--kube-context gke_$(PROJECT_ID)_$(GKE_REGION)_$(GKE_CLUSTER) \
 		--wait \

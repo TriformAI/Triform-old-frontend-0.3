@@ -45,6 +45,8 @@ spec:
           value: x-forwarded-proto
         - name: HOST_HEADER
           value: x-forwarded-host
+        - name: POSTGRES_URL
+          value: {{ .Values.postgresUrl | quote }}
         ports:
         - containerPort: {{ .Values.port }}
           name: http
