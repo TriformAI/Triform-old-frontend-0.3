@@ -181,7 +181,7 @@
 					}}
 					disableKeyboardA11y={true}
 					onconnectend={(...args) => handleConnectEnd(...args, useSvelteFlow)}
-					snapGrid={[10, 10]}
+					snapGrid={[20, 20]}
 					proOptions={{ hideAttribution: true }}
 					zoomOnDoubleClick={false}
 					onbeforedelete={handleBeforeDelete}
