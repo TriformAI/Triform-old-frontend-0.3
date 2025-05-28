@@ -1,7 +1,7 @@
 FROM oven/bun:1-slim AS builder
 WORKDIR /app
 
-RUN apk add --no-cache git python3 make g++
+RUN apt-get update && apt-get install -y git python3 make g++
 
 COPY package.json bun.lockb .
 RUN bun install
