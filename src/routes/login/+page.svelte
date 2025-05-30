@@ -25,11 +25,14 @@
 
 	const onLogin = (provider: (typeof providers)[number]) => {
 		chosenProvider = provider.name
+		localStorage.setItem('lastLoginOption', provider.name)
 		// Return a promise that never resolves so the button starts loading while we're redirecting the user
 		return new Promise(() => {})
 	}
 
+	let lastOption = $state<string>()
 	onMount(() => {
+		lastOption = localStorage.getItem('lastLoginOption') ?? ''
 		// Parse out error from query string
 		const error = new URLSearchParams(window.location.search).get('error')
 		console.log('error', error)
@@ -53,22 +56,36 @@
 			<span class=" text-main-400 text-center">Please login to continue</span>
 		</p>
 
-		<div class=" flex w-xs flex-col items-center gap-y-4">
+		<div class="flex w-xs flex-col items-center gap-y-4">
 			{#each providers as provider}
-				<Button
-					class="w-full"
-					href={`${apiUrl}/login/${provider.name.toLowerCase()}/authorize`}
-					onClick={() => onLogin(provider)}
-					autoLoad="promise"
-					disabled={chosenProvider === provider.name}
-				>
-					{#snippet icon()}
-						<provider.icon />
-					{/snippet}
-					{#snippet body()}
-						{provider.name}
-					{/snippet}
-				</Button>
+				<div class="relative w-full">
+					<Button
+						class="peer w-full"
+						href={`${apiUrl}/login/${provider.name.toLowerCase()}/authorize`}
+						onClick={() => onLogin(provider)}
+						autoLoad="promise"
+						disabled={chosenProvider === provider.name}
+					>
+						{#snippet icon()}
+							<provider.icon />
+						{/snippet}
+						{#snippet body()}
+							{provider.name}
+						{/snippet}
+					</Button>
+					{#if provider.name === lastOption}
+						<span
+							class={[
+								'absolute -top-2 -right-5 px-3 py-1',
+								'text-accent-200 bg-accent-700 border-accent-600 rounded-full border inset-shadow-xs',
+								'text-xs font-bold tracking-wider uppercase',
+								'peer-hover:bg-accent-600 peer-hover:border-accent-500 peer-hover:text-accent-50 transition'
+							]}
+						>
+							Last
+						</span>
+					{/if}
+				</div>
 			{/each}
 		</div>
 	</div>
