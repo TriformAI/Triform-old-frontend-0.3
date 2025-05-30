@@ -11,6 +11,10 @@
 	import type { Uuid } from '$lib/types/agent'
 	import { getFlowModel, getActionModel } from '$lib/nodeModels'
 	import { createComponent } from '$lib/actions/components'
+	import type { Component } from '$lib/types/agent'
+	import { blur, slide } from 'svelte/transition'
+	import InputField from '../atoms/InputField.svelte'
+	import { toast } from 'svelte-sonner'
 
 	interface Props {
 		id: Uuid
@@ -25,6 +29,23 @@
 	const useSvelteFlow = useSvelteFlowHook()
 	const { getNode, deleteElements } = useSvelteFlow
 
+	let pendingComponent = $state<Component>()
+
+	let inputEl: HTMLInputElement | null = $state(null)
+	const onInputCreate = (el: HTMLFormElement) => {
+		setTimeout(() => {
+			const input = el?.querySelector('input')
+			if (!input) return
+			inputEl = input
+			focusInput()
+		}, 100)
+	}
+	const focusInput = () => {
+		if (!inputEl) return
+		inputEl.focus()
+		inputEl.select()
+	}
+
 	const componentTypes = $derived.by(() => {
 		return [
 			{
@@ -32,10 +53,9 @@
 				value: 'flow',
 				icon: IconFlow,
 				handler: async () => {
-					const newComponent = await createComponent(getFlowModel().spec)
-					addNode(newComponent, getNode(id)!.position, [
-						data.sourceIsParent ? 'parent' : data.sourceNodeId
-					])
+					pendingComponent = getFlowModel().spec
+					pendingComponent!.meta.name = 'Flow'
+					setTimeout(focusInput, 50)
 				}
 			},
 			{
@@ -43,14 +63,35 @@
 				value: 'action',
 				icon: IconAction,
 				handler: async () => {
-					const newComponent = await createComponent(getActionModel().spec)
-					addNode(newComponent, getNode(id)!.position, [
-						data.sourceIsParent ? 'parent' : data.sourceNodeId
-					])
+					pendingComponent = getActionModel().spec
+					pendingComponent.meta.name = 'Action'
+					setTimeout(focusInput, 50)
 				}
 			}
 		]
 	})
+
+	let addingComponent = $state(false)
+	const finaliseComponent = async () => {
+		if (!pendingComponent || addingComponent) return
+		try {
+			addingComponent = true
+			pendingComponent.meta.name = pendingComponent.meta.name.trim()
+			if (!pendingComponent.meta.name) {
+				toast.error('Name is required')
+				return
+			}
+			const newComponent = await createComponent(pendingComponent)
+			await addNode(newComponent, getNode(id)!.position, [
+				data.sourceIsParent ? 'parent' : data.sourceNodeId
+			])
+		} catch (error) {
+			console.error(error)
+			toast.error('Failed to create component')
+		} finally {
+			addingComponent = false
+		}
+	}
 
 	async function removeSelectorNode() {
 		const node = getNode(id)
@@ -70,7 +111,7 @@
 />
 
 <div
-	class={['border-main-800 bg-main-850 shadow-window rounded border p-2']}
+	class={['border-main-800 bg-main-850 shadow-window min-w-64 rounded border p-3']}
 	use:clickOutside={{
 		eventType: 'mousedown',
 		handler: () => {
@@ -87,7 +128,9 @@
 	/>
 
 	<div class=" mb-4 flex justify-between">
-		<h2 class="text-main-400 text-xs font-medium whitespace-nowrap">Create component</h2>
+		<h2 class="text-main-400 text-xs font-medium">
+			Create {pendingComponent?.resource?.split('/')[0] ?? 'component'}
+		</h2>
 		<button class="ms-6" type="button" onclick={removeSelectorNode}>
 			<IconClose class="size-4" />
 		</button>
@@ -101,6 +144,7 @@
 					type.handler()
 				}}
 				autoLoad="promise"
+				variation={pendingComponent?.resource.startsWith(type.value) ? 'vibrant' : 'primary'}
 			>
 				{#snippet icon()}
 					<type.icon class="size-4" />
@@ -111,6 +155,32 @@
 			</Button>
 		{/each}
 	</div>
+	{#if pendingComponent}
+		<form
+			transition:slide={{ duration: 300 }}
+			use:onInputCreate
+			class="mt-4"
+			onsubmit={finaliseComponent}
+		>
+			<InputField
+				label="Name"
+				placeholder="Enter a name for the component"
+				required
+				bind:value={pendingComponent.meta.name}
+			/>
+			<Button
+				variation="primary"
+				class="mt-3 w-full px-2 py-1 text-sm"
+				type="submit"
+				isLoading={addingComponent}
+				disabled={addingComponent}
+			>
+				{#snippet body()}
+					Create
+				{/snippet}
+			</Button>
+		</form>
+	{/if}
 
 	<Handle
 		{id}
