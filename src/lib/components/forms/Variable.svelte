@@ -37,8 +37,11 @@
 
 		isCreating = true
 
+		// Create variable
 		try {
-			// Create variable
+			// copy dev to stage and prod for now (until we have support for all 3)
+			payload.value.stage = payload.value.dev
+			payload.value.prod = payload.value.dev
 			const result = await api.post<Variable>('variables', payload)
 
 			// Attach variable to node
@@ -79,38 +82,44 @@
 		</div>
 
 		<form method="POST" class="grid" onsubmit={handleSubmit}>
-			<div class="mb-auto grid gap-2">
+			<div class="mb-auto grid gap-4">
 				<InputField name="name" label="Name" containerClass="" bind:value={payload.name} />
 
-				<InputField
-					name="key"
-					label="Key"
-					bind:value={() => payload.key, value => (payload.key = toSnakeUpperCase(value))}
-					onpaste={e => {
-						const target = e.target as HTMLInputElement
-						const pastedText = e.clipboardData?.getData('text')
-						e.preventDefault()
-
-						if (!pastedText) {
-							return
-						}
-
-						const parts = pastedText.split('=')
-
-						target.value = toSnakeUpperCase(parts[0])
-
-						if (parts[1]) {
-							const nextInput = document.querySelector<HTMLInputElement>('input[name="value_dev"]')
-							if (nextInput) {
-								nextInput.value = parts[1].trim()
-								nextInput.focus()
+				<div class="grid grid-cols-[1fr_auto_1fr] items-center gap-2">
+					<InputField
+						name="key"
+						label="Key"
+						bind:value={() => payload.key, value => (payload.key = toSnakeUpperCase(value))}
+						onpaste={e => {
+							const target = e.target as HTMLInputElement
+							const pastedText = e.clipboardData?.getData('text')
+							e.preventDefault()
+							if (!pastedText) {
+								return
 							}
-						}
-					}}
-					class="font-mono"
-				/>
+							const parts = pastedText.split('=')
+							target.value = toSnakeUpperCase(parts[0])
+							if (parts[1]) {
+								const nextInput =
+									document.querySelector<HTMLInputElement>('input[name="value_dev"]')
+								if (nextInput) {
+									nextInput.value = parts[1].trim()
+									nextInput.focus()
+								}
+							}
+						}}
+						class="font-mono"
+					/>
+					<span class="text-main-400 mt-4">=</span>
+					<InputField
+						class="col-span-5 font-mono"
+						name={`value_dev`}
+						label="Value"
+						bind:value={payload.value.dev}
+					/>
+				</div>
 
-				<p class="mt-2 font-medium opacity-60">Values</p>
+				<!-- <p class="mt-2 font-medium opacity-60">Values</p>
 				<div class="grid gap-2">
 					{#each ['Dev', 'Stage', 'Prod'] as item}
 						<InputField
@@ -121,7 +130,7 @@
 							bind:value={payload.value[item.toLowerCase() as keyof typeof payload.value]}
 						/>
 					{/each}
-				</div>
+				</div> -->
 			</div>
 
 			<div class="mt-auto grid grid-cols-2 gap-4">
