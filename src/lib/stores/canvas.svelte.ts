@@ -302,6 +302,10 @@ export async function addNode(
 	}
 
 	await invalidateAll()
+
+	// select the new node
+	const node = nodesStore.find(node => node.id === newNodeId)
+	if (node) node.selected = true
 }
 
 // Deletes a given node from the project or flow component
