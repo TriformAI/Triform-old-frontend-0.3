@@ -17,7 +17,7 @@
 		return undefined
 	})
 
-	const showLibrary = $derived(!selected.node)
+	const showLibrary = $derived(!selected.node || selected.node.type === 'parent-node')
 
 	const nodeType = $derived.by(() => {
 		const type = selected.node?.type
