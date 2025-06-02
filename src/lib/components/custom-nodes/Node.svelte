@@ -40,7 +40,7 @@
 		// Whenever a node is double clicked, run the first action menu item
 		if (!node?.type) return
 		const actions = getActions(node.type)
-		actions[0]?.onClick?.(node)
+		actions?.filter(a => !a.isDangerous)[0]?.onClick?.(node)
 	}
 
 	let contextIsOpen = $state(false)
