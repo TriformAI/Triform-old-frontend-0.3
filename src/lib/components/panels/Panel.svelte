@@ -1,5 +1,5 @@
 <script lang="ts">
-	import type { Component as SvelteComponent, Snippet } from 'svelte'
+	import { type Component as SvelteComponent, type Snippet, setContext } from 'svelte'
 	import type { onClickFn } from '$lib/stores/nodeActions.svelte'
 	import CodeEditor from './items/CodeEditor.svelte'
 	import Execute from './items/Execute/Root.svelte'
@@ -7,7 +7,7 @@
 	import ProjectSettings from './items/ProjectSettings.svelte'
 	import Variables from './items/Variables/Root.svelte'
 	import { getActions } from '$lib/stores/nodeActions.svelte'
-
+	import Switch from '$lib/components/atoms/Switch.svelte'
 	import { type Component } from '$lib/types/agent'
 	import { type Project } from '$lib/types/project'
 
@@ -40,10 +40,14 @@
 
 	const title = $derived(componentData?.meta?.name ?? 'Project')
 	const desc = $derived(componentData?.meta?.intention?.purpose)
+
+	let useDraft = $state({ value: true })
+
+	setContext('use-draft', useDraft)
 </script>
 
 <div class="overflow-x-hidden">
-	<div class="border-b-main-800 mb-2 border-b px-3 pb-4">
+	<div class="border-b-main-800 mb-2 border-b px-3 pe-8 pb-4">
 		<div class="flex items-center gap-4">
 			<h2 class="flex items-center gap-2 truncate text-lg font-semibold">
 				{#if Icon}
@@ -71,6 +75,11 @@
 					</li>
 				{/each}
 			</ul>
+
+			<Switch bind:checked={useDraft.value}
+				><code class="font-semibold tracking-wider uppercase">Draft</code>
+				<span class="text-main-300">mode</span></Switch
+			>
 		</div>
 
 		{#if desc}

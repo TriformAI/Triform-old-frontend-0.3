@@ -85,4 +85,4 @@
 	})
 </script>
 
-<div use:initEditor class={['overflow-auto', classes]}></div>
+<div use:initEditor class={['overflow-auto', readOnly && 'cursor-not-allowed', classes]}></div>

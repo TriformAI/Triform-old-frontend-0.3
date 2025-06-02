@@ -4,7 +4,6 @@
 	import { openPanelItems, toggleOpenPanelItem, selected } from '$lib/stores/panel.svelte'
 	import { getCurrentFlowId } from '$lib/stores/canvas.svelte'
 	import type { Component } from '$lib/types/agent'
-	import IconAlert from '~icons/mdi/liquid-spot'
 
 	export interface Props {
 		componentData: Component

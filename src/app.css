@@ -275,4 +275,40 @@
 	.input-text {
 		@apply border-main-700 bg-main-800 text-main-200 hover:border-main-600 focus:border-main-600 w-full rounded-md border px-3 py-2 text-sm transition outline-none;
 	}
+
+	.radio {
+		@apply border-accent-100 bg-accent-100 size-3.5 cursor-pointer appearance-none rounded-full border-3 transition;
+	}
+
+	.radio:checked {
+		@apply bg-accent-600;
+	}
+
+	.switch {
+		&:has(input:focus-visible) {
+			@apply ring-2;
+		}
+
+		[data-switch] {
+			@apply bg-main-600;
+		}
+
+		&:has(:checked) [data-switch] {
+			@apply bg-accent-500;
+			&:after {
+				@apply translate-x-3;
+			}
+		}
+
+		[data-switch]:after {
+			content: '';
+			@apply bg-accent-500 absolute top-0.5 left-0.5 size-4 rounded-full;
+			background: #fff;
+			transition: all 0.3s ease-in-out;
+		}
+
+		input {
+			@apply sr-only;
+		}
+	}
 }

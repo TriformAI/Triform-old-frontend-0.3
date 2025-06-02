@@ -4,8 +4,8 @@
 	import type * as Monaco from 'monaco-editor/esm/vs/editor/editor.api'
 	import githubDarkTheme from '$lib/editor-themes/github-dark.json'
 
-	let editor: Monaco.editor.IStandaloneCodeEditor
-	let monaco: typeof Monaco
+	let editor = $state<Monaco.editor.IStandaloneCodeEditor>()
+	let monaco = $state<typeof Monaco>()
 
 	interface Props {
 		code: string
@@ -38,8 +38,10 @@
 			})
 
 			editor.onDidChangeModelContent(_e => {
-				code = editor.getValue()
-				onUpdate?.(code)
+				if (editor) {
+					code = editor.getValue()
+					onUpdate?.(code)
+				}
 			})
 
 			// @ts-expect-error theme typing
@@ -63,6 +65,7 @@
 		if (!editor) return
 		editor.updateOptions({ readOnly })
 	})
+
 	// update the editor value if it's changed after the editor is initialized
 	$effect(() => {
 		const ref = code
@@ -70,6 +73,10 @@
 		if (ref !== editor.getValue()) editor.setValue(ref)
 	})
 </script>
+
+{#if readOnly}
+	<div class="absolute inset-0 z-50 cursor-not-allowed"></div>
+{/if}
 
 <div
 	class={['bg-main-800 h-full w-full animate-pulse rounded-md', editorInitialized && 'hidden']}

@@ -10,6 +10,8 @@ import type { Uuid } from '$lib/types/agent'
 }
 */
 export const handleDragStop = async () => {
+	console.log('handleDragStop')
+
 	// if current flow id is not defined, we're at the project level
 	const isRootLevel = !getCurrentFlowId()
 	const parentId = isRootLevel ? page.params.id : getCurrentFlow()?.component_id

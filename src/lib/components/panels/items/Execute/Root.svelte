@@ -1,24 +1,21 @@
 <script lang="ts">
-	import type { ExecutionTraceData } from '$lib/types/execution'
-
 	import { toast } from 'svelte-sonner'
-	import { source } from 'sveltekit-sse'
 	import IconAdd from '~icons/mdi/plus-circle-outline'
 	import Button from '../../../atoms/Button.svelte'
 	import LightEditor from '$lib/components/atoms/LightEditor.svelte'
-
 	import IconPlay from '~icons/material-symbols/play-arrow-outline-rounded'
 	import IconCopy from '~icons/mdi/content-copy'
-	import { createExecution } from '$lib/utils/execution'
 	import { selected } from '$lib/stores/panel.svelte'
 	import PanelItem from '../../PanelItem.svelte'
 	import PayloadDialog from './PayloadDialog.svelte'
 	import ComboBox from '$lib/components/atoms/ComboBox.svelte'
 	import { page } from '$app/state'
 	import { blur } from 'svelte/transition'
-
+	import { executeComponent, executor } from '$lib/actions/executor.svelte'
 	import { type Component } from '$lib/types/agent'
-	import { getCurrentFlowId } from '$lib/stores/canvas.svelte'
+	import { drafts } from '$lib/stores/canvas.svelte'
+	import { getContext } from 'svelte'
+
 	const { componentData }: { componentData: Component } = $props()
 
 	let payload = $state('{\n\t"msg": "hello world"\n}')
@@ -26,144 +23,12 @@
 		payload = selected.payload
 	}
 
-	let result = $state('')
-
 	let payloadDialog = $state<HTMLDialogElement>()
 
-	let isRunning = $state(false)
-	let executionState = $state('')
-
 	const formattedExecutionState = $derived.by(() => {
-		const state = executionState.split('_').join(' ')
+		const state = executor.state.split('_').join(' ')
 		return state.substring(0, 1).toUpperCase() + state.substring(1)
 	})
-
-	const run = async () => {
-		if (!payload) return toast.error('Please enter a payload')
-		if (!isValidJson) return toast.error('The payload needs to be valid JSON')
-
-		const nodeId = selected.node?.id ?? getCurrentFlowId()
-
-		if (!nodeId) {
-			return toast.error('No node selected')
-		}
-
-		isRunning = true
-
-		const execution = createExecution(nodeId, JSON.parse(payload), componentData)
-		console.log('creating execution', execution)
-
-		let stream: ReturnType<typeof source> | undefined = undefined
-
-		try {
-			stream = source(`/api/executions`, {
-				options: {
-					body: JSON.stringify(execution),
-					method: 'POST',
-					credentials: 'include'
-				},
-				error: err => {
-					throw err
-				},
-				cache: false
-			})
-			console.log('stream', stream)
-			executionState = 'Starting execution'
-
-			const extractErrorMessage = (msg: string): string => {
-				let data: ExecutionTraceData
-				try {
-					data = JSON.parse(msg as unknown as string)
-				} catch (e) {
-					console.error('Failed to parse error message', e)
-					return ''
-				}
-				if (!('error' in data.payload)) return ''
-				return typeof data.payload.error === 'string'
-					? data.payload.error
-					: JSON.stringify(data.payload.error, null, 2)
-			}
-
-			// Define event handlers
-			const eventHandlers = {
-				close: msg => {
-					if (msg === 'finished') {
-						console.log('finished')
-						isRunning = false
-						stream?.close()
-						stream = undefined
-					}
-				},
-				error: msg => {
-					isRunning = false
-					toast.error('Error executing component')
-					let parsedMsg: Record<string, unknown>
-					try {
-						parsedMsg = JSON.parse(msg as unknown as string)
-					} catch (e) {
-						console.error('Failed to parse error message', e)
-						return
-					}
-					console.error('Error executing component', parsedMsg.error ?? parsedMsg)
-				},
-				action_started: msg => {
-					let data: ExecutionTraceData
-					try {
-						data = JSON.parse(msg as unknown as string)
-					} catch (e) {
-						console.error('Failed to parse execution trace data', e)
-						return
-					}
-					if (!('result' in data.payload)) return
-					console.log('starting action')
-				},
-				execution_completed: msg => {
-					console.log('got execution_completed', msg)
-					let data: ExecutionTraceData
-					try {
-						data = JSON.parse(msg as unknown as string)
-					} catch (e) {
-						console.error('Failed to parse execution trace data', e)
-						return
-					}
-					if (!('result' in data.payload)) return
-					let res: unknown
-					// If we executed just one action, use the result from just that one
-					if (data.payload.result && Object.keys(data.payload.result).length === 1) {
-						res = Object.values(data.payload.result)[0]
-					} else {
-						// Otherwise, show all results for now
-						res = data.payload.result
-					}
-					result = typeof res === 'string' ? res : JSON.stringify(res, null, 2)
-					console.log(result)
-				},
-				action_failed: msg => {
-					// TODO: highlight the node that failed
-					isRunning = false
-					toast.error('Action failed')
-					result = extractErrorMessage(msg)
-				},
-				execution_failed: msg => {
-					isRunning = false
-					toast.error('Execution failed')
-					result = extractErrorMessage(msg)
-				}
-			} as Record<string, (msg: string) => void>
-			// Subscribe to the events above
-			for (const [event, handler] of Object.entries(eventHandlers))
-				stream.select(event).subscribe(msg => {
-					if (!msg) return
-					console.log('got event', event)
-					if (!['close', 'ping'].includes(event)) executionState = event
-					return handler(msg)
-				})
-		} catch (e) {
-			console.error('Failed executing component', e)
-			toast.error('There was an error executing the component')
-			isRunning = false
-		}
-	}
 
 	const isValidJson = $derived.by(() => {
 		try {
@@ -175,7 +40,7 @@
 	})
 
 	async function copyResult() {
-		await navigator.clipboard.writeText(result)
+		await navigator.clipboard.writeText(executor.result)
 		toast.success('Result copied to clipboard')
 	}
 
@@ -192,10 +57,20 @@
 		payload = val
 		selected.payload = val
 	}
-</script>
 
-<!-- Execute {selectedNode?.data?.component_name ?? ''}
-{selectedNode?.data ? `v${selectedNode?.data?.component_version}` : ''} -->
+	const draftData = $derived.by(() => {
+		return drafts[componentData.meta.id]
+	})
+
+	const useDraft = $derived(getContext<{ value: boolean }>('use-draft'))
+
+	function run() {
+		if (!payload) return toast.error('Please enter a payload')
+		if (!isValidJson) return toast.error('The payload needs to be valid JSON')
+
+		executeComponent(payload, useDraft.value ? draftData : componentData)
+	}
+</script>
 
 <PanelItem {componentData} title="Execute">
 	<div class={[' col-start-1 row-start-1 grid min-w-80 grid-rows-[auto_1fr_min-content] gap-y-4']}>
@@ -222,6 +97,7 @@
 					<IconAdd class="size-5" />
 				</button>
 			</div>
+
 			{#key newPayload}
 				<LightEditor
 					wordWrap={true}
@@ -238,7 +114,7 @@
 				<p class="text-sm font-medium">
 					<span class="text-main-300">Result</span>
 				</p>
-				{#if result}
+				{#if executor.result}
 					<button
 						class="text-main-400 hover:text-main-300 ms-auto -mt-1 transition-colors"
 						onclick={() => copyResult()}><IconCopy class="size-4.5" /></button
@@ -247,7 +123,7 @@
 			</div>
 
 			<div class="relative">
-				{#if isRunning}
+				{#if executor.isRunning}
 					<div
 						class={[
 							'h-full min-h-16 w-full rounded-md transition-all',
@@ -261,7 +137,7 @@
 							amount: 3
 						}}
 					>
-						{#key executionState}
+						{#key executor.state}
 							<span
 								class={[
 									'text-main-200 h-fit w-fit truncate text-center',
@@ -279,35 +155,49 @@
 						{/key}
 					</div>
 				{/if}
+
 				<LightEditor
 					readOnly={true}
 					wordWrap={true}
 					language="json"
-					bind:value={result}
+					value={executor.result}
 					class={[
 						'text-sm transition-all duration-300',
-						isRunning ? 'blur-xs grayscale-75' : 'blur-[0px] grayscale-0'
+						executor.isRunning ? 'blur-xs grayscale-75' : 'blur-[0px] grayscale-0'
 					]}
 				/>
 			</div>
 		</div>
 
-		<div
-			class="tooltip-red"
-			aria-label={!isValidJson ? 'Invalid JSON data' : undefined}
-			data-balloon-pos="up"
-		>
-			<Button
-				variation="vibrant"
-				class="w-full"
-				onClick={run}
-				autoLoad="promise"
-				disabled={!isValidJson || isRunning}
+		<div class="grid gap-2">
+			<div
+				class="tooltip-red grow"
+				aria-label={!isValidJson ? 'Invalid JSON data' : undefined}
+				data-balloon-pos="up"
 			>
-				{#snippet icon()}
-					<IconPlay class="size-6" />
-				{/snippet}
-			</Button>
+				<Button
+					variation="vibrant"
+					class="w-full"
+					onClick={run}
+					autoLoad="promise"
+					disabled={!isValidJson || executor.isRunning}
+				>
+					{#snippet icon()}
+						<IconPlay class="size-6" />
+					{/snippet}
+
+					{#snippet body()}
+						<span>
+							{#if useDraft.value}
+								Run draft
+							{:else}
+								Run published
+							{/if}
+						</span>
+					{/snippet}
+				</Button>
+			</div>
+			<p class="text-main-400 text-center text-xs"></p>
 		</div>
 	</div>
 </PanelItem>
