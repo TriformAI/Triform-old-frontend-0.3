@@ -82,6 +82,7 @@
 		"svelte-headlessui": "^0.0.45",
 		"svelte-infinite": "^0.5.0",
 		"svelte-transition": "^0.0.17",
+		"tailwind-merge": "^3.3.0",
 		"ws": "^8.18.2"
 	}
 }

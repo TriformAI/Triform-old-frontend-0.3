@@ -22,7 +22,7 @@
 			]}
 		>
 			<IconArrow
-				class="text-accent-400 size-6 drop-shadow-[0px_0px_10px_var(--color-accent-50)] transition"
+				class="text-accent-500 size-6 drop-shadow-[0px_0px_10px_var(--color-accent-50)] transition"
 			/>
 		</div>
 	</button>

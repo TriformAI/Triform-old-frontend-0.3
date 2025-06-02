@@ -4,6 +4,7 @@
 	import ComponentCard from './ComponentCard.svelte'
 	import type { Component } from '$lib/types/agent'
 	import InputField from '../../atoms/InputField.svelte'
+	import InnerNode from '$lib/components/custom-nodes/InnerNode.svelte'
 
 	const loaderState = new LoaderState()
 	let loadedSoFar = $state(0)
@@ -25,6 +26,12 @@
 	let search = $state('')
 </script>
 
+<!-- Keep these, needed for preview of components on drag -->
+<div class="absolute left-[-999em]">
+	<InnerNode type="flow" id="flow-preview" />
+	<InnerNode type="action" id="action-preview" />
+</div>
+
 <InfiniteLoader {loaderState} triggerLoad={loadMore} loopMaxCalls={100}>
 	<div class="bg-main-900/60 sticky -top-5 pt-1 pb-4 backdrop-blur-xs">
 		<div
@@ -38,6 +45,7 @@
 			<InputField placeholder="Search" containerClass="w-full" bind:value={search} />
 		</div>
 	</div>
+
 	<div class="grid h-full grid-cols-1 gap-4 overflow-y-auto px-4 @2xl:grid-cols-2">
 		{#each filteredComponents as component}
 			<ComponentCard meta={component} />

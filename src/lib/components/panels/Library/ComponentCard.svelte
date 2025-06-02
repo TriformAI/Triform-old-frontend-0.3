@@ -1,19 +1,21 @@
 <script lang="ts">
 	import type { Component } from '$lib/types/agent'
-
 	import DescriptionIcon from '~icons/material-symbols/description-rounded'
 	import InputIcon from '~icons/material-symbols/input-circle-rounded'
 	import ArrowRightIcon from '~icons/material-symbols/arrow-right-alt-rounded'
 
-	const {
-		meta
-	}: {
+	interface Props {
 		meta: Component['meta']
-	} = $props()
+	}
+
+	const { meta }: Props = $props()
 
 	function handleDragStart(event: DragEvent) {
 		if (event.dataTransfer) {
+			const isMaybeFlow = meta.name.toLowerCase().includes('flow')
+			const preview = document.getElementById(isMaybeFlow ? 'flow-preview' : 'action-preview')!
 			event.dataTransfer.setData('text/plain', meta.id)
+			event.dataTransfer.setDragImage(preview, 40, 40)
 			event.dataTransfer.effectAllowed = 'copy'
 		}
 	}
@@ -33,6 +35,7 @@
 	<h3 class="text-main-200 mb-2">
 		{meta.name}
 	</h3>
+
 	<div class="[&_svg]:text-main-300 flex flex-col gap-1 text-sm">
 		<div class="text-main-400 flex flex-row gap-2">
 			<DescriptionIcon class="flex-shrink-0" />

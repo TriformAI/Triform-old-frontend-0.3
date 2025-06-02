@@ -8,9 +8,10 @@
 	import NodeActions from './NodeActions.svelte'
 	import NodeContainer from './NodeContainer.svelte'
 	import compare from 'just-compare'
-	import { scale } from 'svelte/transition'
+	import InnerNode from './InnerNode.svelte'
 
 	interface Props {
+		type: 'action' | 'flow'
 		id: Node['id']
 		data: NodeData
 		selected: boolean
@@ -21,20 +22,17 @@
 
 	const props: Props = $props()
 
-	const { id, data, selected, icon, shape = 'circle', class: classes }: Props = $derived(props)
+	const {
+		id,
+		data,
+		selected,
+		icon,
+		shape = 'circle',
+		class: classes,
+		type
+	}: Props = $derived(props)
 
 	const node = $derived(getNodes().find(node => node.id === id))
-
-	const borderClass = $derived.by(() => {
-		return ''
-		// if (!nodeState) return ''
-
-		// return {
-		// 	success: 'border-emerald-500',
-		// 	error: 'border-red-500',
-		// 	running: 'border-accent-500'
-		// }[nodeState]
-	})
 
 	const openFn = () => {
 		// Whenever a node is double clicked, run the first action menu item
@@ -88,23 +86,8 @@
 							></span>
 						</span>
 					</div>
-					<button
-						class={[
-							'relative flex size-20 items-center justify-center rounded-full border border-[var(--node-color)] p-2 transition-all',
-							shape === 'circle' && 'rounded-full',
-							shape === 'square' && 'rounded-md',
-							borderClass,
-							classes
-						]}
-						style:background-color={selected
-							? 'color-mix(in oklab, color-mix(in oklab, var(--node-color) 40%, black) 50%, transparent)'
-							: undefined}
-						ondblclickcapture={openFn}
-					>
-						<span class="drop-shadow-[0px_0px_10px_var(--node-color)]">
-							{@render icon?.()}
-						</span>
-					</button>
+
+					<InnerNode {openFn} {selected} {type} />
 				</div>
 			{/snippet}
 
