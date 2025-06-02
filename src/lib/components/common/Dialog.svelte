@@ -104,18 +104,6 @@
 </dialog>
 
 <style>
-	@starting-style {
-		dialog.center[open] {
-			opacity: 0;
-			transform: translateY(-50%) scale(0.925);
-		}
-
-		dialog.center[open]::backdrop {
-			backdrop-filter: blur(0px);
-			opacity: 0;
-		}
-	}
-
 	dialog.center {
 		transition:
 			opacity 0.2s var(--easing-circ),
@@ -125,16 +113,21 @@
 		transition-behavior: allow-discrete;
 		transform: translateY(-50%) scale(0.98);
 		opacity: 0;
-	}
 
-	dialog.center[open] {
-		opacity: 1;
-		transform: translateY(-50%) scale(1);
-		transition:
-			opacity 0.3s var(--easing-circ),
-			transform 0.3s ease-in-out,
-			display 0.3s,
-			overlay 0.3s;
+		&[open] {
+			opacity: 1;
+			transform: translateY(-50%) scale(1);
+			transition:
+				opacity 0.3s var(--easing-circ),
+				transform 0.3s ease-in-out,
+				display 0.3s,
+				overlay 0.3s;
+
+			@starting-style {
+				opacity: 0;
+				transform: translateY(-50%) scale(0.925);
+			}
+		}
 	}
 
 	dialog.center::backdrop {
@@ -144,16 +137,16 @@
 		background-color: rgba(0, 0, 0, 0.5);
 		backdrop-filter: blur(0px);
 		opacity: 0;
+		transition-behavior: allow-discrete;
 	}
 
 	dialog.center[open]::backdrop {
 		backdrop-filter: blur(var(--blur-xs));
 		opacity: 1;
-	}
 
-	@starting-style {
-		dialog.bottom[open] {
-			transform: translateY(100%);
+		@starting-style {
+			backdrop-filter: blur(0px);
+			opacity: 0;
 		}
 	}
 
@@ -163,10 +156,13 @@
 			transform 0.5s var(--easing-circ),
 			overlay 0.3s ease-out allow-discrete,
 			display 0.3s ease-out allow-discrete;
-	}
 
-	dialog.bottom[open] {
-		transform: translateY(0%);
+		[open] {
+			transform: translateY(0%);
+			@starting-style {
+				transform: translateY(100%);
+			}
+		}
 	}
 
 	/*   Closed state of the dialog   */
@@ -176,10 +172,14 @@
 			transform 0.5s var(--easing-circ),
 			overlay 0.3s ease-out allow-discrete,
 			display 0.3s ease-out allow-discrete;
-	}
 
-	dialog.right[open] {
-		transform: translateX(0%);
+		&[open] {
+			transform: translateX(0%);
+
+			@starting-style {
+				transform: translateX(100%);
+			}
+		}
 	}
 
 	dialog.right::backdrop {
@@ -194,17 +194,8 @@
 	dialog.right[open]::backdrop {
 		backdrop-filter: blur(var(--blur-xs));
 		opacity: 1;
-	}
 
-	/*   Before-open state  */
-	/* Needs to be after the previous dialog[open] rule to take effect,
-    as the specificity is the same */
-	@starting-style {
-		dialog.right[open] {
-			transform: translateX(100%);
-		}
-
-		dialog.right[open]::backdrop {
+		@starting-style {
 			backdrop-filter: blur(0px);
 			opacity: 0;
 		}
