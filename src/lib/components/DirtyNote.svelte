@@ -10,6 +10,6 @@
 		class="text-main-400 flex items-center gap-1 text-sm font-medium"
 		transition:fade={{ duration: 200 }}
 	>
-		<IconAlert class="text-warning-500" /> You have unsaved changes
+		<IconAlert class="text-warning-500" /> You have unpublished changes
 	</p>
 {/if}

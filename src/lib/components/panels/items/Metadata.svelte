@@ -287,7 +287,7 @@
 				bind:value={draftData.meta.intention.output}
 			/>
 
-			<div class="col-span-2 flex">
+			<div class="col-span-2 mt-2 flex">
 				<DirtyNote show={dataIsDirty} />
 
 				<div class="ms-auto flex flex-row justify-end gap-x-4">
@@ -315,7 +315,7 @@
 						{isLoading}
 					>
 						{#snippet body()}
-							Update
+							Publish
 						{/snippet}
 					</Button>
 				</div>

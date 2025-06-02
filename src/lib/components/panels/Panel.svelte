@@ -77,8 +77,8 @@
 			</ul>
 
 			<Switch bind:checked={useDraft.value}
-				><code class="font-semibold tracking-wider uppercase">Draft</code>
-				<span class="text-main-300">mode</span></Switch
+				><code class="text-main-300 font-semibold tracking-wider uppercase">Draft</code>
+				<span class="text-main-400">mode</span></Switch
 			>
 		</div>
 
