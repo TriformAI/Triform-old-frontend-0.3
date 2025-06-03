@@ -18,7 +18,8 @@
 		getNodes,
 		setEdges,
 		setNodes,
-		getCurrentFlow
+		getCurrentFlow,
+		getProject
 	} from '$lib/stores/canvas.svelte'
 	import { defaultEdgeProps, type NodeType } from '$lib/types/flow'
 	import {
@@ -38,8 +39,10 @@
 	import { type OnNavigate } from '@sveltejs/kit'
 	import { onNavigate } from '$app/navigation'
 	import { getComponent, createComponent } from '$lib/actions/components'
-	import { isFlow, type Uuid } from '$lib/types/agent'
+	import { isAction, isFlow, type Uuid } from '$lib/types/agent'
 	import { getFlowModel } from '$lib/nodeModels'
+	import { flowHasComponent } from '$lib/utils/flowHasComponent'
+	import { toast } from 'svelte-sonner'
 
 	const useSvelteFlow = svelteFlowHook()
 	const { fitView, screenToFlowPosition } = useSvelteFlow
@@ -106,9 +109,20 @@
 	async function handleDrop(event: DragEvent) {
 		event.preventDefault()
 		if (!event.dataTransfer) return
+		const project = getProject()
+		if (!project) return toast.error('No project found')
 
 		const componentId = event.dataTransfer.getData('text/plain')
 		const component = await getComponent(componentId as Uuid)
+
+		// make sure we're not creating a recursive flow in any way
+		if (component.resource === 'flow/v1') {
+			for (const node of Object.values(project.spec.nodes)) {
+				if (!isFlow(node.spec)) continue
+				if (flowHasComponent(node.spec, component))
+					return toast.error(`You can't add a component as a child of itself`)
+			}
+		}
 
 		const position = screenToFlowPosition({ x: event.clientX, y: event.clientY })
 

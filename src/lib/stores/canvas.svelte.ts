@@ -70,6 +70,8 @@ const currentFlow = $derived.by(() => {
 	return getFlowById(project.spec.nodes, currentFlowId as Uuid)
 })
 
+export const getProject = () => page.data.project
+
 export const getCurrentFlow = () => currentFlow
 export const getCurrentFlowId = () => currentFlowId
 
