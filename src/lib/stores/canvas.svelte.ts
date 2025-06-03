@@ -122,12 +122,24 @@ export async function initFlow(
 		}
 	}
 
+	// if we're at the top level, add a ghost node for creating new flows
+	if (isRootLevel) {
+		nodes.push({
+			id: 'create-node',
+			type: 'create-node',
+			draggable: false,
+			selectable: false,
+			position: { x: 0, y: 0 }
+		})
+	}
+
 	// use nodes w/ positions if we can, otherwise auto-layout
 	const validPositions = new Set(Object.keys(positions)).intersection(
 		new Set(nodes.map(node => node.id))
 	)
 	nodesStore =
-		validPositions.size >= nodes.length - 1 // -1 for the input node
+		validPositions.size >= nodes.length - 1 && // -1 for the input node
+		!isRootLevel // always use auto layout at root level
 			? nodes
 			: await getLayoutedNodes(nodes, edges)
 	edgesStore = edges
@@ -168,7 +180,7 @@ export function parseNodes(
 		return {
 			id,
 			type,
-			draggable: true,
+			draggable: !isRootLevel, // disable dragging of top-level flows
 			position: positions[id] ?? { x: 0, y: 0 },
 			data: {
 				trinode: node,

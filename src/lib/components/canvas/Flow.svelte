@@ -5,6 +5,7 @@
 	import LoadingNode from '$lib/components/custom-nodes/LoadingNode.svelte'
 	import ParentNode from '$lib/components/custom-nodes/ParentNode.svelte'
 	import SelectorNode from '$lib/components/custom-nodes/SelectorNode.svelte'
+	import CreateNode from '$lib/components/custom-nodes/CreateNode.svelte'
 	import Edge from './Edge.svelte'
 	import {
 		handleBeforeDelete,
@@ -43,6 +44,7 @@
 	import { getFlowModel } from '$lib/nodeModels'
 	import { flowHasComponent } from '$lib/utils/flowHasComponent'
 	import { toast } from 'svelte-sonner'
+	import LineBackground from './LineBackground.svelte'
 
 	const useSvelteFlow = svelteFlowHook()
 	const { fitView, screenToFlowPosition } = useSvelteFlow
@@ -56,7 +58,8 @@
 		// @ts-expect-error TODO: adjust props on component
 		'selector-node': SelectorNode,
 		'loading-node': LoadingNode,
-		'parent-node': ParentNode
+		'parent-node': ParentNode,
+		'create-node': CreateNode
 	}
 
 	const edgeTypes: EdgeTypes = {
@@ -202,13 +205,17 @@
 					ondelete={handleDelete}
 					onnodedragstop={handleDragStop}
 				>
-					<Background
-						bgColor="#18181b"
-						patternColor="#52525c"
-						gap={20}
-						size={1}
-						variant={BackgroundVariant.Dots}
-					/>
+					{#if getCurrentFlow()}
+						<Background
+							bgColor="#18181b"
+							patternColor="#52525c"
+							gap={20}
+							size={1}
+							variant={BackgroundVariant.Dots}
+						/>
+					{:else}
+						<LineBackground bgColor="#18181b" patternColor="var(--color-main-800)" gap={50} />
+					{/if}
 				</SvelteFlow>
 			</div>
 		{/key}

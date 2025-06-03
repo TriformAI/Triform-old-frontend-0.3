@@ -6,6 +6,7 @@ import { Position } from '@xyflow/svelte'
 const NODE_SIZE = 80
 
 export const getLayoutedNodes = async (nodes: Node[], edges: Edge[]) => {
+	console.log('laying out nodes')
 	const graph = new dagre.graphlib.Graph()
 	graph.setDefaultEdgeLabel(() => ({}))
 	graph.setGraph({
