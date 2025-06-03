@@ -3,7 +3,6 @@
 	import { selected } from '$lib/stores/panel.svelte'
 	import Action from '$lib/components/panels/Action.svelte'
 	import Flow from '$lib/components/panels/Flow.svelte'
-	import Endpoint from '$lib/components/panels/Endpoint.svelte'
 	import { getCurrentFlow } from '$lib/stores/canvas.svelte'
 	import ComponentLibrary from './panels/Library/ComponentLibrary.svelte'
 
@@ -27,8 +26,7 @@
 
 	const nodeComponents = {
 		flow: Flow,
-		action: Action,
-		endpoint: Endpoint
+		action: Action
 	}
 
 	const NodeComponent = $derived(nodeComponents[nodeType as keyof typeof nodeComponents])

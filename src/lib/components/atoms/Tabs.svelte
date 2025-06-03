@@ -1,7 +1,10 @@
 <script lang="ts">
+	import type { Component as SvelteComponent } from 'svelte'
+
 	export interface Tab {
 		key: string
 		label: string
+		icon?: SvelteComponent
 	}
 
 	interface Props {
@@ -17,18 +20,26 @@
 	}
 </script>
 
-<div class="border-main-800 grid grid-cols-3 gap-2 overflow-hidden rounded-sm border">
+<div
+	class="border-main-800 grid overflow-hidden rounded-sm border"
+	style="grid-template-columns: repeat({tabs.length}, 1fr)"
+>
 	{#each tabs as tab, idx}
 		{@const isActive = idx === activeTab}
 		<button
 			class={[
-				'hover:text-main-200 block w-full truncate py-2 text-center text-sm leading-tight  transition-colors',
+				'hover:text-main-200 block w-full truncate text-center text-sm leading-tight transition-colors',
 				isActive ? ' bg-main-800 text-main-200' : 'text-main-500',
+				!!tab.icon ? 'pt-2 pb-3' : 'py-2',
 				classes
 			]}
+			type="button"
 			onclick={() => onTabSelect(idx)}
 		>
-			{tab.label}
+			{#if tab.icon}
+				<tab.icon class="mx-auto size-8 py-1" />
+			{/if}
+			<span>{tab.label}</span>
 		</button>
 	{/each}
 </div>

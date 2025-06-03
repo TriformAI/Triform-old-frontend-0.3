@@ -73,7 +73,7 @@
 		appearance === 'center' && 'top-1/2 mx-auto w-full max-w-md rounded-lg md:max-w-xl',
 		appearance === 'bottom' && 'inset-x-0 top-auto bottom-0 w-full max-w-none',
 		appearance === 'right' &&
-			'inset-y-0 left-[calc(100vw-75vw)] grid h-dvh max-h-dvh w-[75vw] md:left-[calc(100vw-25vw)] md:w-[25vw]'
+			'inset-y-0 left-[min(calc(100vw-max(75vw,30rem)),calc(100vw-30rem))] grid h-dvh max-h-dvh w-[max(75vw,30rem)] md:left-[min(calc(100vw-max(25vw,30rem)),calc(100vw-30rem))] md:w-[max(25vw,30rem)]'
 	]}
 >
 	<div class={['grid', appearance === 'right' && 'bg-main-850 p-6']}>
