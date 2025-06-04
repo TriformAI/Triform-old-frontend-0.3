@@ -44,7 +44,6 @@
 	import { getFlowModel } from '$lib/nodeModels'
 	import { flowHasComponent } from '$lib/utils/flowHasComponent'
 	import { toast } from 'svelte-sonner'
-	import LineBackground from './LineBackground.svelte'
 
 	const useSvelteFlow = svelteFlowHook()
 	const { fitView, screenToFlowPosition } = useSvelteFlow
@@ -205,7 +204,12 @@
 					ondelete={handleDelete}
 					onnodedragstop={handleDragStop}
 				>
-					{#if getCurrentFlow()}
+					<div
+						class={[
+							getCurrentFlow() ? 'opacity-100' : 'opacity-0',
+							'transition-opacity duration-500'
+						]}
+					>
 						<Background
 							bgColor="#18181b"
 							patternColor="#52525c"
@@ -213,11 +217,15 @@
 							size={1}
 							variant={BackgroundVariant.Dots}
 						/>
-					{:else}
-						<LineBackground bgColor="#18181b" patternColor="var(--color-main-800)" gap={50} />
-					{/if}
+					</div>
 				</SvelteFlow>
 			</div>
 		{/key}
 	{/if}
 </div>
+
+<style>
+	:global(.svelte-flow__container[role='application']) {
+		background: var(--color-main-900) !important;
+	}
+</style>
