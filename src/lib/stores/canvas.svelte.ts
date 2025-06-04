@@ -111,7 +111,7 @@ export async function initFlow(
 		const minX = Math.min(...nodes.map(node => node.position.x)) ?? 0
 		const maxX = Math.max(...nodes.map(node => node.position.x)) ?? 0
 		// Add the parent/input node (for visualisation)
-		nodes.push(getInputNode((minX + maxX) / 2, minY - 150) as Node)
+		nodes.push(getInputNode(Math.round((minX + maxX) / 2), Math.round(minY - 150)) as Node)
 		// Add the node selector if the flow has no nodes
 		if (!hasNodes) {
 			const { node, edge } = getNodeSelector(nodes[0].id, { x: 0, y: 0 }, true)
