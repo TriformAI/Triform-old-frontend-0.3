@@ -4,7 +4,7 @@ import { API } from '$lib/api'
 import type { User } from '$lib/types/auth'
 
 const authUrl = import.meta.env.VITE_TRICORE_AUTH_URL
-const baseUrl = import.meta.env.VITE_TRICORE_URL
+const baseUrl = import.meta.env.VITE_TRICORE_INTERNAL_URL
 
 const authHandle: Handle = async ({ event, resolve }) => {
 	const authToken = event.cookies.get('triform_key')
