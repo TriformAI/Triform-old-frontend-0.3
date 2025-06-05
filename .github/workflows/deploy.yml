@@ -11,7 +11,7 @@ env:
   GKE_REGION: europe-west3
   VITE_TOLGEE_API_URL: https://app.tolgee.io
   VITE_TRICORE_URL: https://api.tricore.dev/v1
-  VITE_TRICORE_INTERNAL_URL: https://proxy:8080/v1
+  VITE_TRICORE_INTERNAL_URL: http://proxy:8080/v1
   VITE_TRICORE_AUTH_URL: https://api.tricore.dev/v1
   PUBLIC_TRICORE_AUTH_URL: https://api.tricore.dev/v1
   NODE_ENV: production
