@@ -30,22 +30,30 @@ export async function POST({ request, locals }) {
 
 	console.log('got emitter', emitter)
 
-	return produce(async function start({ emit, lock }) {
-		const msgHandler = (evt: Event) => {
-			const msg = evt as CustomEvent<ServerSentEventMessage>
-			console.log('got builder', msg.detail.event, msg.detail.data)
-			emit(msg.detail.event!, msg.detail.data!)
+	return produce(
+		async function start({ emit, lock }) {
+			const msgHandler = (evt: Event) => {
+				const msg = evt as CustomEvent<ServerSentEventMessage>
+				console.log('got builder', msg.detail.event, msg.detail.data)
+				emit(msg.detail.event!, msg.detail.data!)
+			}
+			emitter.addEventListener('message', msgHandler)
+			// Wait for build to finish
+			await new Promise(resolve => emitter.addEventListener('close', resolve))
+			// Stop stream
+			emit('close', 'finished')
+			lock.set(false)
+			return function cancel() {
+				// Clean up
+				console.debug('Cleaning up stream')
+				emitter.removeEventListener('message', msgHandler)
+			}
+		},
+		{
+			ping: 1000,
+			stop: () => {
+				console.log('stopping builder stream')
+			}
 		}
-		emitter.addEventListener('message', msgHandler)
-		// Wait for build to finish
-		await new Promise(resolve => emitter.addEventListener('close', resolve))
-		// Stop stream
-		emit('close', 'finished')
-		lock.set(false)
-		return function cancel() {
-			// Clean up
-			console.debug('Cleaning up stream')
-			emitter.removeEventListener('message', msgHandler)
-		}
-	})
+	)
 }
