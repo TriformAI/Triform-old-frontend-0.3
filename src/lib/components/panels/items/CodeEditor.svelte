@@ -56,10 +56,7 @@
 
 		if (idx > -1) activeTab = idx
 
-		draftData.spec = {
-			...draftData.spec,
-			...newData
-		}
+		Object.assign(draftData.spec, newData)
 	})
 
 	const publishSpec = async () => {
