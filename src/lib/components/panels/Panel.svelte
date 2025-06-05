@@ -7,7 +7,6 @@
 	import ProjectSettings from './items/ProjectSettings.svelte'
 	import Variables from './items/Variables/Root.svelte'
 	import { getActions } from '$lib/stores/nodeActions.svelte'
-	import Switch from '$lib/components/atoms/Switch.svelte'
 	import { type Component } from '$lib/types/agent'
 	import { type Project } from '$lib/types/project'
 
@@ -75,11 +74,6 @@
 					</li>
 				{/each}
 			</ul>
-
-			<Switch bind:checked={useDraft.value}
-				><code class="text-main-300 font-semibold tracking-wider uppercase">Draft</code>
-				<span class="text-main-400">mode</span></Switch
-			>
 		</div>
 
 		{#if desc}

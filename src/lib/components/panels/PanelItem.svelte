@@ -44,7 +44,7 @@
 	const isOpen = $derived(nodeType ? openPanelItems[nodeType]?.includes(title) : forceOpen)
 </script>
 
-<div class="grid py-2 ps-2 pe-2">
+<div class="grid py-2 ps-2 pe-8">
 	<div class="flex flex-row items-center">
 		{#if selected.node || getCurrentFlowId()}
 			<button

@@ -1,10 +1,11 @@
 <script lang="ts">
 	import { toast } from 'svelte-sonner'
 	import IconAdd from '~icons/mdi/plus-circle-outline'
-	import Button from '../../../atoms/Button.svelte'
+	import Button from '$lib/components/atoms/Button.svelte'
 	import LightEditor from '$lib/components/atoms/LightEditor.svelte'
 	import IconPlay from '~icons/material-symbols/play-arrow-outline-rounded'
 	import IconCopy from '~icons/mdi/content-copy'
+	import IconCheck from '~icons/mdi/check-bold'
 	import { selected } from '$lib/stores/panel.svelte'
 	import PanelItem from '../../PanelItem.svelte'
 	import PayloadDialog from './PayloadDialog.svelte'
@@ -15,6 +16,8 @@
 	import { type Component } from '$lib/types/agent'
 	import { drafts } from '$lib/stores/canvas.svelte'
 	import { getContext } from 'svelte'
+	import { DropdownMenu } from 'bits-ui'
+	import IconChevronDown from '~icons/mdi/chevron-down'
 
 	const { componentData }: { componentData: Component } = $props()
 
@@ -169,12 +172,57 @@
 			</div>
 		</div>
 
-		<div class="grid gap-2">
-			<div
-				class="tooltip-red grow"
-				aria-label={!isValidJson ? 'Invalid JSON data' : undefined}
-				data-balloon-pos="up"
-			>
+		<div
+			class="tooltip-red mt-4 grid grow gap-2"
+			aria-label={!isValidJson ? 'Invalid JSON data' : undefined}
+			data-balloon-pos="up"
+		>
+			<div class="relative">
+				<div class="absolute end-0 top-0 bottom-0">
+					<DropdownMenu.Root>
+						<DropdownMenu.Trigger
+							class="hover:bg-accent-900 bg-accent-800 h-full items-center justify-center rounded-e-md px-3"
+						>
+							<IconChevronDown class="size-6" />
+						</DropdownMenu.Trigger>
+
+						<DropdownMenu.Portal>
+							<DropdownMenu.Content
+								class="bg-main-850 shadow-popover my-2 me-5 rounded-md outline-hidden focus-visible:outline-hidden"
+							>
+								<DropdownMenu.Item
+									class={[
+										'data-highlighted:bg-main-800 flex cursor-pointer items-center justify-between gap-2 rounded-sm px-4 py-2 text-sm font-medium ring-0! ring-transparent! select-none focus-visible:outline-none'
+									]}
+									onSelect={() => {
+										useDraft.value = true
+									}}
+								>
+									Current draft
+									{#if useDraft.value}
+										<IconCheck class="text-accent-300 size-4" />
+									{/if}
+								</DropdownMenu.Item>
+
+								<div class="bg-main-700 h-[1px]"></div>
+
+								<DropdownMenu.Item
+									class={[
+										'data-highlighted:bg-main-800  flex cursor-pointer items-center justify-between gap-2 rounded-sm px-4 py-2 text-sm font-medium ring-0! ring-transparent! select-none focus-visible:outline-none'
+									]}
+									onSelect={() => {
+										useDraft.value = false
+									}}
+								>
+									Published
+									{#if !useDraft.value}
+										<IconCheck class="text-accent-300 size-4" />
+									{/if}
+								</DropdownMenu.Item>
+							</DropdownMenu.Content>
+						</DropdownMenu.Portal>
+					</DropdownMenu.Root>
+				</div>
 				<Button
 					variation="vibrant"
 					class="w-full"
@@ -189,7 +237,7 @@
 					{#snippet body()}
 						<span>
 							{#if useDraft.value}
-								Run draft
+								Run current draft
 							{:else}
 								Run published
 							{/if}
@@ -197,7 +245,6 @@
 					{/snippet}
 				</Button>
 			</div>
-			<p class="text-main-400 text-center text-xs"></p>
 		</div>
 	</div>
 </PanelItem>

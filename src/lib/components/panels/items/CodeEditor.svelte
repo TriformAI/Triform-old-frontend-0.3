@@ -99,8 +99,6 @@
 	const componentId = $derived(componentData.meta.id)
 	const isBuilding = $derived(componentId in inProgressComponents)
 
-	const useDraft = $derived(getContext<{ value: boolean }>('use-draft'))
-
 	async function saveDraft(data?: Component) {
 		if (!data) {
 			data = draftData
@@ -126,7 +124,7 @@
 						<Editor
 							bind:code={draftData.spec[key as FileType]}
 							class={`${idx === activeTab ? 'block' : 'hidden'} absolute h-full w-full rounded-md`}
-							readOnly={!useDraft.value || isBuilding}
+							readOnly={isBuilding}
 							onUpdate={debounce(saveDraft, 500)}
 						/>
 					{:else}
@@ -135,7 +133,7 @@
 							bind:value={draftData.spec[key as FileType]}
 							wordWrap={true}
 							class={`${idx === activeTab ? 'block' : 'hidden'} bg-main-800 absolute h-full w-full rounded-md ps-6 pt-2.5 text-sm`}
-							readOnly={!useDraft.value || isBuilding}
+							readOnly={isBuilding}
 							onUpdate={debounce(saveDraft, 500)}
 						/>
 					{/if}
@@ -168,26 +166,20 @@
 		{/if}
 	</div>
 
-	{#if !useDraft.value}
-		<p class="text-main-500 mt-2 text-center text-sm">
-			Code is read-only when draft mode is disabled
-		</p>
-	{:else}
-		<div class="mt-4 flex items-center justify-between">
-			<DirtyNote show={dataIsDirty} />
+	<div class="mt-4 flex items-center justify-between">
+		<DirtyNote show={dataIsDirty} />
 
-			<Button
-				class="ms-auto"
-				type="button"
-				onClick={publishSpec}
-				autoLoad="promise"
-				disabled={!dataIsDirty || isBuilding}
-				variation="vibrant"
-			>
-				{#snippet body()}
-					Publish
-				{/snippet}
-			</Button>
-		</div>
-	{/if}
+		<Button
+			class="ms-auto"
+			type="button"
+			onClick={publishSpec}
+			autoLoad="promise"
+			disabled={!dataIsDirty || isBuilding}
+			variation="vibrant"
+		>
+			{#snippet body()}
+				Publish
+			{/snippet}
+		</Button>
+	</div>
 </PanelItem>
