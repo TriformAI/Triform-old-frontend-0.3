@@ -50,10 +50,7 @@ export async function POST({ request, locals }) {
 			}
 		},
 		{
-			ping: 1000,
-			stop: () => {
-				console.log('stopping builder stream')
-			}
+			ping: 5000
 		}
 	)
 }

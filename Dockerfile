@@ -22,9 +22,6 @@ RUN bun install --production
 
 WORKDIR /app/build
 
-# temporarily add curl for debugging
-RUN apt-get update && apt-get install -y curl
-
 USER bun
 
 ENTRYPOINT ["bun", "index.js"]
