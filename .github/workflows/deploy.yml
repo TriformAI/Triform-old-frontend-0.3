@@ -62,6 +62,7 @@ jobs:
         echo "VITE_TOLGEE_API_URL=${{ env.VITE_TOLGEE_API_URL }}" >> .env
         echo "VITE_TOLGEE_API_KEY=${{ secrets.VITE_TOLGEE_API_KEY }}" >> .env
         echo "VITE_TRICORE_URL=${{ env.VITE_TRICORE_URL }}" >> .env
+        echo "VITE_TRICORE_INTERNAL_URL=${{ env.VITE_TRICORE_INTERNAL_URL }}" >> .env
         echo "VITE_TRICORE_AUTH_URL=${{ env.VITE_TRICORE_AUTH_URL }}" >> .env
         echo "PUBLIC_TRICORE_AUTH_URL=${{ env.PUBLIC_TRICORE_AUTH_URL }}" >> .env
         echo "NODE_ENV=${{ env.NODE_ENV }}" >> .env
