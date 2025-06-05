@@ -10,6 +10,7 @@ spec:
     services:
     - name: {{ .Release.Name }}
       port: {{ .Values.port }}
+    enableWebsockets: true
     timeoutPolicy:
       response: 600s
       idle: 600s
