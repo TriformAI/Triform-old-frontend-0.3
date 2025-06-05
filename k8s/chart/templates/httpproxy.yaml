@@ -10,6 +10,9 @@ spec:
     services:
     - name: {{ .Release.Name }}
       port: {{ .Values.port }}
+  - timeoutPolicy:
+      response: 600s
+      idle: 600s
   virtualhost:
     fqdn: {{ .Values.httpproxy.fqdn }}
     tls:
