@@ -74,13 +74,11 @@
 							selected ? 'text-main-300' : 'text-main-400'
 						]}
 					>
-						<span
-							class={['bg-main-900 text-main-200 inline-flex items-center gap-1 whitespace-nowrap']}
-						>
+						<span class={['bg-main-900 text-main-200 relative whitespace-nowrap']}>
 							{draftData?.meta.name}
 							<span
 								class={[
-									'bg-warning-600 block size-1.5 -translate-y-0.5 rounded-full transition-transform',
+									'bg-warning-600 absolute -end-2.5 top-1 block size-1.5 rounded-full transition-transform',
 									isDirty ? 'scale-100' : 'scale-0'
 								]}
 							></span>
