@@ -1,5 +1,4 @@
 import { type OnConnectEnd, useSvelteFlow as svelteFlowHook } from '@xyflow/svelte'
-import { addTemporaryNode } from '$lib/utils/temporaryNode'
 import { defaultEdgeProps, type Node } from '$lib/types/flow'
 import type { Uuid } from '$lib/types/agent'
 import { addEdge, getEdges, getNodes, setEdges, setNodes } from '$lib/stores/canvas.svelte'

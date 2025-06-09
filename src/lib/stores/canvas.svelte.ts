@@ -19,8 +19,8 @@ import { selected } from '$lib/stores/panel.svelte'
 import { getLeafNodes } from '$lib/utils/getLeafNodes'
 import { getNodeSelector } from '$lib/utils/getNodeSelector'
 
-let nodesStore = $state<Node[]>([])
-let edgesStore = $state<Edge[]>([])
+let nodesStore = $state.raw<Node[]>([])
+let edgesStore = $state.raw<Edge[]>([])
 
 // SvelteFlow requires nodes & edges to be bound
 // We can't export a let, so export getters and setters instead
