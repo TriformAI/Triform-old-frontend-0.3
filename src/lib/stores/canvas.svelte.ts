@@ -122,15 +122,31 @@ export async function initFlow(
 		}
 	}
 
-	// if we're at the top level, add a ghost node for creating new flows
+	// if we're at the top level, layout the nodes ourself and also add a ghost node for creating new flows
 	if (isRootLevel) {
+		const nodeSize = 80
+		const gap = 60
+		let x = 0
+		let y = 0
+		for (const node of nodes) {
+			node.position = { x, y }
+			x += nodeSize + gap
+			if (x > 500) {
+				x = 0
+				y += nodeSize + gap
+			}
+			console.log(x, y)
+		}
+		// add the ghost node after the last node
 		nodes.push({
 			id: 'create-node',
 			type: 'create-node',
 			draggable: false,
 			selectable: false,
-			position: { x: 0, y: 0 }
+			// idk why we need to offset x but it is what it is
+			position: { x: x - (nodeSize + gap), y }
 		})
+		console.log(x, y)
 	}
 
 	// use nodes w/ positions if we can, otherwise auto-layout
@@ -138,11 +154,30 @@ export async function initFlow(
 		new Set(nodes.map(node => node.id))
 	)
 	nodesStore =
-		validPositions.size >= nodes.length - 1 && // -1 for the input node
-		!isRootLevel // always use auto layout at root level
+		validPositions.size >= nodes.length - 1 || // -1 for the input node
+		isRootLevel // always force no layout at root level
 			? nodes
 			: await getLayoutedNodes(nodes, edges)
 	edgesStore = edges
+
+	// if we're at the top level, add a ghost node to the right of the last node
+	if (isRootLevel) {
+		// the last node is the one with the highest X coordinate of the ones with the highest Y coordinate
+		const maxY = Math.max(...nodes.map(node => node.position.y))
+		const maxX = Math.max(
+			...nodes.filter(node => node.position.y === maxY).map(node => node.position.x)
+		)
+		nodes.push({
+			id: 'create-node',
+			type: 'create-node',
+			draggable: false,
+			selectable: false,
+			position: {
+				x: maxX + 80 + 60,
+				y: maxY
+			}
+		})
+	}
 }
 
 // Get selected node from url hash, if any, and set as selected
