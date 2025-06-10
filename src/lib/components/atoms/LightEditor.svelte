@@ -1,8 +1,8 @@
 <script lang="ts">
 	import 'prism-code-editor/languages/json'
-
-	import 'prism-code-editor/prism/languages/json'
 	import 'prism-code-editor/prism/languages/markdown'
+	import 'prism-code-editor/prism/languages/python'
+	import 'prism-code-editor/prism/languages/json'
 
 	import 'prism-code-editor/layout.css'
 	import 'prism-code-editor/scrollbar.css'
