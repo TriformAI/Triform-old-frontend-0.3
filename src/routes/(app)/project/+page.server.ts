@@ -21,7 +21,7 @@ export const actions = {
 			meta: {
 				name,
 				intention: {
-					purpose: intention,
+					purpose: intention ?? '',
 					input: '',
 					output: ''
 				}
