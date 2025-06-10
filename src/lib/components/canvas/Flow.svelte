@@ -44,6 +44,7 @@
 	import { getFlowModel } from '$lib/nodeModels'
 	import { flowHasComponent } from '$lib/utils/flowHasComponent'
 	import { toast } from 'svelte-sonner'
+	import { replaceState } from '$app/navigation'
 
 	const useSvelteFlow = svelteFlowHook()
 	const { fitView, screenToFlowPosition } = useSvelteFlow

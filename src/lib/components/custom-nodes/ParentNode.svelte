@@ -8,7 +8,7 @@
 	const props = $props()
 
 	const gotoParent = () => {
-		goto(`/project/${page.params.id.split('/').slice(0, -1).join('/')}`)
+		goto(`${page.url.pathname.split('/').slice(0, -1).join('/')}`)
 	}
 </script>
 

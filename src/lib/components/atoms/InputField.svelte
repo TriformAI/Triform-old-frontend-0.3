@@ -3,6 +3,7 @@
 
 	let {
 		value = $bindable(),
+
 		label,
 		name,
 		placeholder,
@@ -11,6 +12,7 @@
 		type = 'text',
 		autocomplete = 'off',
 		required,
+		readonly,
 		class: classProp,
 		containerClass,
 		onblur,
@@ -28,6 +30,7 @@
 		type?: string
 		autocomplete?: FullAutoFill
 		required?: boolean
+		readonly?: boolean
 		class?: string
 		containerClass?: string
 		onblur?: (e: FocusEvent) => void
@@ -52,6 +55,7 @@
 			{placeholder}
 			{autocomplete}
 			{required}
+			{readonly}
 			bind:value
 			class={[
 				'input-text peer',

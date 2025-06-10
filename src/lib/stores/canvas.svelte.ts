@@ -48,12 +48,12 @@ export const loadDrafts = (allDrafts: { component_id: Uuid; spec: Component }[])
 }
 
 // True if we're in the root level (Have not entered a flow)
-const isRootLevel = $derived(page.params.id.split('/').length === 1)
+const isRootLevel = $derived(page.params.path === undefined)
 
 // The current flow ID - last uuid in the path (if any)
 const currentFlowId = $derived.by(() => {
-	const ids = page?.params?.id?.split('/') ?? []
-	if (ids.length <= 1) return undefined
+	const ids = page?.params?.path?.split('/') ?? []
+	if (ids.length < 1) return undefined
 	return ids.pop()
 }) as Uuid | undefined
 
@@ -86,11 +86,8 @@ export async function initFlow(
 	project: Project,
 	allPositions: Record<Uuid, Record<Uuid, { x: number; y: number }>> = {}
 ) {
-	console.log('loading flow', project)
-	console.time('initFlow')
-
 	// Get nodes from project or current flow
-	const triNodes = currentFlow ? currentFlow.spec.spec.nodes : project.spec.nodes
+	const triNodes = isRootLevel ? project.spec.nodes : currentFlow?.spec.spec.nodes
 
 	// Turn trinodes into Svelteflow nodes and edges
 	// @ts-expect-error - we know the id is defined
@@ -151,6 +148,7 @@ export async function initFlow(
 	const validPositions = new Set(Object.keys(positions)).intersection(
 		new Set(nodes.map(node => node.id))
 	)
+
 	nodesStore =
 		validPositions.size >= nodes.length - 1 || // -1 for the input node
 		isRootLevel // always force no layout at root level
@@ -485,6 +483,28 @@ export const getBreadcrumbs = () => {
 	}
 
 	return undefined
+}
+
+export const breadcrumbs = () => {
+	const project = page.data.project
+	if (!project) {
+		return undefined
+	}
+
+	const projectUrl = `/project/${page.data.project?.meta.id}`
+
+	const breadcrumbs = [
+		{ name: 'Projects', id: '', path: '/project' },
+		{ name: project.meta.name, id: project.meta.id, path: projectUrl }
+	]
+
+	const flowCrumbs = getBreadcrumbs()
+
+	if (flowCrumbs) {
+		breadcrumbs.push(...flowCrumbs)
+	}
+
+	return breadcrumbs
 }
 
 export const getNodePath = () => {

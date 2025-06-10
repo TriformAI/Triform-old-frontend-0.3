@@ -8,6 +8,7 @@
 		type?: string
 		rows?: number
 		required?: boolean
+		readonly?: boolean
 		useMonoFont?: boolean
 		oninput?: (e: Event) => void
 	}
@@ -21,6 +22,7 @@
 		rows = 4,
 		useMonoFont = false,
 		required,
+		readonly,
 		oninput
 	}: Props = $props()
 
@@ -37,6 +39,7 @@
 		{placeholder}
 		{rows}
 		{required}
+		{readonly}
 		bind:value
 		{oninput}
 		class={['input-text', useMonoFont && 'font-mono']}

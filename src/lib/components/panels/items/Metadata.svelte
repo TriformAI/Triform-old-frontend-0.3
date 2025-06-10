@@ -30,6 +30,7 @@
 	import { type Component } from '$lib/types/agent'
 	import { invalidate } from '$app/navigation'
 	import DirtyNote from '$lib/components/DirtyNote.svelte'
+	import { getContext } from 'svelte'
 
 	const { componentData }: { componentData: Component } = $props()
 
@@ -38,6 +39,8 @@
 	const draftData = $derived.by(() => {
 		return drafts[componentData.meta.id]
 	})
+
+	const useDraft = $derived(getContext<{ value: boolean }>('use-draft'))
 
 	const dataIsDirty = $derived(draftData ? !compare(componentData.meta, draftData.meta) : false)
 
@@ -258,6 +261,7 @@
 				required
 				label="Name"
 				name="name"
+				readonly={!useDraft.value}
 				oninput={debounce(saveDraft, 500)}
 				bind:value={draftData.meta.name}
 			/>
@@ -267,6 +271,7 @@
 				class="col-span-2"
 				label="Purpose"
 				name="Purpose"
+				readonly={!useDraft.value}
 				oninput={debounce(saveDraft, 500)}
 				bind:value={draftData.meta.intention.purpose}
 			/>
@@ -275,6 +280,7 @@
 				rows={2}
 				label="Expected input"
 				name="input"
+				readonly={!useDraft.value}
 				oninput={debounce(saveDraft, 500)}
 				bind:value={draftData.meta.intention.input}
 			/>
@@ -283,43 +289,50 @@
 				rows={2}
 				label="Expected output"
 				name="output"
+				readonly={!useDraft.value}
 				oninput={debounce(saveDraft, 500)}
 				bind:value={draftData.meta.intention.output}
 			/>
 
-			<div class="col-span-2 mt-2 flex">
-				<DirtyNote show={dataIsDirty} />
+			{#if !useDraft.value}
+				<p class="text-main-500 col-span-2 mt-2 text-center text-sm">
+					Code is read-only when draft mode is disabled
+				</p>
+			{:else}
+				<div class="col-span-2 mt-2 flex">
+					<DirtyNote show={dataIsDirty} />
 
-				<div class="ms-auto flex flex-row justify-end gap-x-4">
-					{#if isAction(componentData)}
+					<div class="ms-auto flex flex-row justify-end gap-x-4">
+						{#if isAction(componentData)}
+							<Button
+								variation="primary"
+								type="button"
+								onClick={buildComponent}
+								isLoading={isBuilding}
+							>
+								{#snippet icon()}
+									<IconMagic />
+								{/snippet}
+								{#snippet body()}
+									Build
+								{/snippet}
+							</Button>
+						{/if}
+
 						<Button
-							variation="primary"
-							type="button"
-							onClick={buildComponent}
-							isLoading={isBuilding}
+							variation="vibrant"
+							type="submit"
+							class="ms-auto"
+							disabled={!dataIsDirty || isLoading}
+							{isLoading}
 						>
-							{#snippet icon()}
-								<IconMagic />
-							{/snippet}
 							{#snippet body()}
-								Build
+								Publish
 							{/snippet}
 						</Button>
-					{/if}
-
-					<Button
-						variation="vibrant"
-						type="submit"
-						class="ms-auto"
-						disabled={!dataIsDirty || isLoading}
-						{isLoading}
-					>
-						{#snippet body()}
-							Publish
-						{/snippet}
-					</Button>
+					</div>
 				</div>
-			</div>
+			{/if}
 		</form>
 	</PanelItem>
 {/if}
