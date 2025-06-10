@@ -2,6 +2,7 @@
 	import { onMount, type Snippet } from 'svelte'
 	import IconChevronDown from '~icons/mdi/chevron-down'
 	import IconClose from '~icons/mdi/close'
+	import { Toaster } from 'svelte-sonner'
 
 	interface Props {
 		children: Snippet
@@ -59,23 +60,23 @@
 	{open}
 	use:clickOutside
 	bind:this={dialog}
-	onclose={() => {
-		console.log('onclose')
-
-		if (onClose) {
-			onClose()
-		}
-	}}
+	onclose={() => onClose?.()}
 	class={[
 		classes,
 		appearance,
-		`text-main-300 fixed m-0 overflow-visible bg-transparent`,
+		'text-main-300 fixed m-0 overflow-visible bg-transparent',
 		appearance === 'center' && 'top-1/2 mx-auto w-full max-w-md rounded-lg md:max-w-xl',
 		appearance === 'bottom' && 'inset-x-0 top-auto bottom-0 w-full max-w-none',
 		appearance === 'right' &&
 			'inset-y-0 left-[min(calc(100vw-max(75vw,30rem)),calc(100vw-30rem))] grid h-dvh max-h-dvh w-[max(75vw,30rem)] md:left-[min(calc(100vw-max(25vw,30rem)),calc(100vw-30rem))] md:w-[max(25vw,30rem)]'
 	]}
 >
+	{#if isOpen}
+		<div class="absolute float-left" style="transform: translateX(calc(-100vw + 480px));">
+			<Toaster richColors position="top-left" />
+		</div>
+	{/if}
+
 	<div class={['grid', appearance === 'right' && 'bg-main-850 p-6']}>
 		{#if appearance === 'bottom'}
 			<button
