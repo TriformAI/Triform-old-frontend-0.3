@@ -8,9 +8,7 @@
 	import IconCheck from '~icons/mdi/check-bold'
 	import { selected } from '$lib/stores/panel.svelte'
 	import PanelItem from '../../PanelItem.svelte'
-	import PayloadDialog from './PayloadDialog.svelte'
-	import ComboBox from '$lib/components/atoms/ComboBox.svelte'
-	import { page } from '$app/state'
+	import Payload from '../common/Payload.svelte'
 	import { blur } from 'svelte/transition'
 	import { executeComponent, executor } from '$lib/actions/executor.svelte'
 	import { type Component } from '$lib/types/agent'
@@ -25,8 +23,6 @@
 	if (selected.payload) {
 		payload = selected.payload
 	}
-
-	let payloadDialog = $state<HTMLDialogElement>()
 
 	const formattedExecutionState = $derived.by(() => {
 		const state = executor.state.split('_').join(' ')
@@ -47,19 +43,9 @@
 		toast.success('Result copied to clipboard')
 	}
 
-	let newPayload = $state('')
-
 	$effect(() => {
-		if (newPayload) {
-			payload = page.data.payloads?.find(p => p.meta.id === newPayload)?.spec.payload ?? ''
-			newPayload = ''
-		}
+		selected.payload = payload
 	})
-
-	function setPayload(val: string) {
-		payload = val
-		selected.payload = val
-	}
 
 	const draftData = $derived.by(() => {
 		return drafts[componentData.meta.id]
@@ -77,40 +63,7 @@
 
 <PanelItem {componentData} title="Execute">
 	<div class={[' col-start-1 row-start-1 grid min-w-80 grid-rows-[auto_1fr_min-content] gap-y-4']}>
-		{#if page.data.payloads?.length}
-			<ComboBox
-				bind:value={newPayload}
-				placeholder="Use saved payload"
-				items={page.data.payloads?.map(v => ({ value: v.meta.id, label: v.spec.name })) ?? []}
-			/>
-		{/if}
-
-		<div class="bg-main-800/50 rounded-lg p-3">
-			<div class=" -mt-1 mb-4 flex items-end justify-between">
-				<p class="text-sm font-medium">
-					<span class="text-main-300">Payload</span>
-				</p>
-				<button
-					aria-label="Save payload"
-					data-balloon-pos="left"
-					class="text-main-400 hover:text-main-300 -mt-1 transition-colors"
-					type="button"
-					onclick={() => payloadDialog?.showModal()}
-				>
-					<IconAdd class="size-5" />
-				</button>
-			</div>
-
-			{#key newPayload}
-				<LightEditor
-					wordWrap={true}
-					language="json"
-					bind:value={payload}
-					onUpdate={v => setPayload(v)}
-					class="text-sm"
-				/>
-			{/key}
-		</div>
+		<Payload bind:value={payload} />
 
 		<div class="bg-main-800/50 grid grid-rows-[auto_minmax(100px,1fr)] rounded-lg p-3">
 			<div class=" -mt-1 mb-4 flex items-end justify-between">
@@ -248,7 +201,3 @@
 		</div>
 	</div>
 </PanelItem>
-
-{#key payload}
-	<PayloadDialog {payload} bind:dialog={payloadDialog} />
-{/key}

@@ -6,6 +6,7 @@
 	import Metadata from './items/Metadata.svelte'
 	import ProjectSettings from './items/ProjectSettings.svelte'
 	import Variables from './items/Variables/Root.svelte'
+	import Triggers from './items/Triggers/Root.svelte'
 	import { getActions } from '$lib/stores/nodeActions.svelte'
 	import { type Component } from '$lib/types/agent'
 	import { type Project } from '$lib/types/project'
@@ -21,6 +22,7 @@
 					Metadata: typeof Metadata
 					ProjectSettings: typeof ProjectSettings
 					Variables: typeof Variables
+					Triggers: typeof Triggers
 				}
 			]
 		>
@@ -83,7 +85,7 @@
 
 	{#if componentData}
 		<div class="divide-main-800 grid divide-y">
-			{@render panels({ CodeEditor, Execute, Metadata, ProjectSettings, Variables })}
+			{@render panels({ CodeEditor, Execute, Metadata, ProjectSettings, Variables, Triggers })}
 		</div>
 	{/if}
 </div>

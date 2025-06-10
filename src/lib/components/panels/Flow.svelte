@@ -6,8 +6,9 @@
 </script>
 
 <Panel {componentData} {Icon}>
-	{#snippet panels({ Execute, Metadata, Variables })}
+	{#snippet panels({ Execute, Metadata, Variables, Triggers })}
 		<Metadata {componentData} />
+		<Triggers {componentData} />
 		<Execute {componentData} />
 		<Variables {componentData} />
 	{/snippet}

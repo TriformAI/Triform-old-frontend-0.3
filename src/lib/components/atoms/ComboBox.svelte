@@ -7,7 +7,13 @@
 	import IconAdd from '~icons/mdi/plus-circle-outline'
 	import { tick } from 'svelte'
 
-	interface Props {
+	let {
+		value = $bindable(),
+		items,
+		createNew,
+		placeholder,
+		target
+	}: {
 		value: string
 		placeholder?: string
 		items: {
@@ -18,9 +24,8 @@
 			label: string
 			trigger: () => void
 		}
-	}
-
-	let { value = $bindable(), items, createNew, placeholder }: Props = $props()
+		target?: HTMLElement
+	} = $props()
 
 	let searchValue = $state('')
 
@@ -105,7 +110,7 @@
 			{/if}
 		</div>
 	</div>
-	<Combobox.Portal>
+	<Combobox.Portal to={target}>
 		<Combobox.Content
 			class={[
 				'focus-override',

@@ -19,12 +19,17 @@ export interface Project {
 	}
 }
 
-export interface Variable {
-	resource: 'variable/v1'
+export interface Modifier {
+	resource: string
 	meta: {
 		id: Uuid
 		name: string
 	}
+	spec: Record<string, unknown> | undefined
+}
+
+export interface Variable extends Modifier {
+	resource: 'variable/v1'
 	spec: {
 		key: string
 		secret: boolean
@@ -33,6 +38,24 @@ export interface Variable {
 			stage: string
 			prod: string
 		}
+	}
+}
+
+export interface Trigger extends Modifier {
+	resource: 'endpoint/v1' | 'cron/v1'
+	spec: Record<never, never> | undefined
+}
+
+export interface Endpoint extends Trigger {
+	resource: 'endpoint/v1'
+	spec: Record<never, never> | undefined
+}
+
+export interface Cron extends Trigger {
+	resource: 'cron/v1'
+	spec: {
+		schedule: string
+		input: string // TODO: payload here too?
 	}
 }
 

@@ -1,4 +1,4 @@
-import type { Project, Variable } from '$lib/types/project'
+import type { Payload, Project, Variable, Modifier } from '$lib/types/project'
 import { fail } from '@sveltejs/kit'
 import { db } from '$lib/db'
 import { getNodes } from '$lib/utils/getNodes'
@@ -12,12 +12,14 @@ export async function load({ locals, params, depends }) {
 	const id = params.id.split('/').shift()
 	if (!id) return fail(404, { message: 'Project not found' })
 
-	const [project, variables, payloads, allComponents] = await Promise.all([
+	const [project, modifiers, payloads, allComponents] = await Promise.all([
 		locals.api.get<Project>(`projects/${id}?depth=999`),
-		locals.api.get<Variable[]>(`modifiers?full=true&type=variable`),
-		locals.api.get<Variable[]>(`payloads?full=true`),
+		locals.api.get<Modifier[]>(`modifiers?full=true`),
+		locals.api.get<Payload[]>(`payloads?full=true`),
 		locals.api.get<Component['meta'][]>(`components`)
 	])
+
+	const variables = modifiers.filter(m => m.resource === 'variable/v1') as Variable[]
 
 	// Get the drafts & positions within each flow
 	const projectNodes = Object.values(project.spec.nodes).flatMap(node => [
@@ -52,6 +54,7 @@ export async function load({ locals, params, depends }) {
 		}[],
 		positions,
 		components: allComponents,
+		modifiers,
 		variables,
 		payloads
 	}

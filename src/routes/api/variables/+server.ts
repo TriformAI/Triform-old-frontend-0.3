@@ -1,6 +1,8 @@
 import { error, json } from '@sveltejs/kit'
 import type { Variable } from '$lib/types/project'
 
+// TODO: refactor this into the /modifiers endpoint
+
 export async function POST({ request, locals }) {
 	const { name, key, value } = await request.json()
 
