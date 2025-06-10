@@ -135,7 +135,6 @@ export async function initFlow(
 				x = 0
 				y += nodeSize + gap
 			}
-			console.log(x, y)
 		}
 		// add the ghost node after the last node
 		nodes.push({
@@ -146,7 +145,6 @@ export async function initFlow(
 			// idk why we need to offset x but it is what it is
 			position: { x: x - (nodeSize + gap), y }
 		})
-		console.log(x, y)
 	}
 
 	// use nodes w/ positions if we can, otherwise auto-layout
