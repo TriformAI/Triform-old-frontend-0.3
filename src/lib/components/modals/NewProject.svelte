@@ -52,7 +52,7 @@
 				}}
 			>
 				<InputField name="name" label="Project Name" required />
-				<TextField name="intention" label="Project Intention" required />
+				<TextField name="intention" label="Project Intention" />
 
 				<Button variation="vibrant" type="submit" class="mt-5 w-full" {isLoading}>
 					{#snippet body()}
