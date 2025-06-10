@@ -72,7 +72,7 @@
 	]}
 >
 	{#if isOpen}
-		<div class="absolute float-left" style="transform: translateX(calc(-100vw + 480px));">
+		<div class="toast-container absolute">
 			<Toaster richColors position="top-left" />
 		</div>
 	{/if}
@@ -200,5 +200,15 @@
 			backdrop-filter: blur(0px);
 			opacity: 0;
 		}
+	}
+
+	dialog.right .toast-container {
+		transform: translateX(calc(-100vw + 480px));
+		float: left;
+	}
+
+	dialog.center .toast-container {
+		transform: translateY(calc(-33vh)) translateX(calc(-50vw + 300px));
+		float: left;
 	}
 </style>
