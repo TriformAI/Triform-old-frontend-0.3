@@ -1,4 +1,4 @@
-import type { Uuid, Node } from './agent'
+import type { Uuid, Node, Meta } from './agent'
 
 interface Intention {
 	purpose: string
@@ -41,22 +41,25 @@ export interface Variable extends Modifier {
 	}
 }
 
-export interface Trigger extends Modifier {
+// This is going to extend modifiers once we migrate the triggers to modifiers
+export interface Trigger {
 	resource: 'endpoint/v1' | 'cron/v1'
-	spec: Record<never, never> | undefined
+	meta: Omit<Meta, 'intention'>
+	spec: {
+		component_id: Uuid
+	}
 }
 
 export interface Endpoint extends Trigger {
 	resource: 'endpoint/v1'
-	spec: Record<never, never> | undefined
 }
 
 export interface Cron extends Trigger {
 	resource: 'cron/v1'
 	spec: {
 		schedule: string
-		input: string // TODO: payload here too?
-	}
+		input: Record<string, unknown> // TODO: payload here too?
+	} & Trigger['spec']
 }
 
 export interface Payload {

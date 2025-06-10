@@ -10,15 +10,15 @@
 
 	const { componentData }: { componentData: Component } = $props()
 
-	const triggers = page.data.modifiers.filter(m => ['endpoint/v1', 'cron/v1'].includes(m.resource))
+	const triggers = page.data.triggers?.filter(t => t.spec.component_id === componentData.meta.id)
 </script>
 
+<Dialog bind:dialog {componentData} />
 <PanelItem {componentData} title="Triggers" isListContainer onAddClick={() => dialog?.showModal()}>
 	<div class="flex flex-col gap-4">
 		{#each triggers as trigger}
 			<Item {componentData} {trigger} />
 		{:else}
-			<Dialog bind:dialog />
 			<p class="text-main-500 text-sm text-center">No triggers yet</p>
 		{/each}
 	</div>

@@ -37,8 +37,17 @@
 
 				if (!confirmed) return
 
-				await api.delete(`modifiers/${trigger.meta.id}`)
+				// await api.delete(`modifiers/${trigger.meta.id}`)
+				// toast.success('Trigger removed')
+
+				// to delete a trigger (before they're modifiers) we just need to set the
+				// component_id to some uuid that doesn't exist
+				// DISCLAIMER: this is genuinely the most brain-dead thing in this codebase
+				// but it's temporary, and I 100% blame christoffer for it :)
+				trigger.spec.component_id = '00000000-0000-0000-0000-000000000000'
+				await api.put(`components/${trigger.meta.id}`, trigger)
 				toast.success('Trigger removed')
+
 				await invalidate('project')
 			}
 		},
@@ -54,7 +63,7 @@
 	])
 </script>
 
-<Dialog bind:dialog bind:data />
+<Dialog bind:dialog {data} {componentData} />
 <div
 	class={[
 		'flex flex-row items-start justify-between',
@@ -73,9 +82,11 @@
 			<h4 class="text-main-200 font-semibold">
 				{trigger.meta.name}
 			</h4>
-			<!-- <span class={['text-main-400', trigger.resource === 'cron/v1' && 'font-mono']}>
-				{trigger.resource === 'endpoint/v1' ? 'wip' : (trigger as Cron).spec.schedule}
-			</span> -->
+			<span class={['text-main-400', trigger.resource === 'cron/v1' && 'font-mono']}>
+				{trigger.resource === 'endpoint/v1'
+					? `https://api.tricore.dev/v1/endpoints/${trigger.meta.id}`
+					: (trigger as Cron).spec.schedule}
+			</span>
 		</div>
 	</div>
 	<div class="flex flex-row gap-2">

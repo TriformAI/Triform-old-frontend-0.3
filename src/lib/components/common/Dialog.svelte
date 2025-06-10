@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { onMount, type Snippet } from 'svelte'
+	import { onMount, untrack, type Snippet } from 'svelte'
 	import IconChevronDown from '~icons/mdi/chevron-down'
 	import IconClose from '~icons/mdi/close'
 	import { Toaster } from 'svelte-sonner'
@@ -39,9 +39,7 @@
 	let isOpen = $state(false)
 
 	$effect(() => {
-		if (isOpen && onOpen) {
-			onOpen()
-		}
+		if (isOpen) untrack(() => onOpen?.())
 	})
 
 	onMount(() => {

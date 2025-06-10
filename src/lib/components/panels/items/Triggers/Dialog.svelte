@@ -12,13 +12,16 @@
 	import AlarmIcon from '~icons/material-symbols/alarm-rounded'
 	import Payload from '../common/Payload.svelte'
 	import type { Cron, Trigger, Modifier } from '$lib/types/project'
+	import type { Component } from '$lib/types/agent'
 
 	let {
 		dialog = $bindable(),
-		data = $bindable()
+		data: sourceData,
+		componentData
 	}: {
 		dialog: HTMLDialogElement | undefined
 		data?: Trigger
+		componentData: Component
 	} = $props()
 
 	const tabs: Tab[] = [
@@ -40,6 +43,7 @@
 	let hasCronErrors = $state(false)
 	let hasJsonErrors = $state(false)
 	let isNew = $state(false)
+	let data = $state<Trigger>()
 	const hasErrors = $derived.by(() => {
 		// no validation if it's an endpoint
 		if (activeTab === 0) return false
@@ -58,33 +62,39 @@
 
 	const handleSubmit = async (e: SubmitEvent) => {
 		e.preventDefault()
+		const resource = `${tabs[activeTab].key === 'endpoint' ? 'endpoint' : 'cron'}/v1`
 
-		if (hasCronErrors) return toast.error('Invalid cron expression')
+		if (hasCronErrors && resource === 'cron/v1') return toast.error('Invalid cron expression')
 
 		const api = new API()
 		const currTab = tabs[activeTab]
 		isCreating = true
 
-		const resource = `${tabs[activeTab].key === 'endpoint' ? 'endpoint' : 'cron'}/v1`
+		const spec =
+			currTab.key === 'endpoint'
+				? {}
+				: {
+						schedule: Object.values(cronFields).join(' '),
+						input: JSON.parse(payload)
+					}
 
 		const body = {
 			resource,
 			meta: {
-				name
+				...data?.meta,
+				name,
+				id: data?.meta.id ?? crypto.randomUUID()
 			},
-			spec:
-				currTab.key === 'endpoint'
-					? {}
-					: {
-							schedule: Object.values(cronFields).join(' '),
-							input: payload
-						}
+			spec: {
+				component_id: componentData.meta.id,
+				...spec
+			}
 		}
 		try {
 			if (isNew) {
-				await api.post<Modifier>('modifiers', body)
+				await api.post<Modifier>('components', body)
 			} else {
-				await api.put<Modifier>(`modifiers/${data?.meta.id}`, body)
+				await api.put<Modifier>(`components/${data?.meta.id}`, body)
 			}
 			await invalidate('project')
 			dialog?.close()
@@ -96,6 +106,7 @@
 
 	// update the loaded data whenever the dialog is opened
 	const loadData = () => {
+		data = sourceData
 		// if it's a brand new trigger, default to endpoint
 		isNew = !data
 		if (!data) {
@@ -105,13 +116,19 @@
 					id: crypto.randomUUID(),
 					name: ''
 				},
-				spec: {}
+				spec: {
+					component_id: componentData.meta.id
+				}
 			}
 		}
 		activeTab = data.resource === 'endpoint/v1' ? 0 : 1
-		name = 'meta' in data ? data.meta.name : ''
+		name = 'meta' in data ? (data.meta.name as string) : ''
 		if (data.resource === 'cron/v1') {
-			payload = (data as Cron).spec.input
+			let unparsedPayload = (data as Cron).spec.input
+			payload =
+				typeof unparsedPayload === 'string'
+					? unparsedPayload
+					: JSON.stringify(unparsedPayload, null, 2)
 			const [minute, hour, day, month, weekday] = (data as Cron).spec.schedule.split(' ')
 			cronFields = {
 				minute,
