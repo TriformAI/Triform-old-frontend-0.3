@@ -56,6 +56,6 @@
 	</InfiniteLoader>
 
 	<div
-		class="from-main-900 via-main-900/75 to-main-950/0 pointer-events-none fixed bottom-0 left-0 h-20 w-full rounded-lg bg-gradient-to-t"
+		class="from-main-950/75 to-main-900/0 pointer-events-none sticky bottom-0 left-0 h-20 w-full rounded-lg bg-gradient-to-t"
 	></div>
 </div>
