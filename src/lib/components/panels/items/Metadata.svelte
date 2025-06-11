@@ -3,7 +3,6 @@
 	import InputField from '$lib/components/atoms/InputField.svelte'
 	import TextField from '$lib/components/atoms/TextField.svelte'
 	import Button from '$lib/components/atoms/Button.svelte'
-	import type { Action } from '$lib/types/agent'
 	import { toast } from 'svelte-sonner'
 	import compare from 'just-compare'
 	import { debounce } from '$lib/utils/debounce'
@@ -29,8 +28,6 @@
 	import { openPanelItems, toggleOpenPanelItem } from '$lib/stores/panel.svelte'
 	import { drafts } from '$lib/stores/canvas.svelte'
 	import { type Component } from '$lib/types/agent'
-	import { invalidate } from '$app/navigation'
-	import DirtyNote from '$lib/components/DirtyNote.svelte'
 	import { getContext } from 'svelte'
 
 	const { componentData }: { componentData: Component } = $props()
@@ -43,49 +40,16 @@
 
 	const useDraft = $derived(getContext<{ value: boolean }>('use-draft'))
 
-	const dataIsDirty = $derived(draftData ? !compare(componentData.meta, draftData.meta) : false)
-
-	let isLoading = $state(false)
-	const isBuilding = $derived(componentData.meta.id in inProgressComponents)
-
-	async function publishMetadata(e: SubmitEvent) {
-		e.preventDefault()
-
-		isLoading = true
-
-		try {
-			const payload = {
-				...componentData,
-				meta: draftData.meta
-			}
-
-			const result = await api.put<Action>(`components/${componentData.meta.id}`, payload)
-
-			// If spec is not dirty, delete draft
-			// Else, update draft with published meta
-			if (compare(componentData.spec, draftData.spec)) {
-				await api.delete<Action>(`components/${componentData.meta.id}/draft`)
-			} else {
-				await saveDraft(
-					{
-						...draftData,
-						meta: { ...result.meta }
-					},
-					componentData.meta.id
+	const dataIsDirty = $derived(
+		draftData
+			? !compare(
+					{ ...draftData.meta, version: undefined },
+					{ ...componentData.meta, version: undefined }
 				)
-			}
-			console.log("invalidate('project')")
+			: false
+	)
 
-			invalidate('project')
-
-			toast.success('Metadata successfully updated!')
-		} catch (error) {
-			toast.error('Failed to update metadata')
-			console.error(error)
-		}
-
-		isLoading = false
-	}
+	const isBuilding = $derived(componentData.meta.id in inProgressComponents)
 
 	const nodeType = $derived(isAction(componentData) ? 'action' : 'flow')
 
@@ -253,8 +217,7 @@
 	}
 
 	const saveMetadataDraft = () => {
-		const { spec, ...dataWithoutSpec } = draftData
-		saveDraft(nodeType === 'action' ? draftData : dataWithoutSpec, componentData.meta.id)
+		saveDraft(draftData, componentData.meta.id)
 	}
 
 	const debouncedSaveDraft = debounce(saveMetadataDraft, 500)
@@ -270,7 +233,7 @@
 
 {#if draftData}
 	<PanelItem {componentData} title="Metadata" isDirty={dataIsDirty}>
-		<form method="POST" class="grid grid-cols-2 gap-3" onsubmit={publishMetadata}>
+		<form method="POST" class="grid grid-cols-2 gap-3" onsubmit={buildComponent}>
 			<InputField
 				containerClass="col-span-2"
 				required
@@ -315,16 +278,9 @@
 				</p>
 			{:else}
 				<div class="col-span-2 mt-2 flex">
-					<DirtyNote show={dataIsDirty} />
-
 					<div class="ms-auto flex flex-row justify-end gap-x-4">
 						{#if isAction(componentData)}
-							<Button
-								variation="primary"
-								type="button"
-								onClick={buildComponent}
-								isLoading={isBuilding}
-							>
+							<Button variation="vibrant" type="submit" isLoading={isBuilding}>
 								{#snippet icon()}
 									<IconMagic />
 								{/snippet}
@@ -333,18 +289,6 @@
 								{/snippet}
 							</Button>
 						{/if}
-
-						<Button
-							variation="vibrant"
-							type="submit"
-							class="ms-auto"
-							disabled={!dataIsDirty || isLoading}
-							{isLoading}
-						>
-							{#snippet body()}
-								Publish
-							{/snippet}
-						</Button>
 					</div>
 				</div>
 			{/if}

@@ -19,8 +19,8 @@ import { selected } from '$lib/stores/panel.svelte'
 import { getLeafNodes } from '$lib/utils/getLeafNodes'
 import { getNodeSelector } from '$lib/utils/getNodeSelector'
 
-let nodesStore = $state.raw<Node[]>([])
-let edgesStore = $state.raw<Edge[]>([])
+let nodesStore = $state<Node[]>([])
+let edgesStore = $state<Edge[]>([])
 
 // SvelteFlow requires nodes & edges to be bound
 // We can't export a let, so export getters and setters instead
@@ -46,6 +46,10 @@ export const loadDrafts = (allDrafts: { component_id: Uuid; spec: Component }[])
 		drafts[draft.component_id as Uuid] = draft.spec
 	}
 }
+let project = $state<Project>()
+export const loadProject = (proj: Project) => {
+	project = proj
+}
 
 // True if we're in the root level (Have not entered a flow)
 const isRootLevel = $derived(page.params.path === undefined)
@@ -62,7 +66,6 @@ const currentFlow = $derived.by(() => {
 		return
 	}
 
-	const project = page.data.project
 	if (!project) {
 		return
 	}
@@ -70,7 +73,7 @@ const currentFlow = $derived.by(() => {
 	return getFlowById(project.spec.nodes, currentFlowId as Uuid)
 })
 
-export const getProject = () => page.data.project
+export const getProject = () => project
 
 export const getCurrentFlow = () => currentFlow
 export const getCurrentFlowId = () => currentFlowId
@@ -83,17 +86,19 @@ export const isFlow = (component: Component): component is Flow => component.res
 
 // Initialize the nodes on project or flow level
 export async function initFlow(
-	project: Project,
+	proj: Project,
 	allPositions: Record<Uuid, Record<Uuid, { x: number; y: number }>> = {}
 ) {
+	if (!project) loadProject(proj)
 	// Get nodes from project or current flow
-	const triNodes = isRootLevel ? project.spec.nodes : currentFlow?.spec.spec.nodes
+	const triNodes = isRootLevel ? project!.spec.nodes : currentFlow?.spec.spec.nodes
 
 	// Turn trinodes into Svelteflow nodes and edges
 	// @ts-expect-error - we know the id is defined
 	const positions = allPositions[isRootLevel ? project.meta.id : currentFlow?.spec.meta.id] ?? {}
+
 	// eslint-disable-next-line prefer-const
-	let { nodes, edges } = parseNodes(triNodes, positions)
+	let { nodes, edges } = parseNodes(triNodes ?? {}, positions)
 
 	// Add data from local storage (open panels & payload)
 	nodes = addPersistedDataToNodes(nodes)
@@ -140,7 +145,10 @@ export async function initFlow(
 			draggable: false,
 			selectable: false,
 			// idk why we need to offset x but it is what it is
-			position: { x: x - (nodeSize + gap), y }
+			position: {
+				x: x, // - (nodeSize + gap),
+				y
+			}
 		})
 	}
 
@@ -300,15 +308,41 @@ const onFlowUpdate = (flow: Flow) => {
 	flow.spec.outputs = Object.keys(leafNodes) as Uuid[]
 }
 
+/**
+ * Updates all nodes that use the same component surgically without having to reparse the entire flow.
+ * We'll have to modify this when we have proper version handling
+ */
+export const updateNodeComponent = (component: Component) => {
+	// update the currently visible nodes
+	for (const node of nodesStore) {
+		if (node.data?.trinode?.component_id === component.meta.id) {
+			node.data.trinode.spec = component
+		}
+	}
+
+	// run the same update on all nodes in the project to make sure it stays in sync too
+	if (!project) {
+		throw new Error('No project found')
+	}
+	const processNode = (node: TriNode) => {
+		if (node.component_id === component.meta.id) {
+			node.spec = component
+		}
+		if (!node?.spec || !isFlow(node.spec)) return
+		for (const child of Object.values(node.spec.spec.nodes)) {
+			processNode(child)
+		}
+	}
+	for (const node of Object.values(project.spec.nodes)) processNode(node)
+}
+
 export async function addNode(
 	component: Component,
 	position: { x: number; y: number },
 	inputs: Source[]
 ) {
-	const project = page.data.project
-
 	if (!project) {
-		throw new Error('No project found')
+		throw new Error('No project loaded')
 	}
 
 	const newNodeId = crypto.randomUUID()
@@ -355,10 +389,8 @@ export async function addNode(
 
 // Deletes a given node from the project or flow component
 export async function deleteNode(id: Uuid) {
-	const project = page.data.project
-
 	if (!project) {
-		throw new Error('No project found')
+		throw new Error('No project loaded')
 	}
 
 	// Delete node from project
@@ -486,7 +518,6 @@ export const getBreadcrumbs = () => {
 }
 
 export const breadcrumbs = () => {
-	const project = page.data.project
 	if (!project) {
 		return undefined
 	}

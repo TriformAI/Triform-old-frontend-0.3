@@ -57,7 +57,7 @@ export interface Action {
 export interface Meta {
 	name: string
 	id: Uuid
-	version: number
+	version?: number
 	intention?: {
 		purpose: string
 		input: string

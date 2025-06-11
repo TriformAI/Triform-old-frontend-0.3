@@ -1,5 +1,8 @@
 import type { Uuid, Node, Meta } from './agent'
 
+export const isProject = (obj: unknown): obj is Project =>
+	typeof obj === 'object' && obj !== null && 'resource' in obj && obj?.resource === 'project/v1'
+
 interface Intention {
 	purpose: string
 	input: string

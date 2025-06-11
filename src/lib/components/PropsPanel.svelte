@@ -32,7 +32,7 @@
 	const NodeComponent = $derived(nodeComponents[nodeType as keyof typeof nodeComponents])
 </script>
 
-{#key componentData}
+{#key componentData?.meta?.id}
 	<div class="scroll-gutter-stable bg-main-950/60 @container row-span-2 overflow-y-auto py-4">
 		{#if selected.isMultiple}
 			<p class="mx-3">Multiple nodes selected</p>

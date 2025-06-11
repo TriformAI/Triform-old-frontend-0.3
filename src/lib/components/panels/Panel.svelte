@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { type Component as SvelteComponent, type Snippet, setContext } from 'svelte'
+	import { type Component as SvelteComponent, type Snippet, setContext, onMount } from 'svelte'
 	import type { onClickFn } from '$lib/stores/nodeActions.svelte'
 	import CodeEditor from './items/CodeEditor.svelte'
 	import Execute from './items/Execute/Root.svelte'
@@ -8,8 +8,18 @@
 	import Variables from './items/Variables/Root.svelte'
 	import Triggers from './items/Triggers/Root.svelte'
 	import { getActions } from '$lib/stores/nodeActions.svelte'
-	import { type Component } from '$lib/types/agent'
+	import { type Component, isFlow } from '$lib/types/agent'
 	import { type Project } from '$lib/types/project'
+	import Button from '$lib/components/atoms/Button.svelte'
+	import { drafts } from '$lib/stores/canvas.svelte'
+	import DirtyNote from '../DirtyNote.svelte'
+	import { API } from '$lib/api'
+	import { toast } from 'svelte-sonner'
+	import componentIsDirty from '$lib/utils/componentIsDirty'
+	import { isProject } from '$lib/types/project'
+	import { updateNodeComponent } from '$lib/stores/canvas.svelte'
+
+	const api = new API()
 
 	interface Props {
 		componentData: Component | Project
@@ -30,13 +40,43 @@
 
 	const { componentData, Icon, panels }: Props = $props()
 
+	const draftData = $derived.by(() => {
+		return drafts[componentData?.meta?.id]
+	})
+	const isDirty = $derived(
+		!isProject(componentData)
+			? componentIsDirty($state.snapshot(draftData), $state.snapshot(componentData))
+			: false // unsaved is handled by project settings itself and doesn't use drafts
+	)
+
 	const actions = $derived.by(() => {
 		const type = 'flow-node'
 		getActions(type)
 	})
 
-	const handleActionClick = (fn: onClickFn) => {
-		fn(componentData)
+	// const handleActionClick = (fn: onClickFn) => {
+	// 	fn(componentData)
+	// }
+
+	const publishComponent = async () => {
+		if (isProject(componentData)) return
+
+		let result: Component | undefined = undefined
+		try {
+			result = await api.put<Component>(`components/${componentData.meta.id}`, draftData)
+			// if it was a flow that we updated, we won't get back the full resolved component so we
+			// need to re-populate the local (fully resolved) spec before updating it
+			if (isFlow(componentData)) result.spec = componentData.spec
+			result = $state.snapshot(result)
+			await api.delete(`components/${componentData.meta.id}/draft`)
+		} catch (error) {
+			console.error(error)
+			toast.error('Failed to publish component')
+		}
+
+		if (result) updateNodeComponent(result)
+		else console.error('Result was undefined')
+		toast.success('Component published')
 	}
 
 	const title = $derived(componentData?.meta?.name ?? 'Project')
@@ -49,38 +89,50 @@
 
 <div class="overflow-x-hidden">
 	<div class="border-b-main-800 mb-2 border-b px-3 pe-8 pb-4">
-		<div class="flex items-center gap-4">
+		<div class="flex items-center justify-between gap-4">
 			<h2 class="flex items-center gap-2 truncate text-lg font-semibold">
 				{#if Icon}
 					<Icon class="size-5" />
 				{/if}
-				<span class="truncate">{title}</span>
+				<div class="flex flex-col">
+					<span class="truncate">{title}</span>
+					{#if desc}
+						<p class="text-main-400 mt-1 line-clamp-2 truncate text-sm">{desc}</p>
+					{/if}
+				</div>
 			</h2>
 
-			<ul class="ms-auto flex items-center gap-1">
-				{#each actions as action}
-					<li>
-						<button
-							aria-label={action.label}
-							data-balloon-pos="down"
-							onclick={() => handleActionClick(action.onClick)}
-							class={[
-								'rounded p-1 transition-colors',
-								action.isDangerous
-									? 'list-btn--danger hover:bg-danger-600/25'
-									: 'hover:bg-main-700 text-main-400 hover:text-main-200'
-							]}
-						>
-							<action.icon class="size-5" />
-						</button>
-					</li>
-				{/each}
-			</ul>
+			<div class="flex flex-row items-center gap-4">
+				{#if !isProject(componentData)}
+					<DirtyNote show={isDirty} />
+					<Button
+						variation="vibrant"
+						disabled={!isDirty}
+						onClick={publishComponent}
+						autoLoad="promise">Publish</Button
+					>
+				{/if}
+				<!-- <ul class="ms-auto flex items-center gap-1">
+					{#each actions as action}
+						<li>
+							<button
+								aria-label={action.label}
+								data-balloon-pos="down"
+								onclick={() => handleActionClick(action.onClick)}
+								class={[
+									'rounded p-1 transition-colors',
+									action.isDangerous
+										? 'list-btn--danger hover:bg-danger-600/25'
+										: 'hover:bg-main-700 text-main-400 hover:text-main-200'
+								]}
+							>
+								<action.icon class="size-5" />
+							</button>
+						</li>
+					{/each}
+				</ul> -->
+			</div>
 		</div>
-
-		{#if desc}
-			<p class="text-main-400 mt-1 line-clamp-2">{desc}</p>
-		{/if}
 	</div>
 
 	{#if componentData}

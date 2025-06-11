@@ -8,7 +8,7 @@
 	import PropsPanel from '$lib/components/PropsPanel.svelte'
 	import Confirm from '$lib/components/common/Confirm.svelte'
 	import { loadComponents } from '$lib/stores/library.svelte'
-	import { initFlow, loadDrafts } from '$lib/stores/canvas.svelte'
+	import { initFlow, loadDrafts, loadProject } from '$lib/stores/canvas.svelte'
 
 	import 'balloon-css'
 	import { onMount } from 'svelte'
@@ -24,6 +24,9 @@
 	$effect(() => {
 		if (data.drafts) {
 			loadDrafts(data.drafts)
+		}
+		if (data.project) {
+			loadProject(data.project)
 		}
 	})
 

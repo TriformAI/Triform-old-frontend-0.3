@@ -3,6 +3,6 @@ import { type Component } from '$lib/types/agent'
 
 const api = new API()
 
-export async function saveDraft(data: Component | Omit<Component, 'spec'>, componentId: string) {
-	await api.patch(`components/${componentId}/draft`, data)
+export async function saveDraft(component: Component, componentId: string) {
+	await api.patch(`components/${componentId}/draft`, component)
 }

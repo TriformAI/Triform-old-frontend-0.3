@@ -13,20 +13,16 @@
 	import { inProgressComponents } from '$lib/stores/builder.svelte'
 	import { blur } from 'svelte/transition'
 	import { type Component } from '$lib/types/agent'
-	import { invalidate } from '$app/navigation'
-	import DirtyNote from '$lib/components/DirtyNote.svelte'
 	import { debounce } from '$lib/utils/debounce'
 
 	const { componentData }: { componentData: Component } = $props()
-
-	const api = new API()
 
 	const draftData = $derived.by(() => {
 		return drafts[componentData.meta.id] as Action
 	})
 
 	const dataIsDirty = $derived.by(() => {
-		return draftData ? !compare(componentData.spec, draftData.spec) : false
+		return draftData ? !compare(draftData.spec, componentData.spec) : false
 	})
 
 	const filenames = {
@@ -58,36 +54,6 @@
 
 		Object.assign(draftData.spec, newData)
 	})
-
-	const publishSpec = async () => {
-		try {
-			const payload = {
-				...componentData,
-				spec: draftData.spec
-			}
-
-			const result = await api.put<Action>(`components/${componentData.meta.id}`, payload)
-			// If meta is not dirty, delete draft
-			// Else, update draft with published spec
-			if (compare(componentData.meta, draftData.meta)) {
-				await api.delete<Action>(`components/${componentData.meta.id}/draft`)
-			} else {
-				await saveDraft(
-					{
-						...draftData,
-						spec: { ...result.spec }
-					},
-					componentData.meta.id
-				)
-			}
-
-			invalidate('project')
-			toast.success('Code successfully published!')
-		} catch (e) {
-			console.error('Failed to publish code', e)
-			toast.error('Failed to publish code')
-		}
-	}
 
 	let activeTab = $state(0) // Default to the first tab
 
@@ -161,22 +127,5 @@
 				</div>
 			{/key}
 		{/if}
-	</div>
-
-	<div class="mt-4 flex items-center justify-between">
-		<DirtyNote show={dataIsDirty} />
-
-		<Button
-			class="ms-auto"
-			type="button"
-			onClick={publishSpec}
-			autoLoad="promise"
-			disabled={!dataIsDirty || isBuilding}
-			variation="vibrant"
-		>
-			{#snippet body()}
-				Publish
-			{/snippet}
-		</Button>
 	</div>
 </PanelItem>

@@ -2,6 +2,7 @@
 	import { type Snippet } from 'svelte'
 
 	import { fly, scale } from 'svelte/transition'
+	import { twMerge } from 'tailwind-merge'
 
 	import AutorenewIcon from '~icons/material-symbols/autorenew-rounded'
 
@@ -12,6 +13,7 @@
 		// etc...
 		body?: Snippet
 		icon?: Snippet
+		children?: Snippet
 		// promise = show until promise resolves
 		autoLoad?: 'promise'
 		// If it returns a promise, show loading indicator until it resolves
@@ -30,6 +32,7 @@
 	let {
 		variation = 'primary',
 		body,
+		children,
 		onClick: onClickProp,
 		autoLoad,
 		icon,
@@ -44,33 +47,53 @@
 		isLoading = $bindable(false)
 	}: Props = $props()
 
+	const content = $derived(body ?? children)
+
 	const hasTextColor = ['danger'].includes(variation)
 
-	const onClick = () => {
+	const onClick = async () => {
+		// Click handler with optional auto-loading behaviour
+		// 1. Follows external links immediately (if href provided)
+		// 2. Runs the user-supplied onClick handler
+		// 3. If autoLoad === 'promise' and the handler returns a promise:
+		//    • Show a spinner after a short delay (to avoid UI flash)
+		//    • Keep the spinner visible until the promise settles
+		// 4. Always clears timers / loading state in the finally block so we don't
+		//    leak state when the handler throws or rejects
 		if (href) {
 			if (target === '_blank') window.open(href, '_blank')
 			else window.location.href = href
 		}
 
-		if (typeof onClickProp === 'function') {
-			let timeout: ReturnType<typeof setTimeout>
-			// Wait a bit before we show the loading indicator, so it doesn't flash
-			if (autoLoad === 'promise') timeout = setTimeout(() => (isLoading = true), 75)
-			// If it wasn't a promise this will just resolve immediately
-			Promise.resolve(onClickProp())
-				.then(() => {
-					if (autoLoad !== 'promise') return
-					if (timeout) clearTimeout(timeout)
-					isLoading = false
-					// hack, in case the promise is resolved too fast
-					// (basically never happens but its pretty catastrophic if it does
-					// so better to just fix it like this)
-					setTimeout(() => (isLoading = false), 150)
-				})
-				.catch(_e => {
-					if (timeout) clearTimeout(timeout)
-					isLoading = false
-				})
+		// No click handler → nothing more to do
+		if (typeof onClickProp !== 'function') return
+
+		// Should we auto-manage loading UI?
+		const useAutoLoad = autoLoad === 'promise'
+
+		// Indicates whether the handler has finished (successfully or not)
+		let settled = false
+
+		// Delay before showing the spinner. If the handler resolves quickly we
+		// cancel this timer so the spinner never flashes.
+		const delay = 150
+		const timer = useAutoLoad
+			? setTimeout(() => {
+					if (!settled) isLoading = true
+				}, delay)
+			: undefined
+
+		try {
+			const result = onClickProp()
+			// Await only if it looks like a promise
+			if (useAutoLoad && result && typeof (result as any).then === 'function') {
+				await result
+			}
+		} finally {
+			// Cleanup no matter what
+			settled = true
+			if (timer) clearTimeout(timer)
+			if (useAutoLoad) isLoading = false
 		}
 	}
 </script>
@@ -122,7 +145,7 @@
 				</div>
 			{/if}
 		</div>
-		{@render body?.()}
+		{@render content?.()}
 	{:else}
 		<!-- If we don't have an icon, replace the entire text with the loading icon -->
 		{@const animY = 10}
@@ -141,12 +164,12 @@
 					out:fly={{ y: -animY, duration: 300, delay: 0 }}
 					class="col-start-1 row-start-1"
 				>
-					{@render body?.()}
+					{@render content?.()}
 				</div>
 			{/if}
 			<!-- Copy of the body to make sure the button is always the same width even when loading -->
 			<div class="pointer-events-none invisible col-start-1 row-start-1">
-				{@render body?.()}
+				{@render content?.()}
 			</div>
 		</div>
 	{/if}
