@@ -13,6 +13,7 @@
 	import Payload from '../common/Payload.svelte'
 	import type { Cron, Trigger, Modifier } from '$lib/types/project'
 	import type { Component } from '$lib/types/agent'
+	import { sleep } from '$lib/utils/sleep'
 
 	let {
 		dialog = $bindable(),
@@ -96,6 +97,7 @@
 			} else {
 				await api.put<Modifier>(`components/${data?.meta.id}`, body)
 			}
+			await sleep(150)
 			await invalidate('project')
 			dialog?.close()
 		} catch (e) {
