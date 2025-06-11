@@ -33,7 +33,10 @@
 	<InnerNode type="action" id="action-preview" />
 </div>
 
-<div class="relative grid overflow-y-auto" style="scrollbar-color:white transparent;">
+<div
+	class="border-main-800 relative grid overflow-y-auto rounded-lg border"
+	style="scrollbar-color:rgba(255,255,255,0.5) transparent;"
+>
 	<InfiniteLoader {loaderState} triggerLoad={loadMore} loopMaxCalls={100}>
 		<div
 			class="bg-main-900/60 sticky top-0 mb-4 flex w-full flex-row gap-2 px-4 pt-4 backdrop-blur-xs"
