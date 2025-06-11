@@ -109,7 +109,7 @@
 						})}
 				/>
 
-				<div class="bg-main-950/60 ms-1 mb-1 grid rounded-md">
+				<div class="ms-1 mb-1 grid">
 					<ComponentLibrary />
 				</div>
 			</div>
