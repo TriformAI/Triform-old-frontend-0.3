@@ -50,6 +50,7 @@
 
 	const MIN_PROPS_PANEL_WIDTH = 600
 	const MIN_COMPONENT_PANEL_HEIGHT = 180
+	const GUTTER_SIZE = 8
 
 	const propsPanelStartWidth = Number(
 		localStorage.getItem('propsPanelWidth') || MIN_PROPS_PANEL_WIDTH
@@ -70,16 +71,17 @@
 		<SvelteFlowProvider>
 			<div
 				bind:this={gridContainer}
-				style={`grid-template-columns: 1fr 4px ${propsPanelStartWidth}px; grid-template-rows: 1fr 4px ${componentPanelStartHeight}px`}
+				style={`grid-template-columns: 1fr ${GUTTER_SIZE}px ${propsPanelStartWidth}px; grid-template-rows: 1fr ${GUTTER_SIZE}px ${componentPanelStartHeight}px`}
 				class={`bg-main-850 grid h-full pt-1`}
 			>
 				<div
-					class="bg-main-900 border-main-800 ms-1 grid place-items-center overflow-hidden rounded-lg border"
+					class="bg-main-900 border-main-800 ms-2 grid place-items-center overflow-hidden rounded-lg border"
 				>
 					<Flow bind:this={flowComponent} />
 				</div>
 
 				<GridResizerHandle
+					gutterSize={GUTTER_SIZE}
 					name="propsPanel"
 					startSize={propsPanelStartWidth}
 					defaultSize={MIN_PROPS_PANEL_WIDTH}
@@ -96,6 +98,7 @@
 				<PropsPanel />
 
 				<GridResizerHandle
+					gutterSize={GUTTER_SIZE}
 					name="componentsLibPanel"
 					startSize={componentPanelStartHeight}
 					defaultSize={MIN_COMPONENT_PANEL_HEIGHT}
@@ -109,9 +112,7 @@
 						})}
 				/>
 
-				<div class="ms-1 mb-1 grid">
-					<ComponentLibrary />
-				</div>
+				<ComponentLibrary />
 			</div>
 		</SvelteFlowProvider>
 	</main>

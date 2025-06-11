@@ -34,11 +34,13 @@
 </div>
 
 <div
-	class="border-main-800 bg-main-900/60 relative grid overflow-y-auto rounded-lg border"
+	class="border-main-800 bg-main-900/60 relative ms-2 mb-2 grid overflow-y-auto rounded-lg border"
 	style="scrollbar-color:rgba(255,255,255,0.5) transparent;"
 >
 	<InfiniteLoader {loaderState} triggerLoad={loadMore} loopMaxCalls={100}>
-		<div class="sticky top-0 mb-4 flex w-full flex-row gap-2 px-4 pt-4 backdrop-blur-xs">
+		<div
+			class="bg-main-900/75 sticky top-0 mb-4 flex w-full flex-row gap-2 px-4 pt-4 backdrop-blur-xs"
+		>
 			<InputField
 				placeholder="Search component library"
 				containerClass="w-full"
@@ -54,6 +56,6 @@
 	</InfiniteLoader>
 
 	<div
-		class="from-main-950 via-main-950 to-main-950/0 pointer-events-none absolute right-0 bottom-0 left-0 h-20 rounded-lg bg-gradient-to-t"
+		class="from-main-900 via-main-900/75 to-main-950/0 pointer-events-none fixed bottom-0 left-0 h-20 w-full rounded-lg bg-gradient-to-t"
 	></div>
 </div>

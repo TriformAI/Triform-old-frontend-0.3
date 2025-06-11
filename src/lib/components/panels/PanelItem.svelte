@@ -53,7 +53,7 @@
 				class={['me-auto flex w-full items-center gap-1']}
 			>
 				<IconChevronRight class={[' transition-transform', isOpen ? 'rotate-90' : '']} />
-				<h2 class={['eyebrow  text-main-300 transition-colors']}>
+				<h2 class={['eyebrow text-main-300 whitespace-nowrap transition-colors']}>
 					{title}
 				</h2>
 				<div
