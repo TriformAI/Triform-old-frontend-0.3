@@ -5,8 +5,8 @@
 	import { createComponent } from '$lib/actions/components'
 	import { addNode } from '$lib/stores/canvas.svelte'
 	import { getFlowModel } from '$lib/nodeModels'
-	import { onMount } from 'svelte'
 	import { toast } from 'svelte-sonner'
+	import { clickOutside } from '$lib/utils/clickOutside'
 
 	const props = $props()
 
@@ -54,6 +54,7 @@
 				},
 				[]
 			)
+			stopEditing()
 		} catch (e) {
 			toast.error('Failed to create flow')
 		} finally {
@@ -62,7 +63,12 @@
 	}
 </script>
 
-<div class="relative grid items-end justify-center pb-1 transition-all">
+<div
+	class="relative grid items-end justify-center pb-1 transition-all"
+	use:clickOutside={{
+		handler: stopEditing
+	}}
+>
 	<div
 		role={isEditing ? 'div' : 'button'}
 		class={[
@@ -81,7 +87,6 @@
 				bind:value={name}
 				use={handleInputRef}
 				placeholder="Enter flow name"
-				onblur={stopEditing}
 				onkeydown={handleKeydown}
 				variation="tight"
 				class="ml-2 border-none bg-transparent text-white"
