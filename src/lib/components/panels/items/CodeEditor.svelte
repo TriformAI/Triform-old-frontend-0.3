@@ -1,5 +1,6 @@
 <script lang="ts">
 	import { API } from '$lib/api'
+	import { saveDraft } from '$lib/actions/drafts'
 	import Editor from '$lib/components/atoms/Editor.svelte'
 	import LightEditor from '$lib/components/atoms/LightEditor.svelte'
 	import Tabs from '$lib/components/atoms/Tabs.svelte'
@@ -15,7 +16,6 @@
 	import { invalidate } from '$app/navigation'
 	import DirtyNote from '$lib/components/DirtyNote.svelte'
 	import { debounce } from '$lib/utils/debounce'
-	import { getContext } from 'svelte'
 
 	const { componentData }: { componentData: Component } = $props()
 
@@ -72,10 +72,13 @@
 			if (compare(componentData.meta, draftData.meta)) {
 				await api.delete<Action>(`components/${componentData.meta.id}/draft`)
 			} else {
-				await saveDraft({
-					...draftData,
-					spec: { ...result.spec }
-				})
+				await saveDraft(
+					{
+						...draftData,
+						spec: { ...result.spec }
+					},
+					componentData.meta.id
+				)
 			}
 
 			invalidate('project')
@@ -99,13 +102,7 @@
 	const componentId = $derived(componentData.meta.id)
 	const isBuilding = $derived(componentId in inProgressComponents)
 
-	async function saveDraft(data?: Component) {
-		if (!data) {
-			data = draftData
-		}
-
-		await api.patch<Action>(`components/${componentData.meta.id}/draft`, data)
-	}
+	const debouncedSaveDraft = debounce(() => saveDraft(draftData, componentData.meta.id), 500)
 </script>
 
 <PanelItem title="Code" {componentData} isDirty={dataIsDirty}>
@@ -125,7 +122,7 @@
 							bind:code={draftData.spec[key as FileType]}
 							class={`${idx === activeTab ? 'block' : 'hidden'} absolute h-full w-full rounded-md`}
 							readOnly={isBuilding}
-							onUpdate={debounce(saveDraft, 500)}
+							onUpdate={debouncedSaveDraft}
 						/>
 					{:else}
 						<LightEditor
@@ -134,7 +131,7 @@
 							wordWrap={true}
 							class={`${idx === activeTab ? 'block' : 'hidden'} bg-main-800 absolute h-full w-full rounded-md ps-6 pt-2.5 text-sm`}
 							readOnly={isBuilding}
-							onUpdate={debounce(saveDraft, 500)}
+							onUpdate={debouncedSaveDraft}
 						/>
 					{/if}
 				{/each}

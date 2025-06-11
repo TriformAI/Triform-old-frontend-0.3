@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { saveDraft } from '$lib/actions/drafts'
 	import InputField from '$lib/components/atoms/InputField.svelte'
 	import TextField from '$lib/components/atoms/TextField.svelte'
 	import Button from '$lib/components/atoms/Button.svelte'
@@ -65,13 +66,18 @@
 			if (compare(componentData.spec, draftData.spec)) {
 				await api.delete<Action>(`components/${componentData.meta.id}/draft`)
 			} else {
-				await saveDraft({
-					...draftData,
-					meta: { ...result.meta }
-				})
+				await saveDraft(
+					{
+						...draftData,
+						meta: { ...result.meta }
+					},
+					componentData.meta.id
+				)
 			}
+			console.log("invalidate('project')")
 
 			invalidate('project')
+
 			toast.success('Metadata successfully updated!')
 		} catch (error) {
 			toast.error('Failed to update metadata')
@@ -81,13 +87,7 @@
 		isLoading = false
 	}
 
-	async function saveDraft(data?: Component) {
-		if (!data) {
-			data = draftData
-		}
-
-		await api.patch<Action>(`components/${componentData.meta.id}/draft`, data)
-	}
+	const nodeType = $derived(isAction(componentData) ? 'action' : 'flow')
 
 	// TODO: perhaps move this to the builder store, or some util function, but this will
 	// be moved soon either way when we transition to a global chat interface
@@ -114,7 +114,7 @@
 		if (!confirmed) return
 
 		// make sure the code tab is open
-		const nodeType = isAction(componentData) ? 'action' : 'flow'
+
 		if (!openPanelItems[nodeType].includes('Code')) {
 			toggleOpenPanelItem(nodeType, 'Code')
 		}
@@ -251,7 +251,22 @@
 		for (const [event, handler] of Object.entries(rawEventHandlers))
 			stream.select(event).subscribe((payload: string) => payload && handler(payload))
 	}
+
+	const saveMetadataDraft = () => {
+		const { spec, ...dataWithoutSpec } = draftData
+		saveDraft(nodeType === 'action' ? draftData : dataWithoutSpec, componentData.meta.id)
+	}
+
+	const debouncedSaveDraft = debounce(saveMetadataDraft, 500)
 </script>
+
+<!-- {#if draftData}
+	<p>{JSON.stringify(draftData.meta)}</p>
+{/if}
+<p>---</p>
+{#if componentData}
+	<p>{JSON.stringify(componentData.meta)}</p>
+{/if} -->
 
 {#if draftData}
 	<PanelItem {componentData} title="Metadata" isDirty={dataIsDirty}>
@@ -262,7 +277,7 @@
 				label="Name"
 				name="name"
 				readonly={!useDraft.value}
-				oninput={debounce(saveDraft, 500)}
+				oninput={debouncedSaveDraft}
 				bind:value={draftData.meta.name}
 			/>
 
@@ -272,7 +287,7 @@
 				label="Purpose"
 				name="Purpose"
 				readonly={!useDraft.value}
-				oninput={debounce(saveDraft, 500)}
+				oninput={debouncedSaveDraft}
 				bind:value={draftData.meta.intention.purpose}
 			/>
 
@@ -281,7 +296,7 @@
 				label="Expected input"
 				name="input"
 				readonly={!useDraft.value}
-				oninput={debounce(saveDraft, 500)}
+				oninput={debouncedSaveDraft}
 				bind:value={draftData.meta.intention.input}
 			/>
 
@@ -290,7 +305,7 @@
 				label="Expected output"
 				name="output"
 				readonly={!useDraft.value}
-				oninput={debounce(saveDraft, 500)}
+				oninput={debouncedSaveDraft}
 				bind:value={draftData.meta.intention.output}
 			/>
 

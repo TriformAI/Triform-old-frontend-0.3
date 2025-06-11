@@ -4,11 +4,12 @@
 	import { getActions } from '$lib/stores/nodeActions.svelte'
 	import type { Node, NodeData } from '$lib/types/flow'
 	import type { Snippet } from 'svelte'
-
+	import componentIsDirty from '$lib/utils/componentIsDirty'
 	import NodeActions from './NodeActions.svelte'
 	import NodeContainer from './NodeContainer.svelte'
 	import compare from 'just-compare'
 	import InnerNode from './InnerNode.svelte'
+	import { isAction } from '$lib/types/agent'
 
 	interface Props {
 		type: 'action' | 'flow'
@@ -54,7 +55,7 @@
 	})
 
 	const draftData = $derived(drafts[data.trinode.spec.meta.id])
-	const isDirty = $derived(!compare(data.trinode.spec, draftData))
+	const isDirty = $derived(componentIsDirty(draftData, data.trinode.spec))
 </script>
 
 <NodeContainer {...props} {showTargetHandle} {showSourceHandle}>
