@@ -6,10 +6,12 @@
 	import DragIcon from '~icons/material-symbols/drag-indicator'
 
 	interface Props {
-		meta: Component['meta']
+		component: Component
 	}
 
-	const { meta }: Props = $props()
+	const { component }: Props = $props()
+
+	const meta = $derived(component.meta)
 
 	function handleDragStart(event: DragEvent) {
 		if (event.dataTransfer) {

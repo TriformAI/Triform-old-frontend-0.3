@@ -8,13 +8,13 @@
 
 	const loaderState = new LoaderState()
 	let loadedSoFar = $state(0)
-	const loadedComponents = $state<Component['meta'][]>([])
+	const loadedComponents = $state<Component[]>([])
 	// super rudimentary search for now
 	const filteredComponents = $derived(
 		loadedComponents.filter(
 			component =>
-				component.name.toLowerCase().includes(search.toLowerCase()) ||
-				component.intention?.purpose?.toLowerCase().includes(search.toLowerCase())
+				component.meta.name.toLowerCase().includes(search.toLowerCase()) ||
+				component.meta.intention?.purpose?.toLowerCase().includes(search.toLowerCase())
 		)
 	)
 
@@ -47,7 +47,7 @@
 
 		<div class="grid grid-cols-[repeat(auto-fit,minmax(320px,1fr))] gap-4 px-4">
 			{#each filteredComponents as component}
-				<ComponentCard meta={component} />
+				<ComponentCard {component} />
 			{/each}
 		</div>
 	</InfiniteLoader>

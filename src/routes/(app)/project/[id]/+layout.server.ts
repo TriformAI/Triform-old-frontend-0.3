@@ -1,12 +1,4 @@
-import type {
-	Payload,
-	Project,
-	Variable,
-	Modifier,
-	Trigger,
-	Cron,
-	Endpoint
-} from '$lib/types/project'
+import type { Payload, Project, Variable, Modifier, Trigger } from '$lib/types/project'
 import { fail } from '@sveltejs/kit'
 import { db } from '$lib/db'
 import { getNodes } from '$lib/utils/getNodes'
@@ -20,28 +12,34 @@ export async function load({ locals, params, depends }) {
 	const id = params.id
 	if (!id) return fail(404, { message: 'Project not found' })
 
-	const [project, modifiers, payloads, allComponents, crons, endpoints] = await Promise.all([
+	const [project, modifiers, payloads, allComponents] = await Promise.all([
 		locals.api.get<Project>(`projects/${id}?depth=999`),
 		locals.api.get<Modifier[]>(`modifiers?full=true`),
 		locals.api.get<Payload[]>(`payloads?full=true`),
-		locals.api.get<Component['meta'][]>(`components`),
-		locals.api.get<Cron[]>(`components?type=cron&full=true`),
-		locals.api.get<Endpoint[]>(`components?type=endpoint&full=true`)
+		locals.api.get<Component[]>(`components?full=true`)
 	])
 
 	const variables = modifiers.filter(m => m.resource === 'variable/v1') as Variable[]
 
-	const allTriggers = [...crons, ...endpoints] as Trigger[]
 	// we get all components (incl versions) for now, so we need to go through them
 	// and only get the latest version for each component
 	// for each componentId, find the one with the highest version
-	const triggers = Object.values(
-		Object.groupBy(allTriggers, trigger => trigger.meta.id as string)
-	).map(triggerVersions =>
-		triggerVersions!.reduce((highest, current) =>
-			(current.meta.version as number) > (highest.meta.version as number) ? current : highest
+	const getLatestVersion = (components: Component[]): Component[] => {
+		const grouped = Object.groupBy(components, c => c.meta.id) as Record<Uuid, Component[]>
+		return Object.values(grouped).map(group =>
+			group.reduce((latest, curr) => {
+				const latestVersion = latest.meta.version ?? 0
+				const currVersion = curr.meta.version ?? 0
+				return currVersion > latestVersion ? curr : latest
+			})
 		)
-	)
+	}
+	const triggers = getLatestVersion(
+		allComponents.filter(c => ['cron/v1', 'endpoint/v1'].includes(c.resource))
+	) as Trigger[]
+	// do the same for all components
+	const latestComponents = getLatestVersion(allComponents)
+	console.log(latestComponents)
 
 	// Get the drafts & positions within each flow
 	const projectNodes = Object.values(project.spec.nodes).flatMap(node => [
@@ -76,7 +74,7 @@ export async function load({ locals, params, depends }) {
 			spec: Component
 		}[],
 		positions,
-		components: allComponents,
+		components: latestComponents,
 		modifiers,
 		variables,
 		payloads,
