@@ -6,8 +6,7 @@
 		axis: 'x' | 'y'
 		gridContainer: HTMLDivElement
 		onResizeEnd?: () => void
-		defaultSize?: number
-		startSize?: number
+		size: number
 		gutterSize?: number
 	}
 
@@ -16,24 +15,27 @@
 		axis,
 		gridContainer,
 		onResizeEnd,
-		defaultSize = 300,
-		startSize = 300,
+		size = $bindable(),
 		gutterSize = 10
 	}: Props = $props()
 
+	const DEFAULT_SIZE = axis === 'x' ? 500 : 200
+
 	let isResizing = $state(false)
+	let isTransitioning = $state(false)
+
+	let lastDraggedSize = $state(size || DEFAULT_SIZE)
 
 	const MIN_SIZE_THRESHOLD = 80
 	const MINIFIED_SIZE = 6
-
-	let currentPanelSize = $state(startSize)
+	const TEASE_SIZE = 14
 
 	// Track mouse position and direction
 	let lastMouseX = $state(0)
 	let lastMouseY = $state(0)
 	let direction = $state<'left' | 'right' | 'up' | 'down' | null>(null)
 
-	const isMinified = $derived(currentPanelSize === MINIFIED_SIZE)
+	const isMinified = $derived(size <= TEASE_SIZE)
 
 	function handleResize(event: MouseEvent) {
 		isResizing = true
@@ -55,7 +57,7 @@
 
 	function resize(event: MouseEvent) {
 		if (!isResizing || !gridContainer) return
-		if (currentPanelSize < MINIFIED_SIZE) return
+		if (size < MINIFIED_SIZE) return
 
 		// Calculate direction based on mouse movement
 		updateDirection(event)
@@ -65,6 +67,10 @@
 		// Update last mouse position for next calculation
 		lastMouseX = event.clientX
 		lastMouseY = event.clientY
+
+		lastDraggedSize = size
+
+		persistSize()
 	}
 
 	function updateDirection(event: MouseEvent) {
@@ -87,55 +93,49 @@
 	}
 
 	function resizeX(event: MouseEvent) {
-		const containerRect = gridContainer.getBoundingClientRect()
-		const containerWidth = containerRect.width
-
-		currentPanelSize = containerRect.right - event.clientX
-		console.log(currentPanelSize)
-
-		if (currentPanelSize < MIN_SIZE_THRESHOLD && direction === 'right') {
+		if (size < MIN_SIZE_THRESHOLD && direction === 'right') {
 			transitionToSize(MINIFIED_SIZE)
 		} else {
-			gridContainer.style.gridTemplateColumns = `1fr ${gutterSize}px ${currentPanelSize}px`
+			const containerRect = gridContainer.getBoundingClientRect()
+			size = containerRect.right - event.clientX
 		}
-
-		localStorage.setItem(`${name}Width`, String(currentPanelSize))
 	}
 
 	function resizeY(event: MouseEvent) {
-		const containerRect = gridContainer.getBoundingClientRect()
-		const containerHeight = containerRect.height
-
-		currentPanelSize = containerRect.bottom - event.clientY
-
-		if (currentPanelSize < 100 && direction === 'down') {
+		if (size < 100 && direction === 'down') {
 			transitionToSize(MINIFIED_SIZE)
 		} else {
-			gridContainer.style.gridTemplateRows = `1fr ${gutterSize}px ${currentPanelSize}px`
+			const containerRect = gridContainer.getBoundingClientRect()
+			size = containerRect.bottom - event.clientY
 		}
-
-		localStorage.setItem(`${name}Height`, String(currentPanelSize))
 	}
 
-	async function resetToDefaultSize() {
-		await transitionToSize(defaultSize)
+	function persistSize() {
+		localStorage.setItem(`${name}${axis === 'x' ? 'Width' : 'Height'}`, String(size))
+	}
+
+	async function resetToOpen() {
+		await transitionToSize(lastDraggedSize > MIN_SIZE_THRESHOLD ? lastDraggedSize : DEFAULT_SIZE)
 	}
 
 	async function resizeToMin() {
-		startSize = currentPanelSize
+		size = MINIFIED_SIZE
 		await transitionToSize(MINIFIED_SIZE)
 	}
 
-	async function transitionToSize(size: number) {
+	async function transitionToSize(targetSize: number, saveAsCurrent = true) {
+		isTransitioning = true
 		// Add and then remove the transition class
 		// Can't have transitions enabled by default, it will mess with drag-resizing
-		gridContainer.classList.add('transition-all', 'duration-300')
-		gridContainer.style[axis === 'x' ? 'gridTemplateColumns' : 'gridTemplateRows'] =
-			`1fr ${gutterSize}px ${size}px`
+		gridContainer.classList.add('transition-all', 'duration-500')
+		size = targetSize
 		// Let the transition finish
-		await sleep(300)
-		gridContainer.classList.remove('transition-all', 'duration-300')
-		currentPanelSize = size
+		await sleep(500)
+
+		gridContainer.classList.remove('transition-all', 'duration-500')
+		isTransitioning = false
+
+		persistSize()
 	}
 </script>
 
@@ -147,7 +147,17 @@
 	]}
 >
 	<button
-		ondblclick={isMinified ? resetToDefaultSize : resizeToMin}
+		onmouseenter={() => {
+			if (isMinified) {
+				transitionToSize(TEASE_SIZE, false)
+			}
+		}}
+		onmouseleave={async () => {
+			if (size === TEASE_SIZE && !isTransitioning) {
+				resizeToMin()
+			}
+		}}
+		ondblclick={isMinified ? resetToOpen : resizeToMin}
 		onmousedown={handleResize}
 		type="button"
 		aria-label={axis === 'x' ? 'Resize panel width' : 'Resize panel height'}

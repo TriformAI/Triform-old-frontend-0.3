@@ -4,6 +4,9 @@
 	import Action from '$lib/components/panels/Action.svelte'
 	import Flow from '$lib/components/panels/Flow.svelte'
 	import { getCurrentFlow } from '$lib/stores/canvas.svelte'
+	import { twMerge } from 'tailwind-merge'
+
+	let { class: classes }: { class?: string } = $props()
 
 	const componentData = $derived.by(() => {
 		if (selected.node && selected.node.data && selected.node.data.trinode) {
@@ -31,7 +34,10 @@
 
 {#key componentData?.meta?.id}
 	<div
-		class="scroll-gutter-stable bg-main-950/60 border-main-800 @container row-span-3 me-2 mb-2 overflow-y-auto rounded-lg border py-4"
+		class={twMerge(
+			'scroll-gutter-stable bg-main-950/60 border-main-800 @container row-span-3 me-2 mb-2 overflow-y-auto rounded-lg border py-4',
+			classes
+		)}
 	>
 		{#if selected.isMultiple}
 			<p class="mx-3">Multiple nodes selected</p>

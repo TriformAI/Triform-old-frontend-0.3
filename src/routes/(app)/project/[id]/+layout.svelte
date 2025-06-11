@@ -48,15 +48,16 @@
 		})()
 	})
 
-	const MIN_PROPS_PANEL_WIDTH = 600
-	const MIN_COMPONENT_PANEL_HEIGHT = 180
+	const DEFAULT_PROPS_PANEL_WIDTH = 600
+	const DEFAULT_COMPONENT_PANEL_HEIGHT = 180
 	const GUTTER_SIZE = 8
 
-	const propsPanelStartWidth = Number(
-		localStorage.getItem('propsPanelWidth') || MIN_PROPS_PANEL_WIDTH
+	let propsPanelWidth = $state(
+		Number(localStorage.getItem('propsPanelWidth') || DEFAULT_PROPS_PANEL_WIDTH)
 	)
-	const componentPanelStartHeight = Number(
-		localStorage.getItem('componentsLibPanelHeight') || MIN_COMPONENT_PANEL_HEIGHT
+
+	let componentPanelHeight = $state(
+		Number(localStorage.getItem('componentsLibPanelHeight') || DEFAULT_COMPONENT_PANEL_HEIGHT)
 	)
 </script>
 
@@ -71,8 +72,8 @@
 		<SvelteFlowProvider>
 			<div
 				bind:this={gridContainer}
-				style={`grid-template-columns: 1fr ${GUTTER_SIZE}px ${propsPanelStartWidth}px; grid-template-rows: 1fr ${GUTTER_SIZE}px ${componentPanelStartHeight}px`}
-				class={`bg-main-850 grid h-full pt-1`}
+				style={`grid-template-columns: 1fr ${GUTTER_SIZE}px ${propsPanelWidth}px; grid-template-rows: 1fr ${GUTTER_SIZE}px ${componentPanelHeight}px`}
+				class={`bg-main-850 grid h-full pt-1 ease-(--easing-circ)`}
 			>
 				<div
 					class="bg-main-900 border-main-800 ms-2 grid place-items-center overflow-hidden rounded-lg border"
@@ -81,11 +82,10 @@
 				</div>
 
 				<GridResizerHandle
-					gutterSize={GUTTER_SIZE}
 					name="propsPanel"
-					startSize={propsPanelStartWidth}
-					defaultSize={MIN_PROPS_PANEL_WIDTH}
 					axis="x"
+					bind:size={propsPanelWidth}
+					gutterSize={GUTTER_SIZE}
 					{gridContainer}
 					onResizeEnd={() =>
 						flowComponent?.fitView({
@@ -95,14 +95,13 @@
 						})}
 				/>
 
-				<PropsPanel />
+				<PropsPanel class={propsPanelWidth <= 30 ? 'border-main-850' : ''} />
 
 				<GridResizerHandle
-					gutterSize={GUTTER_SIZE}
 					name="componentsLibPanel"
-					startSize={componentPanelStartHeight}
-					defaultSize={MIN_COMPONENT_PANEL_HEIGHT}
 					axis="y"
+					bind:size={componentPanelHeight}
+					gutterSize={GUTTER_SIZE}
 					{gridContainer}
 					onResizeEnd={() =>
 						flowComponent?.fitView({
@@ -112,7 +111,7 @@
 						})}
 				/>
 
-				<ComponentLibrary />
+				<ComponentLibrary class={propsPanelWidth <= 30 ? 'border-main-850' : ''} />
 			</div>
 		</SvelteFlowProvider>
 	</main>
