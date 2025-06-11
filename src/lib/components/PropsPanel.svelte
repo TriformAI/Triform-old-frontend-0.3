@@ -4,7 +4,6 @@
 	import Action from '$lib/components/panels/Action.svelte'
 	import Flow from '$lib/components/panels/Flow.svelte'
 	import { getCurrentFlow } from '$lib/stores/canvas.svelte'
-	import ComponentLibrary from './panels/Library/ComponentLibrary.svelte'
 
 	const componentData = $derived.by(() => {
 		if (selected.node && selected.node.data && selected.node.data.trinode) {
@@ -15,8 +14,6 @@
 
 		return undefined
 	})
-
-	const showLibrary = $derived(!selected.node || selected.node.type === 'parent-node')
 
 	const nodeType = $derived.by(() => {
 		const type = selected.node?.type
@@ -33,7 +30,9 @@
 </script>
 
 {#key componentData?.meta?.id}
-	<div class="scroll-gutter-stable bg-main-950/60 @container row-span-2 overflow-y-auto py-4">
+	<div
+		class="scroll-gutter-stable bg-main-950/60 @container row-span-3 me-1 mb-1 overflow-y-auto rounded-md py-4"
+	>
 		{#if selected.isMultiple}
 			<p class="mx-3">Multiple nodes selected</p>
 		{:else if NodeComponent}
@@ -42,9 +41,6 @@
 			<Flow componentData={componentData!} />
 		{:else}
 			<Project />
-		{/if}
-		{#if showLibrary}
-			<ComponentLibrary />
 		{/if}
 	</div>
 {/key}

@@ -17,6 +17,7 @@
 				component.intention?.purpose?.toLowerCase().includes(search.toLowerCase())
 		)
 	)
+
 	const loadMore = async () => {
 		const size = 20
 		loadedComponents.push(...components.slice(loadedSoFar, loadedSoFar + size))
@@ -32,23 +33,26 @@
 	<InnerNode type="action" id="action-preview" />
 </div>
 
-<InfiniteLoader {loaderState} triggerLoad={loadMore} loopMaxCalls={100}>
-	<div class="bg-main-900/60 sticky -top-5 pt-1 pb-4 backdrop-blur-xs">
+<div class="relative grid overflow-y-auto" style="scrollbar-color:white transparent;">
+	<InfiniteLoader {loaderState} triggerLoad={loadMore} loopMaxCalls={100}>
 		<div
-			class="[&_div]:bg-main-700 my-4 flex w-full flex-row items-center gap-2 [&_div]:h-[1px] [&_div]:flex-1"
+			class="bg-main-900/60 sticky top-0 mb-4 flex w-full flex-row gap-2 px-4 pt-4 backdrop-blur-xs"
 		>
-			<div></div>
-			<h2 class="text-main-400 text-sm font-bold uppercase">Component library</h2>
-			<div></div>
+			<InputField
+				placeholder="Search component library"
+				containerClass="w-full"
+				bind:value={search}
+			/>
 		</div>
-		<div class="flex w-full flex-row gap-2 px-4">
-			<InputField placeholder="Search" containerClass="w-full" bind:value={search} />
-		</div>
-	</div>
 
-	<div class="grid h-full grid-cols-1 gap-4 overflow-y-auto px-4 @2xl:grid-cols-2">
-		{#each filteredComponents as component}
-			<ComponentCard meta={component} />
-		{/each}
-	</div>
-</InfiniteLoader>
+		<div class="grid grid-cols-[repeat(auto-fit,minmax(320px,1fr))] gap-4 px-4">
+			{#each filteredComponents as component}
+				<ComponentCard meta={component} />
+			{/each}
+		</div>
+	</InfiniteLoader>
+
+	<div
+		class="from-main-950 via-main-950 to-main-950/0 pointer-events-none absolute right-0 bottom-0 left-0 h-20 bg-gradient-to-t"
+	></div>
+</div>
