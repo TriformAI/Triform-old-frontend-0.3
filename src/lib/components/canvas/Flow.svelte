@@ -215,7 +215,7 @@
 							bgColor="#18181b"
 							patternColor="#52525c"
 							gap={20}
-							size={1}
+							size={1.25}
 							variant={BackgroundVariant.Dots}
 						/>
 					</div>
