@@ -31,7 +31,7 @@
 
 {#key componentData?.meta?.id}
 	<div
-		class="scroll-gutter-stable bg-main-950/60 @container row-span-3 me-1 mb-1 overflow-y-auto rounded-md py-4"
+		class="scroll-gutter-stable bg-main-950/60 border-main-800 @container row-span-3 me-1 mb-1 overflow-y-auto rounded-lg border py-4"
 	>
 		{#if selected.isMultiple}
 			<p class="mx-3">Multiple nodes selected</p>

@@ -73,7 +73,9 @@
 				style={`grid-template-columns: 1fr 4px ${propsPanelStartWidth}px; grid-template-rows: 1fr 4px ${componentPanelStartHeight}px`}
 				class={`bg-main-850 grid h-full pt-1`}
 			>
-				<div class="bg-main-900 ms-1 grid place-items-center overflow-hidden rounded-md">
+				<div
+					class="bg-main-900 border-main-800 ms-1 grid place-items-center overflow-hidden rounded-lg border"
+				>
 					<Flow bind:this={flowComponent} />
 				</div>
 
