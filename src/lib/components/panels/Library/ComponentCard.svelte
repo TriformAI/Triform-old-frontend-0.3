@@ -4,6 +4,8 @@
 	import InputIcon from '~icons/material-symbols/input-circle-rounded'
 	import ArrowRightIcon from '~icons/material-symbols/arrow-right-alt-rounded'
 	import DragIcon from '~icons/material-symbols/drag-indicator'
+	import FlowIcon from '~icons/material-symbols/network-node'
+	import ActionIcon from '~icons/mdi/rhombus'
 
 	interface Props {
 		component: Component
@@ -15,13 +17,16 @@
 
 	function handleDragStart(event: DragEvent) {
 		if (event.dataTransfer) {
-			const isMaybeFlow = meta.name.toLowerCase().includes('flow')
-			const preview = document.getElementById(isMaybeFlow ? 'flow-preview' : 'action-preview')!
+			const preview = document.getElementById(
+				component.resource === 'flow/v1' ? 'flow-preview' : 'action-preview'
+			)!
 			event.dataTransfer.setData('text/plain', meta.id)
 			event.dataTransfer.setDragImage(preview, 40, 40)
 			event.dataTransfer.effectAllowed = 'copy'
 		}
 	}
+
+	const Icon = $derived(component.resource === 'flow/v1' ? FlowIcon : ActionIcon)
 </script>
 
 <div
@@ -42,6 +47,14 @@
 
 	<div>
 		<h3 class="text-main-200 mb-2">
+			<Icon
+				class={[
+					'mr-2 inline-block drop-shadow-[0px_0px_7px]',
+					component.resource === 'flow/v1'
+						? 'text-accent-400 drop-shadow-accent-500'
+						: 'text-main-300 drop-shadow-main-300/40'
+				]}
+			/>
 			{meta.name}
 		</h3>
 		<div class="[&_svg]:text-main-300 flex flex-col gap-1 text-sm">

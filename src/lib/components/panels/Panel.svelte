@@ -92,7 +92,14 @@
 		<div class="flex items-center justify-between gap-4">
 			<h2 class="flex items-center gap-2 truncate text-lg font-semibold">
 				{#if Icon}
-					<Icon class="size-5" />
+					<Icon
+						class={[
+							'mr-1 size-6 drop-shadow-[0px_0px_5px]',
+							componentData.resource === 'flow/v1'
+								? 'text-accent-400 drop-shadow-accent-500'
+								: 'text-main-300 drop-shadow-main-300/50'
+						]}
+					/>
 				{/if}
 				<div class="flex flex-col">
 					<span class="truncate">{title}</span>
