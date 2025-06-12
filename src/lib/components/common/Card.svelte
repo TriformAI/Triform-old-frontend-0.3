@@ -63,7 +63,7 @@
 				padding === 'default' && 'px-5 py-4',
 				padding === 'tight' && 'px-4 py-3',
 				isDraggable && 'cursor-grab select-none',
-				isDraggable && isDragging ? 'cursor-grabbing' : 'cursor-grab'
+				isDraggable && (isDragging ? 'cursor-grabbing' : 'cursor-grab')
 			]}
 			onmousedown={onDragStart}
 			role={isDraggable ? 'dialog' : undefined}
