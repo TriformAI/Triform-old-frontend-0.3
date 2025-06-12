@@ -45,7 +45,7 @@
 >
 	<InfiniteLoader {loaderState} triggerLoad={loadMore} loopMaxCalls={100}>
 		<div
-			class="bg-main-900/75 sticky top-0 mb-4 flex w-full flex-row gap-2 px-4 pt-4 backdrop-blur-xs"
+			class="bg-main-900/75 sticky top-0 z-10 mb-4 flex w-full flex-row gap-2 px-4 pt-4 backdrop-blur-xs"
 		>
 			<InputField
 				placeholder="Search component library"
