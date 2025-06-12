@@ -1,5 +1,6 @@
 <script lang="ts">
 	import Flow from '$lib/components/canvas/Flow.svelte'
+	import 'balloon-css'
 	import GridResizerHandle from '$lib/components/GridResizerHandle.svelte'
 	import { SvelteFlowProvider } from '@xyflow/svelte'
 	import Navbar from '$lib/components/Navbar.svelte'
@@ -9,8 +10,7 @@
 	import { loadComponents } from '$lib/stores/library.svelte'
 	import { initFlow, loadDrafts, loadProject } from '$lib/stores/canvas.svelte'
 	import ComponentLibrary from '$lib/components/panels/Library/ComponentLibrary.svelte'
-
-	import 'balloon-css'
+	import { debounce } from '$lib/utils/debounce'
 	import { onMount } from 'svelte'
 	import { sleep } from '$lib/utils/sleep.js'
 
@@ -87,12 +87,12 @@
 					bind:size={propsPanelWidth}
 					gutterSize={GUTTER_SIZE}
 					{gridContainer}
-					onResizeEnd={() =>
+					onResizeEnd={debounce(() => {
 						flowComponent?.fitView({
 							maxZoom: 1,
-							minZoom: 1,
 							duration: 500
-						})}
+						})
+					}, 300)}
 				/>
 
 				<PropsPanel class={propsPanelWidth <= 30 ? 'border-main-850' : ''} />
@@ -103,12 +103,12 @@
 					bind:size={componentPanelHeight}
 					gutterSize={GUTTER_SIZE}
 					{gridContainer}
-					onResizeEnd={() =>
+					onResizeEnd={debounce(() => {
 						flowComponent?.fitView({
 							maxZoom: 1,
-							minZoom: 1,
 							duration: 500
-						})}
+						})
+					}, 300)}
 				/>
 
 				<ComponentLibrary class={propsPanelWidth <= 30 ? 'border-main-850' : ''} />
