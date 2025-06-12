@@ -14,15 +14,9 @@
 	import {
 		inProgressComponents,
 		type TaskCreated,
-		type CodeInstallPackagesStarted,
-		type CodeInstallPackagesCompleted,
-		type CodeEditStarted,
-		type CodeEditCompleted,
-		type CodeDocumentStarted,
-		type CodeDocumentCompleted,
 		type ActionBuildCompleted,
-		type CodeReviewStarted,
-		type CodeReviewCompleted
+		type ActionBuildStarted,
+		type ActionBuildProgress
 	} from '$lib/stores/builder.svelte'
 	import { isAction } from '$lib/stores/canvas.svelte'
 	import { openPanelItems, toggleOpenPanelItem } from '$lib/stores/panel.svelte'
@@ -55,7 +49,8 @@
 
 	// TODO: perhaps move this to the builder store, or some util function, but this will
 	// be moved soon either way when we transition to a global chat interface
-	const buildComponent = async () => {
+	const buildComponent = async (e: Event) => {
+		e.preventDefault()
 		// currently we only allow building actions
 		// this should never happen (for now) cause the button is disabled if the node is not an action
 		if (!isAction(componentData)) return toast.error('Only actions can be built right now')
@@ -136,42 +131,29 @@
 			'task:created': (payload: TaskCreated) => {
 				inProgressComponents[componentId].message = 'Started building...'
 			},
-			'code:install_packages:started': (payload: CodeInstallPackagesStarted) => {
-				inProgressComponents[componentId].message =
-					`Installing packages: ${payload.details.input?.split('\n').join(', ')}`
+			'action:build:started': (payload: ActionBuildStarted) => {
+				inProgressComponents[componentId].message = 'Started building action...'
 			},
-			'code:install_packages:completed': (payload: CodeInstallPackagesCompleted) => {
-				inProgressComponents[componentId].message = 'Packages installed'
-			},
-			'code:edit:started': (payload: CodeEditStarted) => {
-				inProgressComponents[componentId].message = payload.agent_message
-			},
-			'code:edit:completed': (payload: CodeEditCompleted) => {
-				Object.assign(inProgressComponents[componentId].component, {
-					spec: {
-						...inProgressComponents[componentId].component.spec,
-						source: payload.details.code
-					}
-				})
-			},
-			'code:document:started': (payload: CodeDocumentStarted) => {
-				inProgressComponents[componentId].message = 'Documenting code...'
-			},
-			'code:document:completed': (payload: CodeDocumentCompleted) => {
-				inProgressComponents[componentId].message = 'Finished documenting code'
-				Object.assign(inProgressComponents[componentId].component, {
-					spec: {
-						...inProgressComponents[componentId].component.spec,
-						readme: payload.details.description
-					}
-				})
-			},
-			'code:review:started': (payload: CodeReviewStarted) => {
-				inProgressComponents[componentId].message = 'Reviewing code...'
-			},
-			'code:review:completed': (payload: CodeReviewCompleted) => {
-				inProgressComponents[componentId].message =
-					'Finished reviewing code, considering changes...'
+			'action:build:progress': (payload: ActionBuildProgress) => {
+				if (payload.agent_message) inProgressComponents[componentId].message = payload.agent_message
+				const comp = inProgressComponents[componentId].component
+				if (payload.details.code)
+					Object.assign(comp, {
+						spec: {
+							...comp.spec,
+							source: payload.details.code
+						}
+					})
+				else if (payload.sub_step === 'install_packages' && payload.details.packages) {
+					Object.assign(comp, {
+						spec: {
+							...comp.spec,
+							deps: payload.details.packages
+						}
+					})
+					inProgressComponents[componentId].message =
+						`Installing packages: ${payload.details.packages.split('\n').join(', ').trim()}`
+				}
 			},
 			'action:build:completed': (payload: ActionBuildCompleted) => {
 				inProgressComponents[componentId].message = 'Finished building action'
@@ -233,7 +215,7 @@
 
 {#if draftData}
 	<PanelItem {componentData} title="Metadata" isDirty={dataIsDirty}>
-		<form method="POST" class="grid grid-cols-2 gap-3" onsubmit={buildComponent}>
+		<form class="grid grid-cols-2 gap-3" onsubmit={buildComponent}>
 			<InputField
 				containerClass="col-span-2"
 				required

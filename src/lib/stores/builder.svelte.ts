@@ -6,10 +6,8 @@ import { type Component } from '$lib/types/agent'
 
 // Generic base event types (probs should be moved to a types file)
 interface BaseEvent {
-	message_type: string
 	event_name: string
 	timestamp: string
-	source: string
 	task_id: string
 	agent_message: string
 }
@@ -24,40 +22,31 @@ export interface TaskCreated extends BaseEvent {
 	user_id: string
 	message: string
 }
-export interface CodeEditStarted extends BaseEvent {
+export interface ActionBuildStarted extends BaseEvent {
 	details: {
-		code: string
+		task_id: string
+		message: string
 	}
 }
-export interface CodeEditCompleted extends CompletedEvent {
+export interface ActionBuildProgress extends BaseEvent {
+	status: string
+	sub_step: string
 	details: {
-		code: string
+		code?: string
+		output?: string
+		pseudocode?: string
+		packages?: string
+		description?: string
+		usage_examples?: string
 	}
 }
-export interface CodeInstallPackagesStarted extends BaseEvent {
-	details: {
-		input: string
-	}
-}
-export type CodeInstallPackagesCompleted = CompletedEvent
-export type CodeDocumentStarted = BaseEvent
-export interface CodeDocumentCompleted extends CompletedEvent {
-	details: {
-		description: string
-	}
-}
+
 export interface ActionBuildCompleted extends CompletedEvent {
 	details: {
 		task_id: string
 		status: string
 		message: string
 		result: Component[]
-	}
-}
-export type CodeReviewStarted = BaseEvent
-export interface CodeReviewCompleted extends CompletedEvent {
-	details: {
-		output: string
 	}
 }
 
