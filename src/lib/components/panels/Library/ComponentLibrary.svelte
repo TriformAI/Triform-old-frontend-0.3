@@ -41,7 +41,6 @@
 		'border-main-800 bg-main-900/60 relative ms-2 mb-2 grid overflow-y-auto rounded-lg border',
 		classes
 	)}
-	style="scrollbar-color:rgba(255,255,255,0.5) transparent;"
 >
 	<InfiniteLoader {loaderState} triggerLoad={loadMore} loopMaxCalls={100}>
 		<div
