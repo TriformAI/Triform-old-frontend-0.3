@@ -76,7 +76,7 @@
 				class={`bg-main-850 grid h-full pt-1 ease-(--easing-circ)`}
 			>
 				<div
-					class="bg-main-900 border-main-800 ms-2 grid place-items-center overflow-hidden rounded-lg border"
+					class="bg-main-900 border-main-800 flow-container ms-2 grid place-items-center overflow-hidden border"
 				>
 					<Flow bind:this={flowComponent} />
 				</div>
@@ -118,3 +118,16 @@
 </div>
 
 <Confirm />
+
+<style>
+	.flow-container {
+		border-radius: var(--radius-lg);
+	}
+
+	/* Disable rounding in firefox to prevent weird visual glitches */
+	@-moz-document url-prefix() {
+		.flow-container {
+			border-radius: 0;
+		}
+	}
+</style>
