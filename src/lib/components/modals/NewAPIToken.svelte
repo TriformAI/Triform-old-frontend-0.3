@@ -1,12 +1,12 @@
 <script lang="ts">
 	import Dialog from '$lib/components/common/Dialog.svelte'
-	import Code from '../atoms/Code.svelte'
 	import Card from '$lib/components/common/Card.svelte'
 	import InputField from '../atoms/InputField.svelte'
 	import Button from '../atoms/Button.svelte'
 	import { enhance } from '$app/forms'
 	import { toast } from 'svelte-sonner'
-	import { page } from '$app/stores'
+	import { page } from '$app/state'
+	import type { Token } from '$lib/types/auth'
 
 	interface Props {
 		dialog?: HTMLDialogElement
@@ -50,8 +50,18 @@
 						action="/account?/createAPIToken"
 						method="POST"
 						class="space-y-4"
-						use:enhance={() => {
+						use:enhance={({ cancel, formData }) => {
 							isLoading = true
+							if (
+								page.data.tokens
+									.map((t: Token) => t.name.toLowerCase())
+									.includes((formData.get('name') as string)?.toLowerCase())
+							) {
+								toast.error('Token name already exists')
+								isLoading = false
+								cancel()
+							}
+
 							return async ({ update, result }) => {
 								if (result.type === 'success' && result.data) {
 									toast.success('Personal access token created!')
