@@ -32,6 +32,9 @@
 			{#snippet body()}
 				<ul>
 					<li>
+						<a href="/account" class="list-btn w-full">Account</a>
+					</li>
+					<li>
 						<form action="/logout" method="post">
 							<button type="submit" class="list-btn w-full">Log out</button>
 						</form>
