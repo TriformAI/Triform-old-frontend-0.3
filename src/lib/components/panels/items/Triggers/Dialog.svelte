@@ -172,7 +172,7 @@
 						</div>
 						<div>
 							<h4 class="eyebrow">Payload</h4>
-							<Payload bind:value={payload} bind:hasJsonErrors />
+							<Payload usePortal={true} bind:value={payload} bind:hasJsonErrors />
 						</div>
 					{/if}
 				</div>

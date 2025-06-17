@@ -105,6 +105,7 @@
 
 		return { fields, errors }
 	})
+
 	const cronDescription = $derived(
 		isFinishedEntering && !cronValidationErrors.errors.length
 			? cronstrue.toString(Object.values(cronFields).join(' '))
@@ -144,6 +145,7 @@
 			</div>
 		{/each}
 	</div>
+
 	{#if cronValidationErrors?.errors.length}
 		<div class="mx-auto mt-2 flex max-w-lg flex-col gap-1">
 			{#each cronValidationErrors?.errors as error}
