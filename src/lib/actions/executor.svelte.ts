@@ -7,12 +7,6 @@ import type { Execution } from '$lib/types/execution'
 import type { Component } from '$lib/types/agent'
 import type { Uuid } from '$lib/types/agent'
 
-export const executor = $state({
-	isRunning: false,
-	state: '',
-	result: ''
-})
-
 const createExecution = (
 	nodeId: Uuid,
 	input: Record<string, unknown>,
@@ -33,14 +27,22 @@ const createExecution = (
 	return execution
 }
 
-export const executeComponent = async (payload: string, componentData: Component) => {
+export const executeComponent = async (
+	payload: string,
+	componentData: Component,
+	state: {
+		isRunning: boolean
+		state: string
+		result: string
+	}
+) => {
 	const nodeId = selected.node?.id ?? getCurrentFlowId()
 
 	if (!nodeId) {
 		return toast.error('No node selected')
 	}
 
-	executor.isRunning = true
+	state.isRunning = true
 
 	const execution = createExecution(nodeId, JSON.parse(payload), componentData)
 	console.log('creating execution', execution)
@@ -60,7 +62,7 @@ export const executeComponent = async (payload: string, componentData: Component
 			cache: false
 		})
 		console.log('stream', stream)
-		executor.state = 'Starting execution'
+		state.state = 'Starting execution'
 
 		const extractErrorMessage = (msg: string): string => {
 			let data: ExecutionTraceData
@@ -81,13 +83,13 @@ export const executeComponent = async (payload: string, componentData: Component
 			close: msg => {
 				if (msg === 'finished') {
 					console.log('finished')
-					executor.isRunning = false
+					state.isRunning = false
 					stream?.close()
 					stream = undefined
 				}
 			},
 			error: msg => {
-				executor.isRunning = false
+				state.isRunning = false
 				toast.error('Error executing component')
 				let parsedMsg: Record<string, unknown>
 				try {
@@ -127,19 +129,19 @@ export const executeComponent = async (payload: string, componentData: Component
 					// Otherwise, show all results for now
 					res = data.payload.result
 				}
-				executor.result = typeof res === 'string' ? res : JSON.stringify(res, null, 2)
-				console.log(executor.result)
+				state.result = typeof res === 'string' ? res : JSON.stringify(res, null, 2)
+				console.log(state.result)
 			},
 			action_failed: msg => {
 				// TODO: highlight the node that failed
-				executor.isRunning = false
+				state.isRunning = false
 				toast.error('Action failed')
-				executor.result = extractErrorMessage(msg)
+				state.result = extractErrorMessage(msg)
 			},
 			execution_failed: msg => {
-				executor.isRunning = false
+				state.isRunning = false
 				toast.error('Execution failed')
-				executor.result = extractErrorMessage(msg)
+				state.result = extractErrorMessage(msg)
 			}
 		} as Record<string, (msg: string) => void>
 		// Subscribe to the events above
@@ -148,13 +150,13 @@ export const executeComponent = async (payload: string, componentData: Component
 				if (!msg) return
 				console.log('got event', event)
 				if (!['close', 'ping'].includes(event)) {
-					executor.state = event
+					state.state = event
 				}
 				return handler(msg)
 			})
 	} catch (e) {
 		console.error('Failed executing component', e)
 		toast.error('There was an error executing the component')
-		executor.isRunning = false
+		state.isRunning = false
 	}
 }

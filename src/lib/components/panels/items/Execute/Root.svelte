@@ -10,7 +10,7 @@
 	import PanelItem from '../../PanelItem.svelte'
 	import Payload from '../common/Payload.svelte'
 	import { blur } from 'svelte/transition'
-	import { executeComponent, executor } from '$lib/actions/executor.svelte'
+	import { executeComponent } from '$lib/actions/executor.svelte'
 	import { type Component } from '$lib/types/agent'
 	import { drafts } from '$lib/stores/canvas.svelte'
 	import { getContext } from 'svelte'
@@ -25,7 +25,7 @@
 	}
 
 	const formattedExecutionState = $derived.by(() => {
-		const state = executor.state.split('_').join(' ')
+		const state = executorState.state.split('_').join(' ')
 		return state.substring(0, 1).toUpperCase() + state.substring(1)
 	})
 
@@ -39,7 +39,7 @@
 	})
 
 	async function copyResult() {
-		await navigator.clipboard.writeText(executor.result)
+		await navigator.clipboard.writeText(executorState.result)
 		toast.success('Result copied to clipboard')
 	}
 
@@ -53,11 +53,17 @@
 
 	const useDraft = $derived(getContext<{ value: boolean }>('use-draft'))
 
+	const executorState = $state({
+		isRunning: false,
+		state: '',
+		result: ''
+	})
+
 	function run() {
 		if (!payload) return toast.error('Please enter a payload')
 		if (!isValidJson) return toast.error('The payload needs to be valid JSON')
 
-		executeComponent(payload, useDraft.value ? draftData : componentData)
+		executeComponent(payload, useDraft.value ? draftData : componentData, executorState)
 	}
 </script>
 
@@ -70,7 +76,7 @@
 				<p class="text-sm font-medium">
 					<span class="text-main-300">Result</span>
 				</p>
-				{#if executor.result}
+				{#if executorState.result}
 					<button
 						class="text-main-400 hover:text-main-300 ms-auto -mt-1 transition-colors"
 						onclick={() => copyResult()}><IconCopy class="size-4.5" /></button
@@ -79,7 +85,7 @@
 			</div>
 
 			<div class="relative">
-				{#if executor.isRunning}
+				{#if executorState.isRunning}
 					<div
 						class={[
 							'h-full min-h-16 w-full rounded-md transition-all',
@@ -93,7 +99,7 @@
 							amount: 3
 						}}
 					>
-						{#key executor.state}
+						{#key executorState.state}
 							<span
 								class={[
 									'text-main-200 h-fit w-fit truncate text-center',
@@ -116,10 +122,10 @@
 					readOnly={true}
 					wordWrap={true}
 					language="json"
-					value={executor.result}
+					value={executorState.result}
 					class={[
 						'text-sm transition-all duration-300',
-						executor.isRunning ? 'blur-xs grayscale-75' : 'blur-[0px] grayscale-0'
+						executorState.isRunning ? 'blur-xs grayscale-75' : 'blur-[0px] grayscale-0'
 					]}
 				/>
 			</div>
@@ -181,7 +187,7 @@
 					class="w-full"
 					onClick={run}
 					autoLoad="promise"
-					disabled={!isValidJson || executor.isRunning}
+					disabled={!isValidJson || executorState.isRunning}
 				>
 					{#snippet icon()}
 						<IconPlay class="size-6" />
