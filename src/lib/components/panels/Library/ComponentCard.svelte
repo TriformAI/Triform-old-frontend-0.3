@@ -49,7 +49,7 @@
 		<h3 class="text-main-200 mb-2">
 			<Icon
 				class={[
-					'mr-2 inline-block drop-shadow-[0px_0px_7px]',
+					'me-1.5 inline-block size-5 drop-shadow-[0px_0px_7px]',
 					component.resource === 'flow/v1'
 						? 'text-accent-400 drop-shadow-accent-500'
 						: 'text-main-300 drop-shadow-main-300/40'
@@ -57,13 +57,15 @@
 			/>
 			{meta.name}
 		</h3>
-		<div class="[&_svg]:text-main-300 flex flex-col gap-1 text-sm">
-			<div class="text-main-400 flex flex-row gap-2">
+
+		<div class="[&_svg]:text-main-300 ms-0.5 flex flex-col gap-1 text-sm">
+			<div class="text-main-400 flex gap-2">
 				<DescriptionIcon class="flex-shrink-0" />
 				<p class="truncate-lines-2 ms-1 -mt-1">
 					{meta.intention?.purpose || 'No purpose defined'}
 				</p>
 			</div>
+
 			<div class="text-main-400 grid max-w-full grid-cols-[auto_auto] gap-2">
 				<p class="truncate">
 					<InputIcon class="mr-2 inline-block" />
