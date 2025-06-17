@@ -10,10 +10,13 @@
 
 	const { componentData }: { componentData: Component } = $props()
 
-	const triggers = page.data.triggers?.filter(t => t.spec.component_id === componentData.meta.id)
+	const triggers = $derived(
+		page.data.triggers?.filter((t: Trigger) => t.spec.component_id === componentData.meta.id)
+	)
 </script>
 
 <Dialog bind:dialog {componentData} />
+
 <PanelItem {componentData} title="Triggers" isListContainer onAddClick={() => dialog?.showModal()}>
 	<div class="flex flex-col gap-4">
 		{#each triggers as trigger}
