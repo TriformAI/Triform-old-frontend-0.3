@@ -21,8 +21,15 @@
 		return drafts[componentData.meta.id] as Action
 	})
 
+	const removeChecksum = (spec: Component['spec']) => ({
+		...spec,
+		checksum: undefined
+	})
+
 	const dataIsDirty = $derived.by(() => {
-		return draftData ? !compare(draftData.spec, componentData.spec) : false
+		return draftData
+			? !compare(removeChecksum(draftData.spec), removeChecksum(componentData.spec))
+			: false
 	})
 
 	const filenames = {
@@ -106,15 +113,15 @@
 
 		{#if isBuilding}
 			{@const message = inProgressComponents[componentId].message}
-			{#key message}
+			<div
+				class="pointer-events-none absolute inset-0 flex items-center justify-center px-6 py-4 opacity-100 transition starting:opacity-0"
+			>
 				<div
-					class="pointer-events-none absolute inset-0 flex items-center justify-center px-6 py-4 opacity-100 transition starting:opacity-0"
+					class="bg-main-950/40 animate-border grid h-fit w-fit items-center rounded px-8 py-4 backdrop-blur-2xl"
 				>
-					<div
-						class="bg-main-950/40 animate-border h-fit w-fit rounded px-8 py-4 backdrop-blur-2xl"
-					>
+					{#key message}
 						<span
-							class="text-main-200 truncate-lines-5 text-center"
+							class="text-main-200 truncate-lines-5 col-start-1 row-start-1 text-center"
 							transition:blur={{
 								duration: 800,
 								opacity: 0,
@@ -123,9 +130,9 @@
 						>
 							{message}
 						</span>
-					</div>
+					{/key}
 				</div>
-			{/key}
+			</div>
 		{/if}
 	</div>
 </PanelItem>

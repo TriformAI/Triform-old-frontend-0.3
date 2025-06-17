@@ -262,7 +262,7 @@
 				<div class="col-span-2 mt-2 flex">
 					<div class="ms-auto flex flex-row justify-end gap-x-4">
 						{#if isAction(componentData)}
-							<Button variation="vibrant" type="submit" isLoading={isBuilding}>
+							<Button variation="primary" type="submit" isLoading={isBuilding}>
 								{#snippet icon()}
 									<IconMagic />
 								{/snippet}
