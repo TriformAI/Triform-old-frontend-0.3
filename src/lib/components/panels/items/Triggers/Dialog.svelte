@@ -6,7 +6,7 @@
 	import { toast } from 'svelte-sonner'
 	import { API } from '$lib/api'
 	import { invalidate } from '$app/navigation'
-	import Tabs, { type Tab } from '$lib/components/atoms/Tabs.svelte'
+	import Tabs from '$lib/components/atoms/Tabs.svelte'
 	import CronInput from './CronInput.svelte'
 	import EarthIcon from '~icons/mdi/earth'
 	import AlarmIcon from '~icons/material-symbols/alarm-rounded'
@@ -15,17 +15,15 @@
 	import type { Component } from '$lib/types/agent'
 	import { sleep } from '$lib/utils/sleep'
 
-	let {
-		dialog = $bindable(),
-		data: sourceData,
-		componentData
-	}: {
+	interface Props {
 		dialog: HTMLDialogElement | undefined
 		data?: Trigger
 		componentData: Component
-	} = $props()
+	}
 
-	const tabs: Tab[] = [
+	let { dialog = $bindable(), data: sourceData, componentData }: Props = $props()
+
+	const tabs = [
 		{
 			key: 'endpoint',
 			label: 'Endpoint',
@@ -37,6 +35,7 @@
 			icon: AlarmIcon
 		}
 	]
+
 	let activeTab = $state(0)
 	let payload = $state('')
 	let name = $state('')
@@ -45,6 +44,7 @@
 	let hasJsonErrors = $state(false)
 	let isNew = $state(false)
 	let data = $state<Trigger>()
+
 	const hasErrors = $derived.by(() => {
 		// no validation if it's an endpoint
 		if (activeTab === 0) return false
@@ -91,6 +91,7 @@
 				...spec
 			}
 		}
+
 		try {
 			if (isNew) {
 				await api.post<Modifier>('components', body)
@@ -102,6 +103,7 @@
 			dialog?.close()
 		} catch (e) {
 			toast.error('Failed to save trigger')
+		} finally {
 			isCreating = false
 		}
 	}
