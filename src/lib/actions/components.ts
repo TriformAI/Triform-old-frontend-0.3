@@ -14,10 +14,13 @@ export const updateComponentPositions = async (
 	id: Uuid,
 	positions: Record<Uuid, { x: number; y: number }>
 ) => {
-	page.data.positions[id] = positions
+	page.data.positions[id] = {
+		...page.data.positions[id],
+		...positions
+	}
 	return await api.patch<{ updated: number; success: boolean }>(`components/${id}/positions`, {
 		id,
-		positions
+		positions: page.data.positions[id]
 	})
 }
 
