@@ -65,5 +65,11 @@ export const getLayoutedNodes = async (nodes: Node[], edges: Edge[]) => {
 		node.position.y -= centerY
 	})
 
+	// clamp all the nodes to our 20x20 grid
+	nodes.forEach(node => {
+		node.position.x = Math.round(node.position.x / 20) * 20
+		node.position.y = Math.round(node.position.y / 20) * 20
+	})
+
 	return nodes
 }
