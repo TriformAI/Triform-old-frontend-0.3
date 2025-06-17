@@ -1,5 +1,6 @@
 import { API } from '$lib/api'
 import type { Component, Uuid } from '$lib/types/agent'
+import { page } from '$app/state'
 
 const api = new API()
 
@@ -13,6 +14,7 @@ export const updateComponentPositions = async (
 	id: Uuid,
 	positions: Record<Uuid, { x: number; y: number }>
 ) => {
+	page.data.positions[id] = positions
 	return await api.patch<{ updated: number; success: boolean }>(`components/${id}/positions`, {
 		id,
 		positions
