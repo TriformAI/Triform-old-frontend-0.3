@@ -42,7 +42,7 @@
 	]}
 >
 	<DragIcon
-		class="group-hover/card:text-main-200 text-main-400 mt-1 mr-2 -ml-2 size-4 transition"
+		class="group-hover/card:text-main-200 text-main-400 mt-1 mr-2 -ml-2 size-4 shrink-0 transition"
 	/>
 
 	<div>
