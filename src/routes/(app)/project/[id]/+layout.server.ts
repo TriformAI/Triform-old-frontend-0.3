@@ -39,7 +39,6 @@ export async function load({ locals, params, depends }) {
 	) as Trigger[]
 	// do the same for all components
 	const latestComponents = getLatestVersion(allComponents)
-	console.log(latestComponents)
 
 	// Get the drafts & positions within each flow
 	const projectNodes = Object.values(project.spec.nodes).flatMap(node => [

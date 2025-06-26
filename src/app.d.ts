@@ -1,5 +1,5 @@
 import 'unplugin-icons/types/svelte'
-import type { User } from '$lib/types/auth'
+import type { User, Organization } from '$lib/types/auth'
 import type { Payload, Project, Variable } from '$lib/types/project'
 
 import { API } from '$lib/api'
@@ -11,6 +11,7 @@ declare global {
 		// interface Error {}
 		interface Locals {
 			user?: User
+			organizations?: Organization[]
 			api: InstanceType<typeof API>
 		}
 		interface PageData {

@@ -23,7 +23,7 @@
 		</div>
 	</div>
 
-	<div class="mt-2">
+	<div class="mt-2 flex flex-row items-center gap-2">
 		<Dropdown>
 			{#snippet trigger()}
 				<img alt="Avatar" src={page.data.user?.avatar} class="w-8 rounded-full" />

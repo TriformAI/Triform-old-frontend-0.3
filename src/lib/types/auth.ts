@@ -14,3 +14,10 @@ export interface Token {
 	created_at: Date
 	valid_to?: Date
 }
+
+export interface Organization {
+	id: UUID
+	name: string
+	token: string
+	active: boolean
+}

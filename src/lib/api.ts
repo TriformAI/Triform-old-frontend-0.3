@@ -13,6 +13,10 @@ export class API {
 		this.#baseURL = baseURL
 		if (authToken) {
 			this.#authToken = authToken
+		} else {
+			// if no auth token was provided, try to get the org token from the session storage
+			if (!sessionStorage?.getItem) return
+			this.#authToken = sessionStorage.getItem('activeOrgToken') ?? ''
 		}
 	}
 
@@ -24,11 +28,14 @@ export class API {
 	): Promise<T> {
 		//console.debug(`-> ${method} ${this.#baseURL}/${endpoint}`, data ?? '')
 
+		const isAPIToken = this.#authToken?.startsWith('Bearer ')
+		if (isAPIToken) headers['Authorization'] = this.#authToken!
+
 		const res = await this.#fetchFunc(`${this.#baseURL}/${endpoint}`, {
 			method,
 			headers: {
 				'Content-Type': 'application/json',
-				Cookie: this.#authToken ? `triform_key=${this.#authToken}` : '',
+				Cookie: this.#authToken && !isAPIToken ? `triform_key=${this.#authToken}` : '',
 				...headers
 			},
 			body: data ? JSON.stringify(data) : undefined
