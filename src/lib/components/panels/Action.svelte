@@ -8,7 +8,7 @@
 <Panel {componentData} {Icon}>
 	{#snippet panelItems(PanelItems)}
 		<PanelItems
-			items={['codeEditor', 'execute', 'metadata', 'variables', 'triggers']}
+			items={['execute', 'codeEditor', 'metadata', 'variables', 'triggers']}
 			{componentData}
 		/>
 	{/snippet}

@@ -34,9 +34,16 @@
 	}
 
 	const { items, componentData }: Props = $props()
-	const componentType = $derived(componentData.resource.split('/')[0]) as 'flow' | 'action'
+	const componentType = $derived(componentData.resource.split('/')[0]) as
+		| 'flow'
+		| 'action'
+		| 'project'
 
-	const activeComponents = $derived(openPanelItems[componentType] ?? [])
+	const activeComponents = $derived(
+		componentType === 'project'
+			? ['projectSettings']
+			: (openPanelItems[componentType] ?? ['execute'])
+	)
 
 	let isMounted = $state(false)
 	onMount(() => {
