@@ -26,6 +26,7 @@
 	interface Props {
 		items: PanelComponent[]
 		componentData: Component
+		showNav?: boolean
 	}
 
 	const allComponents = {
@@ -37,7 +38,7 @@
 		triggers: { label: 'Triggers', component: Triggers, icon: IconTriggers }
 	}
 
-	const { items, componentData }: Props = $props()
+	const { items, componentData, showNav = true }: Props = $props()
 
 	// Get component type from resource
 	const componentType = $derived(componentData.resource.split('/')[0]) as keyof OpenPanelItems
@@ -71,28 +72,30 @@
 	}
 </script>
 
-<div class="relative grid grid-cols-[auto_1fr] items-start">
-	<nav class="border-main-800 sticky top-20 border-e">
-		<ul>
-			{#each items as key (key)}
-				{@const Icon = allComponents[key].icon}
-				<li
-					class={[
-						'border-b-main-800 border-b',
-						activeComponents.includes(key) ? 'bg-main-850/80' : ''
-					]}
-				>
-					<button
-						title={allComponents[key].label}
-						class="grid size-12 place-items-center"
-						onclick={() => onNavClick(key)}
+<div class={['relative grid items-start', showNav ? 'grid-cols-[auto_1fr]' : 'grid-cols-1']}>
+	{#if showNav}
+		<nav class="border-main-800 sticky top-20 border-e">
+			<ul>
+				{#each items as key (key)}
+					{@const Icon = allComponents[key].icon}
+					<li
+						class={[
+							'border-b-main-800 border-b',
+							activeComponents.includes(key) ? 'bg-main-850/80' : ''
+						]}
 					>
-						<Icon class="size-6" />
-					</button>
-				</li>
-			{/each}
-		</ul>
-	</nav>
+						<button
+							title={allComponents[key].label}
+							class="grid size-12 place-items-center"
+							onclick={() => onNavClick(key)}
+						>
+							<Icon class="size-6" />
+						</button>
+					</li>
+				{/each}
+			</ul>
+		</nav>
+	{/if}
 
 	<div class="border-main-800 z-10 -ms-px border-s">
 		{#if activeComponents.length === 0}
@@ -108,7 +111,7 @@
 			<div
 				data-panel-item={key}
 				class={[
-					'bg-main-950/60 relative z-10 overflow-hidden starting:h-0',
+					' relative z-10 overflow-hidden starting:h-0',
 					activeComponents.includes(key) ? 'max-h-max' : 'h-0',
 					isMounted && 'transition-height duration-500 ease-(--easing-circ)'
 				]}

@@ -7,6 +7,6 @@
 
 <Panel {componentData}>
 	{#snippet panelItems(PanelItems)}
-		<PanelItems items={['projectSettings']} {componentData} />
+		<PanelItems showNav={false} items={['projectSettings']} {componentData} />
 	{/snippet}
 </Panel>

@@ -43,8 +43,8 @@
 </script>
 
 <div class={[' grid  p-5 pt-4']}>
-	<div class="mb-4 flex flex-row items-center">
-		{#if selected.node || getCurrentFlowId()}
+	{#if selected.node || getCurrentFlowId()}
+		<div class="mb-4 flex flex-row items-center">
 			<h2 class={['eyebrow text-main-300 whitespace-nowrap transition-colors']}>
 				{title}
 			</h2>
@@ -67,8 +67,8 @@
 					<IconAdd class="size-5" />
 				</button>
 			{/if}
-		{/if}
-	</div>
+		</div>
+	{/if}
 
 	<div class={['overflow-y-hidden']}>
 		<div class="pb-6">
