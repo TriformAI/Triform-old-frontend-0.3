@@ -14,8 +14,19 @@
 	import IconVariables from '~icons/mdi/variable'
 	import IconProject from '~icons/mdi/shape'
 
-	import { openPanelItems, toggleOpenPanelItem } from '$lib/stores/panel.svelte'
+	import {
+		openPanelItems,
+		toggleOpenPanelItem,
+		type OpenPanelItems
+	} from '$lib/stores/panel.svelte'
 	import { onMount } from 'svelte'
+
+	type PanelComponent = keyof typeof allComponents
+
+	interface Props {
+		items: PanelComponent[]
+		componentData: Component
+	}
 
 	const allComponents = {
 		codeEditor: { label: 'Code', component: CodeEditor, icon: IconCode },
@@ -26,35 +37,42 @@
 		triggers: { label: 'Triggers', component: Triggers, icon: IconTriggers }
 	}
 
-	type PanelComponent = keyof typeof allComponents
-
-	interface Props {
-		items: PanelComponent[]
-		componentData: Component
-	}
-
 	const { items, componentData }: Props = $props()
-	const componentType = $derived(componentData.resource.split('/')[0]) as
-		| 'flow'
-		| 'action'
-		| 'project'
 
+	// Get component type from resource
+	const componentType = $derived(componentData.resource.split('/')[0]) as keyof OpenPanelItems
+
+	// Get active components from openPanelItems or default to ['execute']
 	const activeComponents = $derived(
-		componentType === 'project'
-			? ['projectSettings']
-			: (openPanelItems[componentType] ?? ['execute'])
+		componentType === 'project' ? ['projectSettings'] : (openPanelItems[componentType] ?? [''])
 	)
 
 	let isMounted = $state(false)
+
 	onMount(() => {
+		if (activeComponents.length === 0) {
+			toggleOpenPanelItem(componentType, 'execute')
+		}
+
 		setTimeout(() => {
 			isMounted = true
 		}, 0)
 	})
+
+	function onNavClick(key: PanelComponent) {
+		toggleOpenPanelItem(componentType, key)
+
+		// Scroll to active component if enabled and not already visible
+		if (activeComponents.includes(key)) {
+			document
+				.querySelector(`[data-panel-item="${key}"]`)
+				?.scrollIntoView({ behavior: 'smooth', block: 'end' })
+		}
+	}
 </script>
 
-<div class="grid grid-cols-[auto_1fr] items-start">
-	<nav class="border-main-800 sticky top-20 z-10 border-e">
+<div class="relative grid grid-cols-[auto_1fr] items-start">
+	<nav class="border-main-800 sticky top-20 border-e">
 		<ul>
 			{#each items as key (key)}
 				{@const Icon = allComponents[key].icon}
@@ -67,7 +85,7 @@
 					<button
 						title={allComponents[key].label}
 						class="grid size-12 place-items-center"
-						onclick={() => toggleOpenPanelItem(componentType, key)}
+						onclick={() => onNavClick(key)}
 					>
 						<Icon class="size-6" />
 					</button>
@@ -76,12 +94,21 @@
 		</ul>
 	</nav>
 
-	<div class="border-main-800 -ms-px border-s">
+	<div class="border-main-800 z-10 -ms-px border-s">
+		{#if activeComponents.length === 0}
+			<p
+				class="text-main-500 animate-fade-in absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 text-center text-sm"
+			>
+				No panel items selected
+			</p>
+		{/if}
+
 		{#each items as key}
 			{@const Component = allComponents[key].component}
 			<div
+				data-panel-item={key}
 				class={[
-					'overflow-hidden starting:h-0',
+					'bg-main-950/60 relative z-10 overflow-hidden starting:h-0',
 					activeComponents.includes(key) ? 'max-h-max' : 'h-0',
 					isMounted && 'transition-height duration-500 ease-(--easing-circ)'
 				]}

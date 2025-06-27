@@ -45,13 +45,15 @@ export const selected = {
 	}
 }
 
-interface OpenPanelItems {
+export interface OpenPanelItems {
+	project: string[]
 	flow: string[]
 	action: string[]
 	endpoint: string[]
 }
 
 const defaultOpenPanelItems: OpenPanelItems = {
+	project: [],
 	flow: [],
 	action: [],
 	endpoint: []
