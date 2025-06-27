@@ -46,7 +46,7 @@
 	})
 </script>
 
-<div class="grid grid-cols-[auto_1fr] items-start pe-3">
+<div class="grid grid-cols-[auto_1fr] items-start">
 	<nav class="border-main-800 sticky top-20 z-10 border-e">
 		<ul>
 			{#each items as key (key)}
