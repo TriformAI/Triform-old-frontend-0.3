@@ -6,7 +6,7 @@
 </script>
 
 <Panel {componentData}>
-	{#snippet panels({ ProjectSettings })}
-		<ProjectSettings {componentData} />
+	{#snippet panelItems(PanelItems)}
+		<PanelItems items={['projectSettings']} {componentData} />
 	{/snippet}
 </Panel>

@@ -6,10 +6,7 @@
 </script>
 
 <Panel {componentData} {Icon}>
-	{#snippet panels({ Execute, Metadata, Variables, Triggers })}
-		<Metadata {componentData} />
-		<Triggers {componentData} />
-		<Execute {componentData} />
-		<Variables {componentData} />
+	{#snippet panelItems(PanelItems)}
+		<PanelItems items={['execute', 'metadata', 'variables', 'triggers']} {componentData} />
 	{/snippet}
 </Panel>

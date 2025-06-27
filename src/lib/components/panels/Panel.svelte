@@ -1,12 +1,7 @@
 <script lang="ts">
 	import { type Component as SvelteComponent, type Snippet, setContext, onMount } from 'svelte'
 	import type { onClickFn } from '$lib/stores/nodeActions.svelte'
-	import CodeEditor from './items/CodeEditor.svelte'
-	import Execute from './items/Execute/Root.svelte'
-	import Metadata from './items/Metadata.svelte'
-	import ProjectSettings from './items/ProjectSettings.svelte'
-	import Variables from './items/Variables/Root.svelte'
-	import Triggers from './items/Triggers/Root.svelte'
+
 	import { getActions } from '$lib/stores/nodeActions.svelte'
 	import { type Component, isFlow } from '$lib/types/agent'
 	import { type Project } from '$lib/types/project'
@@ -18,31 +13,23 @@
 	import componentIsDirty from '$lib/utils/componentIsDirty'
 	import { isProject } from '$lib/types/project'
 	import { updateNodeComponent } from '$lib/stores/canvas.svelte'
+	import PanelItems from './PanelItems.svelte'
+	import { objectMap } from '$lib/utils/objectMap'
 
 	const api = new API()
 
 	interface Props {
 		componentData: Component | Project
 		Icon?: SvelteComponent
-		panels: Snippet<
-			[
-				{
-					CodeEditor: typeof CodeEditor
-					Execute: typeof Execute
-					Metadata: typeof Metadata
-					ProjectSettings: typeof ProjectSettings
-					Variables: typeof Variables
-					Triggers: typeof Triggers
-				}
-			]
-		>
+		panelItems: Snippet<[typeof PanelItems]>
 	}
 
-	const { componentData, Icon, panels }: Props = $props()
+	const { componentData, Icon, panelItems }: Props = $props()
 
 	const draftData = $derived.by(() => {
 		return drafts[componentData?.meta?.id]
 	})
+
 	const isDirty = $derived(
 		!isProject(componentData)
 			? componentIsDirty($state.snapshot(draftData), $state.snapshot(componentData))
@@ -53,10 +40,6 @@
 		const type = 'flow-node'
 		getActions(type)
 	})
-
-	// const handleActionClick = (fn: onClickFn) => {
-	// 	fn(componentData)
-	// }
 
 	const publishComponent = async () => {
 		if (isProject(componentData)) return
@@ -87,8 +70,8 @@
 	setContext('use-draft', useDraft)
 </script>
 
-<div class="overflow-x-hidden">
-	<div class="border-b-main-800 mb-2 border-b px-3 pe-8 pb-4">
+<div>
+	<div class="border-b-main-800 bg-main-950 sticky top-0 z-10 grid h-20 border-b px-3 pe-8">
 		<div class="flex items-center justify-between gap-4">
 			<h2 class="flex items-center gap-2 truncate text-lg font-semibold">
 				{#if Icon}
@@ -104,7 +87,7 @@
 				<div class="flex flex-col">
 					<span class="truncate">{title}</span>
 					{#if desc}
-						<p class="text-main-400 mt-1 line-clamp-2 truncate text-sm">{desc}</p>
+						<p class="text-main-500 line-clamp-2 truncate text-sm font-medium">{desc}</p>
 					{/if}
 				</div>
 			</h2>
@@ -119,6 +102,7 @@
 						autoLoad="promise">Publish</Button
 					>
 				{/if}
+
 				<!-- <ul class="ms-auto flex items-center gap-1">
 					{#each actions as action}
 						<li>
@@ -143,8 +127,6 @@
 	</div>
 
 	{#if componentData}
-		<div class="divide-main-800 grid divide-y">
-			{@render panels({ CodeEditor, Execute, Metadata, ProjectSettings, Variables, Triggers })}
-		</div>
+		{@render panelItems?.(PanelItems)}
 	{/if}
 </div>

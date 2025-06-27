@@ -38,7 +38,7 @@
 
 <div
 	class={twMerge(
-		'border-main-800 bg-main-950/60 relative ms-2 mb-2 grid overflow-y-auto rounded-lg border',
+		'border-main-800 custom-scrollbar scroll-gutter-stable bg-main-950/60 relative ms-2 mb-2 grid overflow-y-auto rounded-lg border',
 		classes
 	)}
 >

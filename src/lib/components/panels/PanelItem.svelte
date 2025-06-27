@@ -40,31 +40,24 @@
 		}
 		return undefined
 	})
-
-	const isOpen = $derived(nodeType ? openPanelItems[nodeType]?.includes(title) : forceOpen)
 </script>
 
-<div class="grid py-2 ps-2 pe-8">
-	<div class="flex flex-row items-center">
+<div class={[' grid  p-5 pt-4']}>
+	<div class="mb-4 flex flex-row items-center">
 		{#if selected.node || getCurrentFlowId()}
-			<button
-				type="button"
-				onclick={() => toggleOpenPanelItem(nodeType!, title)}
-				class={['me-auto flex w-full items-center gap-1']}
-			>
-				<IconChevronRight class={[' transition-transform', isOpen ? 'rotate-90' : '']} />
-				<h2 class={['eyebrow text-main-300 whitespace-nowrap transition-colors']}>
-					{title}
-				</h2>
-				<div
-					class={[
-						'bg-warning-600 size-1.5 -translate-y-0.5 rounded-full transition-all',
-						isDirty ? 'scale-100' : 'scale-0'
-					]}
-					aria-label="Unsaved changes"
-					data-balloon-pos="right"
-				></div>
-			</button>
+			<h2 class={['eyebrow text-main-300 whitespace-nowrap transition-colors']}>
+				{title}
+			</h2>
+
+			<div
+				class={[
+					'bg-warning-600 ms-1 size-1.5 -translate-y-0.5 rounded-full transition-all',
+					isDirty ? 'scale-100' : 'scale-0'
+				]}
+				aria-label="Unsaved changes"
+				data-balloon-pos="right"
+			></div>
+
 			{#if isListContainer}
 				<button
 					type="button"
@@ -77,12 +70,7 @@
 		{/if}
 	</div>
 
-	<div
-		class={[
-			'overflow-y-hidden ps-6 transition-all duration-300',
-			isOpen ? 'max-h-max pt-4 ease-out' : 'h-0 overflow-hidden ease-in'
-		]}
-	>
+	<div class={['overflow-y-hidden']}>
 		<div class="pb-6">
 			{@render children()}
 		</div>

@@ -221,7 +221,6 @@
 				required
 				label="Name"
 				name="name"
-				readonly={!useDraft.value}
 				oninput={debouncedSaveDraft}
 				bind:value={draftData.meta.name}
 			/>
@@ -231,7 +230,6 @@
 				class="col-span-2"
 				label="Purpose"
 				name="Purpose"
-				readonly={!useDraft.value}
 				oninput={debouncedSaveDraft}
 				bind:value={draftData.meta.intention.purpose}
 			/>
@@ -240,7 +238,6 @@
 				rows={2}
 				label="Expected input"
 				name="input"
-				readonly={!useDraft.value}
 				oninput={debouncedSaveDraft}
 				bind:value={draftData.meta.intention.input}
 			/>
@@ -249,31 +246,24 @@
 				rows={2}
 				label="Expected output"
 				name="output"
-				readonly={!useDraft.value}
 				oninput={debouncedSaveDraft}
 				bind:value={draftData.meta.intention.output}
 			/>
 
-			{#if !useDraft.value}
-				<p class="text-main-500 col-span-2 mt-2 text-center text-sm">
-					Code is read-only when draft mode is disabled
-				</p>
-			{:else}
-				<div class="col-span-2 mt-2 flex">
-					<div class="ms-auto flex flex-row justify-end gap-x-4">
-						{#if isAction(componentData)}
-							<Button variation="primary" type="submit" isLoading={isBuilding}>
-								{#snippet icon()}
-									<IconMagic />
-								{/snippet}
-								{#snippet body()}
-									Build
-								{/snippet}
-							</Button>
-						{/if}
-					</div>
+			<div class="col-span-2 mt-2 flex">
+				<div class="ms-auto flex flex-row justify-end gap-x-4">
+					{#if isAction(componentData)}
+						<Button variation="primary" type="submit" isLoading={isBuilding}>
+							{#snippet icon()}
+								<IconMagic />
+							{/snippet}
+							{#snippet body()}
+								Build
+							{/snippet}
+						</Button>
+					{/if}
 				</div>
-			{/if}
+			</div>
 		</form>
 	</PanelItem>
 {/if}

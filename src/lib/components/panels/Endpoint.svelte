@@ -6,8 +6,7 @@
 </script>
 
 <Panel {componentData} {Icon}>
-	{#snippet panels({ Execute, Metadata })}
-		<Metadata {componentData} />
-		<Execute {componentData} />
+	{#snippet panelItems(PanelItems)}
+		<PanelItems items={['execute', 'metadata']} {componentData} />
 	{/snippet}
 </Panel>

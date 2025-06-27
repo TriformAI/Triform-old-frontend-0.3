@@ -6,11 +6,10 @@
 </script>
 
 <Panel {componentData} {Icon}>
-	{#snippet panels({ CodeEditor, Execute, Metadata, Variables, Triggers })}
-		<Metadata {componentData} />
-		<Triggers {componentData} />
-		<CodeEditor {componentData} />
-		<Execute {componentData} />
-		<Variables {componentData} />
+	{#snippet panelItems(PanelItems)}
+		<PanelItems
+			items={['codeEditor', 'execute', 'metadata', 'variables', 'triggers']}
+			{componentData}
+		/>
 	{/snippet}
 </Panel>

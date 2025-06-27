@@ -195,8 +195,14 @@
 	text-overflow: ellipsis;
 	-webkit-line-clamp: --value(integer);
 }
+
 @utility scroll-gutter-stable {
 	scrollbar-gutter: stable;
+}
+
+@utility custom-scrollbar {
+	scrollbar-color: var(--color-main-800) var(--color-main-950);
+	scrollbar-width: thin;
 }
 
 @layer overrides {
