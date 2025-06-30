@@ -20,6 +20,10 @@ export class API {
 		}
 	}
 
+	isAPIToken() {
+		return this.#authToken?.startsWith('Bearer ')
+	}
+
 	async #request<T>(
 		method: RequestMethod,
 		endpoint: string,
@@ -28,14 +32,13 @@ export class API {
 	): Promise<T> {
 		//console.debug(`-> ${method} ${this.#baseURL}/${endpoint}`, data ?? '')
 
-		const isAPIToken = this.#authToken?.startsWith('Bearer ')
-		if (isAPIToken) headers['Authorization'] = this.#authToken!
+		if (this.isAPIToken()) headers['Authorization'] = this.#authToken!
 
 		const res = await this.#fetchFunc(`${this.#baseURL}/${endpoint}`, {
 			method,
 			headers: {
 				'Content-Type': 'application/json',
-				Cookie: this.#authToken && !isAPIToken ? `triform_key=${this.#authToken}` : '',
+				Cookie: this.#authToken && !this.isAPIToken() ? `triform_key=${this.#authToken}` : '',
 				...headers
 			},
 			body: data ? JSON.stringify(data) : undefined
@@ -74,7 +77,7 @@ export class API {
 		endpoint: string,
 		method: RequestMethod = 'GET',
 		data?: unknown,
-		headers?: Record<string, string>
+		headers: Record<string, string> = {}
 	) {
 		// Create a promise so we can return the emitter early before it's done streaming
 		// eslint-disable-next-line no-async-promise-executor
@@ -83,11 +86,13 @@ export class API {
 
 			const emitter = new EventTarget()
 
+			if (this.isAPIToken()) headers['Authorization'] = this.#authToken!
+
 			try {
 				const events = await stream(`${this.#baseURL}/${endpoint}`, {
 					method,
 					headers: {
-						Cookie: this.#authToken ? `triform_key=${this.#authToken}` : '',
+						Cookie: this.#authToken && !this.isAPIToken() ? `triform_key=${this.#authToken}` : '',
 						...headers
 					},
 					body: data ? JSON.stringify(data) : undefined
