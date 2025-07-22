@@ -7,7 +7,7 @@
 	import { browser } from '$app/environment'
 	import { page } from '$app/state'
 	import type { Organization } from '$lib/types/auth'
-
+	import { authClient } from '$lib/auth-client'
 	let { children }: { children: Snippet } = $props()
 
 	const showToaster = $derived.by(() => {
@@ -29,6 +29,7 @@
 		const ref = page.data.organizations
 		updateActiveOrg()
 	})
+	const session = authClient.useSession()
 </script>
 
 <div class="relative transform">{@render children?.()}</div>

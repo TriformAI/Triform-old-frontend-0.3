@@ -2,7 +2,7 @@ import { redirect } from '@sveltejs/kit'
 
 export function load({ locals }) {
 	// Redirect to dashboard or login depending on logged-in state
-	if (locals.user) {
+	if (locals.isAuthenticated) {
 		redirect(302, '/dashboard')
 	}
 

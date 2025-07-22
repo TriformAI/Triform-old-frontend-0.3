@@ -10,6 +10,7 @@ declare global {
 	namespace App {
 		// interface Error {}
 		interface Locals {
+			isAuthenticated?: boolean
 			user?: User
 			organizations?: Organization[]
 			api: InstanceType<typeof API>

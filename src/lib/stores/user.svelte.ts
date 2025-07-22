@@ -18,7 +18,7 @@ export const refreshUserData = async () => {
 			userDataStore = {}
 			console.log('user is logged out')
 			if (document.location.pathname !== '/login') {
-				document.location.href = '/login'
+				//document.location.href = '/login'
 			}
 		} else {
 			console.error(err)

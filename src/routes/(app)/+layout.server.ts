@@ -2,7 +2,7 @@ import { redirect } from '@sveltejs/kit'
 
 export async function load({ locals }) {
 	// Don't let unauthenticated users access the app
-	if (!locals.user) {
+	if (!locals.isAuthenticated) {
 		redirect(302, '/')
 	}
 

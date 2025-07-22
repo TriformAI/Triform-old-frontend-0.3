@@ -1,4 +1,5 @@
 import { stream } from 'fetch-event-stream'
+import { getRequestEvent } from '$app/server'
 
 type RequestMethod = 'GET' | 'POST' | 'PUT' | 'DELETE' | 'PATCH'
 
@@ -8,20 +9,9 @@ export class API {
 	#fetchFunc: typeof fetch
 
 	// This API class can be used for both internal requests and to our external API
-	constructor(baseURL: string = '/api', authToken?: string, fetchFunc = fetch) {
+	constructor(baseURL: string = '/api', fetchFunc = fetch) {
 		this.#fetchFunc = fetchFunc
 		this.#baseURL = baseURL
-		if (authToken) {
-			this.#authToken = authToken
-		} else {
-			// if no auth token was provided, try to get the org token from the session storage
-			if (!sessionStorage?.getItem) return
-			this.#authToken = sessionStorage.getItem('activeOrgToken') ?? ''
-		}
-	}
-
-	isAPIToken() {
-		return this.#authToken?.startsWith('Bearer ')
 	}
 
 	async #request<T>(
@@ -30,25 +20,25 @@ export class API {
 		data?: unknown,
 		headers: Record<string, string> = {}
 	): Promise<T> {
-		//console.debug(`-> ${method} ${this.#baseURL}/${endpoint}`, data ?? '')
+		const { request } = getRequestEvent()
 
-		if (this.isAPIToken()) headers['Authorization'] = this.#authToken!
+		//console.debug(`-> ${method} ${this.#baseURL}/${endpoint}`, data ?? '')
 
 		const res = await this.#fetchFunc(`${this.#baseURL}/${endpoint}`, {
 			method,
 			headers: {
 				'Content-Type': 'application/json',
-				Cookie: this.#authToken && !this.isAPIToken() ? `triform_key=${this.#authToken}` : '',
+				cookie: this.#baseURL !== '/	api' ? (request.headers.get('cookie') ?? '') : '',
 				...headers
 			},
 			body: data ? JSON.stringify(data) : undefined
 		})
 
+		console.log(res)
+
 		if (!res.ok) {
 			throw new Error(`API Error: ${res.status} ${res.statusText} ${await res.text()}`)
 		}
-
-		//console.log(res)
 
 		return res.json() as Promise<T>
 	}

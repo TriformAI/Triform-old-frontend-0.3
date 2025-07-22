@@ -7,13 +7,17 @@
 	import DiscordIcon from '~icons/bxl/discord-alt'
 	import GithubIcon from '~icons/bxl/github'
 	import { PUBLIC_TRICORE_AUTH_URL } from '$env/static/public'
+	import { authClient } from '$lib/auth-client'
+
 	const providers = [
 		{
 			name: 'Discord',
+			key: 'discord',
 			icon: DiscordIcon
 		},
 		{
 			name: 'Github',
+			key: 'github',
 			icon: GithubIcon
 		}
 	]
@@ -23,14 +27,18 @@
 	// Disable others
 	let chosenProvider = $state<string | null>(null)
 
-	const onLogin = (provider: (typeof providers)[number]) => {
-		chosenProvider = provider.name
-		localStorage.setItem('lastLoginOption', provider.name)
-		// Return a promise that never resolves so the button starts loading while we're redirecting the user
-		return new Promise(() => {})
+	const onLogin = async (provider: (typeof providers)[number]['key']) => {
+		localStorage.setItem('lastLoginOption', provider)
+
+		await authClient.signIn.social({
+			provider,
+			callbackURL: '/',
+			errorCallbackURL: '/login/error'
+		})
 	}
 
 	let lastOption = $state<string>()
+
 	onMount(() => {
 		lastOption = localStorage.getItem('lastLoginOption') ?? ''
 		// Parse out error from query string
@@ -61,8 +69,7 @@
 				<div class="relative w-full">
 					<Button
 						class="peer w-full"
-						href={`${apiUrl}/login/${provider.name.toLowerCase()}/authorize`}
-						onClick={() => onLogin(provider)}
+						onClick={() => onLogin(provider.key)}
 						autoLoad="promise"
 						disabled={chosenProvider === provider.name}
 					>
@@ -73,6 +80,7 @@
 							{provider.name}
 						{/snippet}
 					</Button>
+
 					{#if provider.name === lastOption}
 						<span
 							class={[
