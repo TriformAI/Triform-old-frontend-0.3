@@ -4,18 +4,20 @@ import { fail } from '@sveltejs/kit'
 export const actions = {
 	async update({ request, locals, params }) {
 		const formData = await request.formData()
+		const { data } = await locals.api.get<Project>(`projects/${params.id}`)
 
-		const payload = await locals.api.get<Project>(`projects/${params.id}`)
-		payload.meta.name = formData.get('name') as string
+		const payload = {
+			resource: data.resource,
+			meta: {
+				intention: data.meta.intention,
+				name: formData.get('name') as string
+			},
+			spec: data.spec
+		}
+
 		payload.meta.intention.purpose = formData.get('intention') as string
 
-		try {
-			const data = await locals.api.put(`projects/${params.id}`, payload)
-			return data
-		} catch (error) {
-			console.error(error)
-			return fail(500, { message: 'Could not update project' })
-		}
+		return await locals.api.put<Project>(`projects/${params.id}`, payload)
 	},
 
 	async delete({ request, locals, params }) {

@@ -25,6 +25,7 @@
 		if (data.drafts) {
 			loadDrafts(data.drafts)
 		}
+
 		if (data.project) {
 			loadProject(data.project)
 		}

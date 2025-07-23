@@ -36,26 +36,6 @@
 
 	setFormdata()
 
-	function updateData() {
-		if (!componentData) {
-			return
-		}
-
-		const meta = componentData.meta
-		componentData.meta = {
-			...meta,
-			...formData,
-			intention: {
-				...meta.intention,
-				...formData.intention
-			}
-		}
-	}
-
-	onDestroy(() => {
-		//updateData()
-	})
-
 	let isLoading = $state(false)
 </script>
 
@@ -67,11 +47,13 @@
 		use:enhance={() => {
 			isLoading = true
 			return async ({ update, result }) => {
+				console.log(result)
+
 				if (result.type === 'success') {
 					toast.success('Project updated!')
 				}
 
-				if (result.type === 'error') {
+				if (result.type === 'failure') {
 					toast.error('Could not update project')
 				}
 
