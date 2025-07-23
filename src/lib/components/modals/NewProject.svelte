@@ -36,9 +36,10 @@
 				use:enhance={() => {
 					isLoading = true
 					return async ({ update, result }) => {
+						console.log(result)
 						if (result.type === 'success') {
 							toast.success('Project created!')
-							await goto(`project/${result.data?.meta?.id}`)
+							await goto(`project/${result.data?.project.meta?.id}`)
 						}
 
 						if (result.type === 'failure') {

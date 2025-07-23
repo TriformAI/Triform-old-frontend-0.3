@@ -1,7 +1,8 @@
-import type { Project } from '$lib/types/project'
+import type { Project } from '$lib/types/resources'
 
 export async function load({ locals }) {
-	const projects = await locals.api.get('projects')
+	const { data: projects } = await locals.api.get<Project[]>('projects')
+	console.log(projects)
 
 	return {
 		projects

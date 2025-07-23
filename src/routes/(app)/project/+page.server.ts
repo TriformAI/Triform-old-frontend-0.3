@@ -27,13 +27,14 @@ export const actions = {
 				}
 			},
 			spec: {
-				nodes: {}
+				nodes: {},
+				modifiers: {}
 			}
 		}
 
-		// Create the project and return it
-		const createdProject = await locals.api.post<Project>('projects', project)
+		console.log(project)
 
-		return createdProject
+		// Create the project and return it
+		return await locals.api.post<Project>('projects', project)
 	}
 }

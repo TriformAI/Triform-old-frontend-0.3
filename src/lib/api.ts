@@ -1,30 +1,98 @@
-import { stream } from 'fetch-event-stream'
 import { getRequestEvent } from '$app/server'
+import { error, fail, type ActionFailure } from '@sveltejs/kit'
 
-type RequestMethod = 'GET' | 'POST' | 'PUT' | 'DELETE' | 'PATCH'
+type RequestMethod = 'GET' | 'POST' | 'PUT' | 'DELETE'
+
+export class ApiError extends Error {
+	status: number
+	data: Record<string, string>
+
+	constructor(status: number, data: Record<string, string>) {
+		super('Request failed')
+		this.status = status
+		this.data = data
+	}
+}
+
+export type ApiErrorType = InstanceType<typeof ApiError>
+
+type ReturnDataWithHeaders<T> = {
+	data: T
+	headers: Headers
+}
+
+type ReturnData<T> = {
+	data: T
+}
 
 export class API {
 	#baseURL: string
-	#authToken?: string
 	#fetchFunc: typeof fetch
 
-	// This API class can be used for both internal requests and to our external API
 	constructor(baseURL: string = '/api', fetchFunc = fetch) {
 		this.#fetchFunc = fetchFunc
 		this.#baseURL = baseURL
 	}
 
+	// Overloads based on returnOnlyPromise and returnHeaders
+	async #request<T>(
+		method: RequestMethod,
+		endpoint: string,
+		data: unknown,
+		headers: Record<string, string>,
+		returnOnlyPromise: true,
+		returnHeaders: true
+	): Promise<ReturnDataWithHeaders<T>>
+
+	async #request<T>(
+		method: RequestMethod,
+		endpoint: string,
+		data: unknown,
+		headers: Record<string, string>,
+		returnOnlyPromise: true,
+		returnHeaders?: false
+	): Promise<ReturnData<T>>
+
+	async #request<T>(
+		method: RequestMethod,
+		endpoint: string,
+		data: unknown,
+		headers: Record<string, string>,
+		returnOnlyPromise: false,
+		returnHeaders: true
+	): Promise<ReturnDataWithHeaders<T> | ActionFailure>
+
+	async #request<T>(
+		method: RequestMethod,
+		endpoint: string,
+		data: unknown,
+		headers: Record<string, string>,
+		returnOnlyPromise: false,
+		returnHeaders?: false
+	): Promise<ReturnData<T> | ActionFailure>
+
+	// Base overload
 	async #request<T>(
 		method: RequestMethod,
 		endpoint: string,
 		data?: unknown,
-		headers: Record<string, string> = {}
-	): Promise<T> {
+		headers?: Record<string, string>,
+		returnOnlyPromise?: boolean,
+		returnHeaders?: boolean
+	): Promise<ReturnData<T> | ReturnDataWithHeaders<T> | ActionFailure>
+
+	// --- Implementation ---
+	async #request<T>(
+		method: RequestMethod,
+		endpoint: string,
+		data?: unknown,
+		headers: Record<string, string> = {},
+		returnOnlyPromise = false,
+		returnHeaders = false
+	): Promise<ReturnData<T> | ReturnDataWithHeaders<T> | ActionFailure> {
 		const { request } = getRequestEvent()
 
-		//console.debug(`-> ${method} ${this.#baseURL}/${endpoint}`, data ?? '')
-
-		const res = await this.#fetchFunc(`${this.#baseURL}/${endpoint}`, {
+		const response = await this.#fetchFunc(`${this.#baseURL}/${endpoint}`, {
 			method,
 			headers: {
 				'Content-Type': 'application/json',
@@ -34,80 +102,122 @@ export class API {
 			body: data ? JSON.stringify(data) : undefined
 		})
 
-		console.log(res)
+		// Check if response is JSON
+		const contentType = response.headers.get('content-type')
+		let result: any
 
-		if (!res.ok) {
-			throw new Error(`API Error: ${res.status} ${res.statusText} ${await res.text()}`)
+		if (contentType && contentType.includes('application/json')) {
+			result = await response.json()
+		} else {
+			// If not JSON, read as text and wrap in an object
+			const text = await response.text()
+			result = { message: text }
 		}
 
-		return res.json() as Promise<T>
+		if (returnOnlyPromise) {
+			if (returnHeaders) {
+				return { data: result as T, headers: response.headers }
+			}
+			return result as ReturnData<T>
+		}
+
+		if (!response.ok) {
+			console.error('API error: ', result)
+			if (['POST', 'PUT', 'DELETE'].includes(method)) {
+				return fail(response.status, result)
+			}
+			throw error(response.status, result)
+		}
+
+		if (returnHeaders) {
+			return { data: result as T, headers: response.headers }
+		}
+
+		return result as ReturnData<T>
 	}
 
-	get<T>(endpoint: string, headers?: Record<string, string>) {
-		return this.#request<T>('GET', endpoint, undefined, headers)
-	}
-
-	post<T>(endpoint: string, data: unknown, headers?: Record<string, string>) {
-		return this.#request<T>('POST', endpoint, data, headers)
-	}
-
-	put<T>(endpoint: string, data: unknown, headers?: Record<string, string>) {
-		return this.#request<T>('PUT', endpoint, data, headers)
-	}
-
-	patch<T>(endpoint: string, data: unknown, headers?: Record<string, string>) {
-		return this.#request<T>('PATCH', endpoint, data, headers)
-	}
-
-	delete<T>(endpoint: string, headers?: Record<string, string>) {
-		return this.#request<T>('DELETE', endpoint, undefined, headers)
-	}
-
-	stream(
+	// --- Public Methods ---
+	get<T>(
 		endpoint: string,
-		method: RequestMethod = 'GET',
+		headers?: Record<string, string>,
+		returnHeaders?: false
+	): Promise<ReturnData<T>>
+	get<T>(
+		endpoint: string,
+		headers: Record<string, string>,
+		returnHeaders: true
+	): Promise<ReturnDataWithHeaders<T>>
+	get<T>(
+		endpoint: string,
+		headers: Record<string, string> = {},
+		returnHeaders: boolean = false
+	): Promise<ReturnData<T> | ReturnDataWithHeaders<T>> {
+		return this.#request<T>('GET', endpoint, undefined, headers, false, returnHeaders as any) as any
+	}
+
+	getRaw<T>(
+		endpoint: string,
+		headers?: Record<string, string>,
+		returnHeaders?: false
+	): Promise<ReturnData<T>>
+	getRaw<T>(
+		endpoint: string,
+		headers: Record<string, string>,
+		returnHeaders: true
+	): Promise<ReturnDataWithHeaders<T>>
+	getRaw<T>(
+		endpoint: string,
+		headers: Record<string, string> = {},
+		returnHeaders: boolean = false
+	): Promise<ReturnData<T> | ReturnDataWithHeaders<T>> {
+		return this.#request<T>('GET', endpoint, undefined, headers, true, returnHeaders as any) as any
+	}
+
+	post<T>(
+		endpoint: string,
+		data: unknown,
+		headers: Record<string, string> = {}
+	): Promise<ReturnData<T> | ActionFailure> {
+		return this.#request<T>('POST', endpoint, data, headers, false)
+	}
+
+	postRaw<T>(
+		endpoint: string,
+		data: unknown,
+		headers: Record<string, string> = {}
+	): Promise<ReturnData<T>> {
+		return this.#request<T>('POST', endpoint, data, headers, true)
+	}
+
+	put<T>(
+		endpoint: string,
+		data: unknown,
+		headers: Record<string, string> = {}
+	): Promise<ReturnData<T> | ActionFailure> {
+		return this.#request<T>('PUT', endpoint, data, headers, false)
+	}
+
+	putRaw<T>(
+		endpoint: string,
+		data: unknown,
+		headers: Record<string, string> = {}
+	): Promise<ReturnData<T>> {
+		return this.#request<T>('PUT', endpoint, data, headers, true)
+	}
+
+	delete<T>(
+		endpoint: string,
 		data?: unknown,
 		headers: Record<string, string> = {}
-	) {
-		// Create a promise so we can return the emitter early before it's done streaming
-		// eslint-disable-next-line no-async-promise-executor
-		return new Promise<EventTarget>(async (resolve, reject) => {
-			console.debug(`-> stream ${method} ${this.#baseURL}/${endpoint}`, data ?? '')
+	): Promise<ReturnData<T> | ActionFailure> {
+		return this.#request<T>('DELETE', endpoint, data, headers, false)
+	}
 
-			const emitter = new EventTarget()
-
-			if (this.isAPIToken()) headers['Authorization'] = this.#authToken!
-
-			try {
-				const events = await stream(`${this.#baseURL}/${endpoint}`, {
-					method,
-					headers: {
-						Cookie: this.#authToken && !this.isAPIToken() ? `triform_key=${this.#authToken}` : '',
-						...headers
-					},
-					body: data ? JSON.stringify(data) : undefined
-				})
-
-				resolve(emitter)
-
-				for await (const event of events) {
-					emitter.dispatchEvent(
-						new CustomEvent('message', {
-							detail: event
-						})
-					)
-				}
-
-				// Once we're done, emit the final close event
-				console.log('emitting close event')
-				emitter.dispatchEvent(new CustomEvent('close', {}))
-			} catch (e) {
-				// @ts-expect-error text is not in the error type
-				const text = await e?.text?.()
-				console.error('Failed to start stream', e, text)
-				reject(new Error(text))
-			}
-			return
-		})
+	deleteRaw<T>(
+		endpoint: string,
+		data?: unknown,
+		headers: Record<string, string> = {}
+	): Promise<ReturnData<T>> {
+		return this.#request<T>('DELETE', endpoint, data, headers, true)
 	}
 }

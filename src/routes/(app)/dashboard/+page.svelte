@@ -32,14 +32,14 @@
 	</div>
 
 	<div class="mt-4 grid grid-cols-2 gap-5 md:grid-cols-3 lg:grid-cols-4">
-		{#each projects as project (project.id)}
+		{#each projects as project (project.meta.id)}
 			<div
 				class="group/project bg-main-850 border-main-800 hover:border-main-700 hover:bg-main-800 relative rounded-lg border transition"
 			>
-				<a class=" relative block w-full transform p-4 pr-8" href="/project/{project.id}">
+				<a class=" relative block w-full transform p-4 pr-8" href="/project/{project.meta.id}">
 					<div>
 						<h2 class="mb-1 flex items-center font-medium">
-							{project.name}
+							{project.meta.name}
 							<span
 								class="opacity-0 transition-all duration-300 group-hover/project:translate-x-2 group-hover/project:opacity-100"
 							>
@@ -47,7 +47,7 @@
 							</span>
 						</h2>
 						<p class="text-main-500">
-							{project.intention.purpose}
+							{project.meta.intention.purpose}
 						</p>
 					</div>
 				</a>
@@ -65,13 +65,13 @@
 
 						{#snippet body()}
 							<form
-								action="/project/{project.id}?/delete"
+								action="/project/{project.meta.id}?/delete"
 								method="POST"
 								use:enhance={() => {
 									return async ({ update, result }) => {
 										console.log(result)
 										if (result.type === 'success') {
-											toast.success(`Project "${project.name}" deleted`)
+											toast.success(`Project "${project.meta.name}" deleted`)
 											await update()
 										} else {
 											toast.error('Project could not be deleted')
