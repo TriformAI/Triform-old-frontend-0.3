@@ -40,11 +40,10 @@
 	import { type OnNavigate } from '@sveltejs/kit'
 	import { onNavigate } from '$app/navigation'
 	import { getComponent, createComponent } from '$lib/actions/components'
-	import { isAction, isFlow, type Uuid } from '$lib/types/agent'
+	import { isFlow, type Uuid } from '$lib/types/agent'
 	import { getFlowModel } from '$lib/nodeModels'
 	import { flowHasComponent } from '$lib/utils/flowHasComponent'
 	import { toast } from 'svelte-sonner'
-	import { replaceState } from '$app/navigation'
 
 	const useSvelteFlow = svelteFlowHook()
 	const { fitView, screenToFlowPosition } = useSvelteFlow
@@ -119,17 +118,17 @@
 		const component = await getComponent(componentId as Uuid)
 
 		// make sure we're not creating a recursive flow in any way
-		if (component.resource === 'flow/v1') {
+		if (component.data.resource === 'flow/v1') {
 			for (const node of Object.values(project.spec.nodes)) {
 				if (!isFlow(node.spec)) continue
-				if (flowHasComponent(node.spec, component))
+				if (flowHasComponent(node.spec, component.data))
 					return toast.error(`You can't add a component as a child of itself`)
 			}
 		}
 
 		const position = screenToFlowPosition({ x: event.clientX, y: event.clientY })
 
-		await addNode(component, position, [])
+		await addNode(component.data, position, [])
 	}
 
 	const createInitialFlow = async () => {

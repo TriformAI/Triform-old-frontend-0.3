@@ -18,7 +18,6 @@
 
 	const tokens = $derived(page.data.tokens)
 	const organizations = $derived(page.data.organizations)
-	$inspect(organizations)
 </script>
 
 <div class="flex flex-col gap-y-4">

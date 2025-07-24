@@ -2,6 +2,7 @@
 	import { goto } from '$app/navigation'
 	import { page } from '$app/state'
 	import Button from '$lib/components/atoms/Button.svelte'
+	$inspect(page.error)
 </script>
 
 <svelte:head>
@@ -15,7 +16,7 @@
 				{page.status}
 			</h1>
 			<p class="text-main-500 mb-6 text-xl">
-				{page.error?.message ?? 'An unknown error occurred'}
+				{page.error.error ?? 'An unknown error occurred'}
 			</p>
 			<div class="flex items-center justify-center">
 				<Button variation="primary" onClick={() => goto('/')}>

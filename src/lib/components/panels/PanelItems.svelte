@@ -39,7 +39,6 @@
 	}
 
 	const { items, componentData, showNav = true }: Props = $props()
-	$inspect(componentData)
 
 	// Get component type from resource
 	const componentType = $derived(componentData.resource.split('/')[0]) as keyof OpenPanelItems

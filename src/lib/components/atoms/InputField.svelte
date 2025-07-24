@@ -3,7 +3,7 @@
 
 	let {
 		value = $bindable(),
-
+		el = $bindable(),
 		label,
 		name,
 		placeholder,
@@ -22,6 +22,7 @@
 		use = () => {}
 	}: {
 		value?: string
+		el?: HTMLInputElement
 		label?: string
 		name?: string
 		placeholder?: string
@@ -56,6 +57,7 @@
 			{autocomplete}
 			{required}
 			{readonly}
+			bind:this={el}
 			bind:value
 			class={[
 				'input-text peer',

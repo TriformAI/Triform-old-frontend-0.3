@@ -9,7 +9,6 @@
 	import { toast } from 'svelte-sonner'
 	import compare from 'just-compare'
 	import PanelItem from '../PanelItem.svelte'
-	import { drafts } from '$lib/stores/canvas.svelte'
 	import { inProgressComponents } from '$lib/stores/builder.svelte'
 	import { blur } from 'svelte/transition'
 	import { type Component } from '$lib/types/agent'
@@ -17,20 +16,7 @@
 
 	const { componentData }: { componentData: Component } = $props()
 
-	const draftData = $derived.by(() => {
-		return drafts[componentData.meta.id] as Action
-	})
-
-	const removeChecksum = (spec: Component['spec']) => ({
-		...spec,
-		checksum: undefined
-	})
-
-	const dataIsDirty = $derived.by(() => {
-		return draftData
-			? !compare(removeChecksum(draftData.spec), removeChecksum(componentData.spec))
-			: false
-	})
+	const dataIsDirty = false // FIXME
 
 	const filenames = {
 		source: 'action.py',
@@ -54,12 +40,12 @@
 		}
 		// switch tab depending on which file was updated
 		const idx = Object.keys(newData).findIndex(
-			key => newData[key as FileType] !== draftData.spec[key]
+			key => newData[key as FileType] !== componentData.spec[key]
 		)
 
 		if (idx > -1) activeTab = idx
 
-		Object.assign(draftData.spec, newData)
+		Object.assign(componentData.spec, newData)
 	})
 
 	let activeTab = $state(0) // Default to the first tab
@@ -75,7 +61,7 @@
 	const componentId = $derived(componentData.meta.id)
 	const isBuilding = $derived(componentId in inProgressComponents)
 
-	const debouncedSaveDraft = debounce(() => saveDraft(draftData, componentData.meta.id), 500)
+	const debouncedSaveDraft = debounce(() => {}, 500) // FIXME
 </script>
 
 <PanelItem title="Code" {componentData} isDirty={dataIsDirty}>
@@ -87,12 +73,12 @@
 				isBuilding && 'opacity-50 grayscale-75'
 			]}
 		>
-			{#if draftData}
+			{#if componentData}
 				{#each Object.entries(filenames) as [key, value], idx (key)}
 					{@const language = value.split('.').pop() as 'py' | 'md' | 'txt'}
 					{#if language === 'py'}
 						<Editor
-							bind:code={draftData.spec[key as FileType]}
+							bind:code={componentData.spec[key as FileType]}
 							class={`${idx === activeTab ? 'block' : 'hidden'} absolute h-full w-full rounded-md`}
 							readOnly={isBuilding}
 							onUpdate={debouncedSaveDraft}
@@ -100,7 +86,7 @@
 					{:else}
 						<LightEditor
 							{language}
-							bind:value={draftData.spec[key as FileType]}
+							bind:value={componentData.spec[key as FileType]}
 							wordWrap={true}
 							class={`${idx === activeTab ? 'block' : 'hidden'} bg-main-800 absolute h-full w-full rounded-md ps-6 pt-2.5 text-sm`}
 							readOnly={isBuilding}

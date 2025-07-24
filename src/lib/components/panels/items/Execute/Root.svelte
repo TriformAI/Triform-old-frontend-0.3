@@ -12,7 +12,6 @@
 	import { blur } from 'svelte/transition'
 	import { executeComponent } from '$lib/actions/executor.svelte'
 	import { type Component } from '$lib/types/agent'
-	import { drafts } from '$lib/stores/canvas.svelte'
 	import { getContext } from 'svelte'
 	import { DropdownMenu } from 'bits-ui'
 	import IconChevronDown from '~icons/mdi/chevron-down'
@@ -47,10 +46,6 @@
 		selected.payload = payload
 	})
 
-	const draftData = $derived.by(() => {
-		return drafts[componentData.meta.id]
-	})
-
 	const useDraft = $derived(getContext<{ value: boolean }>('use-draft'))
 
 	const executorState = $state({
@@ -63,7 +58,7 @@
 		if (!payload) return toast.error('Please enter a payload')
 		if (!isValidJson) return toast.error('The payload needs to be valid JSON')
 
-		executeComponent(payload, useDraft.value ? draftData : componentData, executorState)
+		executeComponent(payload, componentData, executorState)
 	}
 </script>
 

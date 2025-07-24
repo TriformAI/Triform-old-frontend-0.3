@@ -29,25 +29,9 @@ export const getEdges = () => edgesStore
 export const setNodes = (newNodes: Node[]) => (nodesStore = newNodes)
 export const setEdges = (newEdges: Edge[]) => (edgesStore = newEdges)
 
-export const drafts = $state<Record<Uuid, Component>>({})
-export const loadDrafts = (allDrafts: { component_id: Uuid; spec: Component }[]) => {
-	// Path meta.intention which does not always exist
-	// TODO: Clean this up
-	for (const draft of allDrafts) {
-		const meta = draft.spec.meta
-		if (!('intention' in meta)) {
-			meta.intention = {
-				purpose: '',
-				input: '',
-				output: ''
-			}
-		}
-		draft.spec.meta = meta
-		drafts[draft.component_id as Uuid] = draft.spec
-	}
-}
 let project = $state<Project>()
-export const loadProject = (proj: Project) => {
+
+export const setProject = (proj: Project) => {
 	project = proj
 }
 
@@ -86,10 +70,12 @@ export const isFlow = (component: Component): component is Flow => component.res
 
 // Initialize the nodes on project or flow level
 export async function initFlow(
-	proj: Project,
 	allPositions: Record<Uuid, Record<Uuid, { x: number; y: number }>> = {}
 ) {
-	if (!project) loadProject(proj)
+	if (!project) {
+		throw new Error('No project found')
+	}
+
 	// Get nodes from project or current flow
 	const triNodes = isRootLevel ? project!.spec.nodes : currentFlow?.spec.spec.nodes
 
@@ -118,7 +104,7 @@ export async function initFlow(
 		if (!hasNodes) {
 			const { node, edge } = getNodeSelector(nodes[0].id, { x: 0, y: 0 }, true)
 			node.origin = [0.3, 0] // small "hack" to get it to align in the middle
-			console.log('adding node selector', node, edge)
+
 			nodes.push(node)
 			edges.push(edge)
 		}
@@ -324,6 +310,7 @@ export const updateNodeComponent = (component: Component) => {
 	if (!project) {
 		throw new Error('No project found')
 	}
+
 	const processNode = (node: TriNode) => {
 		if (node.component_id === component.meta.id) {
 			node.spec = component
@@ -345,7 +332,7 @@ export async function addNode(
 		throw new Error('No project loaded')
 	}
 
-	const newNodeId = '8e0b5c4e-de4a-47c0-ac9c-4cabc4a6a1f5'
+	const newNodeId = crypto.randomUUID()
 	const newNode = {
 		component_id: component.meta.id,
 		spec: component,
@@ -356,7 +343,9 @@ export async function addNode(
 	// Top-level flows - Update project with new node
 	if (isRootLevel) {
 		const updatedProject = clone(project)
+
 		updatedProject.spec.nodes[newNodeId] = newNode
+
 		await Promise.all([
 			saveProject(updatedProject)
 			// updateComponentPositions(project.meta.id, {
@@ -369,7 +358,6 @@ export async function addNode(
 		const updatedFlow = clone(currentFlow) as typeof currentFlow
 		updatedFlow.spec.spec.nodes[newNodeId] = newNode
 
-		console.log(updatedFlow.spec)
 		onFlowUpdate(updatedFlow.spec)
 
 		await Promise.all([
@@ -424,7 +412,6 @@ export const deleteEdge = async (edgeId: Edge['id']) => {
 	if (!currentFlow) throw new Error('No flow found')
 	const edge = edgesStore.find(e => e.id === edgeId)
 	if (!edge) throw new Error(`Tried to remove non-existent edge ${edgeId}`)
-	console.debug('removing edge', edgeId, edge)
 
 	// Remove the input from the node (edges are defined on the target side)
 	const target = currentFlow.spec.spec.nodes[edge.target]

@@ -132,7 +132,8 @@ export class API {
 			if (['POST', 'PUT', 'DELETE'].includes(method)) {
 				return fail(response.status, result)
 			}
-			throw error(response.status, result)
+
+			error(response.status, result)
 		}
 
 		if (returnHeaders) {

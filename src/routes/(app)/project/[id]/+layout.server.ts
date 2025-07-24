@@ -20,20 +20,6 @@ export async function load({ locals, params, depends }) {
 
 	const variables = modifiers.filter(m => m.resource === 'variable/v1') as Variable[]
 
-	// Get the drafts & positions within each flow
-	const projectNodes = Object.values(project.spec.nodes).flatMap(node => [
-		node.spec,
-		...getNodes(node.spec)
-	])
-
-	const projectComponentIds = projectNodes.map(c => c.meta.id)
-	const flows = projectNodes.filter(c => isFlow(c))
-	const parentIds = [
-		// include the project id as well in the parent ids to allow for top-level flows to be adjusted too
-		id,
-		...flows.map(f => f.meta.id)
-	]
-
 	const positions = { data: [] }
 
 	return {

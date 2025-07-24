@@ -8,7 +8,7 @@
 	import PropsPanel from '$lib/components/PropsPanel.svelte'
 	import Confirm from '$lib/components/common/Confirm.svelte'
 	import { loadComponents } from '$lib/stores/library.svelte'
-	import { initFlow, loadDrafts, loadProject } from '$lib/stores/canvas.svelte'
+	import { initFlow, setProject } from '$lib/stores/canvas.svelte'
 	import ComponentLibrary from '$lib/components/panels/Library/ComponentLibrary.svelte'
 	import { debounce } from '$lib/utils/debounce'
 	import { onMount } from 'svelte'
@@ -21,25 +21,20 @@
 
 	let isLoaded = $state(false)
 
-	$effect(() => {
-		if (data.drafts) {
-			loadDrafts(data.drafts)
-		}
-
-		if (data.project) {
-			loadProject(data.project)
-		}
-	})
-
 	onMount(() => {
+		if (data.project) {
+			setProject(data.project)
+		}
+
 		loadComponents(data.components ?? [])
 	})
 
 	$effect(() => {
 		;(async () => {
 			if (!data.project) return
+
 			isLoaded = false
-			await initFlow(data.project, data.positions)
+			await initFlow(data.positions)
 			await sleep(0)
 			flowComponent?.fitView({
 				maxZoom: 1,

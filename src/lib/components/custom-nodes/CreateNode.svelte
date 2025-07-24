@@ -11,13 +11,9 @@
 	const props = $props()
 
 	let name = $state('')
-	let inputRef: HTMLInputElement
+	let inputRef = $state<HTMLInputElement>()
 	let isEditing = $state(false)
 	let isCreating = $state(false)
-
-	function handleInputRef(el: HTMLInputElement) {
-		inputRef = el
-	}
 
 	function startEditing() {
 		isEditing = true
@@ -89,7 +85,7 @@
 		{#if isEditing}
 			<InputField
 				bind:value={name}
-				use={handleInputRef}
+				bind:el={inputRef}
 				placeholder="Name of flow"
 				onkeydown={handleKeydown}
 				variation="tight"

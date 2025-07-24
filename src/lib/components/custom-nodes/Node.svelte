@@ -1,6 +1,6 @@
 <script lang="ts">
 	import ContextMenu from '$lib/components/atoms/ContextMenu.svelte'
-	import { getNodes, getCurrentFlow, drafts } from '$lib/stores/canvas.svelte'
+	import { getNodes, getCurrentFlow } from '$lib/stores/canvas.svelte'
 	import { getActions } from '$lib/stores/nodeActions.svelte'
 	import type { Node, NodeData } from '$lib/types/flow'
 	import type { Snippet } from 'svelte'
@@ -54,8 +54,7 @@
 		return !isRootLevelAndFlowNode
 	})
 
-	const draftData = $derived(drafts[data.trinode.spec.meta.id])
-	const isDirty = $derived(componentIsDirty(draftData, data.trinode.spec))
+	const isDirty = false // FIXME
 </script>
 
 <NodeContainer {...props} {showTargetHandle} {showSourceHandle}>
@@ -76,7 +75,7 @@
 						]}
 					>
 						<span class={['bg-main-900 text-main-200 relative flex justify-center']}>
-							<span class="truncate">{draftData?.meta.name || 'Untitled'}</span>
+							<span class="truncate">{data.trinode.spec.meta.name || 'Untitled'}</span>
 							<span
 								class={[
 									'bg-warning-600 ms-1 mt-1 block rounded-full transition-transform',

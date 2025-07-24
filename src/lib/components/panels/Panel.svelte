@@ -6,7 +6,6 @@
 	import { type Component, isFlow } from '$lib/types/agent'
 	import { type Project } from '$lib/types/project'
 	import Button from '$lib/components/atoms/Button.svelte'
-	import { drafts } from '$lib/stores/canvas.svelte'
 	import DirtyNote from '../DirtyNote.svelte'
 	import { API } from '$lib/api'
 	import { toast } from 'svelte-sonner'
@@ -26,15 +25,7 @@
 
 	const { componentData, Icon, panelItems }: Props = $props()
 
-	const draftData = $derived.by(() => {
-		return drafts[componentData?.meta?.id]
-	})
-
-	const isDirty = $derived(
-		!isProject(componentData)
-			? componentIsDirty($state.snapshot(draftData), $state.snapshot(componentData))
-			: false // unsaved is handled by project settings itself and doesn't use drafts
-	)
+	const isDirty = false // FIXME
 
 	const actions = $derived.by(() => {
 		const type = 'flow-node'
@@ -46,7 +37,7 @@
 
 		let result: Component | undefined = undefined
 		try {
-			result = await api.put<Component>(`components/${componentData.meta.id}`, draftData)
+			result = await api.put<Component>(`components/${componentData.meta.id}`, componentData)
 			// if it was a flow that we updated, we won't get back the full resolved component so we
 			// need to re-populate the local (fully resolved) spec before updating it
 			if (isFlow(componentData)) result.spec = componentData.spec

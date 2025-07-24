@@ -20,7 +20,6 @@
 	} from '$lib/stores/builder.svelte'
 	import { isAction } from '$lib/stores/canvas.svelte'
 	import { openPanelItems, toggleOpenPanelItem } from '$lib/stores/panel.svelte'
-	import { drafts } from '$lib/stores/canvas.svelte'
 	import { type Component } from '$lib/types/agent'
 	import { getContext } from 'svelte'
 
@@ -28,20 +27,9 @@
 
 	const api = new API()
 
-	const draftData = $derived.by(() => {
-		return drafts[componentData.meta.id]
-	})
+	const useDraft = false
 
-	const useDraft = $derived(getContext<{ value: boolean }>('use-draft'))
-
-	const dataIsDirty = $derived(
-		draftData
-			? !compare(
-					{ ...draftData.meta, version: undefined },
-					{ ...componentData.meta, version: undefined }
-				)
-			: false
-	)
+	const dataIsDirty = false // FIXME
 
 	const isBuilding = $derived(componentData.meta.id in inProgressComponents)
 
@@ -56,10 +44,10 @@
 		if (!isAction(componentData)) return toast.error('Only actions can be built right now')
 		// Make sure all the metadata is filled out
 		const missingFields = []
-		if (!draftData.meta.name) missingFields.push('name')
-		if (!draftData.meta.intention?.purpose) missingFields.push('intention')
-		if (!draftData.meta.intention?.input) missingFields.push('input')
-		if (!draftData.meta.intention?.output) missingFields.push('output')
+		if (!componentData.meta.name) missingFields.push('name')
+		if (!componentData.meta.intention?.purpose) missingFields.push('intention')
+		if (!componentData.meta.intention?.input) missingFields.push('input')
+		if (!componentData.meta.intention?.output) missingFields.push('output')
 		if (missingFields.length)
 			return toast.error(`Missing required fields: ${missingFields.join(', ')}`)
 
@@ -93,8 +81,8 @@
 					body: JSON.stringify({
 						payload: {
 							component: {
-								resource: draftData.resource,
-								meta: draftData.meta,
+								resource: componentData.resource,
+								meta: componentData.meta,
 								spec: {
 									source: '',
 									readme: ''
@@ -198,11 +186,7 @@
 			stream.select(event).subscribe((payload: string) => payload && handler(payload))
 	}
 
-	const saveMetadataDraft = () => {
-		saveDraft(draftData, componentData.meta.id)
-	}
-
-	const debouncedSaveDraft = debounce(saveMetadataDraft, 500)
+	const debouncedSaveDraft = debounce(() => {}, 500) // FIXME
 </script>
 
 <!-- {#if draftData}
@@ -213,7 +197,7 @@
 	<p>{JSON.stringify(componentData.meta)}</p>
 {/if} -->
 
-{#if draftData}
+{#if componentData}
 	<PanelItem {componentData} title="Metadata" isDirty={dataIsDirty}>
 		<form class="grid grid-cols-2 gap-3" onsubmit={buildComponent}>
 			<InputField
@@ -222,7 +206,7 @@
 				label="Name"
 				name="name"
 				oninput={debouncedSaveDraft}
-				bind:value={draftData.meta.name}
+				bind:value={componentData.meta.name}
 			/>
 
 			<TextField
@@ -231,7 +215,7 @@
 				label="Purpose"
 				name="Purpose"
 				oninput={debouncedSaveDraft}
-				bind:value={draftData.meta.intention.purpose}
+				bind:value={componentData.meta.intention.purpose}
 			/>
 
 			<TextField
@@ -239,7 +223,7 @@
 				label="Expected input"
 				name="input"
 				oninput={debouncedSaveDraft}
-				bind:value={draftData.meta.intention.input}
+				bind:value={componentData.meta.intention.input}
 			/>
 
 			<TextField
@@ -247,7 +231,7 @@
 				label="Expected output"
 				name="output"
 				oninput={debouncedSaveDraft}
-				bind:value={draftData.meta.intention.output}
+				bind:value={componentData.meta.intention.output}
 			/>
 
 			<div class="col-span-2 mt-2 flex">

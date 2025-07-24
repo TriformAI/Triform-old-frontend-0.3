@@ -39,7 +39,7 @@
 						console.log(result)
 						if (result.type === 'success') {
 							toast.success('Project created!')
-							await goto(`project/${result.data?.project.meta?.id}`)
+							await goto(`project/${result.data?.data.meta?.id}`)
 						}
 
 						if (result.type === 'failure') {

@@ -2,6 +2,8 @@
 	import logo from '$lib/images/Logo.svg'
 	import Dropdown from './common/Dropdown.svelte'
 	import { page } from '$app/state'
+	import { authClient } from '$lib/auth-client'
+	const session = authClient.useSession()
 
 	const { children } = $props()
 </script>
@@ -26,7 +28,9 @@
 	<div class="mt-2 flex flex-row items-center gap-2">
 		<Dropdown>
 			{#snippet trigger()}
-				<img alt="Avatar" src={page.data.user?.avatar} class="w-8 rounded-full" />
+				{#if $session.data}
+					<img alt="Avatar" src={$session.data.user.image} class="w-8 rounded-full" />
+				{/if}
 			{/snippet}
 
 			{#snippet body()}
