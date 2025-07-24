@@ -42,10 +42,12 @@
 	const createFlow = async () => {
 		isCreating = true
 		isEditing = false
-		const flow = getFlowModel().spec
+		const flow = getFlowModel()
 		flow.meta.name = name
 		try {
 			const newFlow = await createComponent(flow)
+			console.log('newFlow', newFlow)
+
 			await addNode(
 				newFlow,
 				{
@@ -56,6 +58,8 @@
 			)
 			stopEditing()
 		} catch (e) {
+			console.log(e)
+
 			toast.error('Failed to create flow')
 		} finally {
 			isCreating = false
@@ -86,7 +90,7 @@
 			<InputField
 				bind:value={name}
 				use={handleInputRef}
-				placeholder="Enter flow name"
+				placeholder="Name of flow"
 				onkeydown={handleKeydown}
 				variation="tight"
 				class="ml-2 border-none bg-transparent text-white"

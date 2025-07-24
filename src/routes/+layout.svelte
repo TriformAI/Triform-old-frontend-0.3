@@ -11,12 +11,16 @@
 	let { children }: { children: Snippet } = $props()
 
 	const showToaster = $derived.by(() => {
-		if (!browser || !document) return true
-		// don't show any toasts here if there's an open dialog
-		const dialogs = document.querySelectorAll('dialog[open]')
-		console.log('dialogs', dialogs, !dialogs?.length)
-		return !!dialogs?.length
+		// TODO fix logic
+		return true
+		// if (!browser || !document) return true
+		// // don't show any toasts here if there's an open dialog
+		// const dialogs = document.querySelectorAll('dialog[open]')
+		// console.log('dialogs', dialogs, !dialogs?.length)
+		// return !!dialogs?.length
 	})
+
+	$inspect(showToaster)
 
 	// put the currently active org into session storage so we can access it from the API constructor
 	const updateActiveOrg = () => {

@@ -345,7 +345,7 @@ export async function addNode(
 		throw new Error('No project loaded')
 	}
 
-	const newNodeId = crypto.randomUUID()
+	const newNodeId = '8e0b5c4e-de4a-47c0-ac9c-4cabc4a6a1f5'
 	const newNode = {
 		component_id: component.meta.id,
 		spec: component,
@@ -358,10 +358,10 @@ export async function addNode(
 		const updatedProject = clone(project)
 		updatedProject.spec.nodes[newNodeId] = newNode
 		await Promise.all([
-			saveProject(updatedProject),
-			updateComponentPositions(project.meta.id, {
-				[newNodeId]: position
-			})
+			saveProject(updatedProject)
+			// updateComponentPositions(project.meta.id, {
+			// 	[newNodeId]: position
+			// })
 		])
 	}
 	// Nested flows - Update component with new node

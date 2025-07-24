@@ -1,5 +1,6 @@
 import { API } from '$lib/api'
-import type { Component, Uuid } from '$lib/types/agent'
+import type { Uuid } from '$lib/types/agent'
+import type { Component } from '$lib/types/resources'
 import { page } from '$app/state'
 
 const api = new API()
@@ -25,7 +26,10 @@ export const updateComponentPositions = async (
 }
 
 export const createComponent = async (component: Component) => {
-	return await api.post<Component>('components', component)
+	const result = await api.postRaw<Component>('components', component)
+	console.log(result)
+
+	return result.data
 }
 
 export const getComponent = async (id: Uuid) => {

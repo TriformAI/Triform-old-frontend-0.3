@@ -13,7 +13,7 @@ const authHandle: Handle = async ({ event, resolve }) => {
 	}
 
 	event.locals.isAuthenticated = true
-	console.log('apiUrl', apiUrl)
+
 	// Initialize API instance and make available to locals
 	const api = new API(apiUrl, event.fetch)
 	event.locals.api = api

@@ -1,3 +1,4 @@
+import { browser } from '$app/environment'
 import { getRequestEvent } from '$app/server'
 import { error, fail, type ActionFailure } from '@sveltejs/kit'
 
@@ -90,13 +91,18 @@ export class API {
 		returnOnlyPromise = false,
 		returnHeaders = false
 	): Promise<ReturnData<T> | ReturnDataWithHeaders<T> | ActionFailure> {
-		const { request } = getRequestEvent()
+		let cookie = undefined
+
+		if (!browser) {
+			const { request } = getRequestEvent()
+			cookie = this.#baseURL !== '/	api' ? (request.headers.get('cookie') ?? '') : ''
+		}
 
 		const response = await this.#fetchFunc(`${this.#baseURL}/${endpoint}`, {
 			method,
 			headers: {
 				'Content-Type': 'application/json',
-				cookie: this.#baseURL !== '/	api' ? (request.headers.get('cookie') ?? '') : '',
+				cookie,
 				...headers
 			},
 			body: data ? JSON.stringify(data) : undefined
