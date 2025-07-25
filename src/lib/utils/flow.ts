@@ -1,6 +1,6 @@
 import { getNodes } from '$lib/stores/canvas.svelte'
-import { type Uuid } from '$lib/types/agent'
-import { type Node } from '$lib/types/flow'
+import { type UUID as Uuid } from 'crypto'
+import { type Node } from '$lib/types'
 
 export function getDownstreamNodes(id: Uuid): Set<Node> {
 	let downstreamNodes = new Set<Node>()

@@ -1,4 +1,4 @@
-import { type Component, isFlow } from '$lib/types/agent'
+import { type Component, isFlow } from '$lib/types/resources'
 
 // Recursively returns all the nodes in a flow
 export function getNodes(node: Component): Component[] {

@@ -1,6 +1,6 @@
 import 'unplugin-icons/types/svelte'
 import type { User, Organization } from '$lib/types/auth'
-import type { Payload, Project, Variable } from '$lib/types/project'
+import type { Payload, Project, Variable } from '$lib/types/resources'
 
 import { API } from '$lib/api'
 

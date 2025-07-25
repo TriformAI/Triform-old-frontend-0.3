@@ -1,4 +1,6 @@
-import type { Flow, Node as TriNode, Uuid } from '$lib/types/agent'
+import type { Flow } from '$lib/types/resources'
+import type { Node as TriNode } from '$lib/types'
+import type { UUID as Uuid } from 'crypto'
 
 export function getLeafNodes(node: Flow): Record<Uuid, TriNode> {
 	const allNodes = Object.entries(node.spec.nodes)

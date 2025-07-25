@@ -11,7 +11,7 @@
 	import Payload from '../common/Payload.svelte'
 	import { blur } from 'svelte/transition'
 	import { executeComponent } from '$lib/actions/executor.svelte'
-	import { type Component } from '$lib/types/agent'
+	import { type Component } from '$lib/types/resources'
 	import { getContext } from 'svelte'
 	import { DropdownMenu } from 'bits-ui'
 	import IconChevronDown from '~icons/mdi/chevron-down'

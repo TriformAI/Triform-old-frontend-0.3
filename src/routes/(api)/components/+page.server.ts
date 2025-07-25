@@ -1,4 +1,4 @@
-import type { Component } from '$lib/types/agent'
+import type { Component } from '$lib/types/resources'
 
 import { error, json } from '@sveltejs/kit'
 

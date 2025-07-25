@@ -25,7 +25,7 @@
 
 	$effect(() => {
 		if (newPayload) {
-			value = page.data.payloads?.find(p => p.meta.id === newPayload)?.spec.payload ?? ''
+			value = page.data.payloads?.find(p => p.id === newPayload)?.spec.payload ?? ''
 			newPayload = ''
 		}
 	})
@@ -57,7 +57,7 @@
 			<ComboBox
 				bind:value={newPayload}
 				{placeholder}
-				items={page.data.payloads?.map(v => ({ value: v.meta.id, label: v.spec.name })) ?? []}
+				items={page.data.payloads?.map(v => ({ value: v.id, label: v.spec.name })) ?? []}
 				target={usePortal ? portal : undefined}
 			/>
 		{/if}

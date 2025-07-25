@@ -1,4 +1,5 @@
-import type { Uuid, Node as TriNode } from './agent'
+import type { Node as TriNode } from './'
+import type { UUID as Uuid } from 'crypto'
 import type { Node as XyNode, Edge as XyEdge, EdgeProps as XyEdgeProps } from '@xyflow/svelte'
 
 // Visual properties of a node

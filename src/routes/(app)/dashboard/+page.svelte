@@ -32,11 +32,11 @@
 	</div>
 
 	<div class="mt-4 grid grid-cols-2 gap-5 md:grid-cols-3 lg:grid-cols-4">
-		{#each projects as project (project.meta.id)}
+		{#each projects as project (project.id)}
 			<div
 				class="group/project bg-main-850 border-main-800 hover:border-main-700 hover:bg-main-800 relative rounded-lg border transition"
 			>
-				<a class=" relative block w-full transform p-4 pr-8" href="/project/{project.meta.id}">
+				<a class=" relative block w-full transform p-4 pr-8" href="/project/{project.id}">
 					<div>
 						<h2 class="mb-1 flex items-center font-medium">
 							{project.meta.name}
@@ -65,7 +65,7 @@
 
 						{#snippet body()}
 							<form
-								action="/project/{project.meta.id}?/delete"
+								action="/project/{project.id}?/delete"
 								method="POST"
 								use:enhance={() => {
 									return async ({ update, result }) => {

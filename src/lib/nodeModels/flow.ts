@@ -1,4 +1,3 @@
-//import type { Node as TriNode } from '$lib/types/agent'
 import type { Flow } from '$lib/types/resources'
 
 export const getFlowModel = () => {

@@ -2,7 +2,7 @@
 // but for now it just allows us to easily pass data between
 // eg the metadata panel item and the code editor, etc etc
 
-import { type Component } from '$lib/types/agent'
+import { type Component } from '$lib/types/resources'
 
 // Generic base event types (probs should be moved to a types file)
 interface BaseEvent {

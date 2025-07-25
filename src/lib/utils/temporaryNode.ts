@@ -1,5 +1,5 @@
 import { setNodes, setEdges, getNodes, getEdges } from '$lib/stores/canvas.svelte'
-import type { Uuid } from '$lib/types/agent'
+import type { UUID as Uuid } from 'crypto'
 import type { Node, TemporaryNode, Edge } from '$lib/types/flow'
 import type { XYPosition } from '@xyflow/svelte'
 

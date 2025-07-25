@@ -1,9 +1,8 @@
 <script lang="ts">
 	import PanelItem from '../../PanelItem.svelte'
-	import type { Component } from '$lib/types/agent'
 	import Item from './ListItem.svelte'
 	import { page } from '$app/state'
-	import type { Trigger } from '$lib/types/project'
+	import type { Trigger, Component } from '$lib/types/resources'
 	import Dialog from './Dialog.svelte'
 
 	let dialog = $state<HTMLDialogElement>()
@@ -11,7 +10,7 @@
 	const { componentData }: { componentData: Component } = $props()
 
 	const triggers = $derived(
-		page.data.triggers?.filter((t: Trigger) => t.spec.component_id === componentData.meta.id)
+		page.data.triggers?.filter((t: Trigger) => t.spec.component_id === componentData.id)
 	)
 </script>
 

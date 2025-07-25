@@ -1,5 +1,5 @@
 import { json } from '@sveltejs/kit'
-import type { Modifier } from '$lib/types/project'
+import type { Modifier } from '$lib/types/resources'
 
 export async function POST({ request, locals }) {
 	let payload = await request.json()

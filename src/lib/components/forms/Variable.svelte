@@ -6,7 +6,7 @@
 	import { toast } from 'svelte-sonner'
 	import { page } from '$app/state'
 	import { API } from '$lib/api'
-	import type { Variable, Project } from '$lib/types/project'
+	import type { Variable, Project } from '$lib/types/resources'
 	import { invalidate } from '$app/navigation'
 	import { getNodePath } from '$lib/stores/canvas.svelte'
 
@@ -24,7 +24,7 @@
 			stage: '',
 			prod: ''
 		},
-		projectId: page.data.project?.meta.id,
+		projectId: page.data.project?.id,
 		nodePath: getNodePath()
 	})
 
@@ -47,7 +47,7 @@
 			// Attach variable to node
 			await api.post<Project>(`projects/${payload.projectId}/variable`, {
 				nodePath: payload.nodePath,
-				modifierId: result.meta.id
+				modifierId: result.id
 			})
 
 			invalidate('project')

@@ -1,5 +1,5 @@
 import { API } from '$lib/api'
-import { type Component } from '$lib/types/agent'
+import { type Component } from '$lib/types/resources'
 
 const api = new API()
 

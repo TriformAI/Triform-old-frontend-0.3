@@ -1,5 +1,5 @@
 import { json } from '@sveltejs/kit'
-import type { Project } from '$lib/types/project'
+import type { Project } from '$lib/types/resources'
 
 export async function POST({ request, locals, params }) {
 	const { nodePath, modifierId } = await request.json()
@@ -21,7 +21,7 @@ export async function POST({ request, locals, params }) {
 		}
 
 		// Save updated project
-		await locals.api.put<Project>(`projects/${project.meta.id}`, project)
+		await locals.api.put<Project>(`projects/${project.id}`, project)
 
 		return json({ type: 'success' })
 	} catch (error) {

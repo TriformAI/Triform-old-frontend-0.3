@@ -1,5 +1,5 @@
 import { error } from '@sveltejs/kit'
-import { type Component } from '$lib/types/agent'
+import { type Component } from '$lib/types/resources'
 import { type ServerSentEventMessage } from 'fetch-event-stream'
 import { produce } from 'sveltekit-sse'
 

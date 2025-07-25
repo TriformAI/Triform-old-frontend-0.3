@@ -1,5 +1,5 @@
 import { error, json } from '@sveltejs/kit'
-import type { Variable } from '$lib/types/project'
+import type { Variable } from '$lib/types/resources'
 
 // TODO: refactor this into the /modifiers endpoint
 

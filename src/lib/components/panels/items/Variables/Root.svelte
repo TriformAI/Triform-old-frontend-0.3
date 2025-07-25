@@ -8,7 +8,7 @@
 	import PanelItem from '../../PanelItem.svelte'
 	import ComboBox from '$lib/components/atoms/ComboBox.svelte'
 	import { getNodePath } from '$lib/stores/canvas.svelte'
-	import { type Component } from '$lib/types/agent'
+	import { type Component } from '$lib/types/resources'
 
 	const { componentData }: { componentData: Component } = $props()
 
@@ -34,12 +34,12 @@
 			return []
 		}
 
-		return page.data.variables?.filter(variable => variableIds.includes(variable.meta.id)) ?? []
+		return page.data.variables?.filter(variable => variableIds.includes(variable.id)) ?? []
 	})
 
 	let newVariable = $state('')
 
-	const projectId = page.data.project?.meta.id
+	const projectId = page.data.project?.id
 
 	const api = new API()
 
@@ -84,7 +84,7 @@
 					placeholder="Attach variable"
 					items={page.data.variables
 						?.filter(v => !variables.includes(v))
-						.map(v => ({ value: v.meta.id, label: v.spec.key })) ?? []}
+						.map(v => ({ value: v.id, label: v.spec.key })) ?? []}
 					createNew={{
 						label: 'Create new environment variable',
 						trigger: () => {
@@ -112,7 +112,7 @@
 		</div>
 
 		<ul class="mt-2 font-medium">
-			{#each variables as variable (variable.meta.id)}
+			{#each variables as variable (variable.id)}
 				{#if variable.spec.key.toLowerCase().includes(query.toLowerCase())}
 					<Item {variable} onEdit={() => variableDialog?.showModal()} />
 				{/if}

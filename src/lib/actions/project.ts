@@ -1,11 +1,11 @@
 import { API } from '$lib/api'
-import type { Project } from '$lib/types/project'
+import type { Project } from '$lib/types/resources'
 
 const api = new API()
 
 export const saveProject = async (project: Project) => {
-	const id = project.meta.id
-	delete project.meta.id
+	const id = project.id
+	delete project.id
 	project.spec.nodes = Object.fromEntries(
 		Object.entries(project.spec.nodes).map(([id, node]) => {
 			const { component_id } = node

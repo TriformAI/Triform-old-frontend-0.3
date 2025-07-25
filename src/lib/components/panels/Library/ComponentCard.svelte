@@ -1,5 +1,5 @@
 <script lang="ts">
-	import type { Component } from '$lib/types/agent'
+	import type { Component } from '$lib/types/resources'
 	import DescriptionIcon from '~icons/material-symbols/description-rounded'
 	import InputIcon from '~icons/material-symbols/input-circle-rounded'
 	import ArrowRightIcon from '~icons/material-symbols/arrow-right-alt-rounded'
@@ -20,7 +20,7 @@
 			const preview = document.getElementById(
 				component.resource === 'flow/v1' ? 'flow-preview' : 'action-preview'
 			)!
-			event.dataTransfer.setData('text/plain', meta.id)
+			event.dataTransfer.setData('text/plain', component.id)
 			event.dataTransfer.setDragImage(preview, 40, 40)
 			event.dataTransfer.effectAllowed = 'copy'
 		}

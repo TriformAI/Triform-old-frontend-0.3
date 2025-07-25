@@ -7,7 +7,7 @@ export async function PUT({ request, locals }) {
 	}
 
 	const data = await request.json()
-	const updatedProject = await locals.api.put(`projects/${data.meta.id}`, data)
+	const updatedProject = await locals.api.put(`projects/${data.id}`, data)
 
 	return json(updatedProject)
 }

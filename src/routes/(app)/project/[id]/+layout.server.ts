@@ -1,7 +1,8 @@
 import type { Project, Variable, Modifier, Trigger } from '$lib/types/resources'
 import { fail } from '@sveltejs/kit'
 import { getNodes } from '$lib/utils/getNodes'
-import { isFlow, type Component, type Uuid } from '$lib/types/agent'
+import { isFlow, type Component } from '$lib/types/resources'
+import type { UUID as Uuid } from 'crypto'
 
 export async function load({ locals, params, depends }) {
 	depends('project')

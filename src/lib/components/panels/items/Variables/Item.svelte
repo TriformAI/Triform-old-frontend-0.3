@@ -1,5 +1,5 @@
 <script lang="ts">
-	import type { Variable } from '$lib/types/project'
+	import type { Variable } from '$lib/types/resources'
 	import { page } from '$app/state'
 	import { confirmStore } from '$lib/stores/confirm.svelte'
 	import IconDetach from '~icons/mdi/link-variant-off'
@@ -16,7 +16,7 @@
 	let isDetaching = $state(false)
 	let isExpanded = $state(false)
 
-	const projectId = page.data.project?.meta.id
+	const projectId = page.data.project?.id
 	const nodePath = getNodePath()
 
 	async function handleDetach() {
@@ -31,7 +31,7 @@
 		isDetaching = true
 
 		try {
-			await api.delete(`projects/${projectId}/variable/${variable.meta.id}?nodePath=${nodePath}`)
+			await api.delete(`projects/${projectId}/variable/${variable.id}?nodePath=${nodePath}`)
 			toast.success('Variable detached')
 			invalidate('project')
 		} catch (error) {

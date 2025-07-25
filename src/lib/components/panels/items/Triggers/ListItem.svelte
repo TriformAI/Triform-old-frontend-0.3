@@ -1,11 +1,10 @@
 <script lang="ts">
-	import { type Component } from '$lib/types/agent'
+	import type { Component, Cron, Trigger } from '$lib/types/resources'
 	import EarthIcon from '~icons/mdi/earth'
 	import AlarmIcon from '~icons/material-symbols/alarm-rounded'
 	import IconDelete from '~icons/material-symbols/delete-rounded'
 	import IconSettings from '~icons/material-symbols/settings-rounded'
 	import Dialog from './Dialog.svelte'
-	import type { Cron, Trigger } from '$lib/types/project'
 	import { API } from '$lib/api'
 	import { toast } from 'svelte-sonner'
 	import { invalidate } from '$app/navigation'
@@ -37,7 +36,7 @@
 
 				if (!confirmed) return
 
-				// await api.delete(`modifiers/${trigger.meta.id}`)
+				// await api.delete(`modifiers/${trigger.id}`)
 				// toast.success('Trigger removed')
 
 				// to delete a trigger (before they're modifiers) we just need to set the
@@ -45,7 +44,7 @@
 				// DISCLAIMER: this is genuinely the most brain-dead thing in this codebase
 				// but it's temporary, and I 100% blame christoffer for it :)
 				trigger.spec.component_id = '00000000-0000-0000-0000-000000000000'
-				await api.put(`components/${trigger.meta.id}`, trigger)
+				await api.put(`components/${trigger.id}`, trigger)
 				toast.success('Trigger removed')
 
 				await invalidate('project')
@@ -84,7 +83,7 @@
 			</h4>
 			<span class={['text-main-400', trigger.resource === 'cron/v1' && 'font-mono']}>
 				{trigger.resource === 'endpoint/v1'
-					? `https://api.tricore.dev/v1/endpoints/${trigger.meta.id}`
+					? `https://api.tricore.dev/v1/endpoints/${trigger.id}`
 					: (trigger as Cron).spec.schedule}
 			</span>
 		</div>

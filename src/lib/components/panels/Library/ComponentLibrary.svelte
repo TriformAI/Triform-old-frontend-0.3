@@ -2,7 +2,7 @@
 	import { components } from '$lib/stores/library.svelte'
 	import { InfiniteLoader, LoaderState } from 'svelte-infinite'
 	import ComponentCard from './ComponentCard.svelte'
-	import type { Component } from '$lib/types/agent'
+	import type { Component } from '$lib/types/resources'
 	import InputField from '../../atoms/InputField.svelte'
 	import InnerNode from '$lib/components/custom-nodes/InnerNode.svelte'
 	import { twMerge } from 'tailwind-merge'

@@ -1,4 +1,4 @@
-import type { Project } from '$lib/types/project'
+import type { Project } from '$lib/types/resources'
 import { fail } from '@sveltejs/kit'
 
 export const actions = {

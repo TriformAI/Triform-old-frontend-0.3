@@ -4,8 +4,8 @@ import { getCurrentFlowId } from '$lib/stores/canvas.svelte'
 import { toast } from 'svelte-sonner'
 import { selected } from '$lib/stores/panel.svelte'
 import type { Execution } from '$lib/types/execution'
-import type { Component } from '$lib/types/agent'
-import type { Uuid } from '$lib/types/agent'
+import type { Component } from '$lib/types/resources'
+import type { UUID as Uuid } from 'crypto'
 
 const createExecution = (
 	nodeId: Uuid,

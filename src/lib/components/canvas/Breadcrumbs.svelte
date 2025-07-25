@@ -3,7 +3,7 @@
 	import { page } from '$app/state'
 	import { fly } from 'svelte/transition'
 
-	const projectUrl = $derived(`/project/${page.data.project?.meta.id}`)
+	const projectUrl = $derived(`/project/${page.data.project?.id}`)
 
 	const crumbs = $derived(breadcrumbs())
 </script>

@@ -1,4 +1,4 @@
-import { isFlow, isAction, type Component } from '$lib/types/agent'
+import { isFlow, isAction, type Component } from '$lib/types/resources'
 import compareEq from 'just-compare'
 
 export default function componentIsDirty(draft: Component | undefined, published: Component) {

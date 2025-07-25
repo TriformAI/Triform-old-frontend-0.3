@@ -1,12 +1,9 @@
 import type {
 	Node as TriNode, // as to not conflict with Node (used for @xyflow/svelte)
-	Flow,
-	Action,
-	Uuid,
-	Component,
 	Source
-} from '$lib/types/agent'
-import type { Project } from '$lib/types/project'
+} from '$lib/types'
+import type { UUID as Uuid } from 'crypto'
+import type { Project, Flow, Action, Component } from '$lib/types/resources'
 import type { Node, Edge } from '$lib/types/flow'
 import { defaultProps, defaultEdgeProps } from '$lib/types/flow'
 import { updateComponent, updateComponentPositions } from '$lib/actions/components'
@@ -81,7 +78,7 @@ export async function initFlow(
 
 	// Turn trinodes into Svelteflow nodes and edges
 	// @ts-expect-error - we know the id is defined
-	const positions = allPositions[isRootLevel ? project.meta.id : currentFlow?.spec.meta.id] ?? {}
+	const positions = allPositions[isRootLevel ? project.id : currentFlow?.id] ?? {}
 
 	// eslint-disable-next-line prefer-const
 	let { nodes, edges } = parseNodes(triNodes ?? {}, positions)
@@ -301,7 +298,7 @@ const onFlowUpdate = (flow: Flow) => {
 export const updateNodeComponent = (component: Component) => {
 	// update the currently visible nodes
 	for (const node of nodesStore) {
-		if (node.data?.trinode?.component_id === component.meta.id) {
+		if (node.data?.trinode?.component_id === component.id) {
 			node.data.trinode.spec = component
 		}
 	}
@@ -312,7 +309,7 @@ export const updateNodeComponent = (component: Component) => {
 	}
 
 	const processNode = (node: TriNode) => {
-		if (node.component_id === component.meta.id) {
+		if (node.component_id === component.id) {
 			node.spec = component
 		}
 		if (!node?.spec || !isFlow(node.spec)) return
@@ -334,7 +331,7 @@ export async function addNode(
 
 	const newNodeId = crypto.randomUUID()
 	const newNode = {
-		component_id: component.meta.id,
+		component_id: component.id,
 		spec: component,
 		inputs,
 		component_version: null //component.meta.version
@@ -348,7 +345,7 @@ export async function addNode(
 
 		await Promise.all([
 			saveProject(updatedProject)
-			// updateComponentPositions(project.meta.id, {
+			// updateComponentPositions(project.id, {
 			// 	[newNodeId]: position
 			// })
 		])
@@ -509,11 +506,11 @@ export const breadcrumbs = () => {
 		return undefined
 	}
 
-	const projectUrl = `/project/${page.data.project?.meta.id}`
+	const projectUrl = `/project/${page.data.project?.id}`
 
 	const breadcrumbs = [
 		{ name: 'Projects', id: '', path: '/project' },
-		{ name: project.meta.name, id: project.meta.id, path: projectUrl }
+		{ name: project.meta.name, id: project.id, path: projectUrl }
 	]
 
 	const flowCrumbs = getBreadcrumbs()

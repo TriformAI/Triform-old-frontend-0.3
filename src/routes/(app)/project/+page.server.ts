@@ -1,6 +1,5 @@
 import { fail, redirect } from '@sveltejs/kit'
-import type { Project } from '$lib/types/project'
-import type { Endpoint } from '$lib/types/agent.ts'
+import type { Project, Endpoint } from '$lib/types/resources'
 
 export const load = () => {
 	redirect(302, '/dashboard')

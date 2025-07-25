@@ -1,5 +1,5 @@
 import { API } from '$lib/api'
-import type { Variable } from '$lib/types/project'
+import type { Variable } from '$lib/types/resources'
 
 const api = new API()
 

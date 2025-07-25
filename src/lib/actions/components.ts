@@ -1,5 +1,5 @@
 import { API } from '$lib/api'
-import type { Uuid } from '$lib/types/agent'
+import type { UUID as Uuid } from 'crypto'
 import type { Component } from '$lib/types/resources'
 import { page } from '$app/state'
 
@@ -8,7 +8,7 @@ const api = new API()
 export const updateComponent = async (component: Component) => {
 	console.log('component', component)
 
-	return await api.put<Component>(`components/${component.meta.id}`, component)
+	return await api.put<Component>(`components/${component.id}`, component)
 }
 
 export const updateComponentPositions = async (

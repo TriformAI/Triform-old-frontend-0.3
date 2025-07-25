@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { type Component } from '$lib/types/agent'
+	import { type Component } from '$lib/types/resources'
 	import CodeEditor from './items/CodeEditor.svelte'
 	import Execute from './items/Execute/Root.svelte'
 	import Metadata from './items/Metadata.svelte'

@@ -1,19 +1,15 @@
 <script lang="ts">
 	import { type Component as SvelteComponent, type Snippet, setContext, onMount } from 'svelte'
 	import type { onClickFn } from '$lib/stores/nodeActions.svelte'
-
 	import { getActions } from '$lib/stores/nodeActions.svelte'
-	import { type Component, isFlow } from '$lib/types/agent'
-	import { type Project } from '$lib/types/project'
+	import type { Component, Project } from '$lib/types/resources'
+	import { isFlow } from '$lib/types/resources'
 	import Button from '$lib/components/atoms/Button.svelte'
 	import DirtyNote from '../DirtyNote.svelte'
 	import { API } from '$lib/api'
 	import { toast } from 'svelte-sonner'
-	import componentIsDirty from '$lib/utils/componentIsDirty'
-	import { isProject } from '$lib/types/project'
 	import { updateNodeComponent } from '$lib/stores/canvas.svelte'
 	import PanelItems from './PanelItems.svelte'
-	import { objectMap } from '$lib/utils/objectMap'
 
 	const api = new API()
 
@@ -33,16 +29,16 @@
 	})
 
 	const publishComponent = async () => {
-		if (isProject(componentData)) return
+		if (componentData.resource === 'project/v1') return
 
 		let result: Component | undefined = undefined
 		try {
-			result = await api.put<Component>(`components/${componentData.meta.id}`, componentData)
+			result = await api.put<Component>(`components/${componentData.id}`, componentData)
 			// if it was a flow that we updated, we won't get back the full resolved component so we
 			// need to re-populate the local (fully resolved) spec before updating it
 			if (isFlow(componentData)) result.spec = componentData.spec
 			result = $state.snapshot(result)
-			await api.delete(`components/${componentData.meta.id}/draft`)
+			await api.delete(`components/${componentData.id}/draft`)
 		} catch (error) {
 			console.error(error)
 			toast.error('Failed to publish component')

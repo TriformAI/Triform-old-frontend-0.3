@@ -5,13 +5,12 @@
 	import LightEditor from '$lib/components/atoms/LightEditor.svelte'
 	import Tabs from '$lib/components/atoms/Tabs.svelte'
 	import Button from '$lib/components/atoms/Button.svelte'
-	import type { Action } from '$lib/types/agent'
+	import type { Action, Component } from '$lib/types/resources'
 	import { toast } from 'svelte-sonner'
 	import compare from 'just-compare'
 	import PanelItem from '../PanelItem.svelte'
 	import { inProgressComponents } from '$lib/stores/builder.svelte'
 	import { blur } from 'svelte/transition'
-	import { type Component } from '$lib/types/agent'
 	import { debounce } from '$lib/utils/debounce'
 
 	const { componentData }: { componentData: Component } = $props()
@@ -58,7 +57,7 @@
 		}))
 	})
 
-	const componentId = $derived(componentData.meta.id)
+	const componentId = $derived(componentData.id)
 	const isBuilding = $derived(componentId in inProgressComponents)
 
 	const debouncedSaveDraft = debounce(() => {}, 500) // FIXME

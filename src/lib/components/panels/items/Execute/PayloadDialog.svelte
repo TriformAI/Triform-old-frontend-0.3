@@ -4,7 +4,7 @@
 	import InputField from '$lib/components/atoms/InputField.svelte'
 	import Button from '$lib/components/atoms/Button.svelte'
 	import { API } from '$lib/api'
-	import type { Payload } from '$lib/types/project'
+	import type { Payload } from '$lib/types/resources'
 	import TextField from '$lib/components/atoms/TextField.svelte'
 	import LightEditor from '$lib/components/atoms/LightEditor.svelte'
 	import { toast } from 'svelte-sonner'

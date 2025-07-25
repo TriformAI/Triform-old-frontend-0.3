@@ -1,7 +1,7 @@
 import { json, error } from '@sveltejs/kit'
 import { db } from '$lib/db/index.js'
 import { nodePositions } from '$lib/db/schema.js'
-import type { Uuid } from '$lib/types/agent'
+import type { UUID as Uuid } from 'crypto'
 import { sql } from 'drizzle-orm'
 
 export async function PATCH({ request, locals }) {

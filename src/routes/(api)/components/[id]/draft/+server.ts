@@ -2,7 +2,7 @@ import { json, error } from '@sveltejs/kit'
 import { db } from '$lib/db/index.js'
 import { drafts } from '$lib/db/schema.js'
 import { eq } from 'drizzle-orm'
-import type { Component } from '$lib/types/agent'
+import type { Component } from '$lib/types/resources'
 
 export async function PATCH({ request, locals, params }) {
 	if (!locals.user) return error(401, 'Unauthorized')

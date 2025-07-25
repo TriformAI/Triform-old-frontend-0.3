@@ -8,6 +8,7 @@
 	import { toast } from 'svelte-sonner'
 	import { goto } from '$app/navigation'
 	import TextField from '../atoms/TextField.svelte'
+	import { type Project } from '$lib/types/resources'
 
 	interface Props {
 		dialog?: HTMLDialogElement
@@ -39,7 +40,8 @@
 						console.log(result)
 						if (result.type === 'success') {
 							toast.success('Project created!')
-							await goto(`project/${result.data?.data.meta?.id}`)
+							const project = result.data?.data as Project
+							await goto(`project/${project.id}`)
 						}
 
 						if (result.type === 'failure') {

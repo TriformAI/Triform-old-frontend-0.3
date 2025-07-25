@@ -1,16 +1,20 @@
-import type { Node as TriNode } from '$lib/types/agent'
+import type { Node as TriNode } from '$lib/types'
 
-export const getActionModel = () => {
+export const getActionModel = (): TriNode => {
 	return {
 		component_id: crypto.randomUUID(), // so it validates
-		component_version: null,
-		inputs: [],
+		inputs: {},
 		spec: {
+			id: crypto.randomUUID(),
 			resource: 'action/v1',
 			meta: {
+				starred: false,
 				name: 'Action',
-				id: crypto.randomUUID(),
-				version: 1
+				intention: {
+					purpose: '',
+					input: '',
+					output: ''
+				}
 			},
 			spec: {
 				source: `
@@ -24,9 +28,10 @@ def simple(input: Model) -> Model:
 	return input
             `.trim(),
 				readme: '',
-				deps: '',
-				streaming: false
+				requirements: '',
+				checksum: '',
+				runtime: 'python-3.14'
 			}
 		}
-	} as TriNode
+	}
 }

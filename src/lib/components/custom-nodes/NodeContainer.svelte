@@ -3,7 +3,7 @@
 	import CustomHandle from './handles/CustomHandle.svelte'
 	import { Position } from '@xyflow/svelte'
 
-	import type { Uuid } from '$lib/types/agent'
+	import type { UUID as Uuid } from 'crypto'
 
 	interface Props {
 		id: Uuid

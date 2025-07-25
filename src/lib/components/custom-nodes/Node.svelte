@@ -9,7 +9,7 @@
 	import NodeContainer from './NodeContainer.svelte'
 	import compare from 'just-compare'
 	import InnerNode from './InnerNode.svelte'
-	import { isAction } from '$lib/types/agent'
+	import { isAction } from '$lib/types/resources'
 
 	interface Props {
 		type: 'action' | 'flow'

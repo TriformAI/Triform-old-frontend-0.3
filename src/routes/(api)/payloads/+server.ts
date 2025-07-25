@@ -1,5 +1,5 @@
 import { error, json } from '@sveltejs/kit'
-import type { Payload } from '$lib/types/project'
+import type { Payload } from '$lib/types/resources'
 
 export async function POST({ request, locals }) {
 	const { name, payload } = await request.json()

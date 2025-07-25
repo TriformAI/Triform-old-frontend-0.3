@@ -5,9 +5,8 @@
 	import { toast } from 'svelte-sonner'
 	import { enhance } from '$app/forms'
 	import { clone } from '$lib/utils/clone'
-	import { onDestroy } from 'svelte'
 	import PanelItem from '../PanelItem.svelte'
-	import { type Component } from '$lib/types/agent'
+	import { type Component } from '$lib/types/resources'
 
 	const { componentData }: { componentData: Component } = $props()
 
@@ -41,7 +40,7 @@
 
 <PanelItem {componentData} title="Project Settings" forceOpen={true}>
 	<form
-		action={`/project/${componentData.meta.id}?/update`}
+		action={`/project/${componentData.id}?/update`}
 		method="POST"
 		class="grid gap-3"
 		use:enhance={() => {

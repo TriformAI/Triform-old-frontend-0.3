@@ -4,7 +4,6 @@
 	import TextField from '$lib/components/atoms/TextField.svelte'
 	import Button from '$lib/components/atoms/Button.svelte'
 	import { toast } from 'svelte-sonner'
-	import compare from 'just-compare'
 	import { debounce } from '$lib/utils/debounce'
 	import { API } from '$lib/api'
 	import PanelItem from '../PanelItem.svelte'
@@ -20,7 +19,7 @@
 	} from '$lib/stores/builder.svelte'
 	import { isAction } from '$lib/stores/canvas.svelte'
 	import { openPanelItems, toggleOpenPanelItem } from '$lib/stores/panel.svelte'
-	import { type Component } from '$lib/types/agent'
+	import { type Component } from '$lib/types/resources'
 	import { getContext } from 'svelte'
 
 	const { componentData }: { componentData: Component } = $props()
@@ -31,7 +30,7 @@
 
 	const dataIsDirty = false // FIXME
 
-	const isBuilding = $derived(componentData.meta.id in inProgressComponents)
+	const isBuilding = $derived(componentData.id in inProgressComponents)
 
 	const nodeType = $derived(isAction(componentData) ? 'action' : 'flow')
 
@@ -66,7 +65,7 @@
 			toggleOpenPanelItem(nodeType, 'Code')
 		}
 
-		const componentId = componentData.meta.id
+		const componentId = componentData.id
 		// clone the component so we can modify it without affecting the original
 		const component = structuredClone($state.snapshot(componentData))
 		inProgressComponents[componentId] = {

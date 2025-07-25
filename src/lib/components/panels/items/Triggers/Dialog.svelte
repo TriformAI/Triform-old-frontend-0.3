@@ -11,8 +11,8 @@
 	import EarthIcon from '~icons/mdi/earth'
 	import AlarmIcon from '~icons/material-symbols/alarm-rounded'
 	import Payload from '../common/Payload.svelte'
-	import type { Cron, Trigger, Modifier } from '$lib/types/project'
-	import type { Component } from '$lib/types/agent'
+	import type { Cron, Trigger, Modifier } from '$lib/types/resources'
+	import type { Component } from '$lib/types/resources'
 	import { sleep } from '$lib/utils/sleep'
 
 	interface Props {
@@ -84,10 +84,10 @@
 			meta: {
 				...data?.meta,
 				name,
-				id: data?.meta.id ?? crypto.randomUUID()
+				id: data?.id ?? crypto.randomUUID()
 			},
 			spec: {
-				component_id: componentData.meta.id,
+				component_id: componentData.id,
 				...spec
 			}
 		}
@@ -96,7 +96,7 @@
 			if (isNew) {
 				await api.post<Modifier>('components', body)
 			} else {
-				await api.put<Modifier>(`components/${data?.meta.id}`, body)
+				await api.put<Modifier>(`components/${data?.id}`, body)
 			}
 			await sleep(150)
 			await invalidate('project')
@@ -121,7 +121,7 @@
 					name: ''
 				},
 				spec: {
-					component_id: componentData.meta.id
+					component_id: componentData.id
 				}
 			}
 		}

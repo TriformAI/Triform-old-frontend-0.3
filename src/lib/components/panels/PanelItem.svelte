@@ -3,7 +3,7 @@
 	import IconChevronRight from '~icons/material-symbols/chevron-right'
 	import { openPanelItems, toggleOpenPanelItem, selected } from '$lib/stores/panel.svelte'
 	import { getCurrentFlowId } from '$lib/stores/canvas.svelte'
-	import type { Component } from '$lib/types/agent'
+	import type { Component } from '$lib/types/resources'
 	import IconAdd from '~icons/mdi/plus-circle-outline'
 
 	export interface Props {
