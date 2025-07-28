@@ -20,15 +20,8 @@ export const actions = {
 		return await locals.api.put<Project>(`projects/${params.id}`, payload)
 	},
 
-	async delete({ request, locals, params }) {
-		// Send a delete request to the API
-		try {
-			const data = await locals.api.delete<Project>(`projects/${params.id}`)
-			return data
-		} catch (error) {
-			console.error(error)
-			return fail(500, { message: 'Could not delete project' })
-		}
+	async delete({ locals, params }) {
+		return await locals.api.delete<Project>(`projects/${params.id}`)
 	},
 
 	async createModifier({ request, locals }) {

@@ -7,7 +7,7 @@ import type { UUID } from 'node:crypto'
  */
 
 export interface Action {
-	id?: string
+	id?: UUID
 	resource: 'action/v1'
 	meta: Meta & { starred: boolean }
 	spec: {
@@ -39,7 +39,7 @@ export interface ComponentMeta {
 
 export type Component =
 	| {
-			id?: string
+			id?: UUID
 			resource: 'flow/v1'
 			meta: Meta & { starred: boolean }
 			spec: {
@@ -81,7 +81,7 @@ export type Component =
 			}
 	  }
 	| {
-			id?: string
+			id?: UUID
 			resource: 'action/v1'
 			meta: Meta & { starred: boolean }
 			spec: {
@@ -94,7 +94,7 @@ export type Component =
 	  }
 
 export interface Cron {
-	id?: string
+	id?: UUID
 	resource: 'cron/v1'
 	meta: Meta
 	spec: {
@@ -109,7 +109,7 @@ export interface CronSpec {
 }
 
 export interface Endpoint {
-	id?: string
+	id?: UUID
 	resource: 'endpoint/v1'
 	meta: Meta
 	spec: {
@@ -127,14 +127,14 @@ export interface EndpointSpec {
  */
 export type ResolvedComponent =
 	| {
-			id?: string
+			id?: UUID
 			resource: 'flow/v1'
 			meta: Meta & { starred: boolean }
 			spec: {
 				readme: string
 				nodes: {
 					[k: string]: {
-						component_id?: string
+						component_id?: UUID
 						spec: ResolvedComponent
 						inputs: {
 							[k: string]: {
@@ -166,7 +166,7 @@ export type ResolvedComponent =
 			}
 	  }
 	| {
-			id?: string
+			id?: UUID
 			resource: 'action/v1'
 			meta: Meta & { starred: boolean }
 			spec: {
@@ -190,7 +190,7 @@ export interface Execution {
 			[k: string]: {
 				modifier_id: UUID
 				spec: {
-					id?: string
+					id?: UUID
 					resource: 'variable/v1'
 					meta: Meta
 					spec: {
@@ -205,7 +205,7 @@ export interface Execution {
 }
 
 export interface Flow {
-	id?: string
+	id?: UUID
 	resource: 'flow/v1'
 	meta: Meta & { starred: boolean }
 	spec: {
@@ -248,7 +248,7 @@ export interface Flow {
 }
 
 export interface IngressToken {
-	id?: string
+	id?: UUID
 	resource: 'ingress-token/v1'
 	meta: Meta
 	spec: {
@@ -270,7 +270,7 @@ export interface Meta {
 }
 
 export type Modifier = {
-	id?: string
+	id?: UUID
 	resource: 'variable/v1'
 	meta: Meta
 	spec: {
@@ -281,7 +281,7 @@ export type Modifier = {
 }
 
 export interface Project {
-	id?: string
+	id?: UUID
 	resource: 'project/v1'
 	meta: Meta
 	spec: {
@@ -312,18 +312,18 @@ export interface ProjectSpec {
 }
 
 export interface ResolvedFlow {
-	id?: string
+	id?: UUID
 	resource: 'flow/v1'
 	meta: Meta & { starred: boolean }
 	spec: {
 		readme: string
 		nodes: {
 			[k: string]: {
-				component_id?: string
+				component_id?: UUID
 				spec:
 					| ResolvedFlow
 					| {
-							id?: string
+							id?: UUID
 							resource: 'action/v1'
 							meta: Meta & { starred: boolean }
 							spec: {
@@ -365,7 +365,7 @@ export interface ResolvedFlow {
 }
 
 export interface ResolvedProject {
-	id?: string
+	id?: UUID
 	resource: 'project/v1'
 	meta: Meta
 	spec: {
@@ -374,7 +374,7 @@ export interface ResolvedProject {
 				component_id: UUID
 				spec:
 					| {
-							id?: string
+							id?: UUID
 							resource: 'flow/v1'
 							meta: Meta & { starred: boolean }
 							spec: {
@@ -416,7 +416,7 @@ export interface ResolvedProject {
 							}
 					  }
 					| {
-							id?: string
+							id?: UUID
 							resource: 'action/v1'
 							meta: Meta & { starred: boolean }
 							spec: {
@@ -439,7 +439,7 @@ export interface ResolvedProject {
 			[k: string]: {
 				modifier_id: UUID
 				spec: {
-					id?: string
+					id?: UUID
 					resource: 'variable/v1'
 					meta: Meta
 					spec: {
@@ -459,7 +459,7 @@ export interface ResolvedProjectSpec {
 			component_id: UUID
 			spec:
 				| {
-						id?: string
+						id?: UUID
 						resource: 'flow/v1'
 						meta: Meta & { starred: boolean }
 						spec: {
@@ -501,7 +501,7 @@ export interface ResolvedProjectSpec {
 						}
 				  }
 				| {
-						id?: string
+						id?: UUID
 						resource: 'action/v1'
 						meta: Meta & { starred: boolean }
 						spec: {
@@ -524,7 +524,7 @@ export interface ResolvedProjectSpec {
 		[k: string]: {
 			modifier_id: UUID
 			spec: {
-				id?: string
+				id?: UUID
 				resource: 'variable/v1'
 				meta: Meta
 				spec: {
@@ -539,7 +539,7 @@ export interface ResolvedProjectSpec {
 
 export type Trigger =
 	| {
-			id?: string
+			id?: UUID
 			resource: 'endpoint/v1'
 			meta: Meta
 			spec: {
@@ -547,7 +547,7 @@ export type Trigger =
 			}
 	  }
 	| {
-			id?: string
+			id?: UUID
 			resource: 'cron/v1'
 			meta: Meta
 			spec: {
@@ -557,7 +557,7 @@ export type Trigger =
 	  }
 
 export interface Variable {
-	id?: string
+	id?: UUID
 	resource: 'variable/v1'
 	meta: Meta
 	spec: {

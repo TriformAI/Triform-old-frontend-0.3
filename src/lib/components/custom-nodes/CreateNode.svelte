@@ -42,7 +42,6 @@
 		flow.meta.name = name
 		try {
 			const newFlow = await createComponent(flow)
-			console.log('newFlow', newFlow)
 
 			await addNode(
 				newFlow,

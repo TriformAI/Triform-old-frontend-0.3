@@ -2,7 +2,7 @@ import { browser } from '$app/environment'
 import { getRequestEvent } from '$app/server'
 import { error, fail, type ActionFailure } from '@sveltejs/kit'
 
-type RequestMethod = 'GET' | 'POST' | 'PUT' | 'DELETE'
+type RequestMethod = 'GET' | 'POST' | 'PUT' | 'PATCH' | 'DELETE'
 
 export class ApiError extends Error {
 	status: number
@@ -210,6 +210,22 @@ export class API {
 		headers: Record<string, string> = {}
 	): Promise<ReturnData<T>> {
 		return this.#request<T>('PUT', endpoint, data, headers, true)
+	}
+
+	patch<T>(
+		endpoint: string,
+		data: unknown,
+		headers: Record<string, string> = {}
+	): Promise<ReturnData<T> | ActionFailure> {
+		return this.#request<T>('PATCH', endpoint, data, headers, false)
+	}
+
+	patchRaw<T>(
+		endpoint: string,
+		data: unknown,
+		headers: Record<string, string> = {}
+	): Promise<ReturnData<T>> {
+		return this.#request<T>('PATCH', endpoint, data, headers, true)
 	}
 
 	delete<T>(

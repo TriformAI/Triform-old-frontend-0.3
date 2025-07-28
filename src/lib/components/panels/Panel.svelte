@@ -80,7 +80,7 @@
 			</h2>
 
 			<div class="flex flex-row items-center gap-4">
-				{#if !isProject(componentData)}
+				{#if componentData.resource !== 'project/v1'}
 					<DirtyNote show={isDirty} />
 					<Button
 						variation="vibrant"

@@ -22,11 +22,15 @@
 	let isLoaded = $state(false)
 
 	onMount(() => {
+		loadComponents(data.components ?? [])
+	})
+
+	$effect(() => {
 		if (data.project) {
+			console.log(data.project)
+
 			setProject(data.project)
 		}
-
-		loadComponents(data.components ?? [])
 	})
 
 	$effect(() => {
@@ -34,6 +38,7 @@
 			if (!data.project) return
 
 			isLoaded = false
+
 			await initFlow(data.positions)
 			await sleep(0)
 			flowComponent?.fitView({

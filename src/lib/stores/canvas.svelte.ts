@@ -330,21 +330,28 @@ export async function addNode(
 	}
 
 	const newNodeId = crypto.randomUUID()
-	const newNode = {
-		component_id: component.id,
-		spec: component,
-		inputs,
-		component_version: null //component.meta.version
-	}
 
 	// Top-level flows - Update project with new node
 	if (isRootLevel) {
 		const updatedProject = clone(project)
 
-		updatedProject.spec.nodes[newNodeId] = newNode
+		updatedProject.spec.nodes = Object.fromEntries(
+			Object.entries(updatedProject.spec.nodes).map(([id, node]) => {
+				const { component_id } = node
+				return [id, { component_id }]
+			})
+		)
+
+		updatedProject.spec.nodes[newNodeId] = {
+			component_id: component.id!
+		}
+
+		console.log('updatedProject.spec.nodes', updatedProject.spec.nodes)
+
+		const spec = updatedProject.spec
 
 		await Promise.all([
-			saveProject(updatedProject)
+			saveProject(project.id!, { spec })
 			// updateComponentPositions(project.id, {
 			// 	[newNodeId]: position
 			// })
