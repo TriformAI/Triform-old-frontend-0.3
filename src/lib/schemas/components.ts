@@ -41,17 +41,17 @@ export const actionModel = abstractComponentModel.extend({
 	spec: actionSpecModel
 })
 
+const positionModel = z.strictObject({
+	x: z.number(),
+	y: z.number()
+})
+
 // Flow models (without async validations)
 const flowNodeValueModel = z.strictObject({
 	component_id: z.uuidv4(),
 	spec: z.lazy((): z.ZodTypeAny => componentModel),
 	inputs: z.record(z.string(), nodePortModel),
-	position: z
-		.strictObject({
-			x: z.number(),
-			y: z.number()
-		})
-		.default({ x: 0, y: 0 })
+	position: positionModel.default({ x: 0, y: 0 })
 })
 
 const flowNodeModel = z.record(z.string(), flowNodeValueModel)
@@ -60,7 +60,17 @@ const flowSpecModel = z.strictObject({
 	readme: z.string().optional().default(''),
 	nodes: z.record(z.string(), flowNodeValueModel.omit({ spec: true })),
 	outputs: flowOutputModel,
-	inputs: ioModel
+	inputs: ioModel,
+	// store location of the two "built-in" input/output nodes that are only visible inside of the flow
+	io_nodes: z
+		.strictObject({
+			input: positionModel.default({ x: 0, y: 0 }),
+			output: positionModel.default({ x: 0, y: 0 })
+		})
+		.default({
+			input: { x: 0, y: 0 },
+			output: { x: 0, y: 0 }
+		})
 })
 
 export const flowModel = abstractComponentModel.extend({
@@ -132,9 +142,17 @@ export const resolvedAgentModel = agentModel.extend({
 })
 
 // Union models
-export const componentSpecModel = z.union([flowSpecModel, actionSpecModel, agentSpecModel])
+export const componentSpecModel = z.union([
+	flowSpecModel,
+	actionSpecModel,
+	agentSpecModel
+])
 
-export const componentModel = z.discriminatedUnion('resource', [flowModel, actionModel, agentModel])
+export const componentModel = z.discriminatedUnion('resource', [
+	flowModel,
+	actionModel,
+	agentModel
+])
 
 export const componentResourceModel = z.enum(
 	componentModel.options.map(o => o.shape.resource.value)
@@ -148,15 +166,23 @@ export const resolvedComponentModel = z.discriminatedUnion('resource', [
 
 // Helper functions
 export const isFlow = (
-	component: z.infer<typeof componentModel> | z.infer<typeof resolvedComponentModel>
+	component:
+		| z.infer<typeof componentModel>
+		| z.infer<typeof resolvedComponentModel>
 ): component is z.infer<typeof flowModel> | z.infer<typeof resolvedFlowModel> =>
 	component.resource === 'flow/v1'
 
 export const isAction = (
-	component: z.infer<typeof componentModel> | z.infer<typeof resolvedComponentModel>
-): component is z.infer<typeof actionModel> => component.resource === 'action/v1'
+	component:
+		| z.infer<typeof componentModel>
+		| z.infer<typeof resolvedComponentModel>
+): component is z.infer<typeof actionModel> =>
+	component.resource === 'action/v1'
 
 export const isAgent = (
-	component: z.infer<typeof componentModel> | z.infer<typeof resolvedComponentModel>
-): component is z.infer<typeof agentModel> | z.infer<typeof resolvedAgentModel> =>
-	component.resource === 'agent/v1'
+	component:
+		| z.infer<typeof componentModel>
+		| z.infer<typeof resolvedComponentModel>
+): component is
+	| z.infer<typeof agentModel>
+	| z.infer<typeof resolvedAgentModel> => component.resource === 'agent/v1'
