@@ -1,10 +1,49 @@
 /* eslint-disable */
 import type { UUID } from 'node:crypto'
+
+// Base Meta interface
+export interface Meta {
+	name: string
+	intention: string
+}
+
+export type JsonSchemaType =
+	| {
+			type: 'string' | 'number' | 'boolean' | 'null'
+	  }
+	| {
+			type: 'object'
+			properties?: {
+				[k: string]: JsonSchemaType
+			}
+			additionalProperties?: JsonSchemaType
+	  }
+	| {
+			type: 'array'
+			items?: JsonSchemaType
+	  }
+
+export interface InputOutputSpec {
+	description: string
+	type: JsonSchemaType | { [k: string]: { [k: string]: unknown } }
+}
+
+export interface NodePort {
+	source: string | 'parent'
+	target: string
+}
+
 /**
  * This file was automatically generated from Zod schemas.
  * DO NOT MODIFY IT BY HAND. Instead, modify the source schemas,
  * and run the generateSchema script to regenerate this file.
  */
+
+export interface AbstractResource {
+	resource: string
+	meta: Meta
+	spec: unknown
+}
 
 export interface Action {
 	id?: UUID
@@ -16,6 +55,30 @@ export interface Action {
 		checksum: string
 		readme: string
 		runtime: 'python-3.14'
+		inputs: {
+			[k: string]: {
+				description: string
+				type:
+					| JsonSchemaType
+					| {
+							[k: string]: {
+								[k: string]: unknown
+							}
+					  }
+			}
+		}
+		outputs: {
+			[k: string]: {
+				description: string
+				type:
+					| JsonSchemaType
+					| {
+							[k: string]: {
+								[k: string]: unknown
+							}
+					  }
+			}
+		}
 	}
 }
 
@@ -25,18 +88,97 @@ export interface ActionSpec {
 	checksum: string
 	readme: string
 	runtime: 'python-3.14'
+	inputs: {
+		[k: string]: {
+			description: string
+			type:
+				| JsonSchemaType
+				| {
+						[k: string]: {
+							[k: string]: unknown
+						}
+				  }
+		}
+	}
+	outputs: {
+		[k: string]: {
+			description: string
+			type:
+				| JsonSchemaType
+				| {
+						[k: string]: {
+							[k: string]: unknown
+						}
+				  }
+		}
+	}
 }
 
+export interface Agent {
+	id?: UUID
+	resource: 'agent/v1'
+	meta: Meta & { starred: boolean }
+	spec: {
+		model: 'mistral/mistral-medium-latest'
+		readme: string
+		prompts: {
+			system: {
+				type: 'template'
+				value: string
+			}[]
+			user: {
+				type: 'template'
+				value: string
+			}[]
+		}
+		settings: {
+			temperature: number
+			topP: number
+			maxTokens: number
+		}
+		nodes: {
+			[k: string]: {
+				component_id: UUID
+				inputs: {
+					[k: string]: {
+						source: 'parent'
+						target: string
+					}
+				}
+				order: number
+			}
+		}
+		inputs: {
+			[k: string]: {
+				description: string
+				type:
+					| JsonSchemaType
+					| {
+							[k: string]: {
+								[k: string]: unknown
+							}
+					  }
+			}
+		}
+		outputs: {
+			[k: string]: {
+				description: string
+				type:
+					| JsonSchemaType
+					| {
+							[k: string]: {
+								[k: string]: unknown
+							}
+					  }
+			}
+		}
+	}
+}
 export interface ComponentMeta {
 	name: string
-	intention: {
-		purpose: string
-		input: string
-		output: string
-	}
+	intention: string
 	starred: boolean
 }
-
 export type Component =
 	| {
 			id?: UUID
@@ -60,22 +202,29 @@ export type Component =
 					}
 				}
 				outputs: {
-					[k: string]:
-						| {
-								source: string | 'parent'
-								target: string
-						  }
-						| {
-								[k: string]: {
-									[k: string]: unknown
-								}
-						  }
+					[k: string]: {
+						description: string
+						type:
+							| JsonSchemaType
+							| {
+									[k: string]: {
+										[k: string]: unknown
+									}
+							  }
+						source: string
+						target: string
+					}
 				}
 				inputs: {
 					[k: string]: {
-						[k: string]: {
-							[k: string]: unknown
-						}
+						description: string
+						type:
+							| JsonSchemaType
+							| {
+									[k: string]: {
+										[k: string]: unknown
+									}
+							  }
 					}
 				}
 			}
@@ -90,99 +239,688 @@ export type Component =
 				checksum: string
 				readme: string
 				runtime: 'python-3.14'
-			}
-	  }
-
-export interface Cron {
-	id?: UUID
-	resource: 'cron/v1'
-	meta: Meta
-	spec: {
-		schedule: string
-		timezone: string
-	}
-}
-
-export interface CronSpec {
-	schedule: string
-	timezone: string
-}
-
-export interface Endpoint {
-	id?: UUID
-	resource: 'endpoint/v1'
-	meta: Meta
-	spec: {
-		method: 'POST'
-	}
-}
-
-export interface EndpointSpec {
-	method: 'POST'
-}
-
-/**
- * This interface was referenced by `Execution`'s JSON-Schema
- * via the `definition` "__schema0".
- */
-export type ResolvedComponent =
-	| {
-			id?: UUID
-			resource: 'flow/v1'
-			meta: Meta & { starred: boolean }
-			spec: {
-				readme: string
-				nodes: {
+				inputs: {
 					[k: string]: {
-						component_id?: UUID
-						spec: ResolvedComponent
-						inputs: {
-							[k: string]: {
-								source: string | 'parent'
-								target: string
-							}
-						}
+						description: string
+						type:
+							| JsonSchemaType
+							| {
+									[k: string]: {
+										[k: string]: unknown
+									}
+							  }
 					}
 				}
 				outputs: {
-					[k: string]:
-						| {
-								source: string | 'parent'
-								target: string
-						  }
-						| {
-								[k: string]: {
-									[k: string]: unknown
-								}
-						  }
-				}
-				inputs: {
 					[k: string]: {
-						[k: string]: {
-							[k: string]: unknown
-						}
+						description: string
+						type:
+							| JsonSchemaType
+							| {
+									[k: string]: {
+										[k: string]: unknown
+									}
+							  }
 					}
 				}
 			}
 	  }
 	| {
 			id?: UUID
-			resource: 'action/v1'
+			resource: 'agent/v1'
 			meta: Meta & { starred: boolean }
 			spec: {
-				source: string
-				requirements: string
-				checksum: string
+				model: 'mistral/mistral-medium-latest'
 				readme: string
-				runtime: 'python-3.14'
+				prompts: {
+					system: {
+						type: 'template'
+						value: string
+					}[]
+					user: {
+						type: 'template'
+						value: string
+					}[]
+				}
+				settings: {
+					temperature: number
+					topP: number
+					maxTokens: number
+				}
+				nodes: {
+					[k: string]: {
+						component_id: UUID
+						inputs: {
+							[k: string]: {
+								source: 'parent'
+								target: string
+							}
+						}
+						order: number
+					}
+				}
+				inputs: {
+					[k: string]: {
+						description: string
+						type:
+							| JsonSchemaType
+							| {
+									[k: string]: {
+										[k: string]: unknown
+									}
+							  }
+					}
+				}
+				outputs: {
+					[k: string]: {
+						description: string
+						type:
+							| JsonSchemaType
+							| {
+									[k: string]: {
+										[k: string]: unknown
+									}
+							  }
+					}
+				}
 			}
 	  }
+export type ComponentSpec =
+	| {
+			readme: string
+			nodes: {
+				[k: string]: {
+					component_id: UUID
+					inputs: {
+						[k: string]: {
+							source: string | 'parent'
+							target: string
+						}
+					}
+					position: {
+						x: number
+						y: number
+					}
+				}
+			}
+			outputs: {
+				[k: string]: {
+					description: string
+					type:
+						| JsonSchemaType
+						| {
+								[k: string]: {
+									[k: string]: unknown
+								}
+						  }
+					source: string
+					target: string
+				}
+			}
+			inputs: {
+				[k: string]: {
+					description: string
+					type:
+						| JsonSchemaType
+						| {
+								[k: string]: {
+									[k: string]: unknown
+								}
+						  }
+				}
+			}
+	  }
+	| {
+			source: string
+			requirements: string
+			checksum: string
+			readme: string
+			runtime: 'python-3.14'
+			inputs: {
+				[k: string]: {
+					description: string
+					type:
+						| JsonSchemaType
+						| {
+								[k: string]: {
+									[k: string]: unknown
+								}
+						  }
+				}
+			}
+			outputs: {
+				[k: string]: {
+					description: string
+					type:
+						| JsonSchemaType
+						| {
+								[k: string]: {
+									[k: string]: unknown
+								}
+						  }
+				}
+			}
+	  }
+	| {
+			model: 'mistral/mistral-medium-latest'
+			readme: string
+			prompts: {
+				system: {
+					type: 'template'
+					value: string
+				}[]
+				user: {
+					type: 'template'
+					value: string
+				}[]
+			}
+			settings: {
+				temperature: number
+				topP: number
+				maxTokens: number
+			}
+			nodes: {
+				[k: string]: {
+					component_id: UUID
+					inputs: {
+						[k: string]: {
+							source: 'parent'
+							target: string
+						}
+					}
+					order: number
+				}
+			}
+			inputs: {
+				[k: string]: {
+					description: string
+					type:
+						| JsonSchemaType
+						| {
+								[k: string]: {
+									[k: string]: unknown
+								}
+						  }
+				}
+			}
+			outputs: {
+				[k: string]: {
+					description: string
+					type:
+						| JsonSchemaType
+						| {
+								[k: string]: {
+									[k: string]: unknown
+								}
+						  }
+				}
+			}
+	  }
+export interface Cron {
+	resource: 'cron/v1'
+	meta: Omit<Meta, 'intention'>
+	spec: {
+		schedule: string
+		timezone: string
+		payload: {
+			[k: string]: unknown
+		}
+	}
+}
+export interface Endpoint {
+	resource: 'endpoint/v1'
+	meta: Omit<Meta, 'intention'>
+	spec: {
+		method: 'POST'
+		payload_mapping: {
+			[k: string]: string
+		}
+		ingress_tokens: string[]
+	}
+}
 
 export interface Execution {
 	resource: 'execution/v1'
 	meta: Omit<Meta, 'intention'>
 	spec: {
-		component: ResolvedComponent
+		component:
+			| {
+					id?: UUID
+					resource: 'flow/v1'
+					meta: Meta & { starred: boolean }
+					spec: {
+						readme: string
+						nodes: {
+							[k: string]: {
+								component_id: UUID
+								spec:
+									| {
+											id?: UUID
+											resource: 'flow/v1'
+											meta: Meta & { starred: boolean }
+											spec: {
+												readme: string
+												nodes: {
+													[k: string]: {
+														component_id: UUID
+														inputs: {
+															[k: string]: {
+																source: string | 'parent'
+																target: string
+															}
+														}
+														position: {
+															x: number
+															y: number
+														}
+													}
+												}
+												outputs: {
+													[k: string]: {
+														description: string
+														type:
+															| JsonSchemaType
+															| {
+																	[k: string]: {
+																		[k: string]: unknown
+																	}
+															  }
+														source: string
+														target: string
+													}
+												}
+												inputs: {
+													[k: string]: {
+														description: string
+														type:
+															| JsonSchemaType
+															| {
+																	[k: string]: {
+																		[k: string]: unknown
+																	}
+															  }
+													}
+												}
+											}
+									  }
+									| {
+											id?: UUID
+											resource: 'action/v1'
+											meta: Meta & { starred: boolean }
+											spec: {
+												source: string
+												requirements: string
+												checksum: string
+												readme: string
+												runtime: 'python-3.14'
+												inputs: {
+													[k: string]: {
+														description: string
+														type:
+															| JsonSchemaType
+															| {
+																	[k: string]: {
+																		[k: string]: unknown
+																	}
+															  }
+													}
+												}
+												outputs: {
+													[k: string]: {
+														description: string
+														type:
+															| JsonSchemaType
+															| {
+																	[k: string]: {
+																		[k: string]: unknown
+																	}
+															  }
+													}
+												}
+											}
+									  }
+									| {
+											id?: UUID
+											resource: 'agent/v1'
+											meta: Meta & { starred: boolean }
+											spec: {
+												model: 'mistral/mistral-medium-latest'
+												readme: string
+												prompts: {
+													system: {
+														type: 'template'
+														value: string
+													}[]
+													user: {
+														type: 'template'
+														value: string
+													}[]
+												}
+												settings: {
+													temperature: number
+													topP: number
+													maxTokens: number
+												}
+												nodes: {
+													[k: string]: {
+														component_id: UUID
+														inputs: {
+															[k: string]: {
+																source: 'parent'
+																target: string
+															}
+														}
+														order: number
+													}
+												}
+												inputs: {
+													[k: string]: {
+														description: string
+														type:
+															| JsonSchemaType
+															| {
+																	[k: string]: {
+																		[k: string]: unknown
+																	}
+															  }
+													}
+												}
+												outputs: {
+													[k: string]: {
+														description: string
+														type:
+															| JsonSchemaType
+															| {
+																	[k: string]: {
+																		[k: string]: unknown
+																	}
+															  }
+													}
+												}
+											}
+									  }
+								inputs: {
+									[k: string]: {
+										source: string | 'parent'
+										target: string
+									}
+								}
+								position: {
+									x: number
+									y: number
+								}
+							}
+						}
+						outputs: {
+							[k: string]: {
+								description: string
+								type:
+									| JsonSchemaType
+									| {
+											[k: string]: {
+												[k: string]: unknown
+											}
+									  }
+								source: string
+								target: string
+							}
+						}
+						inputs: {
+							[k: string]: {
+								description: string
+								type:
+									| JsonSchemaType
+									| {
+											[k: string]: {
+												[k: string]: unknown
+											}
+									  }
+							}
+						}
+					}
+			  }
+			| {
+					id?: UUID
+					resource: 'action/v1'
+					meta: Meta & { starred: boolean }
+					spec: {
+						source: string
+						requirements: string
+						checksum: string
+						readme: string
+						runtime: 'python-3.14'
+						inputs: {
+							[k: string]: {
+								description: string
+								type:
+									| JsonSchemaType
+									| {
+											[k: string]: {
+												[k: string]: unknown
+											}
+									  }
+							}
+						}
+						outputs: {
+							[k: string]: {
+								description: string
+								type:
+									| JsonSchemaType
+									| {
+											[k: string]: {
+												[k: string]: unknown
+											}
+									  }
+							}
+						}
+					}
+			  }
+			| {
+					id?: UUID
+					resource: 'agent/v1'
+					meta: Meta & { starred: boolean }
+					spec: {
+						model: 'mistral/mistral-medium-latest'
+						readme: string
+						prompts: {
+							system: {
+								type: 'template'
+								value: string
+							}[]
+							user: {
+								type: 'template'
+								value: string
+							}[]
+						}
+						settings: {
+							temperature: number
+							topP: number
+							maxTokens: number
+						}
+						nodes: {
+							[k: string]: {
+								component_id: UUID
+								inputs: {
+									[k: string]: {
+										source: 'parent'
+										target: string
+									}
+								}
+								order: number
+								spec:
+									| {
+											id?: UUID
+											resource: 'flow/v1'
+											meta: Meta & { starred: boolean }
+											spec: {
+												readme: string
+												nodes: {
+													[k: string]: {
+														component_id: UUID
+														inputs: {
+															[k: string]: {
+																source: string | 'parent'
+																target: string
+															}
+														}
+														position: {
+															x: number
+															y: number
+														}
+													}
+												}
+												outputs: {
+													[k: string]: {
+														description: string
+														type:
+															| JsonSchemaType
+															| {
+																	[k: string]: {
+																		[k: string]: unknown
+																	}
+															  }
+														source: string
+														target: string
+													}
+												}
+												inputs: {
+													[k: string]: {
+														description: string
+														type:
+															| JsonSchemaType
+															| {
+																	[k: string]: {
+																		[k: string]: unknown
+																	}
+															  }
+													}
+												}
+											}
+									  }
+									| {
+											id?: UUID
+											resource: 'action/v1'
+											meta: Meta & { starred: boolean }
+											spec: {
+												source: string
+												requirements: string
+												checksum: string
+												readme: string
+												runtime: 'python-3.14'
+												inputs: {
+													[k: string]: {
+														description: string
+														type:
+															| JsonSchemaType
+															| {
+																	[k: string]: {
+																		[k: string]: unknown
+																	}
+															  }
+													}
+												}
+												outputs: {
+													[k: string]: {
+														description: string
+														type:
+															| JsonSchemaType
+															| {
+																	[k: string]: {
+																		[k: string]: unknown
+																	}
+															  }
+													}
+												}
+											}
+									  }
+									| {
+											id?: UUID
+											resource: 'agent/v1'
+											meta: Meta & { starred: boolean }
+											spec: {
+												model: 'mistral/mistral-medium-latest'
+												readme: string
+												prompts: {
+													system: {
+														type: 'template'
+														value: string
+													}[]
+													user: {
+														type: 'template'
+														value: string
+													}[]
+												}
+												settings: {
+													temperature: number
+													topP: number
+													maxTokens: number
+												}
+												nodes: {
+													[k: string]: {
+														component_id: UUID
+														inputs: {
+															[k: string]: {
+																source: 'parent'
+																target: string
+															}
+														}
+														order: number
+													}
+												}
+												inputs: {
+													[k: string]: {
+														description: string
+														type:
+															| JsonSchemaType
+															| {
+																	[k: string]: {
+																		[k: string]: unknown
+																	}
+															  }
+													}
+												}
+												outputs: {
+													[k: string]: {
+														description: string
+														type:
+															| JsonSchemaType
+															| {
+																	[k: string]: {
+																		[k: string]: unknown
+																	}
+															  }
+													}
+												}
+											}
+									  }
+							}
+						}
+						inputs: {
+							[k: string]: {
+								description: string
+								type:
+									| JsonSchemaType
+									| {
+											[k: string]: {
+												[k: string]: unknown
+											}
+									  }
+							}
+						}
+						outputs: {
+							[k: string]: {
+								description: string
+								type:
+									| JsonSchemaType
+									| {
+											[k: string]: {
+												[k: string]: unknown
+											}
+									  }
+							}
+						}
+					}
+			  }
 		payload: {
 			[k: string]: unknown
 		}
@@ -196,7 +934,7 @@ export interface Execution {
 					spec: {
 						key: string
 						value: string
-						secret: boolean
+						secret: false
 					}
 				}
 			}[]
@@ -226,49 +964,44 @@ export interface Flow {
 			}
 		}
 		outputs: {
-			[k: string]:
-				| {
-						source: string | 'parent'
-						target: string
-				  }
-				| {
-						[k: string]: {
-							[k: string]: unknown
-						}
-				  }
+			[k: string]: {
+				description: string
+				type:
+					| JsonSchemaType
+					| {
+							[k: string]: {
+								[k: string]: unknown
+							}
+					  }
+				source: string
+				target: string
+			}
 		}
 		inputs: {
 			[k: string]: {
-				[k: string]: {
-					[k: string]: unknown
-				}
+				description: string
+				type:
+					| JsonSchemaType
+					| {
+							[k: string]: {
+								[k: string]: unknown
+							}
+					  }
 			}
 		}
 	}
 }
-
 export interface IngressToken {
 	id?: UUID
 	resource: 'ingress-token/v1'
 	meta: Meta
 	spec: {
-		hashedToken: UUID
+		hashed_token: UUID
 	}
 }
-
 export interface IngressTokenSpec {
-	hashedToken: UUID
+	hashed_token: UUID
 }
-
-export interface Meta {
-	name: string
-	intention: {
-		purpose: string
-		input: string
-		output: string
-	}
-}
-
 export type Modifier = {
 	id?: UUID
 	resource: 'variable/v1'
@@ -276,18 +1009,49 @@ export type Modifier = {
 	spec: {
 		key: string
 		value: string
-		secret: boolean
+		secret: false
 	}
 }
-
+export type ModifierSpec = {
+	key: string
+	value: string
+	secret: false
+}
 export interface Project {
 	id?: UUID
 	resource: 'project/v1'
-	meta: Meta
+	meta: Omit<Meta, 'intention'>
 	spec: {
+		readme: string
 		nodes: {
 			[k: string]: {
 				component_id: UUID
+				triggers: {
+					[k: string]:
+						| {
+								resource: 'endpoint/v1'
+								meta: Omit<Meta, 'intention'>
+								spec: {
+									method: 'POST'
+									payload_mapping: {
+										[k: string]: string
+									}
+									ingress_tokens: string[]
+								}
+						  }
+						| {
+								resource: 'cron/v1'
+								meta: Omit<Meta, 'intention'>
+								spec: {
+									schedule: string
+									timezone: string
+									payload: {
+										[k: string]: unknown
+									}
+								}
+						  }
+				}
+				order: number
 			}
 		}
 		modifiers: {
@@ -297,11 +1061,37 @@ export interface Project {
 		}
 	}
 }
-
 export interface ProjectSpec {
+	readme: string
 	nodes: {
 		[k: string]: {
 			component_id: UUID
+			triggers: {
+				[k: string]:
+					| {
+							resource: 'endpoint/v1'
+							meta: Omit<Meta, 'intention'>
+							spec: {
+								method: 'POST'
+								payload_mapping: {
+									[k: string]: string
+								}
+								ingress_tokens: string[]
+							}
+					  }
+					| {
+							resource: 'cron/v1'
+							meta: Omit<Meta, 'intention'>
+							spec: {
+								schedule: string
+								timezone: string
+								payload: {
+									[k: string]: unknown
+								}
+							}
+					  }
+			}
+			order: number
 		}
 	}
 	modifiers: {
@@ -311,17 +1101,88 @@ export interface ProjectSpec {
 	}
 }
 
-export interface ResolvedFlow {
+export interface ResolvedAgent {
 	id?: UUID
-	resource: 'flow/v1'
+	resource: 'agent/v1'
 	meta: Meta & { starred: boolean }
 	spec: {
+		model: 'mistral/mistral-medium-latest'
 		readme: string
+		prompts: {
+			system: {
+				type: 'template'
+				value: string
+			}[]
+			user: {
+				type: 'template'
+				value: string
+			}[]
+		}
+		settings: {
+			temperature: number
+			topP: number
+			maxTokens: number
+		}
 		nodes: {
 			[k: string]: {
-				component_id?: UUID
+				component_id: UUID
+				inputs: {
+					[k: string]: {
+						source: 'parent'
+						target: string
+					}
+				}
+				order: number
 				spec:
-					| ResolvedFlow
+					| {
+							id?: UUID
+							resource: 'flow/v1'
+							meta: Meta & { starred: boolean }
+							spec: {
+								readme: string
+								nodes: {
+									[k: string]: {
+										component_id: UUID
+										inputs: {
+											[k: string]: {
+												source: string | 'parent'
+												target: string
+											}
+										}
+										position: {
+											x: number
+											y: number
+										}
+									}
+								}
+								outputs: {
+									[k: string]: {
+										description: string
+										type:
+											| JsonSchemaType
+											| {
+													[k: string]: {
+														[k: string]: unknown
+													}
+											  }
+										source: string
+										target: string
+									}
+								}
+								inputs: {
+									[k: string]: {
+										description: string
+										type:
+											| JsonSchemaType
+											| {
+													[k: string]: {
+														[k: string]: unknown
+													}
+											  }
+									}
+								}
+							}
+					  }
 					| {
 							id?: UUID
 							resource: 'action/v1'
@@ -332,43 +1193,565 @@ export interface ResolvedFlow {
 								checksum: string
 								readme: string
 								runtime: 'python-3.14'
+								inputs: {
+									[k: string]: {
+										description: string
+										type:
+											| JsonSchemaType
+											| {
+													[k: string]: {
+														[k: string]: unknown
+													}
+											  }
+									}
+								}
+								outputs: {
+									[k: string]: {
+										description: string
+										type:
+											| JsonSchemaType
+											| {
+													[k: string]: {
+														[k: string]: unknown
+													}
+											  }
+									}
+								}
 							}
 					  }
-				inputs: {
-					[k: string]: {
-						source: string | 'parent'
-						target: string
-					}
-				}
+					| {
+							id?: UUID
+							resource: 'agent/v1'
+							meta: Meta & { starred: boolean }
+							spec: {
+								model: 'mistral/mistral-medium-latest'
+								readme: string
+								prompts: {
+									system: {
+										type: 'template'
+										value: string
+									}[]
+									user: {
+										type: 'template'
+										value: string
+									}[]
+								}
+								settings: {
+									temperature: number
+									topP: number
+									maxTokens: number
+								}
+								nodes: {
+									[k: string]: {
+										component_id: UUID
+										inputs: {
+											[k: string]: {
+												source: 'parent'
+												target: string
+											}
+										}
+										order: number
+									}
+								}
+								inputs: {
+									[k: string]: {
+										description: string
+										type:
+											| JsonSchemaType
+											| {
+													[k: string]: {
+														[k: string]: unknown
+													}
+											  }
+									}
+								}
+								outputs: {
+									[k: string]: {
+										description: string
+										type:
+											| JsonSchemaType
+											| {
+													[k: string]: {
+														[k: string]: unknown
+													}
+											  }
+									}
+								}
+							}
+					  }
 			}
-		}
-		outputs: {
-			[k: string]:
-				| {
-						source: string | 'parent'
-						target: string
-				  }
-				| {
-						[k: string]: {
-							[k: string]: unknown
-						}
-				  }
 		}
 		inputs: {
 			[k: string]: {
-				[k: string]: {
-					[k: string]: unknown
-				}
+				description: string
+				type:
+					| JsonSchemaType
+					| {
+							[k: string]: {
+								[k: string]: unknown
+							}
+					  }
+			}
+		}
+		outputs: {
+			[k: string]: {
+				description: string
+				type:
+					| JsonSchemaType
+					| {
+							[k: string]: {
+								[k: string]: unknown
+							}
+					  }
 			}
 		}
 	}
 }
+export type ResolvedComponent =
+	| {
+			id?: UUID
+			resource: 'flow/v1'
+			meta: Meta & { starred: boolean }
+			spec: {
+				readme: string
+				nodes: {
+					[k: string]: {
+						component_id: UUID
+						spec:
+							| {
+									id?: UUID
+									resource: 'flow/v1'
+									meta: Meta & { starred: boolean }
+									spec: {
+										readme: string
+										nodes: {
+											[k: string]: {
+												component_id: UUID
+												inputs: {
+													[k: string]: {
+														source: string | 'parent'
+														target: string
+													}
+												}
+												position: {
+													x: number
+													y: number
+												}
+											}
+										}
+										outputs: {
+											[k: string]: {
+												description: string
+												type:
+													| JsonSchemaType
+													| {
+															[k: string]: {
+																[k: string]: unknown
+															}
+													  }
+												source: string
+												target: string
+											}
+										}
+										inputs: {
+											[k: string]: {
+												description: string
+												type:
+													| JsonSchemaType
+													| {
+															[k: string]: {
+																[k: string]: unknown
+															}
+													  }
+											}
+										}
+									}
+							  }
+							| {
+									id?: UUID
+									resource: 'action/v1'
+									meta: Meta & { starred: boolean }
+									spec: {
+										source: string
+										requirements: string
+										checksum: string
+										readme: string
+										runtime: 'python-3.14'
+										inputs: {
+											[k: string]: {
+												description: string
+												type:
+													| JsonSchemaType
+													| {
+															[k: string]: {
+																[k: string]: unknown
+															}
+													  }
+											}
+										}
+										outputs: {
+											[k: string]: {
+												description: string
+												type:
+													| JsonSchemaType
+													| {
+															[k: string]: {
+																[k: string]: unknown
+															}
+													  }
+											}
+										}
+									}
+							  }
+							| {
+									id?: UUID
+									resource: 'agent/v1'
+									meta: Meta & { starred: boolean }
+									spec: {
+										model: 'mistral/mistral-medium-latest'
+										readme: string
+										prompts: {
+											system: {
+												type: 'template'
+												value: string
+											}[]
+											user: {
+												type: 'template'
+												value: string
+											}[]
+										}
+										settings: {
+											temperature: number
+											topP: number
+											maxTokens: number
+										}
+										nodes: {
+											[k: string]: {
+												component_id: UUID
+												inputs: {
+													[k: string]: {
+														source: 'parent'
+														target: string
+													}
+												}
+												order: number
+											}
+										}
+										inputs: {
+											[k: string]: {
+												description: string
+												type:
+													| JsonSchemaType
+													| {
+															[k: string]: {
+																[k: string]: unknown
+															}
+													  }
+											}
+										}
+										outputs: {
+											[k: string]: {
+												description: string
+												type:
+													| JsonSchemaType
+													| {
+															[k: string]: {
+																[k: string]: unknown
+															}
+													  }
+											}
+										}
+									}
+							  }
+						inputs: {
+							[k: string]: {
+								source: string | 'parent'
+								target: string
+							}
+						}
+						position: {
+							x: number
+							y: number
+						}
+					}
+				}
+				outputs: {
+					[k: string]: {
+						description: string
+						type:
+							| JsonSchemaType
+							| {
+									[k: string]: {
+										[k: string]: unknown
+									}
+							  }
+						source: string
+						target: string
+					}
+				}
+				inputs: {
+					[k: string]: {
+						description: string
+						type:
+							| JsonSchemaType
+							| {
+									[k: string]: {
+										[k: string]: unknown
+									}
+							  }
+					}
+				}
+			}
+	  }
+	| {
+			id?: UUID
+			resource: 'action/v1'
+			meta: Meta & { starred: boolean }
+			spec: {
+				source: string
+				requirements: string
+				checksum: string
+				readme: string
+				runtime: 'python-3.14'
+				inputs: {
+					[k: string]: {
+						description: string
+						type:
+							| JsonSchemaType
+							| {
+									[k: string]: {
+										[k: string]: unknown
+									}
+							  }
+					}
+				}
+				outputs: {
+					[k: string]: {
+						description: string
+						type:
+							| JsonSchemaType
+							| {
+									[k: string]: {
+										[k: string]: unknown
+									}
+							  }
+					}
+				}
+			}
+	  }
+	| {
+			id?: UUID
+			resource: 'agent/v1'
+			meta: Meta & { starred: boolean }
+			spec: {
+				model: 'mistral/mistral-medium-latest'
+				readme: string
+				prompts: {
+					system: {
+						type: 'template'
+						value: string
+					}[]
+					user: {
+						type: 'template'
+						value: string
+					}[]
+				}
+				settings: {
+					temperature: number
+					topP: number
+					maxTokens: number
+				}
+				nodes: {
+					[k: string]: {
+						component_id: UUID
+						inputs: {
+							[k: string]: {
+								source: 'parent'
+								target: string
+							}
+						}
+						order: number
+						spec:
+							| {
+									id?: UUID
+									resource: 'flow/v1'
+									meta: Meta & { starred: boolean }
+									spec: {
+										readme: string
+										nodes: {
+											[k: string]: {
+												component_id: UUID
+												inputs: {
+													[k: string]: {
+														source: string | 'parent'
+														target: string
+													}
+												}
+												position: {
+													x: number
+													y: number
+												}
+											}
+										}
+										outputs: {
+											[k: string]: {
+												description: string
+												type:
+													| JsonSchemaType
+													| {
+															[k: string]: {
+																[k: string]: unknown
+															}
+													  }
+												source: string
+												target: string
+											}
+										}
+										inputs: {
+											[k: string]: {
+												description: string
+												type:
+													| JsonSchemaType
+													| {
+															[k: string]: {
+																[k: string]: unknown
+															}
+													  }
+											}
+										}
+									}
+							  }
+							| {
+									id?: UUID
+									resource: 'action/v1'
+									meta: Meta & { starred: boolean }
+									spec: {
+										source: string
+										requirements: string
+										checksum: string
+										readme: string
+										runtime: 'python-3.14'
+										inputs: {
+											[k: string]: {
+												description: string
+												type:
+													| JsonSchemaType
+													| {
+															[k: string]: {
+																[k: string]: unknown
+															}
+													  }
+											}
+										}
+										outputs: {
+											[k: string]: {
+												description: string
+												type:
+													| JsonSchemaType
+													| {
+															[k: string]: {
+																[k: string]: unknown
+															}
+													  }
+											}
+										}
+									}
+							  }
+							| {
+									id?: UUID
+									resource: 'agent/v1'
+									meta: Meta & { starred: boolean }
+									spec: {
+										model: 'mistral/mistral-medium-latest'
+										readme: string
+										prompts: {
+											system: {
+												type: 'template'
+												value: string
+											}[]
+											user: {
+												type: 'template'
+												value: string
+											}[]
+										}
+										settings: {
+											temperature: number
+											topP: number
+											maxTokens: number
+										}
+										nodes: {
+											[k: string]: {
+												component_id: UUID
+												inputs: {
+													[k: string]: {
+														source: 'parent'
+														target: string
+													}
+												}
+												order: number
+											}
+										}
+										inputs: {
+											[k: string]: {
+												description: string
+												type:
+													| JsonSchemaType
+													| {
+															[k: string]: {
+																[k: string]: unknown
+															}
+													  }
+											}
+										}
+										outputs: {
+											[k: string]: {
+												description: string
+												type:
+													| JsonSchemaType
+													| {
+															[k: string]: {
+																[k: string]: unknown
+															}
+													  }
+											}
+										}
+									}
+							  }
+					}
+				}
+				inputs: {
+					[k: string]: {
+						description: string
+						type:
+							| JsonSchemaType
+							| {
+									[k: string]: {
+										[k: string]: unknown
+									}
+							  }
+					}
+				}
+				outputs: {
+					[k: string]: {
+						description: string
+						type:
+							| JsonSchemaType
+							| {
+									[k: string]: {
+										[k: string]: unknown
+									}
+							  }
+					}
+				}
+			}
+	  }
 
-export interface ResolvedProject {
+export interface ResolvedFlow {
 	id?: UUID
-	resource: 'project/v1'
-	meta: Meta
+	resource: 'flow/v1'
+	meta: Meta & { starred: boolean }
 	spec: {
+		readme: string
 		nodes: {
 			[k: string]: {
 				component_id: UUID
@@ -395,22 +1778,29 @@ export interface ResolvedProject {
 									}
 								}
 								outputs: {
-									[k: string]:
-										| {
-												source: string | 'parent'
-												target: string
-										  }
-										| {
-												[k: string]: {
-													[k: string]: unknown
-												}
-										  }
+									[k: string]: {
+										description: string
+										type:
+											| JsonSchemaType
+											| {
+													[k: string]: {
+														[k: string]: unknown
+													}
+											  }
+										source: string
+										target: string
+									}
 								}
 								inputs: {
 									[k: string]: {
-										[k: string]: {
-											[k: string]: unknown
-										}
+										description: string
+										type:
+											| JsonSchemaType
+											| {
+													[k: string]: {
+														[k: string]: unknown
+													}
+											  }
 									}
 								}
 							}
@@ -425,6 +1815,90 @@ export interface ResolvedProject {
 								checksum: string
 								readme: string
 								runtime: 'python-3.14'
+								inputs: {
+									[k: string]: {
+										description: string
+										type:
+											| JsonSchemaType
+											| {
+													[k: string]: {
+														[k: string]: unknown
+													}
+											  }
+									}
+								}
+								outputs: {
+									[k: string]: {
+										description: string
+										type:
+											| JsonSchemaType
+											| {
+													[k: string]: {
+														[k: string]: unknown
+													}
+											  }
+									}
+								}
+							}
+					  }
+					| {
+							id?: UUID
+							resource: 'agent/v1'
+							meta: Meta & { starred: boolean }
+							spec: {
+								model: 'mistral/mistral-medium-latest'
+								readme: string
+								prompts: {
+									system: {
+										type: 'template'
+										value: string
+									}[]
+									user: {
+										type: 'template'
+										value: string
+									}[]
+								}
+								settings: {
+									temperature: number
+									topP: number
+									maxTokens: number
+								}
+								nodes: {
+									[k: string]: {
+										component_id: UUID
+										inputs: {
+											[k: string]: {
+												source: 'parent'
+												target: string
+											}
+										}
+										order: number
+									}
+								}
+								inputs: {
+									[k: string]: {
+										description: string
+										type:
+											| JsonSchemaType
+											| {
+													[k: string]: {
+														[k: string]: unknown
+													}
+											  }
+									}
+								}
+								outputs: {
+									[k: string]: {
+										description: string
+										type:
+											| JsonSchemaType
+											| {
+													[k: string]: {
+														[k: string]: unknown
+													}
+											  }
+									}
+								}
 							}
 					  }
 				inputs: {
@@ -433,6 +1907,514 @@ export interface ResolvedProject {
 						target: string
 					}
 				}
+				position: {
+					x: number
+					y: number
+				}
+			}
+		}
+		outputs: {
+			[k: string]: {
+				description: string
+				type:
+					| JsonSchemaType
+					| {
+							[k: string]: {
+								[k: string]: unknown
+							}
+					  }
+				source: string
+				target: string
+			}
+		}
+		inputs: {
+			[k: string]: {
+				description: string
+				type:
+					| JsonSchemaType
+					| {
+							[k: string]: {
+								[k: string]: unknown
+							}
+					  }
+			}
+		}
+	}
+}
+
+export interface ResolvedProject {
+	id?: UUID
+	resource: 'project/v1'
+	meta: Omit<Meta, 'intention'>
+	spec: {
+		readme: string
+		nodes: {
+			[k: string]: {
+				component_id: UUID
+				spec:
+					| {
+							id?: UUID
+							resource: 'flow/v1'
+							meta: Meta & { starred: boolean }
+							spec: {
+								readme: string
+								nodes: {
+									[k: string]: {
+										component_id: UUID
+										spec:
+											| {
+													id?: UUID
+													resource: 'flow/v1'
+													meta: Meta & { starred: boolean }
+													spec: {
+														readme: string
+														nodes: {
+															[k: string]: {
+																component_id: UUID
+																inputs: {
+																	[k: string]: {
+																		source: string | 'parent'
+																		target: string
+																	}
+																}
+																position: {
+																	x: number
+																	y: number
+																}
+															}
+														}
+														outputs: {
+															[k: string]: {
+																description: string
+																type:
+																	| JsonSchemaType
+																	| {
+																			[k: string]: {
+																				[k: string]: unknown
+																			}
+																	  }
+																source: string
+																target: string
+															}
+														}
+														inputs: {
+															[k: string]: {
+																description: string
+																type:
+																	| JsonSchemaType
+																	| {
+																			[k: string]: {
+																				[k: string]: unknown
+																			}
+																	  }
+															}
+														}
+													}
+											  }
+											| {
+													id?: UUID
+													resource: 'action/v1'
+													meta: Meta & { starred: boolean }
+													spec: {
+														source: string
+														requirements: string
+														checksum: string
+														readme: string
+														runtime: 'python-3.14'
+														inputs: {
+															[k: string]: {
+																description: string
+																type:
+																	| JsonSchemaType
+																	| {
+																			[k: string]: {
+																				[k: string]: unknown
+																			}
+																	  }
+															}
+														}
+														outputs: {
+															[k: string]: {
+																description: string
+																type:
+																	| JsonSchemaType
+																	| {
+																			[k: string]: {
+																				[k: string]: unknown
+																			}
+																	  }
+															}
+														}
+													}
+											  }
+											| {
+													id?: UUID
+													resource: 'agent/v1'
+													meta: Meta & { starred: boolean }
+													spec: {
+														model: 'mistral/mistral-medium-latest'
+														readme: string
+														prompts: {
+															system: {
+																type: 'template'
+																value: string
+															}[]
+															user: {
+																type: 'template'
+																value: string
+															}[]
+														}
+														settings: {
+															temperature: number
+															topP: number
+															maxTokens: number
+														}
+														nodes: {
+															[k: string]: {
+																component_id: UUID
+																inputs: {
+																	[k: string]: {
+																		source: 'parent'
+																		target: string
+																	}
+																}
+																order: number
+															}
+														}
+														inputs: {
+															[k: string]: {
+																description: string
+																type:
+																	| JsonSchemaType
+																	| {
+																			[k: string]: {
+																				[k: string]: unknown
+																			}
+																	  }
+															}
+														}
+														outputs: {
+															[k: string]: {
+																description: string
+																type:
+																	| JsonSchemaType
+																	| {
+																			[k: string]: {
+																				[k: string]: unknown
+																			}
+																	  }
+															}
+														}
+													}
+											  }
+										inputs: {
+											[k: string]: {
+												source: string | 'parent'
+												target: string
+											}
+										}
+										position: {
+											x: number
+											y: number
+										}
+									}
+								}
+								outputs: {
+									[k: string]: {
+										description: string
+										type:
+											| JsonSchemaType
+											| {
+													[k: string]: {
+														[k: string]: unknown
+													}
+											  }
+										source: string
+										target: string
+									}
+								}
+								inputs: {
+									[k: string]: {
+										description: string
+										type:
+											| JsonSchemaType
+											| {
+													[k: string]: {
+														[k: string]: unknown
+													}
+											  }
+									}
+								}
+							}
+					  }
+					| {
+							id?: UUID
+							resource: 'action/v1'
+							meta: Meta & { starred: boolean }
+							spec: {
+								source: string
+								requirements: string
+								checksum: string
+								readme: string
+								runtime: 'python-3.14'
+								inputs: {
+									[k: string]: {
+										description: string
+										type:
+											| JsonSchemaType
+											| {
+													[k: string]: {
+														[k: string]: unknown
+													}
+											  }
+									}
+								}
+								outputs: {
+									[k: string]: {
+										description: string
+										type:
+											| JsonSchemaType
+											| {
+													[k: string]: {
+														[k: string]: unknown
+													}
+											  }
+									}
+								}
+							}
+					  }
+					| {
+							id?: UUID
+							resource: 'agent/v1'
+							meta: Meta & { starred: boolean }
+							spec: {
+								model: 'mistral/mistral-medium-latest'
+								readme: string
+								prompts: {
+									system: {
+										type: 'template'
+										value: string
+									}[]
+									user: {
+										type: 'template'
+										value: string
+									}[]
+								}
+								settings: {
+									temperature: number
+									topP: number
+									maxTokens: number
+								}
+								nodes: {
+									[k: string]: {
+										component_id: UUID
+										inputs: {
+											[k: string]: {
+												source: 'parent'
+												target: string
+											}
+										}
+										order: number
+										spec:
+											| {
+													id?: UUID
+													resource: 'flow/v1'
+													meta: Meta & { starred: boolean }
+													spec: {
+														readme: string
+														nodes: {
+															[k: string]: {
+																component_id: UUID
+																inputs: {
+																	[k: string]: {
+																		source: string | 'parent'
+																		target: string
+																	}
+																}
+																position: {
+																	x: number
+																	y: number
+																}
+															}
+														}
+														outputs: {
+															[k: string]: {
+																description: string
+																type:
+																	| JsonSchemaType
+																	| {
+																			[k: string]: {
+																				[k: string]: unknown
+																			}
+																	  }
+																source: string
+																target: string
+															}
+														}
+														inputs: {
+															[k: string]: {
+																description: string
+																type:
+																	| JsonSchemaType
+																	| {
+																			[k: string]: {
+																				[k: string]: unknown
+																			}
+																	  }
+															}
+														}
+													}
+											  }
+											| {
+													id?: UUID
+													resource: 'action/v1'
+													meta: Meta & { starred: boolean }
+													spec: {
+														source: string
+														requirements: string
+														checksum: string
+														readme: string
+														runtime: 'python-3.14'
+														inputs: {
+															[k: string]: {
+																description: string
+																type:
+																	| JsonSchemaType
+																	| {
+																			[k: string]: {
+																				[k: string]: unknown
+																			}
+																	  }
+															}
+														}
+														outputs: {
+															[k: string]: {
+																description: string
+																type:
+																	| JsonSchemaType
+																	| {
+																			[k: string]: {
+																				[k: string]: unknown
+																			}
+																	  }
+															}
+														}
+													}
+											  }
+											| {
+													id?: UUID
+													resource: 'agent/v1'
+													meta: Meta & { starred: boolean }
+													spec: {
+														model: 'mistral/mistral-medium-latest'
+														readme: string
+														prompts: {
+															system: {
+																type: 'template'
+																value: string
+															}[]
+															user: {
+																type: 'template'
+																value: string
+															}[]
+														}
+														settings: {
+															temperature: number
+															topP: number
+															maxTokens: number
+														}
+														nodes: {
+															[k: string]: {
+																component_id: UUID
+																inputs: {
+																	[k: string]: {
+																		source: 'parent'
+																		target: string
+																	}
+																}
+																order: number
+															}
+														}
+														inputs: {
+															[k: string]: {
+																description: string
+																type:
+																	| JsonSchemaType
+																	| {
+																			[k: string]: {
+																				[k: string]: unknown
+																			}
+																	  }
+															}
+														}
+														outputs: {
+															[k: string]: {
+																description: string
+																type:
+																	| JsonSchemaType
+																	| {
+																			[k: string]: {
+																				[k: string]: unknown
+																			}
+																	  }
+															}
+														}
+													}
+											  }
+									}
+								}
+								inputs: {
+									[k: string]: {
+										description: string
+										type:
+											| JsonSchemaType
+											| {
+													[k: string]: {
+														[k: string]: unknown
+													}
+											  }
+									}
+								}
+								outputs: {
+									[k: string]: {
+										description: string
+										type:
+											| JsonSchemaType
+											| {
+													[k: string]: {
+														[k: string]: unknown
+													}
+											  }
+									}
+								}
+							}
+					  }
+				triggers: {
+					[k: string]:
+						| {
+								resource: 'endpoint/v1'
+								meta: Omit<Meta, 'intention'>
+								spec: {
+									method: 'POST'
+									payload_mapping: {
+										[k: string]: string
+									}
+									ingress_tokens: string[]
+								}
+						  }
+						| {
+								resource: 'cron/v1'
+								meta: Omit<Meta, 'intention'>
+								spec: {
+									schedule: string
+									timezone: string
+									payload: {
+										[k: string]: unknown
+									}
+								}
+						  }
+				}
+				order: number
 			}
 		}
 		modifiers: {
@@ -445,7 +2427,7 @@ export interface ResolvedProject {
 					spec: {
 						key: string
 						value: string
-						secret: boolean
+						secret: false
 					}
 				}
 			}[]
@@ -454,6 +2436,7 @@ export interface ResolvedProject {
 }
 
 export interface ResolvedProjectSpec {
+	readme: string
 	nodes: {
 		[k: string]: {
 			component_id: UUID
@@ -467,6 +2450,152 @@ export interface ResolvedProjectSpec {
 							nodes: {
 								[k: string]: {
 									component_id: UUID
+									spec:
+										| {
+												id?: UUID
+												resource: 'flow/v1'
+												meta: Meta & { starred: boolean }
+												spec: {
+													readme: string
+													nodes: {
+														[k: string]: {
+															component_id: UUID
+															inputs: {
+																[k: string]: {
+																	source: string | 'parent'
+																	target: string
+																}
+															}
+															position: {
+																x: number
+																y: number
+															}
+														}
+													}
+													outputs: {
+														[k: string]: {
+															description: string
+															type:
+																| JsonSchemaType
+																| {
+																		[k: string]: {
+																			[k: string]: unknown
+																		}
+																  }
+															source: string
+															target: string
+														}
+													}
+													inputs: {
+														[k: string]: {
+															description: string
+															type:
+																| JsonSchemaType
+																| {
+																		[k: string]: {
+																			[k: string]: unknown
+																		}
+																  }
+														}
+													}
+												}
+										  }
+										| {
+												id?: UUID
+												resource: 'action/v1'
+												meta: Meta & { starred: boolean }
+												spec: {
+													source: string
+													requirements: string
+													checksum: string
+													readme: string
+													runtime: 'python-3.14'
+													inputs: {
+														[k: string]: {
+															description: string
+															type:
+																| JsonSchemaType
+																| {
+																		[k: string]: {
+																			[k: string]: unknown
+																		}
+																  }
+														}
+													}
+													outputs: {
+														[k: string]: {
+															description: string
+															type:
+																| JsonSchemaType
+																| {
+																		[k: string]: {
+																			[k: string]: unknown
+																		}
+																  }
+														}
+													}
+												}
+										  }
+										| {
+												id?: UUID
+												resource: 'agent/v1'
+												meta: Meta & { starred: boolean }
+												spec: {
+													model: 'mistral/mistral-medium-latest'
+													readme: string
+													prompts: {
+														system: {
+															type: 'template'
+															value: string
+														}[]
+														user: {
+															type: 'template'
+															value: string
+														}[]
+													}
+													settings: {
+														temperature: number
+														topP: number
+														maxTokens: number
+													}
+													nodes: {
+														[k: string]: {
+															component_id: UUID
+															inputs: {
+																[k: string]: {
+																	source: 'parent'
+																	target: string
+																}
+															}
+															order: number
+														}
+													}
+													inputs: {
+														[k: string]: {
+															description: string
+															type:
+																| JsonSchemaType
+																| {
+																		[k: string]: {
+																			[k: string]: unknown
+																		}
+																  }
+														}
+													}
+													outputs: {
+														[k: string]: {
+															description: string
+															type:
+																| JsonSchemaType
+																| {
+																		[k: string]: {
+																			[k: string]: unknown
+																		}
+																  }
+														}
+													}
+												}
+										  }
 									inputs: {
 										[k: string]: {
 											source: string | 'parent'
@@ -480,22 +2609,29 @@ export interface ResolvedProjectSpec {
 								}
 							}
 							outputs: {
-								[k: string]:
-									| {
-											source: string | 'parent'
-											target: string
-									  }
-									| {
-											[k: string]: {
-												[k: string]: unknown
-											}
-									  }
+								[k: string]: {
+									description: string
+									type:
+										| JsonSchemaType
+										| {
+												[k: string]: {
+													[k: string]: unknown
+												}
+										  }
+									source: string
+									target: string
+								}
 							}
 							inputs: {
 								[k: string]: {
-									[k: string]: {
-										[k: string]: unknown
-									}
+									description: string
+									type:
+										| JsonSchemaType
+										| {
+												[k: string]: {
+													[k: string]: unknown
+												}
+										  }
 								}
 							}
 						}
@@ -510,14 +2646,264 @@ export interface ResolvedProjectSpec {
 							checksum: string
 							readme: string
 							runtime: 'python-3.14'
+							inputs: {
+								[k: string]: {
+									description: string
+									type:
+										| JsonSchemaType
+										| {
+												[k: string]: {
+													[k: string]: unknown
+												}
+										  }
+								}
+							}
+							outputs: {
+								[k: string]: {
+									description: string
+									type:
+										| JsonSchemaType
+										| {
+												[k: string]: {
+													[k: string]: unknown
+												}
+										  }
+								}
+							}
 						}
 				  }
-			inputs: {
-				[k: string]: {
-					source: string | 'parent'
-					target: string
-				}
+				| {
+						id?: UUID
+						resource: 'agent/v1'
+						meta: Meta & { starred: boolean }
+						spec: {
+							model: 'mistral/mistral-medium-latest'
+							readme: string
+							prompts: {
+								system: {
+									type: 'template'
+									value: string
+								}[]
+								user: {
+									type: 'template'
+									value: string
+								}[]
+							}
+							settings: {
+								temperature: number
+								topP: number
+								maxTokens: number
+							}
+							nodes: {
+								[k: string]: {
+									component_id: UUID
+									inputs: {
+										[k: string]: {
+											source: 'parent'
+											target: string
+										}
+									}
+									order: number
+									spec:
+										| {
+												id?: UUID
+												resource: 'flow/v1'
+												meta: Meta & { starred: boolean }
+												spec: {
+													readme: string
+													nodes: {
+														[k: string]: {
+															component_id: UUID
+															inputs: {
+																[k: string]: {
+																	source: string | 'parent'
+																	target: string
+																}
+															}
+															position: {
+																x: number
+																y: number
+															}
+														}
+													}
+													outputs: {
+														[k: string]: {
+															description: string
+															type:
+																| JsonSchemaType
+																| {
+																		[k: string]: {
+																			[k: string]: unknown
+																		}
+																  }
+															source: string
+															target: string
+														}
+													}
+													inputs: {
+														[k: string]: {
+															description: string
+															type:
+																| JsonSchemaType
+																| {
+																		[k: string]: {
+																			[k: string]: unknown
+																		}
+																  }
+														}
+													}
+												}
+										  }
+										| {
+												id?: UUID
+												resource: 'action/v1'
+												meta: Meta & { starred: boolean }
+												spec: {
+													source: string
+													requirements: string
+													checksum: string
+													readme: string
+													runtime: 'python-3.14'
+													inputs: {
+														[k: string]: {
+															description: string
+															type:
+																| JsonSchemaType
+																| {
+																		[k: string]: {
+																			[k: string]: unknown
+																		}
+																  }
+														}
+													}
+													outputs: {
+														[k: string]: {
+															description: string
+															type:
+																| JsonSchemaType
+																| {
+																		[k: string]: {
+																			[k: string]: unknown
+																		}
+																  }
+														}
+													}
+												}
+										  }
+										| {
+												id?: UUID
+												resource: 'agent/v1'
+												meta: Meta & { starred: boolean }
+												spec: {
+													model: 'mistral/mistral-medium-latest'
+													readme: string
+													prompts: {
+														system: {
+															type: 'template'
+															value: string
+														}[]
+														user: {
+															type: 'template'
+															value: string
+														}[]
+													}
+													settings: {
+														temperature: number
+														topP: number
+														maxTokens: number
+													}
+													nodes: {
+														[k: string]: {
+															component_id: UUID
+															inputs: {
+																[k: string]: {
+																	source: 'parent'
+																	target: string
+																}
+															}
+															order: number
+														}
+													}
+													inputs: {
+														[k: string]: {
+															description: string
+															type:
+																| JsonSchemaType
+																| {
+																		[k: string]: {
+																			[k: string]: unknown
+																		}
+																  }
+														}
+													}
+													outputs: {
+														[k: string]: {
+															description: string
+															type:
+																| JsonSchemaType
+																| {
+																		[k: string]: {
+																			[k: string]: unknown
+																		}
+																  }
+														}
+													}
+												}
+										  }
+								}
+							}
+							inputs: {
+								[k: string]: {
+									description: string
+									type:
+										| JsonSchemaType
+										| {
+												[k: string]: {
+													[k: string]: unknown
+												}
+										  }
+								}
+							}
+							outputs: {
+								[k: string]: {
+									description: string
+									type:
+										| JsonSchemaType
+										| {
+												[k: string]: {
+													[k: string]: unknown
+												}
+										  }
+								}
+							}
+						}
+				  }
+			triggers: {
+				[k: string]:
+					| {
+							resource: 'endpoint/v1'
+							meta: Omit<Meta, 'intention'>
+							spec: {
+								method: 'POST'
+								payload_mapping: {
+									[k: string]: string
+								}
+								ingress_tokens: string[]
+							}
+					  }
+					| {
+							resource: 'cron/v1'
+							meta: Omit<Meta, 'intention'>
+							spec: {
+								schedule: string
+								timezone: string
+								payload: {
+									[k: string]: unknown
+								}
+							}
+					  }
 			}
+			order: number
 		}
 	}
 	modifiers: {
@@ -530,32 +2916,38 @@ export interface ResolvedProjectSpec {
 				spec: {
 					key: string
 					value: string
-					secret: boolean
+					secret: false
 				}
 			}
 		}[]
 	}
 }
-
+export interface TriggerMeta {
+	name: string
+}
 export type Trigger =
 	| {
-			id?: UUID
 			resource: 'endpoint/v1'
-			meta: Meta
+			meta: Omit<Meta, 'intention'>
 			spec: {
 				method: 'POST'
+				payload_mapping: {
+					[k: string]: string
+				}
+				ingress_tokens: string[]
 			}
 	  }
 	| {
-			id?: UUID
 			resource: 'cron/v1'
-			meta: Meta
+			meta: Omit<Meta, 'intention'>
 			spec: {
 				schedule: string
 				timezone: string
+				payload: {
+					[k: string]: unknown
+				}
 			}
 	  }
-
 export interface Variable {
 	id?: UUID
 	resource: 'variable/v1'
@@ -563,14 +2955,13 @@ export interface Variable {
 	spec: {
 		key: string
 		value: string
-		secret: boolean
+		secret: false
 	}
 }
-
 export interface VariableSpec {
 	key: string
 	value: string
-	secret: boolean
+	secret: false
 }
 
 // ──────────────────────
@@ -583,3 +2974,9 @@ export const isFlow = (
 
 export const isAction = (component: Component | ResolvedComponent): component is Action =>
 	component.resource === 'action/v1'
+
+export const isAgent = (
+	component: Component | ResolvedComponent
+): component is Agent | ResolvedAgent => component.resource === 'agent/v1'
+
+export type { UUID }

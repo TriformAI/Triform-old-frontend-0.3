@@ -1,0 +1,28 @@
+import * as z from 'zod'
+
+// Primitive types
+const primitiveTypeSchema = z.object({
+	type: z.enum(['string', 'number', 'boolean', 'null'])
+})
+
+// Object type with recursive properties
+const objectTypeSchema = z.object({
+	type: z.literal('object'),
+	get properties() {
+		return z.record(z.string(), jsonSchemaTypeModel).optional()
+	},
+	get additionalProperties() {
+		return jsonSchemaTypeModel.optional()
+	}
+})
+
+// Array type with recursive items
+const arrayTypeSchema = z.object({
+	type: z.literal('array'),
+	get items() {
+		return jsonSchemaTypeModel.optional()
+	}
+})
+
+// Main recursive schema
+export const jsonSchemaTypeModel = z.union([primitiveTypeSchema, objectTypeSchema, arrayTypeSchema])

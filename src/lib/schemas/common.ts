@@ -1,0 +1,30 @@
+import * as z from 'zod'
+
+// Base models
+export const metaModel = z.strictObject({
+	name: z.string(),
+	intention: z.string().optional().default('')
+})
+
+export const componentMetaModel = metaModel.extend({
+	starred: z.boolean()
+})
+
+export const triggerMetaModel = metaModel.omit({ intention: true })
+
+export const abstractResourceModel = z.strictObject({
+	resource: z.string(),
+	meta: metaModel,
+	spec: z.unknown()
+})
+
+// Node path model used in multiple places
+export const nodePathModel = z.string().regex(/^(.+\/)?([^/]+)$/, {
+	error: 'Invalid node path'
+})
+
+// Node port model used in components and projects
+export const nodePortModel = z.strictObject({
+	source: z.union([z.uuidv4(), z.literal('parent')]),
+	target: z.string()
+})
