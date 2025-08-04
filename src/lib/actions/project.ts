@@ -5,5 +5,5 @@ import type { UUID } from 'crypto'
 const api = new API()
 
 export const saveProject = async (projectId: UUID, payload: unknown) => {
-	return await api.patchRaw<Project>(`projects/${projectId}`, payload)
+	return await api.patch<Project>(`projects/${projectId}`, payload)
 }
