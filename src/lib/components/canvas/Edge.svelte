@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { getBezierPath, BaseEdge, EdgeLabel } from '@xyflow/svelte'
-	import { type EdgeProps } from '$lib/types/flow'
+	import { type EdgeProps } from '$lib/types/canvas'
 	import { deleteEdge } from '$lib/stores/canvas.svelte'
 	import IconCloseRounded from '~icons/material-symbols/close-rounded'
 	import { confirmStore } from '$lib/stores/confirm.svelte'

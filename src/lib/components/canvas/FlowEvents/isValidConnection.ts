@@ -3,7 +3,7 @@ import {
 	type useSvelteFlow,
 	getOutgoers
 } from '@xyflow/svelte'
-import type { Node } from '$lib/types/flow'
+import type { Node } from '$lib/types/canvas'
 
 export const isValidConnection: AddParameters<
 	IsValidConnectionType,

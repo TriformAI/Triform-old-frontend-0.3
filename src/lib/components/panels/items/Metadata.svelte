@@ -17,16 +17,12 @@
 		type ActionBuildStarted,
 		type ActionBuildProgress
 	} from '$lib/stores/builder.svelte'
-	import { isAction } from '$lib/stores/canvas.svelte'
+	import { isAction } from '$lib/schemas'
 	import { openPanelItems, toggleOpenPanelItem } from '$lib/stores/panel.svelte'
-	import { type Component } from '$lib/types/resources'
-	import { getContext } from 'svelte'
+	import type { z } from 'zod'
+	import type { resolvedComponentModel } from '$lib/schemas'
 
-	const { componentData }: { componentData: Component } = $props()
-
-	const api = new API()
-
-	const useDraft = false
+	const { componentData }: { componentData: z.infer<typeof resolvedComponentModel> } = $props()
 
 	const dataIsDirty = false // FIXME
 
@@ -44,9 +40,7 @@
 		// Make sure all the metadata is filled out
 		const missingFields = []
 		if (!componentData.meta.name) missingFields.push('name')
-		if (!componentData.meta.intention?.purpose) missingFields.push('intention')
-		if (!componentData.meta.intention?.input) missingFields.push('input')
-		if (!componentData.meta.intention?.output) missingFields.push('output')
+		if (!componentData.meta.intention) missingFields.push('intention')
 		if (missingFields.length)
 			return toast.error(`Missing required fields: ${missingFields.join(', ')}`)
 
@@ -211,26 +205,10 @@
 			<TextField
 				rows={3}
 				class="col-span-2"
-				label="Purpose"
-				name="Purpose"
+				label="Intention"
+				name="intention"
 				oninput={debouncedSaveDraft}
-				bind:value={componentData.meta.intention.purpose}
-			/>
-
-			<TextField
-				rows={2}
-				label="Expected input"
-				name="input"
-				oninput={debouncedSaveDraft}
-				bind:value={componentData.meta.intention.input}
-			/>
-
-			<TextField
-				rows={2}
-				label="Expected output"
-				name="output"
-				oninput={debouncedSaveDraft}
-				bind:value={componentData.meta.intention.output}
+				bind:value={componentData.meta.intention}
 			/>
 
 			<div class="col-span-2 mt-2 flex">

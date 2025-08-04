@@ -13,6 +13,7 @@
 	import { debounce } from '$lib/utils/debounce'
 	import { onMount } from 'svelte'
 	import { sleep } from '$lib/utils/sleep.js'
+	import { page } from '$app/state'
 
 	const { data, children } = $props()
 
@@ -39,7 +40,7 @@
 
 			isLoaded = false
 
-			await initFlow(data.positions)
+			await initFlow(data.project)
 			await sleep(0)
 			flowComponent?.fitView({
 				maxZoom: 1,
@@ -79,7 +80,9 @@
 				<div
 					class="bg-main-900 border-main-800 flow-container ms-2 grid place-items-center overflow-hidden border"
 				>
-					<Flow bind:this={flowComponent} />
+					{#key page.url.pathname}
+						<Flow bind:this={flowComponent} />
+					{/key}
 				</div>
 
 				<GridResizerHandle

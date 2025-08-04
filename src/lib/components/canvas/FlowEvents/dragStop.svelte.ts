@@ -1,4 +1,4 @@
-import { getCurrentFlow, getCurrentFlowId, getNodes } from '$lib/stores/canvas.svelte'
+import { getCurrentContainer, getNodes } from '$lib/stores/canvas.svelte'
 import { page } from '$app/state'
 import { updateComponentPositions } from '$lib/actions/components'
 import type { UUID as Uuid } from 'crypto'

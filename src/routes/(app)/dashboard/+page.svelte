@@ -47,7 +47,7 @@
 							</span>
 						</h2>
 						<p class="text-main-500">
-							{project.meta.intention.purpose}
+							{project.meta.intention}
 						</p>
 					</div>
 				</a>

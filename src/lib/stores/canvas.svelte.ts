@@ -3,207 +3,151 @@ import type {
 	Source
 } from '$lib/types'
 import type { UUID as Uuid } from 'crypto'
-import type { Project, Flow, Action, Component } from '$lib/types/resources'
-import type { Node, Edge } from '$lib/types/flow'
-import { defaultProps, defaultEdgeProps } from '$lib/types/flow'
+import type { Project, Flow, Action, Component, ResolvedComponent } from '$lib/types/resources'
+import type { Node, MetaNode, CanvasNode, Edge } from '$lib/types/canvas'
+import { defaultProps, defaultEdgeProps } from '$lib/types/canvas'
 import { updateComponent, updateComponentPositions } from '$lib/actions/components'
 import { invalidateAll } from '$app/navigation'
 import { saveProject } from '$lib/actions/project'
 import { page } from '$app/state'
-import { getLayoutedNodes } from '$lib/components/canvas/layout.svelte'
 import { clone } from '$lib/utils/clone'
 import { selected } from '$lib/stores/panel.svelte'
 import { getLeafNodes } from '$lib/utils/getLeafNodes'
 import { getNodeSelector } from '$lib/utils/getNodeSelector'
+import {
+	isAction,
+	isFlow,
+	isAgent,
+	projectModel,
+	flowModel,
+	agentModel,
+	resolvedFlowModel,
+	resolvedAgentModel,
+	resolvedProjectModel,
+	isProject,
+	resolvedComponentModel
+} from '$lib/schemas'
+import { type FlowContainer } from '$lib/types/flow'
+import type * as z from 'zod'
+import { toast } from 'svelte-sonner'
 
-let nodesStore = $state<Node[]>([])
+let nodesStore = $state<CanvasNode[]>([])
 let edgesStore = $state<Edge[]>([])
 
 // SvelteFlow requires nodes & edges to be bound
 // We can't export a let, so export getters and setters instead
 export const getNodes = () => nodesStore
 export const getEdges = () => edgesStore
-export const setNodes = (newNodes: Node[]) => (nodesStore = newNodes)
+export const setNodes = (newNodes: CanvasNode[]) => (nodesStore = newNodes)
 export const setEdges = (newEdges: Edge[]) => (edgesStore = newEdges)
 
-let project = $state<Project>()
+let currentContainer = $state<FlowContainer>()
+export const getCurrentContainer = () => currentContainer
 
-export const setProject = (proj: Project) => {
+let project = $state<z.infer<typeof resolvedProjectModel>>()
+
+export const setProject = (proj: z.infer<typeof resolvedProjectModel>) => {
 	project = proj
 }
 
-// True if we're in the root level (Have not entered a flow)
-const isRootLevel = $derived(page.params.path === undefined)
-
-// The current flow ID - last uuid in the path (if any)
-const currentFlowId = $derived.by(() => {
-	const ids = page?.params?.path?.split('/') ?? []
-	if (ids.length < 1) return undefined
-	return ids.pop()
-}) as Uuid | undefined
-
-const currentFlow = $derived.by(() => {
-	if (!currentFlowId) {
-		return
-	}
-
-	if (!project) {
-		return
-	}
-
-	return getFlowById(project.spec.nodes, currentFlowId as Uuid)
-})
-
-export const getProject = () => project
-
-export const getCurrentFlow = () => currentFlow
-export const getCurrentFlowId = () => currentFlowId
-
-export const isEndpoint = (component: Component): component is Action =>
-	component.resource === 'endpoint/v1'
-export const isAction = (component: Component): component is Action =>
-	component.resource === 'action/v1'
-export const isFlow = (component: Component): component is Flow => component.resource === 'flow/v1'
+const nodeSize = 100
+const gap = 30
+const maxWidth = 1000
 
 // Initialize the nodes on project or flow level
-export async function initFlow(
-	allPositions: Record<Uuid, Record<Uuid, { x: number; y: number }>> = {}
-) {
-	if (!project) {
-		throw new Error('No project found')
+export async function initFlow(root: FlowContainer) {
+	if (!project) setProject(page.data.project)
+	if (!root) {
+		toast.error('No container found!')
+		return
 	}
+	console.log('initFlow', root)
+	currentContainer = root
 
-	// Get nodes from project or current flow
-	const triNodes = isRootLevel ? project!.spec.nodes : currentFlow?.spec.spec.nodes
+	// parse in all the nodes into the nodesStore
+	const { nodes, edges } = parseNodes(root)
 
-	// Turn trinodes into Svelteflow nodes and edges
-	// @ts-expect-error - we know the id is defined
-	const positions = allPositions[isRootLevel ? project.id : currentFlow?.id] ?? {}
-
-	// eslint-disable-next-line prefer-const
-	let { nodes, edges } = parseNodes(triNodes ?? {}, positions)
-
-	// Add data from local storage (open panels & payload)
-	nodes = addPersistedDataToNodes(nodes)
-
-	// Set selected node from url hash
-	nodes = setSelected(nodes)
-
-	if (currentFlow && !isRootLevel) {
-		const hasNodes = !!nodes.length
-		// find where to place the input node
-		const minY = Math.min(...nodes.map(node => node.position.y)) ?? 0
-		const minX = Math.min(...nodes.map(node => node.position.x)) ?? 0
-		const maxX = Math.max(...nodes.map(node => node.position.x)) ?? 0
-		// Add the parent/input node (for visualisation)
-		nodes.push(getInputNode(Math.round((minX + maxX) / 2), Math.round(minY - 150)) as Node)
-		// Add the node selector if the flow has no nodes
-		if (!hasNodes) {
-			const { node, edge } = getNodeSelector(nodes[0].id, { x: 0, y: 0 }, true)
-			node.origin = [0.3, 0] // small "hack" to get it to align in the middle
-
-			nodes.push(node)
-			edges.push(edge)
-		}
-	}
-
-	// if we're at the top level, layout the nodes ourself and also add a ghost node for creating new flows
-	if (isRootLevel) {
-		const nodeSize = 80
-		const gap = 60
-		let x = 0
-		let y = 0
-		for (const node of nodes) {
-			node.position = { x, y }
-			x += nodeSize + gap
-			if (x > 500) {
-				x = 0
-				y += nodeSize + gap
-			}
-		}
-		// add the ghost node after the last node
+	// add meta nodes
+	if (isFlow(root)) {
 		nodes.push({
-			id: 'create-node',
+			id: `${root.id as Uuid}:input`,
+			type: 'input-node',
+			draggable: true,
+			position: root.spec.io_nodes.input,
+			data: {
+				props: { ...defaultProps }
+			}
+		})
+		nodes.push({
+			id: `${root.id as Uuid}:output`,
+			type: 'output-node',
+			draggable: true,
+			position: root.spec.io_nodes.output,
+			data: {
+				props: { ...defaultProps }
+			}
+		})
+	}
+	if (isProject(root) || isAgent(root)) {
+		// find where to place the create node for agents and flow
+		// should be the last node, so added one step after the last node
+		const lastNode = nodes[nodes.length - 1]
+		let x = lastNode.position.x + nodeSize + gap
+		let y = lastNode.position.y
+		if (x > maxWidth) {
+			x = 0
+			y += nodeSize + gap
+		}
+		nodes.push({
+			id: `${root.id as Uuid}:create`,
 			type: 'create-node',
-			draggable: false,
-			selectable: false,
-			// idk why we need to offset x but it is what it is
-			position: {
-				x: x, // - (nodeSize + gap),
-				y
+			draggable: true,
+			position: { x, y },
+			data: {
+				props: { ...defaultProps }
 			}
 		})
 	}
 
-	// use nodes w/ positions if we can, otherwise auto-layout
-	const validPositions = new Set(Object.keys(positions)).intersection(
-		new Set(nodes.map(node => node.id))
-	)
-
-	nodesStore =
-		validPositions.size >= nodes.length - 1 || // -1 for the input node
-		isRootLevel // always force no layout at root level
-			? nodes
-			: await getLayoutedNodes(nodes, edges)
-	edgesStore = edges
-
-	// if we're at the top level, add a ghost node to the right of the last node
-	if (isRootLevel) {
-		// the last node is the one with the highest X coordinate of the ones with the highest Y coordinate
-		const maxY = Math.max(...nodes.map(node => node.position.y))
-		const maxX = Math.max(
-			...nodes.filter(node => node.position.y === maxY).map(node => node.position.x)
-		)
-		nodes.push({
-			id: 'create-node',
-			type: 'create-node',
-			draggable: false,
-			selectable: false,
-			position: {
-				x: maxX + 80 + 60,
-				y: maxY
-			}
-		})
-	}
-}
-
-// Get selected node from url hash, if any, and set as selected
-function setSelected(nodes: Node[]) {
-	const selectedNodeId = window.location.hash.replace('#', '')
-	if (!selectedNodeId) return nodes
-
-	return nodes.map(node => {
-		if (node.id === selectedNodeId) {
-			node.selected = true
-		}
-		return node
-	})
+	setNodes(nodes)
+	setEdges(edges)
 }
 
 // Get nodes from project
 // Enrich node with additional data
 // Create edges
-export function parseNodes(
-	nodes: Record<Uuid, TriNode>,
-	positions: Record<Uuid, { x: number; y: number }>
-) {
-	function getNode(node: TriNode, id: Uuid): Node {
-		let type: Node['type']
-		if (isAction(node.spec)) {
-			type = 'action-node'
-		} else if (isFlow(node.spec)) {
-			type = 'flow-node'
-		} else if (isEndpoint(node.spec)) {
-			type = 'endpoint-node'
+export function parseNodes(root: FlowContainer) {
+	const parseNode = (node: FlowContainer['spec']['nodes'][string], id: Uuid, i: number): Node => {
+		// if it's part of an ordered context (ie it's a top-level flow or inside of an agent) we
+		// need to lay it out according to the order instead of any x/y position
+		const ordered = 'order' in node
+		let x,
+			y = 0
+		if (ordered) {
+			x = i * (nodeSize + gap)
+			if (x > maxWidth) {
+				x = 0
+				y += nodeSize + gap
+			}
+		} else if ('position' in node) {
+			x = node.position.x
+			y = node.position.y
 		} else {
-			type = 'parent-node'
+			throw new Error('Unknown node position')
+		}
+
+		const getType = () => {
+			if (isAction(node.spec)) return 'action-node'
+			if (isFlow(node.spec)) return 'flow-node'
+			if (isAgent(node.spec)) return 'agent-node'
+			throw new Error('Unknown node type')
 		}
 
 		return {
 			id,
-			type,
-			draggable: !isRootLevel, // disable dragging of top-level flows
-			position: positions[id] ?? { x: 0, y: 0 },
+			type: getType(),
+			draggable: !ordered,
+			position: { x, y },
 			data: {
 				trinode: node,
 				props: { ...defaultProps }
@@ -211,42 +155,60 @@ export function parseNodes(
 		}
 	}
 
-	function getEdges(node: TriNode, id: Uuid) {
+	const parseEdges = (node: FlowContainer['spec']['nodes'][string], id: Uuid) => {
 		const newEdges: Edge[] = []
-		for (const input of node.inputs ?? []) {
-			// Flow inputs
-			if (input === 'parent') {
+		if (!('inputs' in node)) return newEdges
+		for (const [inputName, port] of Object.entries(node.inputs)) {
+			if (port.source === 'parent') {
 				newEdges.push({
 					type: 'default',
 					id: `${id}:input`,
 					source: 'input',
+					sourceHandle: port.target,
 					target: id,
-					data: {
-						props: { ...defaultEdgeProps }
-					}
+					targetHandle: inputName,
+					data: { props: { ...defaultEdgeProps } }
 				})
-				continue
+			} else {
+				newEdges.push({
+					type: 'default',
+					id: `${id}:${inputName}`,
+					source: port.source,
+					sourceHandle: inputName,
+					target: id,
+					targetHandle: port.target,
+					data: { props: { ...defaultEdgeProps } }
+				})
 			}
-
-			// Normal edges
-			newEdges.push({
-				type: 'default',
-				id: `${id}:${input}`,
-				source: input,
-				target: id,
-				data: {
-					props: { ...defaultEdgeProps }
-				}
-			})
 		}
 		return newEdges
 	}
 
-	return Object.entries(nodes)
-		.map(([id, node]) => {
+	// get the output edges for the container (if they exist)
+	const outputEdges =
+		'outputs' in (root?.spec ?? {})
+			? (Object.entries(root.spec.outputs)
+					.map(([outputName, port]) => {
+						if (!('source' in port) || !('target' in port)) return
+						return {
+							type: 'default',
+							id: `${root.id}:${port.source}:${outputName}`,
+							source: port.source,
+							sourceHandle: port.target,
+							target: `${root.id}:output`,
+							targetHandle: outputName,
+							data: { props: { ...defaultEdgeProps } }
+						}
+					})
+					.filter(o => o !== undefined) as Edge[])
+			: []
+
+	return Object.entries(root?.spec?.nodes ?? {})
+		.sort((a, b) => (a[1].order ?? 0) - (b[1].order ?? 0))
+		.map(([id, node], i) => {
 			return {
-				node: getNode(node, id as Uuid),
-				edges: getEdges(node, id as Uuid)
+				node: parseNode(node, id as Uuid, i),
+				edges: parseEdges(node, id as Uuid)
 			}
 		})
 		.reduce(
@@ -255,40 +217,27 @@ export function parseNodes(
 				edges: [...acc.edges, ...curr.edges]
 			}),
 			{
-				nodes: [] as Node[],
-				edges: [] as Edge[]
+				nodes: [] as CanvasNode[],
+				edges: outputEdges
 			}
 		)
 }
 
-function addPersistedDataToNodes(nodes: Node[]) {
-	const rawPayloads = getPersistedPayloads()
-
-	return nodes.map(node => {
-		node.data.props.payload = rawPayloads[node.id] || '{"msg":"Hello world"}'
-		return node
-	})
-}
-
-// Get the open panel items from localStorage, if any
-function getPersistedPayloads(): Record<Uuid, string> {
-	return JSON.parse(localStorage.getItem('payloads') || '{}')
-}
-
-function getInputNode(x: number, y: number) {
-	if (!currentFlow) return
-
-	return {
-		id: 'input',
-		draggable: false,
-		type: 'parent-node',
-		position: { x, y }
+export const getNodeByPath = (
+	sourcePath: string[]
+): z.infer<typeof resolvedComponentModel> | undefined => {
+	if (!sourcePath.length) return
+	const path = [...sourcePath]
+	let node = project?.spec.nodes[path.shift() as string]
+	if (!node) return
+	while (path.length) {
+		if (!node || !('nodes' in node.spec.spec)) return undefined
+		const child: FlowContainer['spec']['nodes'][string] = node.spec.spec.nodes[path.shift() as Uuid]
+		if (!child) return
+		// @ts-expect-error type issue
+		node = child
 	}
-}
-
-const onFlowUpdate = (flow: Flow) => {
-	const leafNodes = getLeafNodes(flow)
-	flow.spec.outputs = Object.keys(leafNodes) as Uuid[]
+	return node?.spec
 }
 
 /**
@@ -362,8 +311,6 @@ export async function addNode(
 		const updatedFlow = clone(currentFlow) as typeof currentFlow
 		updatedFlow.spec.spec.nodes[newNodeId] = newNode
 
-		onFlowUpdate(updatedFlow.spec)
-
 		await Promise.all([
 			await updateComponent(updatedFlow.spec),
 			updateComponentPositions(currentFlow.component_id, {
@@ -394,7 +341,6 @@ export async function deleteNode(id: Uuid) {
 	// Delete node from flow
 	else if (currentFlow) {
 		delete currentFlow.spec.spec.nodes[id]
-		onFlowUpdate(currentFlow.spec)
 		await updateComponent(currentFlow.spec)
 	}
 
@@ -436,76 +382,17 @@ export const deleteEdge = async (edgeId: Edge['id']) => {
 	await invalidateAll()
 }
 
-// Get a flow anywhere in tje project by id
-function getFlowById(
-	root: Record<Uuid, TriNode>,
-	uuid: Uuid
-): (TriNode & { spec: Flow }) | undefined {
-	function findFlow(nodes: Record<Uuid, TriNode>): TriNode | undefined {
-		for (const [id, node] of Object.entries(nodes)) {
-			if (node.spec.resource !== 'flow/v1') continue
-
-			if (id === uuid) {
-				return node
-			}
-
-			// Capture and return if found
-			const result = findFlow(node.spec.spec.nodes)
-			if (result) return result
-		}
-
-		return undefined
-	}
-
-	return findFlow(root)
-}
-
-type Breadcrumb = { id: Uuid; name: string; path: string }[]
-
-// Make breadcrumbs to show when you are in a nested flow
-function makeBreadcrumbs(root: Record<Uuid, TriNode>, uuid: Uuid): Breadcrumb | undefined {
-	function findPath(
-		nodes: Record<Uuid, TriNode>,
-		targetId: Uuid,
-		path: Breadcrumb = [],
-		currentPath: string = ''
-	): Breadcrumb | undefined {
-		for (const [id, node] of Object.entries(nodes)) {
-			if (node.spec.resource !== 'flow/v1') continue
-
-			// Build the current breadcrumb path
-			const newPath = currentPath ? `${currentPath}/${id}` : id
-
-			const currentBreadcrumb = [
-				...path,
-				{ id: id as Uuid, name: node.spec.meta.name, path: newPath }
-			]
-
-			// Found the target node
-			if (id === targetId) {
-				return currentBreadcrumb
-			}
-
-			// Recur into child nodes if they exist
-			const childNodes = node.spec.spec.nodes
-			if (childNodes) {
-				const result = findPath(childNodes, targetId, currentBreadcrumb, newPath)
-				if (result) return result
-			}
-		}
-
-		return undefined
-	}
-
-	return findPath(root, uuid)
-}
-
 export const getBreadcrumbs = () => {
-	if (page.data.project && currentFlowId) {
-		return makeBreadcrumbs(page.data.project.spec.nodes, currentFlowId)
-	}
+	const parts = page.url.pathname.split('/').filter(Boolean)
+	const projectIndex = parts.findIndex(p => p === 'project')
+	const path = parts.slice(projectIndex + 2) // +2 because we want to skip both the project and its id
 
-	return undefined
+	return path.map((p: string, i: number) => ({
+		id: p as Uuid,
+		name: getNodeByPath(path.slice(0, i + 1))?.meta?.name ?? 'Unknown',
+		// +3 because we want to skip both the project and id, and get the first one after that
+		path: `/${parts.slice(0, i + projectIndex + 3).join('/')}`
+	}))
 }
 
 export const breadcrumbs = () => {
@@ -529,6 +416,7 @@ export const breadcrumbs = () => {
 	return breadcrumbs
 }
 
+// TODO: get this from the path instead
 export const getNodePath = () => {
 	const breadcrumbs = getBreadcrumbs()
 	if (!breadcrumbs || !selected) {

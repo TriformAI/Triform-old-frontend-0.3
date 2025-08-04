@@ -30,10 +30,7 @@ export const cronModel = z.strictObject({
 })
 
 // Trigger union
-export const triggerModel = z.discriminatedUnion('resource', [
-	endpointModel,
-	cronModel
-])
+export const triggerModel = z.discriminatedUnion('resource', [endpointModel, cronModel])
 
 // Ingress token models
 export const ingressTokenSpecModel = z.strictObject({

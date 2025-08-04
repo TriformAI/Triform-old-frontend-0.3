@@ -1,11 +1,11 @@
 import type { ExecutionTraceData } from '$lib/types/execution'
 import { source } from 'sveltekit-sse'
-import { getCurrentFlowId } from '$lib/stores/canvas.svelte'
 import { toast } from 'svelte-sonner'
 import { selected } from '$lib/stores/panel.svelte'
 import type { Execution } from '$lib/types/execution'
 import type { Component } from '$lib/types/resources'
 import type { UUID as Uuid } from 'crypto'
+import { getCurrentContainer } from '$lib/stores/canvas.svelte'
 
 const createExecution = (
 	nodeId: Uuid,
@@ -36,7 +36,7 @@ export const executeComponent = async (
 		result: string
 	}
 ) => {
-	const nodeId = selected.node?.id ?? getCurrentFlowId()
+	const nodeId = selected.node?.id ?? getCurrentContainer()?.id
 
 	if (!nodeId) {
 		return toast.error('No node selected')

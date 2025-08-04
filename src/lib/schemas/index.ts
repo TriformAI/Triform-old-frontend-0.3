@@ -8,6 +8,7 @@
 export * from './common.js'
 export * from './components.js'
 export * from './execution.js'
+export * from './guards.js'
 export * from './modifiers.js'
 export * from './projects.js'
 export * from './triggers.js'

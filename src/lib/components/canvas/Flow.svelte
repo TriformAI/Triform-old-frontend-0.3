@@ -19,10 +19,10 @@
 		getNodes,
 		setEdges,
 		setNodes,
-		getCurrentFlow,
-		getProject
+		getCurrentContainer,
+		getNodeByPath
 	} from '$lib/stores/canvas.svelte'
-	import { defaultEdgeProps, type NodeType } from '$lib/types/flow'
+	import { defaultEdgeProps, type MetaNodeType, type NodeType } from '$lib/types/canvas'
 	import {
 		Background,
 		BackgroundVariant,
@@ -33,7 +33,7 @@
 		type EdgeTypes
 	} from '@xyflow/svelte'
 	import '@xyflow/svelte/dist/style.css'
-	import { type Component, tick } from 'svelte'
+	import { type Component, onMount, tick } from 'svelte'
 	import { debounce } from '../../utils/debounce'
 	import { isValidConnection } from './FlowEvents/isValidConnection'
 	import { scale } from 'svelte/transition'
@@ -45,20 +45,22 @@
 	import { getFlowModel } from '$lib/nodeModels'
 	import { flowHasComponent } from '$lib/utils/flowHasComponent'
 	import { toast } from 'svelte-sonner'
+	import { initFlow } from '$lib/stores/canvas.svelte'
+	import type { FlowContainer } from '$lib/types/flow'
+	import { page } from '$app/state'
 
 	const useSvelteFlow = svelteFlowHook()
 	const { fitView, screenToFlowPosition } = useSvelteFlow
 	export { fitView }
 	const updateNodeInternals = useUpdateNodeInternals()
 
-	const nodeTypes: Record<NodeType, Component> = {
-		'endpoint-node': EndpointNode,
+	const nodeTypes: Record<NodeType | MetaNodeType, Component> = {
 		'action-node': ActionNode,
 		'flow-node': FlowNode,
-		// @ts-expect-error TODO: adjust props on component
+		'input-node': ParentNode,
+		'output-node': ParentNode,
 		'selector-node': SelectorNode,
 		'loading-node': LoadingNode,
-		'parent-node': ParentNode,
 		'create-node': CreateNode
 	}
 
@@ -66,8 +68,6 @@
 		// @ts-expect-error TODO: adjust props on component
 		default: Edge
 	}
-
-	const flowIsEmpty = $derived(!getNodes().length)
 
 	let isGoingDeeper = $state(false)
 
@@ -132,10 +132,15 @@
 		await addNode(component.data, position, [])
 	}
 
-	const createInitialFlow = async () => {
-		const newComponent = await createComponent(getFlowModel().spec)
-		addNode(newComponent, { x: 0, y: 0 }, [])
-	}
+	onMount(() => {
+		console.log('onMount', page.data.project)
+		const path = page.url.pathname.split('/')
+		// remove /project/projectId
+		const nodePath = path.slice(path.indexOf('project') + 2)
+		const newContainer = nodePath.length ? getNodeByPath(nodePath) : page.data.project
+		if (newContainer) initFlow(newContainer as FlowContainer)
+		else toast.error('Invalid node path!')
+	})
 </script>
 
 <svelte:window
@@ -153,76 +158,35 @@
 	ondragover={handleDragOver}
 	ondrop={handleDrop}
 >
-	{#if flowIsEmpty}
-		<div class="-mt-32 grid place-items-center gap-10 self-center">
-			<p class="opacity-50">
-				Get started by adding your first
-				{!getCurrentFlow() ? 'flow' : 'action'}
-			</p>
-			<button
-				onclick={createInitialFlow}
-				type="button"
-				class="bg-main-300 text-main-800 grid size-20 place-content-center rounded-full text-4xl leading-none transition-transform duration-300 ease-(--easing-circ) hover:scale-105"
-			>
-				+
-			</button>
-		</div>
-	{:else}
-		{#key getCurrentFlow()?.component_id}
-			{@const transitionSize = 0.25}
-			{@const transitionDuration = 400}
-			<div
-				in:scale={{
-					start: isGoingDeeper ? 1 - transitionSize : 1 + transitionSize,
-					opacity: 0,
-					duration: transitionDuration
-				}}
-				out:scale={{
-					start: isGoingDeeper ? 1 + transitionSize : 1 - transitionSize,
-					opacity: 0,
-					duration: transitionDuration
-				}}
-				class="absolute inset-0"
-			>
-				<SvelteFlow
-					bind:nodes={getNodes, setNodes}
-					bind:edges={getEdges, setEdges}
-					{nodeTypes}
-					{edgeTypes}
-					defaultEdgeOptions={{ data: { props: defaultEdgeProps } }}
-					isValidConnection={(...args) => isValidConnection(...args, useSvelteFlow)}
-					fitView
-					fitViewOptions={{
-						maxZoom: 1,
-						minZoom: 1
-					}}
-					disableKeyboardA11y={true}
-					onconnectend={(...args) => handleConnectEnd(...args, useSvelteFlow)}
-					snapGrid={[20, 20]}
-					proOptions={{ hideAttribution: true }}
-					zoomOnDoubleClick={false}
-					onbeforedelete={handleBeforeDelete}
-					ondelete={handleDelete}
-					onnodedragstop={handleDragStop}
-				>
-					<div
-						class={[
-							getCurrentFlow() ? 'opacity-100' : 'opacity-0',
-							'transition-opacity duration-500'
-						]}
-					>
-						<Background
-							bgColor="#18181b"
-							patternColor="#52525c"
-							gap={20}
-							size={1.25}
-							variant={BackgroundVariant.Dots}
-						/>
-					</div>
-				</SvelteFlow>
-			</div>
-		{/key}
-	{/if}
+	<SvelteFlow
+		bind:nodes={getNodes, setNodes}
+		bind:edges={getEdges, setEdges}
+		{nodeTypes}
+		{edgeTypes}
+		defaultEdgeOptions={{ data: { props: defaultEdgeProps } }}
+		isValidConnection={(...args) => isValidConnection(...args, useSvelteFlow)}
+		fitView
+		fitViewOptions={{
+			maxZoom: 1,
+			minZoom: 1
+		}}
+		disableKeyboardA11y={true}
+		onconnectend={(...args) => handleConnectEnd(...args, useSvelteFlow)}
+		snapGrid={[20, 20]}
+		proOptions={{ hideAttribution: true }}
+		zoomOnDoubleClick={false}
+		onbeforedelete={handleBeforeDelete}
+		ondelete={handleDelete}
+		onnodedragstop={handleDragStop}
+	>
+		<Background
+			bgColor="#18181b"
+			patternColor="#52525c"
+			gap={20}
+			size={1.25}
+			variant={BackgroundVariant.Dots}
+		/>
+	</SvelteFlow>
 </div>
 
 <style>

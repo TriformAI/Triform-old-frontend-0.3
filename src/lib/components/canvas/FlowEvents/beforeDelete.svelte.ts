@@ -1,6 +1,6 @@
 import { confirmStore } from '$lib/stores/confirm.svelte'
 import { toast } from 'svelte-sonner'
-import { type TemporaryNode } from '$lib/types/flow'
+import { type TemporaryNode } from '$lib/types/canvas'
 import { type Node } from '$lib/types'
 
 export const handleBeforeDelete = async ({ nodes }: { nodes: (Node | TemporaryNode)[] }) => {

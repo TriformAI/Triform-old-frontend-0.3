@@ -1,5 +1,6 @@
 <script lang="ts">
-	import { type Component } from '$lib/types/resources'
+	import type * as z from 'zod'
+	import type { resolvedComponentModel } from '$lib/schemas'
 	import CodeEditor from './items/CodeEditor.svelte'
 	import Execute from './items/Execute/Root.svelte'
 	import Metadata from './items/Metadata.svelte'
@@ -25,7 +26,7 @@
 
 	interface Props {
 		items: PanelComponent[]
-		componentData: Component
+		componentData: z.infer<typeof resolvedComponentModel>
 		showNav?: boolean
 	}
 

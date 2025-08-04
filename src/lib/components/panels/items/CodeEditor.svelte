@@ -5,7 +5,8 @@
 	import LightEditor from '$lib/components/atoms/LightEditor.svelte'
 	import Tabs from '$lib/components/atoms/Tabs.svelte'
 	import Button from '$lib/components/atoms/Button.svelte'
-	import type { Action, Component } from '$lib/types/resources'
+	import type { z } from 'zod'
+	import type { resolvedComponentModel, actionModel } from '$lib/schemas'
 	import { toast } from 'svelte-sonner'
 	import compare from 'just-compare'
 	import PanelItem from '../PanelItem.svelte'
@@ -13,7 +14,7 @@
 	import { blur } from 'svelte/transition'
 	import { debounce } from '$lib/utils/debounce'
 
-	const { componentData }: { componentData: Component } = $props()
+	const { componentData }: { componentData: z.infer<typeof actionModel> } = $props()
 
 	const dataIsDirty = false // FIXME
 
@@ -28,7 +29,7 @@
 	// if we're building, we need to sync the component that's being bult to our
 	// local form data, so it's as if we've written it ourselves
 	$effect(() => {
-		const newComponent = inProgressComponents[componentId]?.component as Action
+		const newComponent = inProgressComponents[componentId]?.component as z.infer<typeof actionModel>
 		if (!newComponent) return
 
 		// important that this is in the same order as the tabs

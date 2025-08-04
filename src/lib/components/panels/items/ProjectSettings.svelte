@@ -5,11 +5,12 @@
 	import { toast } from 'svelte-sonner'
 	import { clone } from '$lib/utils/clone'
 	import PanelItem from '../PanelItem.svelte'
-	import { type Component } from '$lib/types/resources'
 	import { saveProject } from '$lib/actions/project'
 	import { createFormHandler } from '$lib/stores/formHandler.svelte'
+	import type { z } from 'zod'
+	import type { resolvedComponentModel } from '$lib/schemas'
 
-	const { componentData }: { componentData: Component } = $props()
+	const { componentData }: { componentData: z.infer<typeof resolvedComponentModel> } = $props()
 
 	interface FormData {
 		name: string
@@ -34,7 +35,7 @@
 
 	const { handleSubmit, isLoading } = $derived(
 		createFormHandler({
-			onSubmit: async data => await saveProject(componentData.id!, { meta: formData }),
+			onSubmit: async data => await saveProject(componentData.id, { meta: formData }),
 			successMessage: 'Project settings updated!',
 			errorMessage: 'Failed to update project settings'
 		})

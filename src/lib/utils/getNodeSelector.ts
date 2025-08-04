@@ -1,5 +1,5 @@
-import type { Node, TemporaryNode } from '$lib/types/flow'
-import { defaultEdgeProps } from '$lib/types/flow'
+import type { Node, TemporaryNode } from '$lib/types/canvas'
+import { defaultEdgeProps } from '$lib/types/canvas'
 import type { XYPosition } from '@xyflow/svelte'
 
 export function getNodeSelector(

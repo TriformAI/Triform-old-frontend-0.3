@@ -1,5 +1,5 @@
 import { getNodes, setNodes } from './canvas.svelte'
-import type { Node, TemporaryNode } from '$lib/types/flow'
+import type { Node, TemporaryNode } from '$lib/types/canvas'
 
 const isRegularNode = (node: Node | TemporaryNode): node is Node =>
 	node.data && 'trinode' in node.data

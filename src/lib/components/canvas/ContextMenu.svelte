@@ -1,5 +1,5 @@
 <script lang="ts">
-	import type { Node, NodeType } from '$lib/types/flow'
+	import type { Node, NodeType } from '$lib/types/canvas'
 
 	import { contextMenus, menuIsOpen, toggleContextMenu } from '$lib/stores/contextMenu.svelte'
 

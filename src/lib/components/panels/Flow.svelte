@@ -1,8 +1,9 @@
 <script lang="ts">
 	import Panel from './Panel.svelte'
 	import Icon from '~icons/material-symbols/network-node'
-	import { type Component } from '$lib/types/resources'
-	const { componentData }: { componentData: Component } = $props()
+	import type { z } from 'zod'
+	import type { resolvedFlowModel } from '$lib/schemas'
+	const { componentData }: { componentData: z.infer<typeof resolvedFlowModel> } = $props()
 </script>
 
 <Panel {componentData} {Icon}>

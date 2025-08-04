@@ -1,8 +1,8 @@
 <script lang="ts">
 	import ContextMenu from '$lib/components/atoms/ContextMenu.svelte'
-	import { getNodes, getCurrentFlow } from '$lib/stores/canvas.svelte'
+	import { getNodes, getCurrentContainer } from '$lib/stores/canvas.svelte'
 	import { getActions } from '$lib/stores/nodeActions.svelte'
-	import type { Node, NodeData } from '$lib/types/flow'
+	import type { Node, NodeData } from '$lib/types/canvas'
 	import type { Snippet } from 'svelte'
 	import componentIsDirty from '$lib/utils/componentIsDirty'
 	import NodeActions from './NodeActions.svelte'
@@ -12,7 +12,7 @@
 	import { isAction } from '$lib/types/resources'
 
 	interface Props {
-		type: 'action' | 'flow'
+		type: 'action' | 'flow' | 'agent'
 		id: Node['id']
 		data: NodeData
 		selected: boolean
@@ -44,7 +44,7 @@
 
 	let contextIsOpen = $state(false)
 
-	const isRootLevelAndFlowNode = $derived(!getCurrentFlow() && node?.type === 'flow-node')
+	const isRootLevelAndFlowNode = $derived(!getCurrentContainer() && node?.type === 'flow-node')
 
 	let showTargetHandle = $derived.by(() => {
 		return node?.type !== 'endpoint-node' && !isRootLevelAndFlowNode

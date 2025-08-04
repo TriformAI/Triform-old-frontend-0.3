@@ -1,5 +1,5 @@
 import { type OnConnectEnd, useSvelteFlow as svelteFlowHook } from '@xyflow/svelte'
-import { defaultEdgeProps, type Node } from '$lib/types/flow'
+import { defaultEdgeProps, type Node } from '$lib/types/canvas'
 import type { UUID as Uuid } from 'crypto'
 import { addEdge, getEdges, getNodes, setEdges, setNodes } from '$lib/stores/canvas.svelte'
 import { getNodeSelector } from '$lib/utils/getNodeSelector'

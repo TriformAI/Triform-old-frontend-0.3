@@ -1,8 +1,9 @@
 <script lang="ts">
 	import Panel from './Panel.svelte'
 	import Icon from '~icons/mdi/rhombus'
-	import { type Component } from '$lib/types/resources'
-	const { componentData }: { componentData: Component } = $props()
+	import type { z } from 'zod'
+	import type { resolvedComponentModel } from '$lib/schemas'
+	const { componentData }: { componentData: z.infer<typeof resolvedComponentModel> } = $props()
 </script>
 
 <Panel {componentData} {Icon}>

@@ -1,4 +1,4 @@
-import type { Node } from '$lib/types/flow'
+import type { Node } from '$lib/types/canvas'
 import type { Edge } from '@xyflow/svelte'
 import dagre from '@dagrejs/dagre'
 import { Position } from '@xyflow/svelte'

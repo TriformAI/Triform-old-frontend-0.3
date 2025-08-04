@@ -150,17 +150,9 @@ export const resolvedAgentModel = agentModel.extend({
 })
 
 // Union models
-export const componentSpecModel = z.union([
-	flowSpecModel,
-	actionSpecModel,
-	agentSpecModel
-])
+export const componentSpecModel = z.union([flowSpecModel, actionSpecModel, agentSpecModel])
 
-export const componentModel = z.discriminatedUnion('resource', [
-	flowModel,
-	actionModel,
-	agentModel
-])
+export const componentModel = z.discriminatedUnion('resource', [flowModel, actionModel, agentModel])
 
 export const componentResourceModel = z.enum(
 	componentModel.options.map(o => o.shape.resource.value)
@@ -171,26 +163,3 @@ export const resolvedComponentModel = z.discriminatedUnion('resource', [
 	actionModel,
 	resolvedAgentModel
 ])
-
-// Helper functions
-export const isFlow = (
-	component:
-		| z.infer<typeof componentModel>
-		| z.infer<typeof resolvedComponentModel>
-): component is z.infer<typeof flowModel> | z.infer<typeof resolvedFlowModel> =>
-	component.resource === 'flow/v1'
-
-export const isAction = (
-	component:
-		| z.infer<typeof componentModel>
-		| z.infer<typeof resolvedComponentModel>
-): component is z.infer<typeof actionModel> =>
-	component.resource === 'action/v1'
-
-export const isAgent = (
-	component:
-		| z.infer<typeof componentModel>
-		| z.infer<typeof resolvedComponentModel>
-): component is
-	| z.infer<typeof agentModel>
-	| z.infer<typeof resolvedAgentModel> => component.resource === 'agent/v1'

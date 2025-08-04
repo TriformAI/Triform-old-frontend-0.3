@@ -1,13 +1,12 @@
 <script lang="ts">
 	import type { Snippet } from 'svelte'
-	import IconChevronRight from '~icons/material-symbols/chevron-right'
-	import { openPanelItems, toggleOpenPanelItem, selected } from '$lib/stores/panel.svelte'
-	import { getCurrentFlowId } from '$lib/stores/canvas.svelte'
-	import type { Component } from '$lib/types/resources'
+	import { getCurrentContainer } from '$lib/stores/canvas.svelte'
 	import IconAdd from '~icons/mdi/plus-circle-outline'
+	import type { z } from 'zod'
+	import type { resolvedComponentModel } from '$lib/schemas'
 
 	export interface Props {
-		componentData: Component
+		componentData: z.infer<typeof resolvedComponentModel>
 		title: string
 		children: Snippet
 		isDirty?: boolean
@@ -35,15 +34,12 @@
 		if (componentData.resource === 'action/v1') {
 			return 'action'
 		}
-		if (componentData.resource === 'endpoint/v1') {
-			return 'endpoint'
-		}
 		return undefined
 	})
 </script>
 
 <div class={[' grid  p-5 pt-4']}>
-	{#if selected.node || getCurrentFlowId()}
+	{#if /*selected.node ||*/ getCurrentContainer()}
 		<div class="mb-4 flex flex-row items-center">
 			<h2 class={['eyebrow text-main-300 whitespace-nowrap transition-colors']}>
 				{title}

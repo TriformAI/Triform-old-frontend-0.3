@@ -1,11 +1,11 @@
 <script lang="ts">
 	import IconAction from '~icons/mdi/rhombus'
 	import IconFlow from '~icons/material-symbols/network-node'
-	import IconEndpoint from '~icons/material-symbols/bolt'
+	import IconAgent from '~icons/material-symbols/psychology-rounded'
 	import { twMerge } from 'tailwind-merge'
 
 	interface Props {
-		type: 'action' | 'flow' | 'endpoint'
+		type: 'action' | 'flow' | 'agent'
 		selected?: boolean
 		class?: string
 		id?: string
@@ -39,8 +39,8 @@
 				iconColor: 'var(--color-accent-500)',
 				shape: 'square'
 			},
-			endpoint: {
-				icon: IconEndpoint,
+			agent: {
+				icon: IconAgent,
 				color: 'var(--color-warning-300)',
 				shape: 'circle'
 			}
