@@ -1,3 +1,4 @@
 {
-  "tailwindCSS.experimental.configFile": "src/app.css"
+  "tailwindCSS.experimental.configFile": "src/app.css",
+  "biome.enabled": false
 }
