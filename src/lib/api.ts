@@ -1,6 +1,4 @@
-import { browser } from '$app/environment'
-import { getRequestEvent } from '$app/server'
-import { error, fail, type ActionFailure } from '@sveltejs/kit'
+import { error, fail, type ActionFailure, type RequestEvent } from '@sveltejs/kit'
 
 type RequestMethod = 'GET' | 'POST' | 'PUT' | 'PATCH' | 'DELETE'
 
@@ -28,11 +26,13 @@ type ReturnData<T> = {
 
 export class API {
 	#baseURL: string
-	#fetchFunc: typeof fetch
+	#fetch: typeof fetch
+	#cookie: string
 
-	constructor(baseURL: string = '/api', fetchFunc = fetch) {
-		this.#fetchFunc = fetchFunc
+	constructor(baseURL: string = '/api', event: RequestEvent | undefined) {
+		this.#fetch = event?.fetch ?? fetch
 		this.#baseURL = baseURL
+		this.#cookie = event?.request.headers.get('cookie') ?? ''
 	}
 
 	// Overloads based on returnOnlyPromise and returnHeaders
@@ -91,18 +91,11 @@ export class API {
 		returnOnlyPromise = false,
 		returnHeaders = false
 	): Promise<ReturnData<T> | ReturnDataWithHeaders<T> | ActionFailure> {
-		let cookie = undefined
-
-		if (!browser) {
-			const { request } = getRequestEvent()
-			cookie = this.#baseURL !== '/	api' ? (request.headers.get('cookie') ?? '') : ''
-		}
-
-		const response = await this.#fetchFunc(`${this.#baseURL}/${endpoint}`, {
+		const response = await this.#fetch(`${this.#baseURL}/${endpoint}`, {
 			method,
 			headers: {
 				'Content-Type': 'application/json',
-				cookie,
+				cookie: this.#cookie,
 				...headers
 			},
 			body: data ? JSON.stringify(data) : undefined

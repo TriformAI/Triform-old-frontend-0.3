@@ -5,7 +5,7 @@ import { env } from '$env/dynamic/private'
 const apiUrl = env.API_URL
 
 const authHandle: Handle = async ({ event, resolve }) => {
-	const authToken = event.cookies.get('better-auth.session_token')
+	const authToken = event.cookies.get('__Secure-better-auth.session_token')
 
 	// Just resolve if no auth token is found in cookies
 	if (!authToken) {
@@ -15,7 +15,7 @@ const authHandle: Handle = async ({ event, resolve }) => {
 	event.locals.isAuthenticated = true
 
 	// Initialize API instance and make available to locals
-	const api = new API(apiUrl, event.fetch)
+	const api = new API(apiUrl, event)
 	event.locals.api = api
 
 	try {
