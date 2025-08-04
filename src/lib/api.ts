@@ -18,19 +18,28 @@ export type ApiErrorType = InstanceType<typeof ApiError>
 
 type ReturnDataWithHeaders<T> = {
 	data: T
+	success: boolean
 	headers: Headers
 }
 
 type ReturnData<T> = {
 	data: T
+	success: boolean
 }
 
-export class API {
+// Helper type to determine if we're on server based on RequestEvent presence
+type IsServerSide<T> = T extends RequestEvent ? true : false
+
+// Conditional return types
+type MutationResult<T, TEvent = undefined> =
+	IsServerSide<TEvent> extends true ? ReturnData<T> | ActionFailure : ReturnData<T>
+
+export class API<TEvent extends RequestEvent | undefined = undefined> {
 	#baseURL: string
 	#fetch: typeof fetch
 	#cookie: string
 
-	constructor(baseURL: string = '/api', event?: RequestEvent | undefined) {
+	constructor(baseURL: string = '/api', event?: TEvent) {
 		this.#fetch = event?.fetch ?? fetch
 		this.#baseURL = baseURL
 		this.#cookie = event?.request.headers.get('cookie') ?? ''
@@ -92,57 +101,61 @@ export class API {
 		returnOnlyPromise = false,
 		returnHeaders = false
 	): Promise<ReturnData<T> | ReturnDataWithHeaders<T> | ActionFailure> {
-		const response = await this.#fetch(`${this.#baseURL}/${endpoint}`, {
-			method,
-			headers: {
-				'Content-Type': 'application/json',
-				cookie: this.#cookie,
-				...headers
-			},
-			body: data ? JSON.stringify(data) : undefined
-		})
+		try {
+			const response = await this.#fetch(`${this.#baseURL}/${endpoint}`, {
+				method,
+				headers: {
+					'Content-Type': 'application/json',
+					cookie: this.#cookie,
+					...headers
+				},
+				body: data ? JSON.stringify(data) : undefined
+			})
 
-		// Check if response is JSON
-		const contentType = response.headers.get('content-type')
-		let result: any
+			const result = await response.json()
 
-		if (contentType && contentType.includes('application/json')) {
-			result = await response.json()
-		} else {
-			// If not JSON, read as text and wrap in an object
-			const text = await response.text()
-			result = { message: text }
-		}
+			if (browser) {
+				return {
+					...result,
+					success: response.ok,
+					status: response.status
+				}
+			}
 
-		if (browser) {
+			if (returnOnlyPromise) {
+				if (returnHeaders) {
+					return {
+						data: result as T,
+						success: response.ok,
+						status: response.status,
+						headers: response.headers
+					}
+				}
+				return result as ReturnData<T>
+			}
+
 			if (!response.ok) {
-				throw new Error(result.message)
+				console.error('API error: ', result)
+				if (['POST', 'PUT', 'DELETE'].includes(method)) {
+					return fail(response.status, result)
+				}
+
+				error(response.status, result)
 			}
 
-			return result as ReturnData<T>
-		}
-
-		if (returnOnlyPromise) {
 			if (returnHeaders) {
-				return { data: result as T, headers: response.headers }
+				return {
+					data: result as T,
+					success: response.ok,
+					status: response.status,
+					headers: response.headers
+				}
 			}
+
 			return result as ReturnData<T>
+		} catch (error) {
+			return { success: false, status: 500, message: 'Server error' }
 		}
-
-		if (!response.ok) {
-			console.error('API error: ', result)
-			if (['POST', 'PUT', 'DELETE'].includes(method)) {
-				return fail(response.status, result)
-			}
-
-			error(response.status, result)
-		}
-
-		if (returnHeaders) {
-			return { data: result as T, headers: response.headers }
-		}
-
-		return result as ReturnData<T>
 	}
 
 	// --- Public Methods ---
@@ -168,31 +181,31 @@ export class API {
 		endpoint: string,
 		data: unknown,
 		headers: Record<string, string> = {}
-	): Promise<ReturnData<T> | ActionFailure> {
-		return this.#request<T>('POST', endpoint, data, headers, false)
+	): Promise<MutationResult<T, TEvent>> {
+		return this.#request<T>('POST', endpoint, data, headers, false) as any
 	}
 
 	put<T>(
 		endpoint: string,
 		data: unknown,
 		headers: Record<string, string> = {}
-	): Promise<ReturnData<T> | ActionFailure> {
-		return this.#request<T>('PUT', endpoint, data, headers, false)
+	): Promise<MutationResult<T, TEvent>> {
+		return this.#request<T>('PUT', endpoint, data, headers, false) as any
 	}
 
 	patch<T>(
 		endpoint: string,
 		data: unknown,
 		headers: Record<string, string> = {}
-	): Promise<ReturnData<T> | ActionFailure> {
-		return this.#request<T>('PATCH', endpoint, data, headers, false)
+	): Promise<MutationResult<T, TEvent>> {
+		return this.#request<T>('PATCH', endpoint, data, headers, false) as any
 	}
 
 	delete<T>(
 		endpoint: string,
 		data?: unknown,
 		headers: Record<string, string> = {}
-	): Promise<ReturnData<T> | ActionFailure> {
-		return this.#request<T>('DELETE', endpoint, data, headers, false)
+	): Promise<MutationResult<T, TEvent>> {
+		return this.#request<T>('DELETE', endpoint, data, headers, false) as any
 	}
 }
