@@ -55,7 +55,9 @@ const positionModel = z.strictObject({
 // Flow models (without async validations)
 const flowNodeValueModel = z.strictObject({
 	component_id: z.uuidv4(),
-	spec: z.lazy((): z.ZodTypeAny => componentModel),
+	get spec() {
+		return componentModel
+	},
 	inputs: z.record(z.string(), nodePortModel),
 	position: positionModel.default({ x: 0, y: 0 })
 })
