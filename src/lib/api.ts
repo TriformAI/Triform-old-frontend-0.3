@@ -1,3 +1,4 @@
+import { browser } from '$app/environment'
 import { error, fail, type ActionFailure, type RequestEvent } from '@sveltejs/kit'
 
 type RequestMethod = 'GET' | 'POST' | 'PUT' | 'PATCH' | 'DELETE'
@@ -29,7 +30,7 @@ export class API {
 	#fetch: typeof fetch
 	#cookie: string
 
-	constructor(baseURL: string = '/api', event: RequestEvent | undefined) {
+	constructor(baseURL: string = '/api', event?: RequestEvent | undefined) {
 		this.#fetch = event?.fetch ?? fetch
 		this.#baseURL = baseURL
 		this.#cookie = event?.request.headers.get('cookie') ?? ''
@@ -113,6 +114,14 @@ export class API {
 			result = { message: text }
 		}
 
+		if (browser) {
+			if (!response.ok) {
+				throw new Error(result.message)
+			}
+
+			return result as ReturnData<T>
+		}
+
 		if (returnOnlyPromise) {
 			if (returnHeaders) {
 				return { data: result as T, headers: response.headers }
@@ -155,38 +164,12 @@ export class API {
 		return this.#request<T>('GET', endpoint, undefined, headers, false, returnHeaders as any) as any
 	}
 
-	getRaw<T>(
-		endpoint: string,
-		headers?: Record<string, string>,
-		returnHeaders?: false
-	): Promise<ReturnData<T>>
-	getRaw<T>(
-		endpoint: string,
-		headers: Record<string, string>,
-		returnHeaders: true
-	): Promise<ReturnDataWithHeaders<T>>
-	getRaw<T>(
-		endpoint: string,
-		headers: Record<string, string> = {},
-		returnHeaders: boolean = false
-	): Promise<ReturnData<T> | ReturnDataWithHeaders<T>> {
-		return this.#request<T>('GET', endpoint, undefined, headers, true, returnHeaders as any) as any
-	}
-
 	post<T>(
 		endpoint: string,
 		data: unknown,
 		headers: Record<string, string> = {}
 	): Promise<ReturnData<T> | ActionFailure> {
 		return this.#request<T>('POST', endpoint, data, headers, false)
-	}
-
-	postRaw<T>(
-		endpoint: string,
-		data: unknown,
-		headers: Record<string, string> = {}
-	): Promise<ReturnData<T>> {
-		return this.#request<T>('POST', endpoint, data, headers, true)
 	}
 
 	put<T>(
@@ -197,14 +180,6 @@ export class API {
 		return this.#request<T>('PUT', endpoint, data, headers, false)
 	}
 
-	putRaw<T>(
-		endpoint: string,
-		data: unknown,
-		headers: Record<string, string> = {}
-	): Promise<ReturnData<T>> {
-		return this.#request<T>('PUT', endpoint, data, headers, true)
-	}
-
 	patch<T>(
 		endpoint: string,
 		data: unknown,
@@ -213,27 +188,11 @@ export class API {
 		return this.#request<T>('PATCH', endpoint, data, headers, false)
 	}
 
-	patchRaw<T>(
-		endpoint: string,
-		data: unknown,
-		headers: Record<string, string> = {}
-	): Promise<ReturnData<T>> {
-		return this.#request<T>('PATCH', endpoint, data, headers, true)
-	}
-
 	delete<T>(
 		endpoint: string,
 		data?: unknown,
 		headers: Record<string, string> = {}
 	): Promise<ReturnData<T> | ActionFailure> {
 		return this.#request<T>('DELETE', endpoint, data, headers, false)
-	}
-
-	deleteRaw<T>(
-		endpoint: string,
-		data?: unknown,
-		headers: Record<string, string> = {}
-	): Promise<ReturnData<T>> {
-		return this.#request<T>('DELETE', endpoint, data, headers, true)
 	}
 }
