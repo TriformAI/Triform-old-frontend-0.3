@@ -285,7 +285,11 @@
 	}
 
 	.error-msg {
-		@apply bg-danger-100 text-danger-500 rounded-md p-4 text-center;
+		@apply bg-danger-900/50 border-danger-800/50 text-danger-200 rounded-md border p-4 text-center;
+
+		ul {
+			@apply list-inside list-disc text-start text-sm;
+		}
 	}
 
 	.eyebrow {

@@ -1,3 +1,10 @@
+import type { projectModel } from '$lib/schemas'
+import type { z } from 'zod'
+
+export type Project = z.infer<typeof projectModel>
+
+/////
+
 /* eslint-disable */
 import type { UUID } from 'node:crypto'
 
@@ -1017,50 +1024,7 @@ export type ModifierSpec = {
 	value: string
 	secret: false
 }
-export interface Project {
-	id?: UUID
-	resource: 'project/v1'
-	meta: Omit<Meta, 'intention'>
-	spec: {
-		readme: string
-		nodes: {
-			[k: string]: {
-				component_id: UUID
-				triggers: {
-					[k: string]:
-						| {
-								resource: 'endpoint/v1'
-								meta: Omit<Meta, 'intention'>
-								spec: {
-									method: 'POST'
-									payload_mapping: {
-										[k: string]: string
-									}
-									ingress_tokens: string[]
-								}
-						  }
-						| {
-								resource: 'cron/v1'
-								meta: Omit<Meta, 'intention'>
-								spec: {
-									schedule: string
-									timezone: string
-									payload: {
-										[k: string]: unknown
-									}
-								}
-						  }
-				}
-				order: number
-			}
-		}
-		modifiers: {
-			[k: string]: {
-				modifier_id: UUID
-			}[]
-		}
-	}
-}
+
 export interface ProjectSpec {
 	readme: string
 	nodes: {

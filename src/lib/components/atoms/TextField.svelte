@@ -1,6 +1,6 @@
 <script lang="ts">
 	interface Props {
-		name: string
+		name?: string
 		value?: string
 		label: string
 		placeholder?: string
