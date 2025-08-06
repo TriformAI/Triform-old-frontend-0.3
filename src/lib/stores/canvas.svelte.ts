@@ -346,8 +346,9 @@ export const addEdge = async (source: EdgeConnection, target: EdgeConnection) =>
 		const node = container.spec.nodes[target.id]
 		if (!node) throw new Error(`Tried to add edge to non-existent node ${target.id}`)
 		if (!('inputs' in node)) throw new Error(`Node ${target.id} does not support inputs`)
+		const sourceId = source.id.endsWith(':input') ? 'parent' : source.id
 		node.inputs[target.handle] = {
-			source: source.id,
+			source: sourceId,
 			target: source.handle
 		}
 	}
