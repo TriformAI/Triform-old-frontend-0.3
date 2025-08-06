@@ -26,8 +26,10 @@ export const ioModel = z.record(
 const flowOutputModel = z.record(
 	ioModel.keyType,
 	ioModel.valueType.extend({
-		source: z.string().nullable(),
-		target: z.string().nullable()
+		source: z.string().nullable().meta({
+			description: 'The ID of the node that is being fed into this node'
+		}),
+		target: z.string().nullable().meta({ description: 'The output of the source node' })
 	})
 )
 

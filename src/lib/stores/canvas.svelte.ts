@@ -327,15 +327,32 @@ export async function deleteNode(id: Uuid) {
 	await invalidateAll()
 }
 
-export const addEdge = async (target: Node, source: Uuid | 'input') => {
-	if (!currentFlow) throw new Error('No flow found')
-	const node = target.data.trinode
-	if (!node.inputs) node.inputs = []
-	node.inputs.push(source === 'input' ? 'parent' : source)
-	currentFlow.spec.spec.nodes[target.id] = node
-	if (isRootLevel) await saveProject(page.data.project!)
-	else await updateComponent(currentFlow.spec)
-	await invalidateAll()
+type EdgeConnection = {
+	id: string
+	handle: string
+}
+export const addEdge = async (source: EdgeConnection, target: EdgeConnection) => {
+	const container = getCurrentContainer()
+	// if we're adding a new output edge, add it to the container
+	if (target.id === `${container.id}:output`) {
+		if (!('outputs' in container.spec))
+			throw new Error(`Container ${container.id} does not support outputs`)
+		Object.assign(container.spec.outputs[target.handle], {
+			source: source.id.split(':')[0],
+			target: source.handle
+		})
+	} else {
+		// otherwise, just create the new input
+		const node = container.spec.nodes[target.id]
+		if (!node) throw new Error(`Tried to add edge to non-existent node ${target.id}`)
+		if (!('inputs' in node)) throw new Error(`Node ${target.id} does not support inputs`)
+		node.inputs[target.handle] = {
+			source: source.id,
+			target: source.handle
+		}
+	}
+	await saveContainer(container)
+	await refreshFlow()
 }
 
 export const deleteEdge = async (edgeId: Edge['id']) => {

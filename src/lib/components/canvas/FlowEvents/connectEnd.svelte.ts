@@ -7,14 +7,20 @@ import { getNodeSelector } from '$lib/utils/getNodeSelector'
 type ConnectEnd = AddParameters<OnConnectEnd, [ReturnType<typeof svelteFlowHook>]>
 
 export const handleConnectEnd: ConnectEnd = async (event, connectionState, useSvelteFlow) => {
-	// if it's a valid connection, don't show the node selector
+	// if it's a valid connection, don't show the node selector but instead add the edge
 	if (connectionState.isValid) {
 		// Figure out which side is the source and which is the target
 		const fromIsTarget = connectionState.fromHandle!.type === 'target'
-		const source = fromIsTarget ? connectionState.toNode : connectionState.fromNode
-		const target = fromIsTarget ? connectionState.fromNode : connectionState.toNode
+		const source = {
+			id: fromIsTarget ? connectionState.toNode?.id : connectionState.fromNode?.id,
+			handle: fromIsTarget ? connectionState.toHandle?.id : connectionState.fromHandle?.id
+		}
+		const target = {
+			id: fromIsTarget ? connectionState.fromNode?.id : connectionState.toNode?.id,
+			handle: fromIsTarget ? connectionState.fromHandle?.id : connectionState.toHandle?.id
+		}
 
-		await addEdge(target as unknown as Node, source!.id as Uuid | 'input')
+		await addEdge(source, target)
 
 		return
 	}
