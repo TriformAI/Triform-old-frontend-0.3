@@ -26,10 +26,12 @@
 >
 	<span
 		class={[
-			'text-main-400 truncate font-sans text-xs',
-			top ? '-translate-y-full pb-1.5' : 'translate-y-full pt-1'
-		]}>{name}</span
+			'text-main-400 bg-main-900/80 truncate rounded px-1 font-sans text-xs backdrop-blur-sm',
+			top ? '-translate-y-full pb-1.5' : 'translate-y-full pt-1 pb-0.5'
+		]}
 	>
+		{name}
+	</span>
 	<Handle {id} {type} {position} class={['z-10 !border-none !bg-transparent p-3', classes]}>
 		<div
 			style="border-color: color-mix(in oklab, var(--node-color) 80%, transparent)"

@@ -183,9 +183,9 @@ export function parseNodes(root: NodeContainer) {
 					type: 'default',
 					id: `${id}:${inputName}`,
 					source: port.source,
-					sourceHandle: inputName,
+					sourceHandle: port.target,
 					target: id,
-					targetHandle: port.target,
+					targetHandle: inputName,
 					data: { props: { ...defaultEdgeProps } }
 				})
 			}

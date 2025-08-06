@@ -45,7 +45,6 @@ export const handleDragStop: NodeTargetEventWithPointer<
 		if (!updatedNode) continue
 		currentContainer.spec.nodes[id].position = updatedNode.position
 	}
-	console.log('currentContainer', currentContainer)
 
 	const unresolvedComponent = unresolveComponent(currentContainer)
 	console.log('unresolvedComponent', unresolvedComponent)
