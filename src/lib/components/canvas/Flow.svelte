@@ -51,6 +51,7 @@
 	import { page } from '$app/state'
 	import { isAction, type resolvedProjectModel } from '$lib/schemas'
 	import type * as z from 'zod'
+	import IoNode from '../custom-nodes/IONode.svelte'
 
 	const useSvelteFlow = svelteFlowHook()
 	const { fitView, screenToFlowPosition } = useSvelteFlow
@@ -60,11 +61,11 @@
 	const nodeTypes: Record<NodeType | MetaNodeType, Component> = {
 		'action-node': ActionNode,
 		'flow-node': FlowNode,
-		'input-node': ParentNode,
-		'output-node': ParentNode,
 		'selector-node': SelectorNode,
 		'loading-node': LoadingNode,
-		'create-node': CreateNode
+		'create-node': CreateNode,
+		'input-node': IoNode,
+		'output-node': IoNode
 	}
 
 	const edgeTypes: EdgeTypes = {

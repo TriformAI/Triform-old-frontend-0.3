@@ -6,20 +6,20 @@
 
 	const {
 		body,
-		inputHandles,
-		outputHandles
+		targetHandles,
+		sourceHandles
 	}: {
-		id: string
+		id?: string
 		body: Snippet
-		inputHandles: string[]
-		outputHandles: string[]
-		data: NodeData | MetaNodeData
+		targetHandles: string[]
+		sourceHandles: string[]
+		data?: NodeData | MetaNodeData
 	} = $props()
 </script>
 
 <div class="group/container relative w-full">
 	<div class="-mt-5.5 flex flex-row items-center justify-around gap-5">
-		{#each inputHandles as name}
+		{#each targetHandles as name}
 			<CustomHandle id={name} {name} type="target" position={Position.Top} />
 		{/each}
 	</div>
@@ -27,7 +27,7 @@
 	{@render body()}
 
 	<div class="flex flex-row items-center justify-around gap-5">
-		{#each outputHandles as name}
+		{#each sourceHandles as name}
 			<CustomHandle id={name} {name} type="source" position={Position.Bottom} />
 		{/each}
 	</div>

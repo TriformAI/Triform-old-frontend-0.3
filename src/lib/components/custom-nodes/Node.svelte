@@ -41,11 +41,11 @@
 
 	let contextIsOpen = $state(false)
 
-	const inputHandles = $derived(Object.keys(data.trinode.spec.spec.inputs))
-	const outputHandles = $derived(Object.keys(data.trinode.spec.spec.outputs))
+	const targetHandles = $derived(Object.keys(data.trinode.spec.spec.inputs))
+	const sourceHandles = $derived(Object.keys(data.trinode.spec.spec.outputs))
 </script>
 
-<NodeContainer {...props} {inputHandles} {outputHandles}>
+<NodeContainer {...props} {targetHandles} {sourceHandles}>
 	{#snippet body()}
 		<ContextMenu bind:open={contextIsOpen}>
 			{#snippet trigger()}

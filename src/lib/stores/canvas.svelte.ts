@@ -116,8 +116,6 @@ export async function refreshFlow() {
 		})
 	}
 
-	console.log('new nodes', $state.snapshot(nodes))
-
 	setNodes(nodes)
 	setEdges(edges)
 }
@@ -172,7 +170,7 @@ export function parseNodes(root: NodeContainer) {
 				newEdges.push({
 					type: 'default',
 					id: `${id}:input`,
-					source: 'input',
+					source: `${root.id}:input`,
 					sourceHandle: port.target,
 					target: id,
 					targetHandle: inputName,

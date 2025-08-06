@@ -40,13 +40,13 @@
 			},
 			flow: {
 				icon: IconFlow,
-				color: 'var(--color-accent-300)',
-				iconColor: 'var(--color-accent-500)',
+				color: 'var(--color-complement-300)',
+				iconColor: 'var(--color-complement-500)',
 				shape: 'square'
 			},
 			agent: {
 				icon: IconAgent,
-				color: 'var(--color-warning-300)',
+				color: 'var(--color-accent-300)',
 				shape: 'circle'
 			}
 		}[type]
