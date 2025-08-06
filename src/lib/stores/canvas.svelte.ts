@@ -244,33 +244,9 @@ export const getNodeByPath = (sourcePath: string[]): TriNode | undefined => {
 	return node
 }
 
-/**
- * Updates all nodes that use the same component surgically without having to reparse the entire flow.
- * We'll have to modify this when we have proper version handling
- */
-export const updateNodeComponent = (component: Component) => {
-	// update the currently visible nodes
-	for (const node of nodesStore) {
-		if (node.data?.trinode?.component_id === component.id) {
-			node.data.trinode.spec = component
-		}
-	}
-
-	// run the same update on all nodes in the project to make sure it stays in sync too
-	if (!project) {
-		throw new Error('No project found')
-	}
-
-	const processNode = (node: TriNode) => {
-		if (node.component_id === component.id) {
-			node.spec = component
-		}
-		if (!node?.spec || !isFlow(node.spec)) return
-		for (const child of Object.values(node.spec.spec.nodes)) {
-			processNode(child)
-		}
-	}
-	for (const node of Object.values(project.spec.nodes)) processNode(node)
+const saveContainer = async (container: NodeContainer) => {
+	if (isProject(container)) return await saveProject(container)
+	return await updateComponent(container)
 }
 
 export async function addNode(
@@ -363,27 +339,30 @@ export const addEdge = async (target: Node, source: Uuid | 'input') => {
 }
 
 export const deleteEdge = async (edgeId: Edge['id']) => {
-	if (!currentFlow) throw new Error('No flow found')
 	const edge = edgesStore.find(e => e.id === edgeId)
-	if (!edge) throw new Error(`Tried to remove non-existent edge ${edgeId}`)
+	if (!edge || !edge.targetHandle) throw new Error(`Tried to remove non-existent edge ${edgeId}`)
+	const container = getCurrentContainer()
 
-	// Remove the input from the node (edges are defined on the target side)
-	const target = currentFlow.spec.spec.nodes[edge.target]
-	if (!target) throw new Error(`Tried to remove edge from non-existent node ${edge.target}`)
-	const source = edge.source === 'input' ? 'parent' : edge.source
-	// prettier-ignore
-	currentFlow.spec.spec.nodes[edge.target].inputs = target.inputs?.filter(i => i !== source)
-
-	// Update parent component
-	if (isRootLevel) {
-		await saveProject(page.data.project!)
-	} else if (currentFlow) {
-		await updateComponent(currentFlow.spec)
+	// if it's an output edge
+	if (edge.target === `${container.id}:output`) {
+		if (!('outputs' in container.spec))
+			throw new Error(`Container ${container.id} does not support outputs`)
+		Object.assign(container.spec.outputs[edge.targetHandle], {
+			source: null,
+			target: null
+		})
 	} else {
-		throw new Error('No project or flow found')
+		// Remove the input from the node (edges are defined on the target side)
+		const target = container.spec.nodes[edge.target]
+		if (!target) throw new Error(`Tried to remove edge from non-existent node ${edge.target}`)
+		if (!('inputs' in target)) throw new Error(`Node ${edge.target} does not support inputs`)
+		delete target.inputs[edge.targetHandle]
 	}
 
-	await invalidateAll()
+	// TODO: revert if this fails
+	await saveContainer(container)
+
+	await refreshFlow()
 }
 
 export const getBreadcrumbs = () => {

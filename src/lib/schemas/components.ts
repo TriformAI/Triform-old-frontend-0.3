@@ -26,8 +26,8 @@ export const ioModel = z.record(
 const flowOutputModel = z.record(
 	ioModel.keyType,
 	ioModel.valueType.extend({
-		source: z.string(),
-		target: z.string()
+		source: z.string().nullable(),
+		target: z.string().nullable()
 	})
 )
 
