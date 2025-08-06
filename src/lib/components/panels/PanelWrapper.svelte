@@ -4,10 +4,9 @@
 	import { getCurrentContainer } from '$lib/stores/canvas.svelte'
 	import Flow from './Flow.svelte'
 	import Action from './Action.svelte'
+	import { selected } from '$lib/stores/panel.svelte'
 
-	const componentData = $derived.by(() => {
-		return getCurrentContainer()
-	})
+	const componentData = $derived(selected.node?.data?.trinode?.spec)
 
 	const NodeComponent = $derived.by(() => {
 		if (!componentData) return

@@ -4,7 +4,6 @@
 	import NodeContainer from './NodeContainer.svelte'
 	import IconFlow from '~icons/material-symbols/network-node'
 	import IconAgent from '~icons/material-symbols/psychology-rounded'
-	import { toast } from 'svelte-sonner'
 	import { isAgent, isFlow } from '$lib/schemas'
 	import IconOutput from '~icons/material-symbols/output-circle-rounded'
 

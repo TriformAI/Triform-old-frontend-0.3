@@ -53,7 +53,6 @@ export const getCurrentContainer = (): NodeContainer => {
 	}
 	if (!nodePath.length) return project
 	const newContainer = getNodeByPath(nodePath)?.spec
-	console.log('newContainer', newContainer, project)
 	if (!newContainer) {
 		toast.error('Invalid node path!')
 		throw new Error('Invalid node path!')
