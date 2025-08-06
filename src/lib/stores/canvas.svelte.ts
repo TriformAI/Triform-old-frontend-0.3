@@ -1,12 +1,10 @@
-import type {
-	Node as TriNode, // as to not conflict with Node (used for @xyflow/svelte)
-	Source
-} from '$lib/types'
+import type { Source } from '$lib/types'
+import type { TriNode } from '$lib/types/flow'
 import type { UUID as Uuid } from 'crypto'
 import type { Project, Flow, Action, Component, ResolvedComponent } from '$lib/types/resources'
 import type { Node, MetaNode, CanvasNode, Edge } from '$lib/types/canvas'
 import { defaultProps, defaultEdgeProps } from '$lib/types/canvas'
-import { updateComponent, updateComponentPositions } from '$lib/actions/components'
+import { updateComponent } from '$lib/actions/components'
 import { invalidateAll } from '$app/navigation'
 import { saveProject } from '$lib/actions/project'
 import { page } from '$app/state'
@@ -27,7 +25,7 @@ import {
 	isProject,
 	resolvedComponentModel
 } from '$lib/schemas'
-import { type FlowContainer } from '$lib/types/flow'
+import { type NodeContainer } from '$lib/types/flow'
 import type * as z from 'zod'
 import { toast } from 'svelte-sonner'
 
@@ -41,31 +39,30 @@ export const getEdges = () => edgesStore
 export const setNodes = (newNodes: CanvasNode[]) => (nodesStore = newNodes)
 export const setEdges = (newEdges: Edge[]) => (edgesStore = newEdges)
 
-let currentContainer = $state<FlowContainer>()
+let currentContainer = $state<NodeContainer>()
 export const getCurrentContainer = () => currentContainer
 
 let project = $state<z.infer<typeof resolvedProjectModel>>()
-
+export const getProject = () => project
 export const setProject = (proj: z.infer<typeof resolvedProjectModel>) => {
 	project = proj
 }
 
-const nodeSize = 100
-const gap = 30
-const maxWidth = 1000
+const nodeSize = {
+	x: 60 * 4,
+	y: 20 * 4
+}
+const gap = 50
+const maxWidth = 1500
 
 // Initialize the nodes on project or flow level
-export async function initFlow(root: FlowContainer) {
-	if (!project) setProject(page.data.project)
-	if (!root) {
-		toast.error('No container found!')
-		return
-	}
-	console.log('initFlow', root)
+export async function initFlow(root: NodeContainer) {
+	if (!root) return void toast.error('No container found!')
+	console.log('initFlow', $state.snapshot(root))
 	currentContainer = root
 
 	// parse in all the nodes into the nodesStore
-	const { nodes, edges } = parseNodes(root)
+	const { nodes, edges } = parseNodes(currentContainer)
 
 	// add meta nodes
 	if (isFlow(root)) {
@@ -92,11 +89,11 @@ export async function initFlow(root: FlowContainer) {
 		// find where to place the create node for agents and flow
 		// should be the last node, so added one step after the last node
 		const lastNode = nodes[nodes.length - 1]
-		let x = lastNode.position.x + nodeSize + gap
+		let x = lastNode.position.x + nodeSize.x + gap
 		let y = lastNode.position.y
 		if (x > maxWidth) {
 			x = 0
-			y += nodeSize + gap
+			y += nodeSize.y + gap
 		}
 		nodes.push({
 			id: `${root.id as Uuid}:create`,
@@ -109,6 +106,8 @@ export async function initFlow(root: FlowContainer) {
 		})
 	}
 
+	console.log('new nodes', $state.snapshot(nodes))
+
 	setNodes(nodes)
 	setEdges(edges)
 }
@@ -116,18 +115,18 @@ export async function initFlow(root: FlowContainer) {
 // Get nodes from project
 // Enrich node with additional data
 // Create edges
-export function parseNodes(root: FlowContainer) {
-	const parseNode = (node: FlowContainer['spec']['nodes'][string], id: Uuid, i: number): Node => {
+export function parseNodes(root: NodeContainer) {
+	const parseNode = (node: TriNode, id: Uuid, i: number): Node => {
 		// if it's part of an ordered context (ie it's a top-level flow or inside of an agent) we
 		// need to lay it out according to the order instead of any x/y position
 		const ordered = 'order' in node
 		let x,
 			y = 0
 		if (ordered) {
-			x = i * (nodeSize + gap)
+			x = i * (nodeSize.x + gap)
 			if (x > maxWidth) {
 				x = 0
-				y += nodeSize + gap
+				y += nodeSize.y + gap
 			}
 		} else if ('position' in node) {
 			x = node.position.x
@@ -155,7 +154,7 @@ export function parseNodes(root: FlowContainer) {
 		}
 	}
 
-	const parseEdges = (node: FlowContainer['spec']['nodes'][string], id: Uuid) => {
+	const parseEdges = (node: TriNode, id: Uuid) => {
 		const newEdges: Edge[] = []
 		if (!('inputs' in node)) return newEdges
 		for (const [inputName, port] of Object.entries(node.inputs)) {
@@ -186,7 +185,7 @@ export function parseNodes(root: FlowContainer) {
 
 	// get the output edges for the container (if they exist)
 	const outputEdges =
-		'outputs' in (root?.spec ?? {})
+		'outputs' in root?.spec
 			? (Object.entries(root.spec.outputs)
 					.map(([outputName, port]) => {
 						if (!('source' in port) || !('target' in port)) return
@@ -223,21 +222,19 @@ export function parseNodes(root: FlowContainer) {
 		)
 }
 
-export const getNodeByPath = (
-	sourcePath: string[]
-): z.infer<typeof resolvedComponentModel> | undefined => {
+export const getNodeByPath = (sourcePath: string[]): TriNode | undefined => {
 	if (!sourcePath.length) return
 	const path = [...sourcePath]
 	let node = project?.spec.nodes[path.shift() as string]
 	if (!node) return
 	while (path.length) {
 		if (!node || !('nodes' in node.spec.spec)) return undefined
-		const child: FlowContainer['spec']['nodes'][string] = node.spec.spec.nodes[path.shift() as Uuid]
+		const child: TriNode = node.spec.spec.nodes[path.shift() as Uuid]
 		if (!child) return
 		// @ts-expect-error type issue
 		node = child
 	}
-	return node?.spec
+	return node
 }
 
 /**
@@ -389,7 +386,7 @@ export const getBreadcrumbs = () => {
 
 	return path.map((p: string, i: number) => ({
 		id: p as Uuid,
-		name: getNodeByPath(path.slice(0, i + 1))?.meta?.name ?? 'Unknown',
+		name: getNodeByPath(path.slice(0, i + 1))?.spec.meta?.name ?? 'Unknown',
 		// +3 because we want to skip both the project and id, and get the first one after that
 		path: `/${parts.slice(0, i + projectIndex + 3).join('/')}`
 	}))

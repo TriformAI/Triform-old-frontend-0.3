@@ -15,8 +15,10 @@
 	import { getContext } from 'svelte'
 	import { DropdownMenu } from 'bits-ui'
 	import IconChevronDown from '~icons/mdi/chevron-down'
+	import type * as z from 'zod'
+	import type { resolvedComponentModel } from '$lib/schemas'
 
-	const { componentData }: { componentData: Component } = $props()
+	const { componentData }: { componentData: z.infer<typeof resolvedComponentModel> } = $props()
 
 	let payload = $state('{\n\t"msg": "hello world"\n}')
 	if (selected.payload) {
@@ -45,8 +47,6 @@
 	$effect(() => {
 		selected.payload = payload
 	})
-
-	const useDraft = $derived(getContext<{ value: boolean }>('use-draft'))
 
 	const executorState = $state({
 		isRunning: false,
@@ -132,51 +132,6 @@
 			data-balloon-pos="up"
 		>
 			<div class="relative">
-				<div class="absolute end-0 top-0 bottom-0">
-					<DropdownMenu.Root>
-						<DropdownMenu.Trigger
-							class="hover:bg-accent-900 bg-accent-800 h-full items-center justify-center rounded-e-md px-3"
-						>
-							<IconChevronDown class="size-6" />
-						</DropdownMenu.Trigger>
-
-						<DropdownMenu.Portal>
-							<DropdownMenu.Content
-								class="bg-main-850 shadow-popover my-2 me-5 rounded-md outline-hidden focus-visible:outline-hidden"
-							>
-								<DropdownMenu.Item
-									class={[
-										'data-highlighted:bg-main-800 flex cursor-pointer items-center justify-between gap-2 rounded-sm px-4 py-2 text-sm font-medium ring-0! ring-transparent! select-none focus-visible:outline-none'
-									]}
-									onSelect={() => {
-										useDraft.value = true
-									}}
-								>
-									Current draft
-									{#if useDraft.value}
-										<IconCheck class="text-accent-300 size-4" />
-									{/if}
-								</DropdownMenu.Item>
-
-								<div class="bg-main-700 h-[1px]"></div>
-
-								<DropdownMenu.Item
-									class={[
-										'data-highlighted:bg-main-800  flex cursor-pointer items-center justify-between gap-2 rounded-sm px-4 py-2 text-sm font-medium ring-0! ring-transparent! select-none focus-visible:outline-none'
-									]}
-									onSelect={() => {
-										useDraft.value = false
-									}}
-								>
-									Published
-									{#if !useDraft.value}
-										<IconCheck class="text-accent-300 size-4" />
-									{/if}
-								</DropdownMenu.Item>
-							</DropdownMenu.Content>
-						</DropdownMenu.Portal>
-					</DropdownMenu.Root>
-				</div>
 				<Button
 					variation="vibrant"
 					class="w-full"
@@ -189,13 +144,7 @@
 					{/snippet}
 
 					{#snippet body()}
-						<span>
-							{#if useDraft.value}
-								Run current draft
-							{:else}
-								Run published
-							{/if}
-						</span>
+						<span> Execute </span>
 					{/snippet}
 				</Button>
 			</div>

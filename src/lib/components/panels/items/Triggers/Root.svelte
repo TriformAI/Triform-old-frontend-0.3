@@ -4,14 +4,17 @@
 	import { page } from '$app/state'
 	import type { Trigger, Component } from '$lib/types/resources'
 	import Dialog from './Dialog.svelte'
+	import type * as z from 'zod'
+	import type { resolvedComponentModel } from '$lib/schemas'
 
 	let dialog = $state<HTMLDialogElement>()
 
-	const { componentData }: { componentData: Component } = $props()
+	const { componentData }: { componentData: z.infer<typeof resolvedComponentModel> } = $props()
 
-	const triggers = $derived(
-		page.data.triggers?.filter((t: Trigger) => t.spec.component_id === componentData.id)
-	)
+	// const triggers = $derived(
+	// 	page.data.triggers?.filter((t: Trigger) => t.spec.component_id === componentData.id)
+	// )
+	const triggers = []
 </script>
 
 <Dialog bind:dialog {componentData} />

@@ -9,6 +9,7 @@ import type {
 	actionModel,
 	agentModel,
 	componentModel,
+	createComponentModel,
 	flowModel,
 	resolvedAgentModel,
 	resolvedComponentModel,
@@ -16,33 +17,29 @@ import type {
 } from './components.js'
 import type { projectModel, resolvedProjectModel } from './projects.js'
 
+type generalComponentModel =
+	| z.infer<typeof componentModel>
+	| z.infer<typeof resolvedComponentModel>
+	| z.infer<typeof resolvedProjectModel>
+	| z.infer<typeof createComponentModel>
+
 export const isFlow = (
-	component:
-		| z.infer<typeof componentModel>
-		| z.infer<typeof resolvedComponentModel>
-		| z.infer<typeof resolvedProjectModel>
+	component: generalComponentModel
 ): component is z.infer<typeof flowModel> | z.infer<typeof resolvedFlowModel> =>
 	component.resource === 'flow/v1'
 
 export const isAgent = (
-	component:
-		| z.infer<typeof componentModel>
-		| z.infer<typeof resolvedComponentModel>
-		| z.infer<typeof resolvedProjectModel>
+	component: generalComponentModel
 ): component is z.infer<typeof agentModel> | z.infer<typeof resolvedAgentModel> =>
 	component.resource === 'agent/v1'
 
 export const isAction = (
-	component:
-		| z.infer<typeof componentModel>
-		| z.infer<typeof resolvedComponentModel>
-		| z.infer<typeof resolvedProjectModel>
+	component: generalComponentModel
 ): component is z.infer<typeof actionModel> => component.resource === 'action/v1'
 
 export const isProject = (
 	component:
-		| z.infer<typeof componentModel>
-		| z.infer<typeof resolvedComponentModel>
+		| generalComponentModel
 		| z.infer<typeof projectModel>
 		| z.infer<typeof resolvedProjectModel>
 ): component is z.infer<typeof projectModel> | z.infer<typeof resolvedProjectModel> =>

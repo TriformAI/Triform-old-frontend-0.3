@@ -1,7 +1,7 @@
 import type { Node as TriNode } from '.'
 import type { UUID as Uuid } from 'crypto'
 import type { Node as XyNode, Edge as XyEdge, EdgeProps as XyEdgeProps } from '@xyflow/svelte'
-import type { FlowContainer } from './flow'
+import type { NodeContainer } from './flow'
 
 // Visual properties of a node
 export interface NodeProps {
@@ -23,7 +23,7 @@ export const defaultProps: NodeProps = {
 // Custom data passed to each node
 export interface NodeData {
 	// The node that's expected on the backend
-	trinode: FlowContainer['spec']['nodes'][string]
+	trinode: NodeContainer['spec']['nodes'][string]
 	isExpanded?: boolean
 	// Visual frontend-only props
 	props: NodeProps
@@ -37,7 +37,7 @@ export type MetaNodeType =
 	| 'loading-node'
 	| 'input-node'
 	| 'output-node'
-export type MetaNodeData = Omit<NodeData, 'trinode'>
+export type MetaNodeData = Exclude<NodeData, 'trinode'>
 
 export interface Node extends XyNode<NodeData, NodeType> {
 	id: Uuid

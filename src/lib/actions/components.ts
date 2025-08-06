@@ -1,32 +1,20 @@
 import { API } from '$lib/api'
 import type { UUID as Uuid } from 'crypto'
 import type { Component } from '$lib/types/resources'
-import { page } from '$app/state'
+import type { componentModel } from '$lib/schemas'
+import type * as z from 'zod'
+import { pick } from '$lib/utils/pick'
 
 const api = new API()
 
-export const updateComponent = async (component: Component) => {
+export const updateComponent = async (component: Partial<z.infer<typeof componentModel>>) => {
 	console.log('component', component)
 
-	return await api.put<Component>(`components/${component.id}`, component)
-}
-
-export const updateComponentPositions = async (
-	id: Uuid,
-	positions: Record<Uuid, { x: number; y: number }>
-) => {
-	page.data.positions[id] = {
-		...page.data.positions[id],
-		...positions
-	}
-	return await api.patch<{ updated: number; success: boolean }>(`components/${id}/positions`, {
-		id,
-		positions: page.data.positions[id]
-	})
+	return await api.patch<Component>(`components/${component.id}`, pick(component, ['spec', 'meta']))
 }
 
 export const createComponent = async (component: Component) => {
-	const result = await api.postRaw<Component>('components', component)
+	const result = await api.post<Component>('components', component)
 	console.log(result)
 
 	return result.data

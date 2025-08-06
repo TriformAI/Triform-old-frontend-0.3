@@ -8,7 +8,7 @@ import * as z from 'zod'
 
 // Base models
 export const metaModel = z.strictObject({
-	name: z.string(),
+	name: z.string().trim().nonempty('Name is required'),
 	intention: z.string().optional().default('')
 })
 

@@ -20,7 +20,8 @@
 		setEdges,
 		setNodes,
 		getCurrentContainer,
-		getNodeByPath
+		getNodeByPath,
+		setProject
 	} from '$lib/stores/canvas.svelte'
 	import { defaultEdgeProps, type MetaNodeType, type NodeType } from '$lib/types/canvas'
 	import {
@@ -45,9 +46,11 @@
 	import { getFlowModel } from '$lib/nodeModels'
 	import { flowHasComponent } from '$lib/utils/flowHasComponent'
 	import { toast } from 'svelte-sonner'
-	import { initFlow } from '$lib/stores/canvas.svelte'
-	import type { FlowContainer } from '$lib/types/flow'
+	import { getProject, initFlow } from '$lib/stores/canvas.svelte'
+	import type { NodeContainer } from '$lib/types/flow'
 	import { page } from '$app/state'
+	import { isAction, type resolvedProjectModel } from '$lib/schemas'
+	import type * as z from 'zod'
 
 	const useSvelteFlow = svelteFlowHook()
 	const { fitView, screenToFlowPosition } = useSvelteFlow
@@ -137,9 +140,11 @@
 		const path = page.url.pathname.split('/')
 		// remove /project/projectId
 		const nodePath = path.slice(path.indexOf('project') + 2)
-		const newContainer = nodePath.length ? getNodeByPath(nodePath) : page.data.project
-		if (newContainer) initFlow(newContainer as FlowContainer)
-		else toast.error('Invalid node path!')
+		if (!getProject()) setProject(page.data.project as z.infer<typeof resolvedProjectModel>)
+		const newContainer = nodePath.length ? getNodeByPath(nodePath)?.spec : page.data.project
+		console.log('newContainer', newContainer, nodePath)
+		if (!newContainer) return void toast.error('Invalid node path!')
+		initFlow(newContainer as NodeContainer)
 	})
 </script>
 

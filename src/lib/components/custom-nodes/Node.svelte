@@ -68,24 +68,7 @@
 						node?.data.props.creating ? 'animate-pulse cursor-progress' : ''
 					]}
 				>
-					<div
-						class={[
-							' absolute -inset-x-[25%] -top-1 -translate-y-full rounded py-0.5 text-center text-sm font-semibold transition',
-							selected ? 'text-main-300' : 'text-main-400'
-						]}
-					>
-						<span class={['bg-main-900 text-main-200 relative flex justify-center']}>
-							<span class="truncate">{data.trinode.spec.meta.name || 'Untitled'}</span>
-							<span
-								class={[
-									'bg-warning-600 ms-1 mt-1 block rounded-full transition-transform',
-									isDirty ? 'size-1.5 scale-100' : 'size-0 scale-0'
-								]}
-							></span>
-						</span>
-					</div>
-
-					<InnerNode {openFn} {selected} {type} />
+					<InnerNode {openFn} {selected} {type} {data} />
 				</div>
 			{/snippet}
 

@@ -9,7 +9,7 @@ import { componentMetaModel, nodePortModel } from './common.js'
 import { jsonSchemaTypeModel } from './type.js'
 
 const abstractComponentModel = z.strictObject({
-	id: z.uuidv4().optional(),
+	id: z.uuidv4(),
 	resource: z.string(),
 	meta: componentMetaModel,
 	spec: z.strictObject({})
@@ -153,6 +153,12 @@ export const resolvedAgentModel = agentModel.extend({
 export const componentSpecModel = z.union([flowSpecModel, actionSpecModel, agentSpecModel])
 
 export const componentModel = z.discriminatedUnion('resource', [flowModel, actionModel, agentModel])
+
+export const createComponentModel = z.discriminatedUnion('resource', [
+	flowModel.omit({ id: true }),
+	actionModel.omit({ id: true }),
+	agentModel.omit({ id: true })
+])
 
 export const componentResourceModel = z.enum(
 	componentModel.options.map(o => o.shape.resource.value)

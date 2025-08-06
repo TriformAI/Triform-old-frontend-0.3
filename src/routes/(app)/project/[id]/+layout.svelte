@@ -20,8 +20,6 @@
 	let gridContainer = $state<HTMLDivElement>()
 	let flowComponent = $state<Flow>()
 
-	let isLoaded = $state(false)
-
 	onMount(() => {
 		loadComponents(data.components ?? [])
 	})
@@ -32,22 +30,6 @@
 
 			setProject(data.project)
 		}
-	})
-
-	$effect(() => {
-		;(async () => {
-			if (!data.project) return
-
-			isLoaded = false
-
-			await initFlow(data.project)
-			await sleep(0)
-			flowComponent?.fitView({
-				maxZoom: 1,
-				minZoom: 1
-			})
-			isLoaded = true
-		})()
 	})
 
 	const DEFAULT_PROPS_PANEL_WIDTH = 600

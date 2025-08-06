@@ -1,7 +1,10 @@
-import { getCurrentContainer, getNodes } from '$lib/stores/canvas.svelte'
-import { page } from '$app/state'
-import { updateComponentPositions } from '$lib/actions/components'
-import type { UUID as Uuid } from 'crypto'
+import { getCurrentContainer } from '$lib/stores/canvas.svelte'
+import { toast } from 'svelte-sonner'
+import { isFlow } from '$lib/schemas'
+import { updateComponent } from '$lib/actions/components'
+import type { CanvasNode } from '$lib/types/canvas'
+import type { NodeTargetEventWithPointer } from '@xyflow/svelte'
+import { unresolveComponent } from '$lib/utils/unresolveComponent'
 
 /*
 {
@@ -10,28 +13,46 @@ import type { UUID as Uuid } from 'crypto'
 	event: MouseEvent | TouchEvent
 }
 */
-export const handleDragStop = async () => {
-	// if current flow id is not defined, we're at the project level
-	const isRootLevel = !getCurrentFlowId()
-	const parentId = isRootLevel ? page.params.id : getCurrentFlow()?.component_id
-	const parent = isRootLevel ? page.data.project : getCurrentFlow()?.spec
-	if (!parentId) return console.error('No parent id')
+// TODO: add support for re-ordering nodes in projects & agent nodes
+export const handleDragStop: NodeTargetEventWithPointer<
+	MouseEvent | TouchEvent,
+	CanvasNode
+> = async (params: {
+	targetNode: CanvasNode | null
+	nodes: CanvasNode[]
+	event: MouseEvent | TouchEvent
+}) => {
+	const { targetNode, nodes, event } = params
+	const currentContainer = getCurrentContainer()
+	console.log('currentContainer', currentContainer)
+	if (!currentContainer) return toast.error('No parent found')
+	if (!isFlow(currentContainer)) return toast.error('Cannot move nodes in this container')
 
-	// save all nodes as they are laid out right now in the current component
-	const parentNodes = new Set(Object.keys(parent?.spec.nodes ?? {}))
-	const nodes = getNodes().filter(node => parentNodes.has(node.id)) // so only real nodes are included
-	if (!nodes.length) return
+	const updatedNodes = new Map<string, CanvasNode>()
+	for (const node of nodes) {
+		if (node.type === 'input-node') {
+			currentContainer.spec.io_nodes.input = node.position
+			continue
+		}
+		if (node.type === 'output-node') {
+			currentContainer.spec.io_nodes.output = node.position
+			continue
+		}
+		updatedNodes.set(node.id, node)
+	}
+	console.log('updatedNodes', updatedNodes)
+	for (const [id, node] of Object.entries(currentContainer.spec.nodes)) {
+		const updatedNode = updatedNodes.get(id)
+		if (!updatedNode) continue
+		currentContainer.spec.nodes[id].position = {
+			x: updatedNode.position.x,
+			y: updatedNode.position.y
+		}
+	}
+	console.log('currentContainer', currentContainer)
 
-	await updateComponentPositions(
-		parentId as Uuid,
-		Object.fromEntries(
-			nodes.map(node => [
-				node.id,
-				{
-					x: node.position.x,
-					y: node.position.y
-				}
-			])
-		)
-	)
+	const unresolvedComponent = unresolveComponent(currentContainer)
+	console.log('unresolvedComponent', unresolvedComponent)
+
+	await updateComponent(unresolvedComponent)
 }

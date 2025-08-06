@@ -4,16 +4,21 @@
 	import IconAgent from '~icons/material-symbols/psychology-rounded'
 	import { twMerge } from 'tailwind-merge'
 
-	interface Props {
+	const {
+		type,
+		selected = false,
+		class: classes,
+		id,
+		openFn,
+		data
+	}: {
 		type: 'action' | 'flow' | 'agent'
 		selected?: boolean
 		class?: string
 		id?: string
 		openFn?: () => void
-	}
-
-	const props: Props = $props()
-	const { type, selected = false, class: classes, id, openFn }: Props = $derived(props)
+		data: NodeData | MetaNodeData
+	} = $props()
 
 	const borderClass = $derived.by(() => {
 		return ''
@@ -53,7 +58,7 @@
 	{id}
 	style={`--node-color: ${typeData.color}`}
 	class={twMerge([
-		'relative flex size-20 items-center justify-center border border-[var(--node-color)] p-2 transition-all',
+		'relative flex h-20 w-60 items-center justify-center border border-[var(--node-color)] p-2 transition-all',
 		typeData.shape === 'circle' && 'rounded-full',
 		typeData.shape === 'square' && 'rounded-md',
 		borderClass,
@@ -64,7 +69,11 @@
 		: undefined}
 	ondblclickcapture={openFn}
 >
-	<span class="drop-shadow-[0px_0px_10px_var(--node-color)]">
-		<typeData.icon class="size-5" style={`color: ${typeData.iconColor ?? typeData.color}`} />
+	<span class="flex flex-row items-center justify-center gap-3">
+		<typeData.icon
+			class="size-5 drop-shadow-[0px_0px_10px_var(--node-color)]"
+			style={`color: ${typeData.iconColor ?? typeData.color}`}
+		/>
+		<span class="truncate">{data?.trinode?.spec.meta.name || 'Untitled'}</span>
 	</span>
 </svelte:element>
