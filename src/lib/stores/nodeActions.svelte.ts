@@ -1,8 +1,8 @@
 import { dev } from '$app/environment'
 import { goto } from '$app/navigation'
 import { page } from '$app/state'
-import type { UUID as Uuid } from 'crypto'
-import { type Node, type NodeType } from '$lib/types/canvas'
+import { type UUID as Uuid } from 'crypto'
+import { type CanvasNode, type MetaNodeType, type NodeType } from '$lib/types/canvas'
 import type { Component } from 'svelte'
 import { toast } from 'svelte-sonner'
 import { SvelteMap } from 'svelte/reactivity'
@@ -12,7 +12,7 @@ import IconExpand from '~icons/mdi/circle-expand'
 import { confirmStore } from './confirm.svelte'
 import { deleteNode as deleteNodeFn } from './canvas.svelte'
 
-export type onClickFn = (node: Component) => Promise<Uuid | void> | void
+export type onClickFn = (node: CanvasNode) => Promise<Uuid | void> | void
 
 interface ActionItem {
 	// For when we access the items programmatically
@@ -24,9 +24,9 @@ interface ActionItem {
 	onClick: onClickFn
 }
 
-const actionsMapStore = $state(new SvelteMap<NodeType, ActionItem[]>())
+const actionsMapStore = $state(new SvelteMap<NodeType | MetaNodeType, ActionItem[]>())
 export const actionsMap = () => actionsMapStore
-export const getActions = (nodeType: NodeType) =>
+export const getActions = (nodeType: NodeType | MetaNodeType) =>
 	actionsMap()
 		.get(nodeType)
 		?.filter(a => !a.hide?.()) ?? []
@@ -39,7 +39,7 @@ const getDebugData = {
 	icon: IconBug,
 	isDangerous: false,
 	hide: () => !dev,
-	onClick: async (node: Node) => {
+	onClick: async (node: CanvasNode) => {
 		console.log('Debug', $state.snapshot(node))
 		toast.info('Printed debug data to console')
 	}
@@ -49,7 +49,7 @@ export const deleteNode = {
 	label: 'Remove',
 	icon: IconTrash,
 	isDangerous: true,
-	onClick: async (node: Node, showConfirmation: boolean = true) => {
+	onClick: async (node: CanvasNode, showConfirmation: boolean = true) => {
 		if (showConfirmation) {
 			const isConfirmed = await confirmStore.show({
 				title: 'Are you sure?',
@@ -71,7 +71,7 @@ actionsMapStore.set('flow-node', [
 		label: 'Expand',
 		icon: IconExpand,
 		isDangerous: false,
-		onClick: async (node: Node) => {
+		onClick: async (node: CanvasNode) => {
 			if (!node) return
 			await goto(page.url.pathname + '/' + node.id)
 		}

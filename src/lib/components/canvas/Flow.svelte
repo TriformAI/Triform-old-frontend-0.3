@@ -46,7 +46,7 @@
 	import { getFlowModel } from '$lib/nodeModels'
 	import { flowHasComponent } from '$lib/utils/flowHasComponent'
 	import { toast } from 'svelte-sonner'
-	import { getProject, initFlow } from '$lib/stores/canvas.svelte'
+	import { getProject, refreshFlow } from '$lib/stores/canvas.svelte'
 	import type { NodeContainer } from '$lib/types/flow'
 	import { page } from '$app/state'
 	import { isAction, type resolvedProjectModel } from '$lib/schemas'
@@ -135,16 +135,13 @@
 		await addNode(component.data, position, [])
 	}
 
-	onMount(() => {
-		console.log('onMount', page.data.project)
-		const path = page.url.pathname.split('/')
-		// remove /project/projectId
-		const nodePath = path.slice(path.indexOf('project') + 2)
-		if (!getProject()) setProject(page.data.project as z.infer<typeof resolvedProjectModel>)
-		const newContainer = nodePath.length ? getNodeByPath(nodePath)?.spec : page.data.project
-		console.log('newContainer', newContainer, nodePath)
-		if (!newContainer) return void toast.error('Invalid node path!')
-		initFlow(newContainer as NodeContainer)
+	onMount(async () => {
+		refreshFlow()
+		await tick()
+		fitView({
+			maxZoom: 1,
+			minZoom: 1
+		})
 	})
 </script>
 

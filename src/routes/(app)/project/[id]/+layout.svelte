@@ -8,7 +8,7 @@
 	import PropsPanel from '$lib/components/PropsPanel.svelte'
 	import Confirm from '$lib/components/common/Confirm.svelte'
 	import { loadComponents } from '$lib/stores/library.svelte'
-	import { initFlow, setProject } from '$lib/stores/canvas.svelte'
+	import { refreshFlow, setProject } from '$lib/stores/canvas.svelte'
 	import ComponentLibrary from '$lib/components/panels/Library/ComponentLibrary.svelte'
 	import { debounce } from '$lib/utils/debounce'
 	import { onMount } from 'svelte'

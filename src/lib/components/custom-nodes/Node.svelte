@@ -1,15 +1,12 @@
 <script lang="ts">
 	import ContextMenu from '$lib/components/atoms/ContextMenu.svelte'
-	import { getNodes, getCurrentContainer } from '$lib/stores/canvas.svelte'
+	import { getNodes } from '$lib/stores/canvas.svelte'
 	import { getActions } from '$lib/stores/nodeActions.svelte'
 	import type { Node, NodeData } from '$lib/types/canvas'
 	import type { Snippet } from 'svelte'
-	import componentIsDirty from '$lib/utils/componentIsDirty'
 	import NodeActions from './NodeActions.svelte'
 	import NodeContainer from './NodeContainer.svelte'
-	import compare from 'just-compare'
 	import InnerNode from './InnerNode.svelte'
-	import { isAction } from '$lib/types/resources'
 
 	interface Props {
 		type: 'action' | 'flow' | 'agent'
@@ -44,20 +41,11 @@
 
 	let contextIsOpen = $state(false)
 
-	const isRootLevelAndFlowNode = $derived(!getCurrentContainer() && node?.type === 'flow-node')
-
-	let showTargetHandle = $derived.by(() => {
-		return node?.type !== 'endpoint-node' && !isRootLevelAndFlowNode
-	})
-
-	let showSourceHandle = $derived.by(() => {
-		return !isRootLevelAndFlowNode
-	})
-
-	const isDirty = false // FIXME
+	const inputHandles = $derived(Object.keys(data.trinode.spec.spec.inputs))
+	const outputHandles = $derived(Object.keys(data.trinode.spec.spec.outputs))
 </script>
 
-<NodeContainer {...props} {showTargetHandle} {showSourceHandle}>
+<NodeContainer {...props} {inputHandles} {outputHandles}>
 	{#snippet body()}
 		<ContextMenu bind:open={contextIsOpen}>
 			{#snippet trigger()}

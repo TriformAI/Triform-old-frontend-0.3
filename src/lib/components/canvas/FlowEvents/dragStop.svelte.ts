@@ -40,14 +40,10 @@ export const handleDragStop: NodeTargetEventWithPointer<
 		}
 		updatedNodes.set(node.id, node)
 	}
-	console.log('updatedNodes', updatedNodes)
-	for (const [id, node] of Object.entries(currentContainer.spec.nodes)) {
+	for (const id of Object.keys(currentContainer.spec.nodes)) {
 		const updatedNode = updatedNodes.get(id)
 		if (!updatedNode) continue
-		currentContainer.spec.nodes[id].position = {
-			x: updatedNode.position.x,
-			y: updatedNode.position.y
-		}
+		currentContainer.spec.nodes[id].position = updatedNode.position
 	}
 	console.log('currentContainer', currentContainer)
 

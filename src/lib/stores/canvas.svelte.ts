@@ -39,13 +39,26 @@ export const getEdges = () => edgesStore
 export const setNodes = (newNodes: CanvasNode[]) => (nodesStore = newNodes)
 export const setEdges = (newEdges: Edge[]) => (edgesStore = newEdges)
 
-let currentContainer = $state<NodeContainer>()
-export const getCurrentContainer = () => currentContainer
-
-let project = $state<z.infer<typeof resolvedProjectModel>>()
+let project = $derived(page.data.project)
 export const getProject = () => project
-export const setProject = (proj: z.infer<typeof resolvedProjectModel>) => {
-	project = proj
+export const setProject = (proj: z.infer<typeof resolvedProjectModel>) => {}
+
+export const getCurrentContainer = (): NodeContainer => {
+	const path = page.url.pathname.split('/')
+	// remove /project/projectId
+	const nodePath = path.slice(path.indexOf('project') + 2)
+	if (!project) {
+		toast.error('No project found')
+		throw new Error('No project found')
+	}
+	if (!nodePath.length) return project
+	const newContainer = getNodeByPath(nodePath)?.spec
+	console.log('newContainer', newContainer, project)
+	if (!newContainer) {
+		toast.error('Invalid node path!')
+		throw new Error('Invalid node path!')
+	}
+	return newContainer as NodeContainer
 }
 
 const nodeSize = {
@@ -56,36 +69,33 @@ const gap = 50
 const maxWidth = 1500
 
 // Initialize the nodes on project or flow level
-export async function initFlow(root: NodeContainer) {
-	if (!root) return void toast.error('No container found!')
-	console.log('initFlow', $state.snapshot(root))
-	currentContainer = root
-
+export async function refreshFlow() {
+	const container = getCurrentContainer()
 	// parse in all the nodes into the nodesStore
-	const { nodes, edges } = parseNodes(currentContainer)
+	const { nodes, edges } = parseNodes(container)
 
 	// add meta nodes
-	if (isFlow(root)) {
+	if (isFlow(container)) {
 		nodes.push({
-			id: `${root.id as Uuid}:input`,
+			id: `${container.id as Uuid}:input`,
 			type: 'input-node',
 			draggable: true,
-			position: root.spec.io_nodes.input,
+			position: container.spec.io_nodes.input,
 			data: {
 				props: { ...defaultProps }
 			}
 		})
 		nodes.push({
-			id: `${root.id as Uuid}:output`,
+			id: `${container.id as Uuid}:output`,
 			type: 'output-node',
 			draggable: true,
-			position: root.spec.io_nodes.output,
+			position: container.spec.io_nodes.output,
 			data: {
 				props: { ...defaultProps }
 			}
 		})
 	}
-	if (isProject(root) || isAgent(root)) {
+	if (isProject(container) || isAgent(container)) {
 		// find where to place the create node for agents and flow
 		// should be the last node, so added one step after the last node
 		const lastNode = nodes[nodes.length - 1]
@@ -96,7 +106,7 @@ export async function initFlow(root: NodeContainer) {
 			y += nodeSize.y + gap
 		}
 		nodes.push({
-			id: `${root.id as Uuid}:create`,
+			id: `${container.id as Uuid}:create`,
 			type: 'create-node',
 			draggable: true,
 			position: { x, y },

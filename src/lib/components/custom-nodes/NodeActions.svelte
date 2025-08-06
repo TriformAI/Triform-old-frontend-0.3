@@ -1,11 +1,11 @@
 <script lang="ts">
-	import type { Node } from '$lib/types/canvas'
+	import type { CanvasNode } from '$lib/types/canvas'
 	import type { onClickFn } from '$lib/stores/nodeActions.svelte'
 
 	import { getActions } from '$lib/stores/nodeActions.svelte'
 
 	interface Props {
-		node?: Node
+		node?: CanvasNode
 		onActionClick?: () => void
 	}
 

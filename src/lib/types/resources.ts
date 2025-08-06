@@ -1,7 +1,7 @@
-import type { projectModel } from '$lib/schemas'
+import type { resolvedProjectModel } from '$lib/schemas'
 import type { z } from 'zod'
 
-export type Project = z.infer<typeof projectModel>
+export type Project = z.infer<typeof resolvedProjectModel>
 
 /////
 
