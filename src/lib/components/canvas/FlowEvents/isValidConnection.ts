@@ -19,7 +19,7 @@ export const isValidConnection: AddParameters<
 	const edges = getEdges()
 	const hasCycle = (node: Node, visited: Set<Node['id']>) => {
 		if (visited.has(node.id)) return true
-		if (node.id !== container.id) visited.add(node.id)
+		if (node.id.split(':')[0] !== container.id) visited.add(node.id)
 		const outgoers = getOutgoers(node, nodes, edges)
 		for (const out of outgoers) {
 			if (out.id === connection.source || hasCycle(out as Node, visited)) return true
