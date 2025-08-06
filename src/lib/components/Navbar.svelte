@@ -18,9 +18,9 @@
 			{#if page.data.project}
 				{#if children}
 					{@render children()}
+				{:else}
+					<span class="font-medium">Projects</span>
 				{/if}
-			{:else}
-				<span class="font-medium">Projects</span>
 			{/if}
 		</div>
 	</div>
