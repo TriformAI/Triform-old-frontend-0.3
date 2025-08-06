@@ -7,6 +7,7 @@ import { getNodeSelector } from '$lib/utils/getNodeSelector'
 type ConnectEnd = AddParameters<OnConnectEnd, [ReturnType<typeof svelteFlowHook>]>
 
 export const handleConnectEnd: ConnectEnd = async (event, connectionState, useSvelteFlow) => {
+	console.log(connectionState)
 	// if it's a valid connection, don't show the node selector but instead add the edge
 	if (connectionState.isValid) {
 		// Figure out which side is the source and which is the target
