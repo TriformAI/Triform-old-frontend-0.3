@@ -2,6 +2,7 @@ import { type Handle } from '@sveltejs/kit'
 import { sequence } from '@sveltejs/kit/hooks'
 import { API } from '$lib/api'
 import { env } from '$env/dynamic/private'
+import { base64 } from 'zod'
 const apiUrl = env.API_URL
 
 const authHandle: Handle = async ({ event, resolve }) => {
@@ -11,6 +12,17 @@ const authHandle: Handle = async ({ event, resolve }) => {
 	if (!authToken) {
 		return resolve(event)
 	}
+
+	try {
+		const { session: sessionData } = JSON.parse(
+			Buffer.from(event.cookies.get('__Secure-better-auth.session_data')!, 'base64url').toString(
+				'utf8'
+			)
+		)
+
+		event.locals.session = sessionData.session
+		event.locals.user = sessionData.user
+	} catch (error) {}
 
 	event.locals.isAuthenticated = true
 

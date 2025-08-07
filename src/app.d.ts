@@ -1,6 +1,7 @@
 import 'unplugin-icons/types/svelte'
-import type { User, Organization } from '$lib/types/auth'
 import type { Payload, Project, Variable } from '$lib/types/resources'
+import type { User, Session } from 'better-auth/types'
+import type { Organization } from 'better-auth/plugins/organization'
 
 import { API } from '$lib/api'
 
@@ -12,6 +13,9 @@ declare global {
 		interface Locals {
 			isAuthenticated?: boolean
 			user?: User
+			session?: Session & {
+				activeOrganizationId?: string | null
+			}
 			organizations?: Organization[]
 			api: InstanceType<typeof API>
 		}
