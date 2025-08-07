@@ -16,7 +16,7 @@
 	const desc = $derived(componentData?.meta?.intention)
 </script>
 
-<div>
+<div class="h-full">
 	<div class="border-b-main-800 bg-main-950 sticky top-0 z-20 grid h-20 border-b px-3 pe-5">
 		<div class="flex items-center justify-between gap-4">
 			<h2 class="flex items-center gap-2 truncate text-lg font-semibold">

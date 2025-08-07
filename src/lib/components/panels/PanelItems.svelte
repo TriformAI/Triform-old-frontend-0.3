@@ -44,16 +44,22 @@
 	// Get component type from resource
 	const componentType = $derived(componentData.resource.split('/')[0]) as keyof OpenPanelItems
 
-	// Get active components from openPanelItems or default to ['execute']
+	// Get active components from openPanelItems or default to first available item
 	const activeComponents = $derived(
-		componentType === 'project' ? ['projectSettings'] : (openPanelItems[componentType] ?? [''])
+		componentType === 'project'
+			? ['projectSettings']
+			: openPanelItems[componentType]?.length > 0
+				? openPanelItems[componentType]
+				: []
 	)
 
 	let isMounted = $state(false)
 
 	onMount(() => {
-		if (activeComponents.length === 0) {
-			toggleOpenPanelItem(componentType, 'execute')
+		if (activeComponents.length === 0 && items.length > 0) {
+			// Default to 'execute' if available, otherwise use the first available item
+			const defaultItem = items.includes('execute') ? 'execute' : items[0]
+			toggleOpenPanelItem(componentType, defaultItem)
 		}
 
 		setTimeout(() => {
@@ -73,21 +79,30 @@
 	}
 </script>
 
-<div class={['relative grid items-start', showNav ? 'grid-cols-[auto_1fr]' : 'grid-cols-1']}>
+<div
+	class={[
+		'relative grid h-[calc(100%-4rem)] items-start',
+		showNav ? 'grid-cols-[auto_1fr]' : 'grid-cols-1'
+	]}
+>
 	{#if showNav}
-		<nav class="border-main-800 sticky top-20 border-e">
+		<nav class="border-main-800 h-full border-e">
 			<ul>
 				{#each items as key (key)}
 					{@const Icon = allComponents[key].icon}
 					<li
 						class={[
 							'border-b-main-800 border-b',
-							activeComponents.includes(key) ? 'bg-main-850/80' : ''
+							'hover:bg-main-800/50',
+							'group/nav-btn transition',
+							activeComponents.includes(key)
+								? 'bg-main-850/90 text-main-100'
+								: 'text-main-400 hover:text-main-300'
 						]}
 					>
 						<button
 							title={allComponents[key].label}
-							class="grid size-12 place-items-center"
+							class="grid size-12 place-items-center transition group-active/nav-btn:scale-90"
 							onclick={() => onNavClick(key)}
 						>
 							<Icon class="size-6" />

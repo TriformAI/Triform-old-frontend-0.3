@@ -73,9 +73,8 @@ export function toggleOpenPanelItem(nodeType: keyof typeof openPanelItems, title
 
 	const openItemsForType = openPanelItems[nodeType]
 
-	openPanelItems[nodeType] = openItemsForType.includes(title)
-		? openItemsForType.filter(item => item !== title)
-		: [...openItemsForType, title]
+	// If the clicked item is already open, close it; otherwise, open only this item
+	openPanelItems[nodeType] = openItemsForType.includes(title) ? [] : [title]
 
 	localStorage.setItem('openPanelItems', JSON.stringify(openPanelItems))
 }
