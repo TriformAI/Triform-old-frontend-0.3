@@ -51,7 +51,6 @@ export class API<TEvent extends RequestEvent | undefined = undefined> {
 		endpoint: string,
 		data: unknown,
 		headers: Record<string, string>,
-		returnOnlyPromise: true,
 		returnHeaders: true
 	): Promise<ReturnDataWithHeaders<T>>
 
@@ -60,7 +59,6 @@ export class API<TEvent extends RequestEvent | undefined = undefined> {
 		endpoint: string,
 		data: unknown,
 		headers: Record<string, string>,
-		returnOnlyPromise: true,
 		returnHeaders?: false
 	): Promise<ReturnData<T>>
 
@@ -69,7 +67,6 @@ export class API<TEvent extends RequestEvent | undefined = undefined> {
 		endpoint: string,
 		data: unknown,
 		headers: Record<string, string>,
-		returnOnlyPromise: false,
 		returnHeaders: true
 	): Promise<ReturnDataWithHeaders<T> | ActionFailure>
 
@@ -78,7 +75,6 @@ export class API<TEvent extends RequestEvent | undefined = undefined> {
 		endpoint: string,
 		data: unknown,
 		headers: Record<string, string>,
-		returnOnlyPromise: false,
 		returnHeaders?: false
 	): Promise<ReturnData<T> | ActionFailure>
 
@@ -88,7 +84,6 @@ export class API<TEvent extends RequestEvent | undefined = undefined> {
 		endpoint: string,
 		data?: unknown,
 		headers?: Record<string, string>,
-		returnOnlyPromise?: boolean,
 		returnHeaders?: boolean
 	): Promise<ReturnData<T> | ReturnDataWithHeaders<T> | ActionFailure>
 
@@ -98,7 +93,6 @@ export class API<TEvent extends RequestEvent | undefined = undefined> {
 		endpoint: string,
 		data?: unknown,
 		headers: Record<string, string> = {},
-		returnOnlyPromise = false,
 		returnHeaders = false
 	): Promise<ReturnData<T> | ReturnDataWithHeaders<T> | ActionFailure> {
 		try {
@@ -123,18 +117,7 @@ export class API<TEvent extends RequestEvent | undefined = undefined> {
 				}
 			}
 
-			if (returnOnlyPromise) {
-				if (returnHeaders) {
-					return {
-						data: result as T,
-						success: response.ok,
-						status: response.status,
-						headers: response.headers
-					}
-				}
-				return result as ReturnData<T>
-			}
-
+			// Return fail or error if response not ok and if we're on server
 			if (!response.ok) {
 				console.error('API error: ', result)
 				if (['POST', 'PUT', 'DELETE'].includes(method)) {
@@ -144,16 +127,20 @@ export class API<TEvent extends RequestEvent | undefined = undefined> {
 				error(response.status, result)
 			}
 
+			const returnData = {
+				...result,
+				success: response.ok,
+				status: response.status
+			}
+
 			if (returnHeaders) {
 				return {
-					data: result as T,
-					success: response.ok,
-					status: response.status,
+					...returnData,
 					headers: response.headers
 				}
 			}
 
-			return result as ReturnData<T>
+			return returnData
 		} catch (error) {
 			console.error('API error: ', error)
 			return { success: false, status: 500, message: 'Server error' }
@@ -163,20 +150,10 @@ export class API<TEvent extends RequestEvent | undefined = undefined> {
 	// --- Public Methods ---
 	get<T>(
 		endpoint: string,
-		headers?: Record<string, string>,
-		returnHeaders?: false
-	): Promise<ReturnData<T>>
-	get<T>(
-		endpoint: string,
-		headers: Record<string, string>,
-		returnHeaders: true
-	): Promise<ReturnDataWithHeaders<T>>
-	get<T>(
-		endpoint: string,
 		headers: Record<string, string> = {},
 		returnHeaders: boolean = false
 	): Promise<ReturnData<T> | ReturnDataWithHeaders<T>> {
-		return this.#request<T>('GET', endpoint, undefined, headers, false, returnHeaders as any) as any
+		return this.#request<T>('GET', endpoint, undefined, headers, returnHeaders as any) as any
 	}
 
 	post<T>(
@@ -184,7 +161,7 @@ export class API<TEvent extends RequestEvent | undefined = undefined> {
 		data: unknown,
 		headers: Record<string, string> = {}
 	): Promise<MutationResult<T, TEvent>> {
-		return this.#request<T>('POST', endpoint, data, headers, false) as any
+		return this.#request<T>('POST', endpoint, data, headers) as any
 	}
 
 	put<T>(
@@ -192,7 +169,7 @@ export class API<TEvent extends RequestEvent | undefined = undefined> {
 		data: unknown,
 		headers: Record<string, string> = {}
 	): Promise<MutationResult<T, TEvent>> {
-		return this.#request<T>('PUT', endpoint, data, headers, false) as any
+		return this.#request<T>('PUT', endpoint, data, headers) as any
 	}
 
 	patch<T>(
@@ -200,7 +177,7 @@ export class API<TEvent extends RequestEvent | undefined = undefined> {
 		data: unknown,
 		headers: Record<string, string> = {}
 	): Promise<MutationResult<T, TEvent>> {
-		return this.#request<T>('PATCH', endpoint, data, headers, false) as any
+		return this.#request<T>('PATCH', endpoint, data, headers) as any
 	}
 
 	delete<T>(
@@ -208,6 +185,6 @@ export class API<TEvent extends RequestEvent | undefined = undefined> {
 		data?: unknown,
 		headers: Record<string, string> = {}
 	): Promise<MutationResult<T, TEvent>> {
-		return this.#request<T>('DELETE', endpoint, data, headers, false) as any
+		return this.#request<T>('DELETE', endpoint, data, headers) as any
 	}
 }
