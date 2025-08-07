@@ -19,21 +19,6 @@
 		// console.log('dialogs', dialogs, !dialogs?.length)
 		// return !!dialogs?.length
 	})
-
-	// put the currently active org into session storage so we can access it from the API constructor
-	const updateActiveOrg = () => {
-		const activeOrg = page.data.organizations?.find((org: Organization) => org.active)
-		sessionStorage.setItem('activeOrgToken', activeOrg?.token ?? '')
-	}
-
-	onMount(updateActiveOrg)
-
-	$effect(() => {
-		const ref = page.data.organizations
-		updateActiveOrg()
-	})
-
-	const session = authClient.useSession()
 </script>
 
 <div class="relative transform">{@render children?.()}</div>

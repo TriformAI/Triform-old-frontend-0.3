@@ -64,7 +64,7 @@
 			<p>
 				<span
 					class={[
-						'rounded px-2 py-1 text-xs font-semibold uppercase',
+						'badge',
 						member.role === 'owner' && 'text-accent-200 bg-accent-600',
 						member.role === 'admin' && 'text-accent-600 bg-accent-200',
 						member.role === 'member' && 'text-main-600 bg-main-200'

@@ -190,6 +190,10 @@
 	padding: 1.5rem;
 }
 
+@utility badge {
+	@apply rounded px-2 py-1 text-xs font-semibold uppercase;
+}
+
 @utility animate-border {
 	animation: border 6s linear infinite;
 	--border-gradient-angle: 0deg;

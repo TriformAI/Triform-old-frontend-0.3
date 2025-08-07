@@ -69,7 +69,7 @@
 						<td class="w-1/5">
 							<span
 								class={[
-									'rounded px-2 py-1 text-xs leading-none font-semibold tracking-wide uppercase',
+									'badge',
 									invite.status === 'pending' && 'bg-warning-700 text-warning-100',
 									invite.status === 'accepted' && 'bg-success-700 text-success-100',
 									invite.status === 'canceled' && 'bg-danger-700 text-danger-100'
