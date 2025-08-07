@@ -20,14 +20,14 @@
 
 <div
 	class={[
-		'absolute relative z-10 flex items-center justify-center',
+		'relative z-10 flex items-center justify-center',
 		top ? 'translate-y-full flex-col' : ' -translate-y-full flex-col-reverse'
 	]}
 >
 	<span
 		class={[
-			'text-main-400 bg-main-900/80 truncate rounded px-1 font-sans text-xs backdrop-blur-sm',
-			top ? '-translate-y-full pb-1.5' : 'translate-y-full pt-1 pb-0.5'
+			'text-main-400 bg-main-900/80 -mt-0.5 block h-fit truncate rounded px-1 font-sans text-xs backdrop-blur-sm',
+			top ? '-translate-y-full pb-1' : 'translate-y-full pt-1 pb-0.5'
 		]}
 	>
 		{name}

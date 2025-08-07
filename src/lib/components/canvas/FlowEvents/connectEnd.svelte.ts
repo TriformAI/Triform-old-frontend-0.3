@@ -1,5 +1,6 @@
-import { type OnConnectEnd, useSvelteFlow as svelteFlowHook } from '@xyflow/svelte'
-import { defaultEdgeProps, type Node } from '$lib/types/canvas'
+import { useSvelteFlow as svelteFlowHook } from '@xyflow/svelte'
+import type { OnConnectEnd } from '@xyflow/svelte'
+import { defaultEdgeProps, type CanvasNode, type Node } from '$lib/types/canvas'
 import type { UUID as Uuid } from 'crypto'
 import { addEdge, getEdges, getNodes, setEdges, setNodes } from '$lib/stores/canvas.svelte'
 import { getNodeSelector } from '$lib/utils/getNodeSelector'
@@ -30,15 +31,7 @@ export const handleConnectEnd: ConnectEnd = async (event, connectionState, useSv
 	if (!fromHandle || !fromNode) return
 
 	const sourceNodeId = fromNode.id as Uuid
-	const nodeSelectorId = crypto.randomUUID()
 	const { clientX, clientY } = 'changedTouches' in event ? event.changedTouches[0] : event
-
-	const newEdge = {
-		source: sourceNodeId,
-		target: nodeSelectorId,
-		id: `${sourceNodeId}:nodeSelector`,
-		data: { props: defaultEdgeProps }
-	}
 
 	const { screenToFlowPosition } = useSvelteFlow
 
@@ -49,7 +42,12 @@ export const handleConnectEnd: ConnectEnd = async (event, connectionState, useSv
 
 	console.info(fromNode.type)
 
-	const { node, edge } = getNodeSelector(sourceNodeId, position, fromNode.type === 'parent-node')
+	const { node, edge } = getNodeSelector(
+		sourceNodeId,
+		position,
+		fromNode as unknown as CanvasNode,
+		fromHandle
+	)
 
 	setNodes([...getNodes(), node])
 	setEdges([...getEdges(), edge])

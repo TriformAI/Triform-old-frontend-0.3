@@ -81,10 +81,10 @@
 				toast.error('Name is required')
 				return
 			}
+			// TODO: add a proper input to the component so it can be connected immediately here
+			// (copy it from the source node's output that we're dragging from)
 			const newComponent = await createComponent(pendingComponent)
-			await addNode(newComponent, getNode(id)!.position, [
-				data.sourceIsParent ? 'parent' : data.sourceNodeId
-			])
+			await addNode(newComponent, getNode(id)!.position, {})
 		} catch (error) {
 			console.error(error)
 			toast.error('Failed to create component')

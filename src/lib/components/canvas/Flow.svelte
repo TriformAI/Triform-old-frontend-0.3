@@ -133,7 +133,7 @@
 
 		const position = screenToFlowPosition({ x: event.clientX, y: event.clientY })
 
-		await addNode(component.data, position, [])
+		await addNode(component.data, position, {})
 	}
 
 	onMount(async () => {

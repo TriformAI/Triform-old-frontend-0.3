@@ -18,7 +18,7 @@
 </script>
 
 <div class="group/container relative w-full">
-	<div class="-mt-5.5 flex flex-row items-center justify-around gap-5">
+	<div class="mb-2 flex h-0 flex-row items-center justify-around gap-5">
 		{#each targetHandles as name}
 			<CustomHandle id={name} {name} type="target" position={Position.Top} />
 		{/each}

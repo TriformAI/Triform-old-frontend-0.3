@@ -102,6 +102,7 @@ export class API<TEvent extends RequestEvent | undefined = undefined> {
 		returnHeaders = false
 	): Promise<ReturnData<T> | ReturnDataWithHeaders<T> | ActionFailure> {
 		try {
+			console.log(`--> ${method} ${this.#baseURL}/${endpoint}`)
 			const response = await this.#fetch(`${this.#baseURL}/${endpoint}`, {
 				method,
 				headers: {
@@ -154,6 +155,7 @@ export class API<TEvent extends RequestEvent | undefined = undefined> {
 
 			return result as ReturnData<T>
 		} catch (error) {
+			console.error('API error: ', error)
 			return { success: false, status: 500, message: 'Server error' }
 		}
 	}

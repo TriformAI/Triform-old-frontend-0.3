@@ -49,7 +49,7 @@
 					x: props.positionAbsoluteX,
 					y: props.positionAbsoluteY
 				},
-				[]
+				{}
 			)
 			stopEditing()
 		} catch (e) {

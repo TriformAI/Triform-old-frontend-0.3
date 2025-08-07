@@ -2,6 +2,7 @@ import type { Node as TriNode } from '.'
 import type { UUID as Uuid } from 'crypto'
 import type { Node as XyNode, Edge as XyEdge, EdgeProps as XyEdgeProps } from '@xyflow/svelte'
 import type { NodeContainer } from './flow'
+import type { Handle } from '@xyflow/system'
 
 // Visual properties of a node
 export interface NodeProps {
@@ -37,17 +38,20 @@ export type MetaNodeType =
 	| 'loading-node'
 	| 'input-node'
 	| 'output-node'
-export type MetaNodeData = Exclude<NodeData, 'trinode'>
+export type MetaNodeData = Omit<Omit<NodeData, 'trinode'>, 'props'> & {
+	sourceNode?: CanvasNode
+	sourceHandle?: Handle
+}
 
 export interface Node extends XyNode<NodeData, NodeType> {
-	id: Uuid
-	parentId?: Uuid
+	id: string
+	parentId?: string
 	type: NodeType
 }
 
 export interface MetaNode extends XyNode<MetaNodeData, MetaNodeType> {
-	id: `${Uuid}:input` | `${Uuid}:output` | Uuid
-	parentId?: Uuid
+	id: `${Uuid}:input` | `${Uuid}:output` | string
+	parentId?: string
 	type: MetaNodeType
 }
 

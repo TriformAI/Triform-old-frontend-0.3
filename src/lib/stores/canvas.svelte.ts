@@ -23,7 +23,9 @@ import {
 	resolvedAgentModel,
 	resolvedProjectModel,
 	isProject,
-	resolvedComponentModel
+	resolvedComponentModel,
+	ioModel,
+	nodePortModel
 } from '$lib/schemas'
 import { type NodeContainer } from '$lib/types/flow'
 import type * as z from 'zod'
@@ -72,6 +74,8 @@ export async function refreshFlow() {
 	const container = getCurrentContainer()
 	// parse in all the nodes into the nodesStore
 	const { nodes, edges } = parseNodes(container)
+
+	console.log('nodes', nodes, 'edges', edges)
 
 	// add meta nodes
 	if (isFlow(container)) {
@@ -164,7 +168,7 @@ export function parseNodes(root: NodeContainer) {
 	const parseEdges = (node: TriNode, id: Uuid) => {
 		const newEdges: Edge[] = []
 		if (!('inputs' in node)) return newEdges
-		for (const [inputName, port] of Object.entries(node.inputs)) {
+		for (const [inputName, port] of Object.entries(node.inputs ?? {})) {
 			if (port.source === 'parent') {
 				newEdges.push({
 					type: 'default',
@@ -250,56 +254,45 @@ const saveContainer = async (container: NodeContainer) => {
 }
 
 export async function addNode(
-	component: Component,
-	position: { x: number; y: number },
-	inputs: Source[]
+	component: z.infer<typeof resolvedComponentModel>,
+	position: { x: number; y: number } = { x: 0, y: 0 },
+	inputs: Record<string, z.infer<typeof nodePortModel>> = {}
 ) {
 	if (!project) {
 		throw new Error('No project loaded')
 	}
 
 	const newNodeId = crypto.randomUUID()
+	const container = getCurrentContainer()
 
-	// Top-level flows - Update project with new node
-	if (isRootLevel) {
-		const updatedProject = clone(project)
+	const baseNode = {
+		component_id: component.id!,
+		spec: component,
+		inputs: !isProject(container) ? inputs : undefined
+	} as TriNode
 
-		updatedProject.spec.nodes = Object.fromEntries(
-			Object.entries(updatedProject.spec.nodes).map(([id, node]) => {
-				const { component_id } = node
-				return [id, { component_id }]
-			})
-		)
+	let newNode
 
-		updatedProject.spec.nodes[newNodeId] = {
-			component_id: component.id!
-		}
-
-		console.log('updatedProject.spec.nodes', updatedProject.spec.nodes)
-
-		const spec = updatedProject.spec
-
-		await Promise.all([
-			saveProject(project.id!, { spec })
-			// updateComponentPositions(project.id, {
-			// 	[newNodeId]: position
-			// })
-		])
-	}
-	// Nested flows - Update component with new node
-	else if (currentFlow) {
-		const updatedFlow = clone(currentFlow) as typeof currentFlow
-		updatedFlow.spec.spec.nodes[newNodeId] = newNode
-
-		await Promise.all([
-			await updateComponent(updatedFlow.spec),
-			updateComponentPositions(currentFlow.component_id, {
-				[newNodeId]: position
-			})
-		])
+	if (isProject(container) || isAgent(container)) {
+		newNode = {
+			...baseNode,
+			order:
+				(Math.max(...Object.values(container.spec.nodes).map(n => n.order)) ??
+					Object.keys(container.spec.nodes).length) + 1
+		} as
+			| z.infer<typeof projectModel>['spec']['nodes'][string]
+			| z.infer<typeof agentModel>['spec']['nodes'][string]
+	} else {
+		newNode = {
+			...baseNode,
+			position
+		} as z.infer<typeof flowModel>['spec']['nodes'][string]
 	}
 
-	await invalidateAll()
+	container.spec.nodes[newNodeId] = newNode
+
+	await saveContainer(container)
+	await refreshFlow()
 
 	// select the new node
 	const node = nodesStore.find(node => node.id === newNodeId)
@@ -312,19 +305,10 @@ export async function deleteNode(id: Uuid) {
 		throw new Error('No project loaded')
 	}
 
-	// Delete node from project
-	if (isRootLevel) {
-		delete project.spec.nodes[id]
-		await saveProject(project)
-	}
-
-	// Delete node from flow
-	else if (currentFlow) {
-		delete currentFlow.spec.spec.nodes[id]
-		await updateComponent(currentFlow.spec)
-	}
-
-	await invalidateAll()
+	const container = getCurrentContainer()
+	delete container.spec.nodes[id]
+	await saveContainer(container)
+	await refreshFlow()
 }
 
 type EdgeConnection = {

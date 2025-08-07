@@ -1,17 +1,25 @@
-import type { Node, TemporaryNode } from '$lib/types/canvas'
+import type { CanvasNode, Node, MetaNode } from '$lib/types/canvas'
 import { defaultEdgeProps } from '$lib/types/canvas'
 import type { XYPosition } from '@xyflow/svelte'
+import type { Handle } from '@xyflow/system'
 
 export function getNodeSelector(
 	sourceId: Node['id'],
 	position: XYPosition,
-	sourceIsParent: boolean
+	fromNode: CanvasNode,
+	fromHandle: Handle
 ) {
 	const nodeId = crypto.randomUUID()
 
+	// If dragging from a target handle (top of node), reverse the connection
+	// The edge should go from selector's source to the node's target
+	const isFromTargetHandle = fromHandle.type === 'target'
+
 	const edge = {
-		source: sourceId,
-		target: nodeId,
+		source: isFromTargetHandle ? nodeId : sourceId,
+		sourceHandle: isFromTargetHandle ? undefined : fromHandle.id,
+		target: isFromTargetHandle ? sourceId : nodeId,
+		targetHandle: isFromTargetHandle ? fromHandle.id : undefined,
 		id: `${sourceId}:${nodeId}`,
 		data: { props: defaultEdgeProps }
 	}
@@ -22,12 +30,13 @@ export function getNodeSelector(
 		position,
 		data: {
 			sourceNodeId: sourceId,
-			sourceIsParent,
-			props: {}
+			sourceIsParent: fromNode.type === 'input-node',
+			sourceNode: fromNode,
+			sourceHandle: fromHandle
 		},
 		// set the origin of the new node so it is centered
 		origin: [0.5, 0.0]
-	} as TemporaryNode
+	} satisfies MetaNode
 
 	return {
 		node,

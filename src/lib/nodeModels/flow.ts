@@ -1,22 +1,22 @@
-import type { Flow } from '$lib/types/resources'
+import type { resolvedFlowModel } from '$lib/schemas'
+import type * as z from 'zod'
 
-export const getFlowModel = () => {
-	return {
+export const getFlowModel = () =>
+	({
 		resource: 'flow/v1',
 		meta: {
 			starred: false,
-			name: 'Flow',
-			intention: {
-				purpose: '',
-				input: '',
-				output: ''
-			}
+			name: 'New Flow',
+			intention: ''
 		},
 		spec: {
-			readme: 'Flow',
+			readme: 'New Flow',
 			nodes: {},
 			outputs: {},
-			inputs: {}
+			inputs: {},
+			io_nodes: {
+				input: { x: 0, y: 0 },
+				output: { x: 0, y: 100 }
+			}
 		}
-	}
-}
+	}) satisfies Omit<z.infer<typeof resolvedFlowModel>, 'id'>
