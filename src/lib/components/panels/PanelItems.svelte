@@ -1,6 +1,5 @@
 <script lang="ts">
-	import type * as z from 'zod'
-	import type { resolvedComponentModel } from '$lib/schemas'
+	import { getVisibleComponent } from '$lib/stores/canvas.svelte'
 	import CodeEditor from './items/CodeEditor.svelte'
 	import Execute from './items/Execute/Root.svelte'
 	import Metadata from './items/Metadata.svelte'
@@ -26,7 +25,7 @@
 
 	interface Props {
 		items: PanelComponent[]
-		componentData: z.infer<typeof resolvedComponentModel>
+		nodeId: string
 		showNav?: boolean
 	}
 
@@ -39,10 +38,12 @@
 		triggers: { label: 'Triggers', component: Triggers, icon: IconTriggers }
 	}
 
-	const { items, componentData, showNav = true }: Props = $props()
+	let { items, nodeId, showNav = true }: Props = $props()
+
+	const componentData = $derived(getVisibleComponent(nodeId))
 
 	// Get component type from resource
-	const componentType = $derived(componentData.resource.split('/')[0]) as keyof OpenPanelItems
+	const componentType = $derived(componentData?.resource?.split('/')[0]) as keyof OpenPanelItems
 
 	// Get active components from openPanelItems or default to first available item
 	const activeComponents = $derived(
@@ -133,7 +134,7 @@
 				]}
 			>
 				<div class="border-b-main-800 border-b">
-					<Component {componentData} />
+					<Component {nodeId} />
 				</div>
 			</div>
 		{/each}

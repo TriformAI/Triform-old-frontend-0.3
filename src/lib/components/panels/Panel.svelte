@@ -1,17 +1,17 @@
 <script lang="ts">
 	import { type Component as SvelteComponent, type Snippet } from 'svelte'
 	import PanelItems from './PanelItems.svelte'
-	import type * as z from 'zod'
-	import type { resolvedComponentModel } from '$lib/schemas'
+	import { getVisibleComponent } from '$lib/stores/canvas.svelte'
 
 	interface Props {
-		componentData: z.infer<typeof resolvedComponentModel>
+		nodeId: string
 		Icon?: SvelteComponent
 		panelItems: Snippet<[typeof PanelItems]>
 	}
 
-	const { componentData, Icon, panelItems }: Props = $props()
+	const { nodeId, Icon, panelItems }: Props = $props()
 
+	const componentData = $derived(getVisibleComponent(nodeId))
 	const title = $derived(componentData?.meta?.name ?? 'Project')
 	const desc = $derived(componentData?.meta?.intention)
 </script>

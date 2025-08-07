@@ -9,19 +9,22 @@
 	import { toast } from 'svelte-sonner'
 	import { invalidate } from '$app/navigation'
 	import { confirmStore } from '$lib/stores/confirm.svelte'
+	import { getVisibleComponent } from '$lib/stores/canvas.svelte'
 
 	const api = new API()
 
 	let {
-		componentData,
+		nodeId,
 		trigger
 	}: {
-		componentData: Component
+		nodeId: string
 		trigger: Trigger
 	} = $props()
 
 	let dialog = $state<HTMLDialogElement>()
 	let data = $state<Trigger>()
+
+	const componentData = $derived(getVisibleComponent(nodeId) as Component)
 
 	const actions = $state([
 		{
@@ -62,7 +65,7 @@
 	])
 </script>
 
-<Dialog bind:dialog {data} {componentData} />
+<Dialog bind:dialog {data} {nodeId} />
 <div
 	class={[
 		'flex flex-row items-start justify-between',

@@ -446,3 +446,9 @@ export const getNodePath = () => {
 
 	return path
 }
+
+export const getVisibleComponent = (nodeId: string | 'container') => {
+	const container = getCurrentContainer()
+	if (nodeId === 'container') return container
+	return container.spec.nodes[nodeId]?.spec as z.infer<typeof resolvedComponentModel>
+}

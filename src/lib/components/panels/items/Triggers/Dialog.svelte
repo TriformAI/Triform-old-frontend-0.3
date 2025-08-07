@@ -14,14 +14,17 @@
 	import type { Cron, Trigger, Modifier } from '$lib/types/resources'
 	import type { Component } from '$lib/types/resources'
 	import { sleep } from '$lib/utils/sleep'
+	import { getVisibleComponent } from '$lib/stores/canvas.svelte'
 
 	interface Props {
 		dialog: HTMLDialogElement | undefined
 		data?: Trigger
-		componentData: Component
+		nodeId: string
 	}
 
-	let { dialog = $bindable(), data: sourceData, componentData }: Props = $props()
+	let { dialog = $bindable(), data: sourceData, nodeId }: Props = $props()
+
+	const componentData = $derived(getVisibleComponent(nodeId) as Component)
 
 	const tabs = [
 		{

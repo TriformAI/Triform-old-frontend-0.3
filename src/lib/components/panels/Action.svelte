@@ -1,16 +1,11 @@
 <script lang="ts">
 	import Panel from './Panel.svelte'
 	import Icon from '~icons/mdi/rhombus'
-	import type { z } from 'zod'
-	import type { resolvedComponentModel } from '$lib/schemas'
-	const { componentData }: { componentData: z.infer<typeof resolvedComponentModel> } = $props()
+	const { nodeId }: { nodeId: string } = $props()
 </script>
 
-<Panel {componentData} {Icon}>
+<Panel {nodeId} {Icon}>
 	{#snippet panelItems(PanelItems)}
-		<PanelItems
-			items={['execute', 'codeEditor', 'metadata', 'variables', 'triggers']}
-			{componentData}
-		/>
+		<PanelItems items={['execute', 'codeEditor', 'metadata', 'variables', 'triggers']} {nodeId} />
 	{/snippet}
 </Panel>

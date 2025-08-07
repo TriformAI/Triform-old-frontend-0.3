@@ -1,12 +1,10 @@
 <script lang="ts">
 	import type { Snippet } from 'svelte'
-	import { getCurrentContainer } from '$lib/stores/canvas.svelte'
+	import { getCurrentContainer, getVisibleComponent } from '$lib/stores/canvas.svelte'
 	import IconAdd from '~icons/mdi/plus-circle-outline'
-	import type { z } from 'zod'
-	import type { resolvedComponentModel } from '$lib/schemas'
 
 	export interface Props {
-		componentData: z.infer<typeof resolvedComponentModel>
+		nodeId: string
 		title: string
 		children: Snippet
 		isDirty?: boolean
@@ -16,7 +14,7 @@
 	}
 
 	let {
-		componentData,
+		nodeId,
 		title,
 		children,
 		isDirty = false,
@@ -24,6 +22,8 @@
 		isListContainer = false,
 		onAddClick
 	}: Props = $props()
+
+	const componentData = $derived(getVisibleComponent(nodeId))
 
 	const nodeType = $derived.by(() => {
 		if (!componentData) return

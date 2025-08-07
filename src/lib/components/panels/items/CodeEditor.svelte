@@ -6,15 +6,20 @@
 	import Tabs from '$lib/components/atoms/Tabs.svelte'
 	import Button from '$lib/components/atoms/Button.svelte'
 	import type { z } from 'zod'
-	import type { resolvedComponentModel, actionModel } from '$lib/schemas'
+	import type { actionModel } from '$lib/schemas'
 	import { toast } from 'svelte-sonner'
 	import compare from 'just-compare'
 	import PanelItem from '../PanelItem.svelte'
 	import { inProgressComponents } from '$lib/stores/builder.svelte'
 	import { blur } from 'svelte/transition'
 	import { debounce } from '$lib/utils/debounce'
+	import { updateComponent } from '$lib/actions/components'
+	import { getVisibleComponent } from '$lib/stores/canvas.svelte'
 
-	const { componentData }: { componentData: z.infer<typeof actionModel> } = $props()
+	const { nodeId }: { nodeId: string } = $props()
+
+	// Get the component data directly from the store
+	const componentData = $derived(getVisibleComponent(nodeId) as z.infer<typeof actionModel>)
 
 	const dataIsDirty = false // FIXME
 
@@ -26,11 +31,11 @@
 
 	type FileType = keyof typeof filenames
 
-	// if we're building, we need to sync the component that's being bult to our
+	// if we're building, we need to sync the component that's being built to our
 	// local form data, so it's as if we've written it ourselves
 	$effect(() => {
 		const newComponent = inProgressComponents[componentId]?.component as z.infer<typeof actionModel>
-		if (!newComponent) return
+		if (!newComponent || !componentData) return
 
 		// important that this is in the same order as the tabs
 		const newData = {
@@ -38,13 +43,15 @@
 			readme: newComponent.spec.readme,
 			requirements: newComponent.spec.requirements
 		}
+
 		// switch tab depending on which file was updated
 		const idx = Object.keys(newData).findIndex(
-			key => newData[key as FileType] !== componentData.spec[key]
+			key => newData[key as FileType] !== componentData.spec[key as FileType]
 		)
 
 		if (idx > -1) activeTab = idx
 
+		// Update component data directly
 		Object.assign(componentData.spec, newData)
 	})
 
@@ -58,13 +65,38 @@
 		}))
 	})
 
-	const componentId = $derived(componentData.id)
-	const isBuilding = $derived(componentId in inProgressComponents)
+	const componentId = $derived(componentData?.id)
+	const isBuilding = $derived(componentId ? componentId in inProgressComponents : false)
 
-	const debouncedSaveDraft = debounce(() => {}, 500) // FIXME
+	// Current file info
+	const currentFileKey = $derived(Object.keys(filenames)[activeTab] as FileType)
+	const currentFileName = $derived(filenames[currentFileKey])
+	const currentLanguage = $derived(currentFileName.split('.').pop() as 'py' | 'md' | 'txt')
+
+	// Create a reactive binding for current file content
+	let currentContent = $state('')
+
+	// Sync content when tab changes or component data changes
+	$effect(() => {
+		if (componentData) {
+			currentContent = componentData.spec[currentFileKey] || ''
+		}
+	})
+
+	// Update component data when content changes
+	$effect(() => {
+		if (componentData && currentContent !== undefined) {
+			componentData.spec[currentFileKey] = currentContent
+		}
+	})
+
+	const debouncedSave = debounce(async () => {
+		const res = await updateComponent(componentData)
+		if (!res.success) toast.error(`Failed saving ${componentData.meta.name}`)
+	}, 500)
 </script>
 
-<PanelItem title="Code" {componentData} isDirty={dataIsDirty}>
+<PanelItem title="Code" {nodeId} isDirty={dataIsDirty}>
 	<div class="relative">
 		<Tabs {tabs} bind:activeTab />
 		<div
@@ -74,31 +106,30 @@
 			]}
 		>
 			{#if componentData}
-				{#each Object.entries(filenames) as [key, value], idx (key)}
-					{@const language = value.split('.').pop() as 'py' | 'md' | 'txt'}
-					{#if language === 'py'}
+				{#key activeTab}
+					{#if currentLanguage === 'py'}
 						<Editor
-							bind:code={componentData.spec[key as FileType]}
-							class={`${idx === activeTab ? 'block' : 'hidden'} absolute h-full w-full rounded-md`}
+							bind:code={currentContent}
+							class="h-full w-full rounded-md"
 							readOnly={isBuilding}
-							onUpdate={debouncedSaveDraft}
+							onUpdate={debouncedSave}
 						/>
 					{:else}
 						<LightEditor
-							{language}
-							bind:value={componentData.spec[key as FileType]}
+							language={currentLanguage}
+							bind:value={currentContent}
 							wordWrap={true}
-							class={`${idx === activeTab ? 'block' : 'hidden'} bg-main-800 absolute h-full w-full rounded-md ps-6 pt-2.5 text-sm`}
+							class="bg-main-800 h-full w-full rounded-md ps-6 pt-2.5 text-sm"
 							readOnly={isBuilding}
-							onUpdate={debouncedSaveDraft}
+							onUpdate={debouncedSave}
 						/>
 					{/if}
-				{/each}
+				{/key}
 			{/if}
 		</div>
 
-		{#if isBuilding}
-			{@const message = inProgressComponents[componentId].message}
+		{#if isBuilding && componentId}
+			{@const message = inProgressComponents[componentId]?.message}
 			<div
 				class="pointer-events-none absolute inset-0 flex items-center justify-center px-6 py-4 opacity-100 transition starting:opacity-0"
 			>

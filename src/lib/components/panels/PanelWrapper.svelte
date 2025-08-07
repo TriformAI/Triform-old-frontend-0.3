@@ -1,17 +1,14 @@
 <script lang="ts">
 	import { isAction, isFlow } from '$lib/schemas'
-	import { getCurrentContainer } from '$lib/stores/canvas.svelte'
+	import { getVisibleComponent } from '$lib/stores/canvas.svelte'
 	import Flow from './Flow.svelte'
 	import Action from './Action.svelte'
 	import { selected } from '$lib/stores/panel.svelte'
-	import * as z from 'zod'
-	import type { resolvedComponentModel } from '$lib/schemas'
 
-	const componentData = $derived(
-		selected.node?.data?.trinode?.spec ?? getCurrentContainer()
-	) as z.infer<typeof resolvedComponentModel>
+	const nodeId = $derived(selected.node?.id ?? 'container')
 
 	const NodeComponent = $derived.by(() => {
+		const componentData = getVisibleComponent(nodeId)
 		if (!componentData) return
 		if (isFlow(componentData)) return Flow
 		if (isAction(componentData)) return Action
@@ -19,7 +16,7 @@
 </script>
 
 {#if NodeComponent}
-	{#key componentData.id}
-		<NodeComponent {componentData} />
+	{#key nodeId}
+		<NodeComponent {nodeId} />
 	{/key}
 {/if}

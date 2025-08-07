@@ -9,8 +9,13 @@
 	import { createFormHandler } from '$lib/stores/formHandler.svelte'
 	import type { z } from 'zod'
 	import type { resolvedProjectModel } from '$lib/schemas'
+	import { getVisibleComponent } from '$lib/stores/canvas.svelte'
 
-	const { componentData }: { componentData: z.infer<typeof resolvedProjectModel> } = $props()
+	const { nodeId }: { nodeId: string } = $props()
+
+	const componentData = $derived(
+		getVisibleComponent(nodeId) as z.infer<typeof resolvedProjectModel>
+	)
 
 	interface FormData {
 		name: string
@@ -40,7 +45,7 @@
 	)
 </script>
 
-<PanelItem {componentData} title="Project Settings" forceOpen={true}>
+<PanelItem {nodeId} title="Project Settings" forceOpen={true}>
 	<form class="grid gap-3" onsubmit={e => handleSubmit(e, formData)}>
 		<InputField required label="Name" name="name" bind:value={formData.name} />
 

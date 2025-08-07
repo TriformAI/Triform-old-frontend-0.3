@@ -17,8 +17,13 @@
 	import IconChevronDown from '~icons/mdi/chevron-down'
 	import type * as z from 'zod'
 	import type { resolvedComponentModel } from '$lib/schemas'
+	import { getVisibleComponent } from '$lib/stores/canvas.svelte'
 
-	const { componentData }: { componentData: z.infer<typeof resolvedComponentModel> } = $props()
+	const { nodeId }: { nodeId: string } = $props()
+
+	const componentData = $derived(
+		getVisibleComponent(nodeId) as z.infer<typeof resolvedComponentModel>
+	)
 
 	let payload = $state('{\n\t"msg": "hello world"\n}')
 	if (selected.payload) {
@@ -65,7 +70,7 @@
 	}
 </script>
 
-<PanelItem {componentData} title="Execute">
+<PanelItem {nodeId} title="Execute">
 	<div class={[' col-start-1 row-start-1 grid min-w-80 grid-rows-[auto_1fr_min-content] gap-y-4']}>
 		<Payload bind:value={payload} />
 

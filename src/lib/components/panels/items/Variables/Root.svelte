@@ -9,8 +9,11 @@
 	import ComboBox from '$lib/components/atoms/ComboBox.svelte'
 	import { getNodePath } from '$lib/stores/canvas.svelte'
 	import { type Component } from '$lib/types/resources'
+	import { getVisibleComponent } from '$lib/stores/canvas.svelte'
 
-	const { componentData }: { componentData: Component } = $props()
+	const { nodeId }: { nodeId: string } = $props()
+
+	const componentData = $derived(getVisibleComponent(nodeId) as Component)
 
 	let variableDialog = $state<HTMLDialogElement>()
 
@@ -61,7 +64,7 @@
 	}
 </script>
 
-<PanelItem {componentData} title="Environment Variables">
+<PanelItem {nodeId} title="Environment Variables">
 	<div>
 		<!-- {#if variables.length > 0}
 		<div class=" mb-2 grid grid-cols-[1fr_auto] items-end gap-4">

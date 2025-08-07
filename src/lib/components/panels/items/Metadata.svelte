@@ -21,8 +21,33 @@
 	import { openPanelItems, toggleOpenPanelItem } from '$lib/stores/panel.svelte'
 	import type { z } from 'zod'
 	import type { resolvedComponentModel } from '$lib/schemas'
+	import { getVisibleComponent } from '$lib/stores/canvas.svelte'
 
-	const { componentData }: { componentData: z.infer<typeof resolvedComponentModel> } = $props()
+	const { nodeId }: { nodeId: string } = $props()
+
+	const componentData = $derived(
+		getVisibleComponent(nodeId) as z.infer<typeof resolvedComponentModel>
+	)
+
+	// Create reactive bindings for the meta properties that need to be editable
+	let name = $state('')
+	let intention = $state('')
+
+	// Sync state with component data
+	$effect(() => {
+		if (componentData) {
+			name = componentData.meta.name || ''
+			intention = componentData.meta.intention || ''
+		}
+	})
+
+	// Sync changes back to component data
+	$effect(() => {
+		if (componentData) {
+			componentData.meta.name = name
+			componentData.meta.intention = intention
+		}
+	})
 
 	const dataIsDirty = false // FIXME
 
@@ -191,7 +216,7 @@
 {/if} -->
 
 {#if componentData}
-	<PanelItem {componentData} title="Metadata" isDirty={dataIsDirty}>
+	<PanelItem {nodeId} title="Metadata" isDirty={dataIsDirty}>
 		<form class="grid grid-cols-2 gap-3" onsubmit={buildComponent}>
 			<InputField
 				containerClass="col-span-2"
@@ -199,7 +224,7 @@
 				label="Name"
 				name="name"
 				oninput={debouncedSaveDraft}
-				bind:value={componentData.meta.name}
+				bind:value={name}
 			/>
 
 			<TextField
@@ -208,7 +233,7 @@
 				label="Intention"
 				name="intention"
 				oninput={debouncedSaveDraft}
-				bind:value={componentData.meta.intention}
+				bind:value={intention}
 			/>
 
 			<div class="col-span-2 mt-2 flex">

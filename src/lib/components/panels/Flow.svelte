@@ -1,13 +1,11 @@
 <script lang="ts">
 	import Panel from './Panel.svelte'
 	import Icon from '~icons/material-symbols/network-node'
-	import type { z } from 'zod'
-	import type { resolvedFlowModel } from '$lib/schemas'
-	const { componentData }: { componentData: z.infer<typeof resolvedFlowModel> } = $props()
+	const { nodeId }: { nodeId: string } = $props()
 </script>
 
-<Panel {componentData} {Icon}>
+<Panel {nodeId} {Icon}>
 	{#snippet panelItems(PanelItems)}
-		<PanelItems items={['execute', 'metadata', 'variables', 'triggers']} {componentData} />
+		<PanelItems items={['execute', 'metadata', 'variables', 'triggers']} {nodeId} />
 	{/snippet}
 </Panel>
