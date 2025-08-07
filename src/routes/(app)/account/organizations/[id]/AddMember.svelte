@@ -18,33 +18,29 @@
 		e.preventDefault()
 		isAdding = true
 
-		// First try to get the user by email. We need the user id to add the user to the organization
-		const userByEmail = await api.post<{ email: string; id: string }>(`users/by-email`, {
-			email: newMemberEmail
-		})
-
-		if (!userByEmail.data) {
-			toast.error('User not found. Please ask the user to login first.')
-			isAdding = false
-			return
-		}
-
-		// If we have the user, add them to the organization
+		// Add the user (if exists) to the organization
 		const newMember = await api.post(`organizations/${page.params.id}/members`, {
 			organizationId: page.params.id,
 			role: newMemberRole,
-			userId: userByEmail.data.id
+			email: newMemberEmail
 		})
 
 		isAdding = false
 
-		if (newMember.status !== 201) {
-			toast.error('Could not add member')
+		if (newMember.status === 404) {
+			toast.error('No user found with this email. Please ask the user to login first.')
 			return
 		}
 
-		toast.success('Member added!')
-		await getOrganization()
+		if (newMember.status === 201) {
+			toast.success('Member added!')
+			newMemberEmail = ''
+			newMemberRole = 'member'
+			await getOrganization()
+			return
+		}
+
+		toast.error('Something went wrong. Please try again.')
 	}
 
 	let newMemberEmail = $state('')

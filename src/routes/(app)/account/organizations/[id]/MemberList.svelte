@@ -88,20 +88,19 @@
 						<ul>
 							<li>
 								<button
-									onclick={e => removeMember(e, member)}
-									class="list-btn w-full text-sm font-medium"
-								>
-									Remove from organization
-								</button>
-							</li>
-
-							<li>
-								<button
 									onclick={e =>
 										changeRole(e, member, member.role === 'member' ? 'admin' : 'member')}
 									class="list-btn w-full text-sm font-medium"
 								>
 									{member.role === 'member' ? 'Promote to admin' : 'Demote to member'}
+								</button>
+							</li>
+							<li>
+								<button
+									onclick={e => removeMember(e, member)}
+									class="list-btn w-full text-sm font-medium"
+								>
+									Remove from organization
 								</button>
 							</li>
 						</ul>
