@@ -94,8 +94,8 @@ export async function refreshFlow() {
 		// find where to place the create node for agents and flow
 		// should be the last node, so added one step after the last node
 		const lastNode = nodes[nodes.length - 1]
-		let x = lastNode.position.x + nodeSize.x + gap
-		let y = lastNode.position.y
+		let x = (lastNode?.position.x ?? 0) + nodeSize.x + gap
+		let y = lastNode?.position.y ?? 0
 		if (x > maxWidth) {
 			x = 0
 			y += nodeSize.y + gap
