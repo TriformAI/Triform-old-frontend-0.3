@@ -8,11 +8,11 @@
 	import Variables from './items/Variables/Root.svelte'
 	import Triggers from './items/Triggers/Root.svelte'
 
-	import IconExecute from '~icons/mdi/play-circle-outline'
-	import IconCode from '~icons/mdi/code-braces'
-	import IconMetadata from '~icons/mdi/code-tags'
-	import IconTriggers from '~icons/mdi/lightning-bolt'
-	import IconVariables from '~icons/mdi/variable'
+	import IconExecute from '~icons/mdi/lightning-bolt'
+	import IconCode from '~icons/material-symbols/code-rounded'
+	import IconMetadata from '~icons/mdi/clipboard-edit'
+	import IconTriggers from '~icons/material-symbols/input-rounded'
+	import IconVariables from '~icons/material-symbols/vpn-key-rounded'
 	import IconProject from '~icons/mdi/shape'
 
 	import {
