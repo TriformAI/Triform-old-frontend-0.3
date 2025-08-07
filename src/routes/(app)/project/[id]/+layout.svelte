@@ -8,7 +8,7 @@
 	import PropsPanel from '$lib/components/PropsPanel.svelte'
 	import Confirm from '$lib/components/common/Confirm.svelte'
 	import { loadComponents } from '$lib/stores/library.svelte'
-	import { refreshFlow, setProject } from '$lib/stores/canvas.svelte'
+	import { refreshFlow } from '$lib/stores/canvas.svelte'
 	import ComponentLibrary from '$lib/components/panels/Library/ComponentLibrary.svelte'
 	import { debounce } from '$lib/utils/debounce'
 	import { onMount } from 'svelte'
@@ -22,14 +22,6 @@
 
 	onMount(() => {
 		loadComponents(data.components ?? [])
-	})
-
-	$effect(() => {
-		if (data.project) {
-			console.log(data.project)
-
-			setProject(data.project)
-		}
 	})
 
 	const DEFAULT_PROPS_PANEL_WIDTH = 600

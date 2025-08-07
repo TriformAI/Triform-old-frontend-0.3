@@ -13,16 +13,7 @@
 		handleConnectEnd,
 		handleDragStop
 	} from '$lib/components/canvas/FlowEvents'
-	import {
-		addNode,
-		getEdges,
-		getNodes,
-		setEdges,
-		setNodes,
-		getCurrentContainer,
-		getNodeByPath,
-		setProject
-	} from '$lib/stores/canvas.svelte'
+	import { addNode, getEdges, getNodes, setEdges, setNodes } from '$lib/stores/canvas.svelte'
 	import { defaultEdgeProps, type MetaNodeType, type NodeType } from '$lib/types/canvas'
 	import {
 		Background,

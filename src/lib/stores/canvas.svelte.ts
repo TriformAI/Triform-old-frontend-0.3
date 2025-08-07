@@ -22,6 +22,7 @@ import {
 import { type NodeContainer } from '$lib/types/flow'
 import { toast } from 'svelte-sonner'
 import type * as z from 'zod'
+import { clone } from '$lib/utils/clone'
 
 let nodesStore = $state<CanvasNode[]>([])
 let edgesStore = $state<Edge[]>([])
@@ -35,8 +36,12 @@ export const setEdges = (newEdges: Edge[]) => (edgesStore = newEdges)
 
 let project = $derived(page.data.project)
 export const getProject = () => project
-export const setProject = (proj: z.infer<typeof resolvedProjectModel>) => {}
 
+const currentNodePath = $derived.by(() => {
+	const path = page.url.pathname.split('/')
+	// remove /project/projectId
+	return path.slice(path.indexOf('project') + 2)
+})
 export const getCurrentContainer = (): NodeContainer => {
 	const path = page.url.pathname.split('/')
 	// remove /project/projectId
@@ -241,9 +246,28 @@ export const getNodeByPath = (sourcePath: string[]): TriNode | undefined => {
 }
 
 // TODO: update the local component with the new one we get back from the api
-const saveContainer = async (container: NodeContainer) => {
-	if (isProject(container)) return await saveProject(container)
-	return await updateComponent(container)
+const saveContainer = async (snapshot: NodeContainer) => {
+	const container = getCurrentContainer()
+	const res = isProject(container) ? await saveProject(container) : await updateComponent(container)
+	if (!res.success) {
+		toast.error('There was an error saving the container')
+		console.log('failed', res.data)
+		if (isProject(snapshot)) {
+			if (!project) {
+				toast.error('No project found')
+				throw new Error('No project found')
+			}
+			project.spec = snapshot.spec
+			return res
+		}
+		const parent = getNodeByPath(currentNodePath)?.spec as NodeContainer | undefined
+		if (!parent) {
+			toast.error('No parent container found')
+			throw new Error(`No parent container found for ${currentNodePath.join('/')}`)
+		}
+		parent.spec = snapshot.spec
+	}
+	return res
 }
 
 export async function addNode(
@@ -257,6 +281,7 @@ export async function addNode(
 
 	const newNodeId = crypto.randomUUID()
 	const container = getCurrentContainer()
+	const snapshot = clone($state.snapshot(container))
 
 	const baseNode = {
 		component_id: component.id!,
@@ -287,7 +312,7 @@ export async function addNode(
 
 	console.log('newNode', newNode, inputs)
 
-	await saveContainer(container)
+	await saveContainer(snapshot)
 	await refreshFlow()
 
 	// select the new node
@@ -302,8 +327,11 @@ export async function deleteNode(id: Uuid) {
 	}
 
 	const container = getCurrentContainer()
+	const snapshot = clone($state.snapshot(container))
+
 	delete container.spec.nodes[id]
-	await saveContainer(container)
+
+	await saveContainer(snapshot)
 	await refreshFlow()
 }
 
@@ -313,6 +341,8 @@ type EdgeConnection = {
 }
 export const addEdge = async (source: EdgeConnection, target: EdgeConnection) => {
 	const container = getCurrentContainer()
+	const snapshot = clone($state.snapshot(container))
+
 	// if we're adding a new output edge, add it to the container
 	if (target.id === `${container.id}:output`) {
 		if (!('outputs' in container.spec))
@@ -332,7 +362,8 @@ export const addEdge = async (source: EdgeConnection, target: EdgeConnection) =>
 			target: source.handle
 		}
 	}
-	await saveContainer(container)
+
+	await saveContainer(snapshot)
 	await refreshFlow()
 }
 
@@ -340,6 +371,8 @@ export const deleteEdge = async (edgeId: Edge['id']) => {
 	const edge = edgesStore.find(e => e.id === edgeId)
 	if (!edge || !edge.targetHandle) throw new Error(`Tried to remove non-existent edge ${edgeId}`)
 	const container = getCurrentContainer()
+
+	const snapshot = clone($state.snapshot(container))
 
 	// if it's an output edge
 	if (edge.target === `${container.id}:output`) {
@@ -358,7 +391,7 @@ export const deleteEdge = async (edgeId: Edge['id']) => {
 	}
 
 	// TODO: revert if this fails
-	await saveContainer(container)
+	await saveContainer(snapshot)
 
 	await refreshFlow()
 }

@@ -8,7 +8,7 @@
 	import { saveProject } from '$lib/actions/project'
 	import { createFormHandler } from '$lib/stores/formHandler.svelte'
 	import type { z } from 'zod'
-	import type { resolvedComponentModel, resolvedProjectModel } from '$lib/schemas'
+	import type { resolvedProjectModel } from '$lib/schemas'
 
 	const { componentData }: { componentData: z.infer<typeof resolvedProjectModel> } = $props()
 
