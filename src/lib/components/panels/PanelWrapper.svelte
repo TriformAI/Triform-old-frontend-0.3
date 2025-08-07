@@ -4,8 +4,12 @@
 	import Flow from './Flow.svelte'
 	import Action from './Action.svelte'
 	import { selected } from '$lib/stores/panel.svelte'
+	import * as z from 'zod'
+	import type { resolvedComponentModel } from '$lib/schemas'
 
-	const componentData = $derived(selected.node?.data?.trinode?.spec ?? getCurrentContainer())
+	const componentData = $derived(
+		selected.node?.data?.trinode?.spec ?? getCurrentContainer()
+	) as z.infer<typeof resolvedComponentModel>
 
 	const NodeComponent = $derived.by(() => {
 		if (!componentData) return
@@ -14,6 +18,8 @@
 	})
 </script>
 
-{#if NodeComponent && componentData}
-	<NodeComponent {componentData} />
+{#if NodeComponent}
+	{#key componentData.id}
+		<NodeComponent {componentData} />
+	{/key}
 {/if}

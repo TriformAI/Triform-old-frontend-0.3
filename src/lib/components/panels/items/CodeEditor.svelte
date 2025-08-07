@@ -21,7 +21,7 @@
 	const filenames = {
 		source: 'action.py',
 		readme: 'README.md',
-		deps: 'requirements.txt'
+		requirements: 'requirements.txt'
 	} as const
 
 	type FileType = keyof typeof filenames
@@ -36,7 +36,7 @@
 		const newData = {
 			source: newComponent.spec.source,
 			readme: newComponent.spec.readme,
-			deps: newComponent.spec.deps
+			requirements: newComponent.spec.requirements
 		}
 		// switch tab depending on which file was updated
 		const idx = Object.keys(newData).findIndex(

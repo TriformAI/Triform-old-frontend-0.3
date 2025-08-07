@@ -129,7 +129,7 @@
 					Object.assign(comp, {
 						spec: {
 							...comp.spec,
-							deps: payload.details.packages
+							requirements: payload.details.packages
 						}
 					})
 					inProgressComponents[componentId].message =

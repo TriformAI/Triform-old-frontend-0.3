@@ -13,7 +13,7 @@ export const metaModel = z.strictObject({
 })
 
 export const componentMetaModel = metaModel.extend({
-	starred: z.boolean()
+	starred: z.boolean().optional().default(false)
 })
 
 export const triggerMetaModel = metaModel.omit({ intention: true })

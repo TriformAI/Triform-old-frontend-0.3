@@ -51,14 +51,17 @@
 	const executorState = $state({
 		isRunning: false,
 		state: '',
-		result: ''
+		result: '',
+		abortController: undefined as unknown as AbortController
 	})
 
 	function run() {
 		if (!payload) return toast.error('Please enter a payload')
 		if (!isValidJson) return toast.error('The payload needs to be valid JSON')
 
-		executeComponent(payload, componentData, executorState)
+		executorState.abortController = new AbortController()
+
+		executeComponent(JSON.parse(payload), componentData, executorState)
 	}
 </script>
 

@@ -1,7 +1,13 @@
 import { browser } from '$app/environment'
 import { error, fail, type ActionFailure, type RequestEvent } from '@sveltejs/kit'
+import { stream as eventStream } from 'fetch-event-stream'
 
 type RequestMethod = 'GET' | 'POST' | 'PUT' | 'PATCH' | 'DELETE'
+
+type StreamEvent<T> = {
+	data: T
+	event?: string
+}
 
 export class ApiError extends Error {
 	status: number
@@ -153,7 +159,7 @@ export class API<TEvent extends RequestEvent | undefined = undefined> {
 		headers: Record<string, string> = {},
 		returnHeaders: boolean = false
 	): Promise<ReturnData<T> | ReturnDataWithHeaders<T>> {
-		return this.#request<T>('GET', endpoint, undefined, headers, returnHeaders as any) as any
+		return this.#request<T>('GET', endpoint, undefined, headers, returnHeaders as any)
 	}
 
 	post<T>(
@@ -161,7 +167,7 @@ export class API<TEvent extends RequestEvent | undefined = undefined> {
 		data: unknown,
 		headers: Record<string, string> = {}
 	): Promise<MutationResult<T, TEvent>> {
-		return this.#request<T>('POST', endpoint, data, headers) as any
+		return this.#request<T>('POST', endpoint, data, headers)
 	}
 
 	put<T>(
@@ -169,7 +175,7 @@ export class API<TEvent extends RequestEvent | undefined = undefined> {
 		data: unknown,
 		headers: Record<string, string> = {}
 	): Promise<MutationResult<T, TEvent>> {
-		return this.#request<T>('PUT', endpoint, data, headers) as any
+		return this.#request<T>('PUT', endpoint, data, headers)
 	}
 
 	patch<T>(
@@ -177,7 +183,7 @@ export class API<TEvent extends RequestEvent | undefined = undefined> {
 		data: unknown,
 		headers: Record<string, string> = {}
 	): Promise<MutationResult<T, TEvent>> {
-		return this.#request<T>('PATCH', endpoint, data, headers) as any
+		return this.#request<T>('PATCH', endpoint, data, headers)
 	}
 
 	delete<T>(
@@ -185,6 +191,44 @@ export class API<TEvent extends RequestEvent | undefined = undefined> {
 		data?: unknown,
 		headers: Record<string, string> = {}
 	): Promise<MutationResult<T, TEvent>> {
-		return this.#request<T>('DELETE', endpoint, data, headers) as any
+		return this.#request<T>('DELETE', endpoint, data, headers)
+	}
+
+	async *stream<T>(
+		endpoint: string,
+		data?: unknown,
+		method?: RequestMethod,
+		headers: Record<string, string> = {},
+		signal?: AbortSignal
+	): AsyncGenerator<StreamEvent<T>, void, unknown> {
+		const url = `${this.#baseURL}/${endpoint}`
+
+		const requestInit: RequestInit = {
+			method: method ?? (data ? 'POST' : 'GET'),
+			headers: {
+				cookie: this.#cookie,
+				...headers
+			},
+			signal
+		}
+
+		if (data) {
+			requestInit.headers = {
+				...requestInit.headers,
+				'Content-Type': 'application/json'
+			}
+			requestInit.body = JSON.stringify(data)
+		}
+
+		const events = await eventStream(url, requestInit)
+
+		for await (const event of events) {
+			if (event.data) {
+				yield {
+					data: JSON.parse(event.data) as T,
+					event: event.event
+				}
+			}
+		}
 	}
 }

@@ -12,10 +12,19 @@ import { modifierMappingModel } from './modifiers.js'
 // expects everything to be fully resolved
 export const executionModel = abstractResourceModel.extend({
 	resource: z.literal('execution/v1'),
-	meta: metaModel.omit({ intention: true }),
+	meta: metaModel
+		.omit({ intention: true })
+		.extend({ name: z.string().optional() }),
 	spec: z.strictObject({
 		component: resolvedComponentModel,
 		payload: z.record(z.string(), z.unknown()),
 		modifiers: modifierMappingModel.default({})
 	})
+})
+
+export const executionEventModel = z.strictObject({
+	event: z.enum(['running', 'completed', 'failed']),
+	path: z.array(z.string()),
+	payload: z.record(z.string(), z.unknown()),
+	output: z.record(z.string(), z.unknown())
 })
