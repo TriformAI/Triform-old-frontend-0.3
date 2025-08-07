@@ -30,17 +30,20 @@ export const isFlow = (
 
 export const isAgent = (
 	component: generalComponentModel
-): component is z.infer<typeof agentModel> | z.infer<typeof resolvedAgentModel> =>
-	component.resource === 'agent/v1'
+): component is
+	| z.infer<typeof agentModel>
+	| z.infer<typeof resolvedAgentModel> => component.resource === 'agent/v1'
 
 export const isAction = (
 	component: generalComponentModel
-): component is z.infer<typeof actionModel> => component.resource === 'action/v1'
+): component is z.infer<typeof actionModel> =>
+	component.resource === 'action/v1'
 
 export const isProject = (
 	component:
 		| generalComponentModel
 		| z.infer<typeof projectModel>
 		| z.infer<typeof resolvedProjectModel>
-): component is z.infer<typeof projectModel> | z.infer<typeof resolvedProjectModel> =>
-	component.resource === 'project/v1'
+): component is
+	| z.infer<typeof projectModel>
+	| z.infer<typeof resolvedProjectModel> => component.resource === 'project/v1'

@@ -31,4 +31,8 @@ const arrayTypeSchema = z.object({
 })
 
 // Main recursive schema
-export const jsonSchemaTypeModel = z.union([primitiveTypeSchema, objectTypeSchema, arrayTypeSchema])
+export const jsonSchemaTypeModel = z.union([
+	primitiveTypeSchema,
+	objectTypeSchema,
+	arrayTypeSchema
+])

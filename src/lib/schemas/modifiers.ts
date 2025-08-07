@@ -36,4 +36,6 @@ export const modifierMappingModel = z.record(
 	)
 )
 
-export const modifierResourceModel = z.enum(modifierModel.options.map(o => o.shape.resource.value))
+export const modifierResourceModel = z.enum(
+	modifierModel.options.map(o => o.shape.resource.value)
+)

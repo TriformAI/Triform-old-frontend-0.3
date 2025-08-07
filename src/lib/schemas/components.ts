@@ -29,7 +29,10 @@ const flowOutputModel = z.record(
 		source: z.string().nullable().meta({
 			description: 'The ID of the node that is being fed into this node'
 		}),
-		target: z.string().nullable().meta({ description: 'The output of the source node' })
+		target: z
+			.string()
+			.nullable()
+			.meta({ description: 'The output of the source node' })
 	})
 )
 
@@ -39,7 +42,7 @@ export const actionSpecModel = z.strictObject({
 	requirements: z.string().optional().default(''),
 	checksum: z.string().optional().default(''),
 	readme: z.string().optional().default(''),
-	runtime: z.literal('python-3.14').default('python-3.14'),
+	runtime: z.literal('python-3.13').default('python-3.13'),
 	inputs: ioModel,
 	outputs: ioModel
 })
@@ -152,9 +155,17 @@ export const resolvedAgentModel = agentModel.extend({
 })
 
 // Union models
-export const componentSpecModel = z.union([flowSpecModel, actionSpecModel, agentSpecModel])
+export const componentSpecModel = z.union([
+	flowSpecModel,
+	actionSpecModel,
+	agentSpecModel
+])
 
-export const componentModel = z.discriminatedUnion('resource', [flowModel, actionModel, agentModel])
+export const componentModel = z.discriminatedUnion('resource', [
+	flowModel,
+	actionModel,
+	agentModel
+])
 
 export const createComponentModel = z.discriminatedUnion('resource', [
 	flowModel.omit({ id: true }),
