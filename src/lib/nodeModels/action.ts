@@ -1,37 +1,64 @@
-import type { Node as TriNode } from '$lib/types'
+import type * as z from 'zod'
+import { actionModel, ioModel, jsonSchemaTypeToPython } from '$lib/schemas'
+import { objectMap } from '$lib/utils/objectMap'
 
-export const getActionModel = (): TriNode => {
+export const getActionModel = (inputs: z.infer<typeof ioModel>) => {
+	const convertedTypes = objectMap(inputs, value => ({
+		...value,
+		type: jsonSchemaTypeToPython(value.type)
+	}))
+	const indent = '  '
+	const inputArgs = Object.entries(convertedTypes)
+		.map(([key, value]) => `${indent}${key}: ${value.type}`)
+		.join(', ')
+		.trim()
+	const inputDescriptions = Object.entries(inputs)
+		.map(([key, value]) => `${indent.repeat(2)}${key}: ${value.description}`)
+		.join('\n')
+	const outputDescriptions = Object.entries(inputs)
+		.map(([key, value]) => `${indent.repeat(2)}${key}: ${value.description}`)
+		.join('\n')
+	const outputModelAttributes = Object.entries(convertedTypes)
+		.map(([key, value]) => `${indent}${key}: ${value.type}`)
+		.join('\n')
+	const outputKeys = Object.keys(convertedTypes).map(key => `${indent.repeat(2)}${key}=${key}`)
+
 	return {
-		component_id: crypto.randomUUID(), // so it validates
-		inputs: {},
+		resource: 'action/v1',
+		meta: {
+			name: 'Action',
+			intention: '',
+			starred: false
+		},
 		spec: {
-			id: crypto.randomUUID(),
-			resource: 'action/v1',
-			meta: {
-				starred: false,
-				name: 'Action',
-				intention: {
-					purpose: '',
-					input: '',
-					output: ''
-				}
-			},
-			spec: {
-				source: `
-from pydantic import BaseModel
-    
-class Model(BaseModel):
-	msg: str
+			source: `
+from typing import TypedDict
+
+@triform.output
+class Output(TypedDict):
+  """The output of the action.
+	Attributes:
+${outputDescriptions}
+	"""
+${outputModelAttributes}
 
 @triform.entrypoint
-def simple(input: Model) -> Model:
-	return input
-            `.trim(),
-				readme: '',
-				requirements: '',
-				checksum: '',
-				runtime: 'python-3.14'
-			}
+def simple(${inputArgs}) -> Output:
+  """A simple placeholder action.
+	Args:
+${inputDescriptions}
+	"""
+  return Output(
+${outputKeys}
+	)
+				`.trim(),
+			readme: '',
+			requirements: '',
+			checksum: '',
+			runtime: 'python-3.13',
+			// populated whenever we save the action based on the source code:
+			inputs: {},
+			outputs: {}
 		}
-	}
+	} satisfies Omit<z.infer<typeof actionModel>, 'id'>
 }

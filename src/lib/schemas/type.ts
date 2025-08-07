@@ -36,3 +36,44 @@ export const jsonSchemaTypeModel = z.union([
 	objectTypeSchema,
 	arrayTypeSchema
 ])
+
+export const jsonSchemaTypeToPython = (
+	typeModel: z.infer<typeof jsonSchemaTypeModel> | Record<string, never>
+): string => {
+	// Handle empty object (no type information)
+	if (Object.keys(typeModel).length === 0) {
+		return 'Any'
+	}
+
+	const type = typeModel as z.infer<typeof jsonSchemaTypeModel>
+
+	switch (type.type) {
+		case 'string':
+			return 'str'
+		case 'number':
+			return 'int'
+		case 'boolean':
+			return 'bool'
+		case 'null':
+			return 'None'
+		case 'array':
+			if (type.items) {
+				const itemType = jsonSchemaTypeToPython(type.items)
+				return `List[${itemType}]`
+			}
+			return 'List'
+		case 'object':
+			if (type.additionalProperties) {
+				const valueType = jsonSchemaTypeToPython(type.additionalProperties)
+				return `Dict[str, ${valueType}]`
+			}
+			if (type.properties) {
+				// For objects with specific properties, we'd need TypedDict
+				// but for simplicity, we'll return Dict[str, Any]
+				return 'Dict[str, Any]'
+			}
+			return 'Dict'
+		default:
+			return 'Any'
+	}
+}

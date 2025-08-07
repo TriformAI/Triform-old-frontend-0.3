@@ -1,16 +1,11 @@
-import type { Source } from '$lib/types'
 import type { TriNode } from '$lib/types/flow'
 import type { UUID as Uuid } from 'crypto'
-import type { Project, Flow, Action, Component, ResolvedComponent } from '$lib/types/resources'
-import type { Node, MetaNode, CanvasNode, Edge } from '$lib/types/canvas'
+import type { Node, CanvasNode, Edge } from '$lib/types/canvas'
 import { defaultProps, defaultEdgeProps } from '$lib/types/canvas'
 import { updateComponent } from '$lib/actions/components'
-import { invalidateAll } from '$app/navigation'
 import { saveProject } from '$lib/actions/project'
 import { page } from '$app/state'
-import { clone } from '$lib/utils/clone'
 import { selected } from '$lib/stores/panel.svelte'
-import { getLeafNodes } from '$lib/utils/getLeafNodes'
 import { getNodeSelector } from '$lib/utils/getNodeSelector'
 import {
 	isAction,
@@ -19,17 +14,14 @@ import {
 	projectModel,
 	flowModel,
 	agentModel,
-	resolvedFlowModel,
-	resolvedAgentModel,
 	resolvedProjectModel,
 	isProject,
 	resolvedComponentModel,
-	ioModel,
 	nodePortModel
 } from '$lib/schemas'
 import { type NodeContainer } from '$lib/types/flow'
-import type * as z from 'zod'
 import { toast } from 'svelte-sonner'
+import type * as z from 'zod'
 
 let nodesStore = $state<CanvasNode[]>([])
 let edgesStore = $state<Edge[]>([])
@@ -248,6 +240,7 @@ export const getNodeByPath = (sourcePath: string[]): TriNode | undefined => {
 	return node
 }
 
+// TODO: update the local component with the new one we get back from the api
 const saveContainer = async (container: NodeContainer) => {
 	if (isProject(container)) return await saveProject(container)
 	return await updateComponent(container)
@@ -289,7 +282,10 @@ export async function addNode(
 		} as z.infer<typeof flowModel>['spec']['nodes'][string]
 	}
 
+	// @ts-expect-error fuck-ass error that I'm praying will fix itself once we remove the old types
 	container.spec.nodes[newNodeId] = newNode
+
+	console.log('newNode', newNode, inputs)
 
 	await saveContainer(container)
 	await refreshFlow()

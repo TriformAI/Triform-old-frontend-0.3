@@ -11,25 +11,28 @@
 	import type { UUID as Uuid } from 'crypto'
 	import { getFlowModel, getActionModel } from '$lib/nodeModels'
 	import { createComponent } from '$lib/actions/components'
-	import type { Component } from '$lib/types/resources'
+	import type { Component, ResolvedComponent, ResolvedFlow } from '$lib/types/resources'
 	import { blur, slide } from 'svelte/transition'
 	import InputField from '../atoms/InputField.svelte'
 	import { toast } from 'svelte-sonner'
+	import type { MetaNodeData } from '$lib/types/canvas'
+	import type * as z from 'zod'
+	import { ioModel } from '$lib/schemas'
+	import { getCurrentContainer } from '$lib/stores/canvas.svelte'
+	import { pick } from '$lib/utils/pick'
 
-	interface Props {
+	const {
+		id,
+		data
+	}: {
 		id: Uuid
-		data: {
-			sourceIsParent: boolean
-			sourceNodeId: Uuid
-		}
-	}
-
-	const { id, data }: Props = $props()
+		data: MetaNodeData
+	} = $props()
 
 	const useSvelteFlow = useSvelteFlowHook()
 	const { getNode, deleteElements } = useSvelteFlow
 
-	let pendingComponent = $state<Component>()
+	let pendingComponent = $state<Omit<ResolvedComponent, 'id'>>()
 
 	let inputEl: HTMLInputElement | null = $state(null)
 	const onInputCreate = (el: HTMLFormElement) => {
@@ -46,6 +49,34 @@
 		inputEl.select()
 	}
 
+	// copy the input from the source node to the new component that we're about to create
+	const [sourceInput, nodeInput]: [
+		z.infer<typeof ioModel>,
+		ResolvedFlow['spec']['nodes'][string]['inputs']
+	] = $derived.by(() => {
+		const inputName = data.sourceHandle?.id
+		const container = getCurrentContainer()
+		if (!inputName || !container || !data.sourceNode?.id) return [{}, {}]
+		const sourceIsParent = data.sourceNode.type === 'input-node'
+		const node = sourceIsParent
+			? (container as ResolvedComponent)
+			: container.spec.nodes[data.sourceNode.id].spec
+		console.log('node', data.sourceNode.id, node)
+		if (!node) return [{}, {}]
+		let input: z.infer<typeof ioModel>['input']
+		// if it's an input node, we'll have to yoink the input from the input of the source node
+		if (data.sourceNode.type === 'input-node') input = node.spec.inputs[inputName]
+		// otherwise, it should come from the output of the source node
+		else {
+			// @ts-expect-error typescript gives up when there's a circular dependency
+			input = pick(node.spec.outputs[inputName], ['description', 'type'])
+		}
+		return [
+			{ [inputName]: input },
+			{ [inputName]: { source: sourceIsParent ? 'parent' : data.sourceNode.id, target: inputName } }
+		]
+	})
+
 	const componentTypes = $derived.by(() => {
 		return [
 			{
@@ -53,7 +84,7 @@
 				value: 'flow',
 				icon: IconFlow,
 				handler: async () => {
-					pendingComponent = getFlowModel().spec
+					pendingComponent = getFlowModel(sourceInput)
 					pendingComponent!.meta.name = 'Flow'
 					setTimeout(focusInput, 50)
 				}
@@ -63,7 +94,7 @@
 				value: 'action',
 				icon: IconAction,
 				handler: async () => {
-					pendingComponent = getActionModel().spec
+					pendingComponent = getActionModel(sourceInput)
 					pendingComponent.meta.name = 'Action'
 					setTimeout(focusInput, 50)
 				}
@@ -81,10 +112,8 @@
 				toast.error('Name is required')
 				return
 			}
-			// TODO: add a proper input to the component so it can be connected immediately here
-			// (copy it from the source node's output that we're dragging from)
 			const newComponent = await createComponent(pendingComponent)
-			await addNode(newComponent, getNode(id)!.position, {})
+			await addNode(newComponent, getNode(id)!.position, nodeInput)
 		} catch (error) {
 			console.error(error)
 			toast.error('Failed to create component')
