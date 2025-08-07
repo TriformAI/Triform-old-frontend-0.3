@@ -51,7 +51,7 @@
 				class={[
 					'me-1.5 inline-block size-5 drop-shadow-[0px_0px_7px]',
 					component.resource === 'flow/v1'
-						? 'text-accent-400 drop-shadow-accent-500'
+						? 'text-complement-400 drop-shadow-complement-500'
 						: 'text-main-300 drop-shadow-main-300/40'
 				]}
 			/>
@@ -62,11 +62,11 @@
 			<div class="text-main-400 flex gap-2">
 				<DescriptionIcon class="flex-shrink-0" />
 				<p class="truncate-lines-2 ms-1 -mt-1">
-					{meta.intention?.purpose || 'No purpose defined'}
+					{meta.intention || 'No intention'}
 				</p>
 			</div>
 
-			<div class="text-main-400 grid max-w-full grid-cols-[auto_auto] gap-2">
+			<!-- <div class="text-main-400 grid max-w-full grid-cols-[auto_auto] gap-2">
 				<p class="truncate">
 					<InputIcon class="mr-2 inline-block" />
 					{meta.intention?.input || 'No input defined'}
@@ -75,7 +75,7 @@
 					<ArrowRightIcon class="inline-block" />
 					{meta.intention?.output || 'No output defined'}
 				</p>
-			</div>
+			</div> -->
 		</div>
 	</div>
 </div>
