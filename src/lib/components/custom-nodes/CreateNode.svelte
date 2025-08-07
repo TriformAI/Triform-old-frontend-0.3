@@ -38,7 +38,7 @@
 	const createFlow = async () => {
 		isCreating = true
 		isEditing = false
-		const flow = getFlowModel()
+		const flow = getFlowModel({})
 		flow.meta.name = name
 		try {
 			const newFlow = await createComponent(flow)
