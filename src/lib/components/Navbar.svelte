@@ -43,7 +43,7 @@
 							<span>{$activeOrganization.data?.name}</span>
 							<a
 								href="/account/organizations"
-								class="text-accent-400 hover:text-accent-300 font-semibold">Switch</a
+								class="text-accent-400 hover:text-accent-300 font-semibold">Change</a
 							>
 						</div>
 					</li>

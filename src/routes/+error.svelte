@@ -2,7 +2,6 @@
 	import { goto } from '$app/navigation'
 	import { page } from '$app/state'
 	import Button from '$lib/components/atoms/Button.svelte'
-	$inspect(page.error)
 </script>
 
 <svelte:head>

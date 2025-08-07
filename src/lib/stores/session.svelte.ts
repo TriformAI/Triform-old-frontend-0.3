@@ -1,8 +1,8 @@
 import { authClient } from '$lib/auth-client'
 import type { User, Session } from 'better-auth/types'
 
-interface CustomSession extends Session {
-	activeOrganizationId: string
+type CustomSession = Session & {
+	activeOrganizationId?: string | null
 }
 
 interface SessionState {
@@ -52,7 +52,6 @@ class SessionStore {
 
 		try {
 			const { data: session, error } = await authClient.getSession()
-			console.log({ session, error })
 
 			if (error) {
 				this.state.error = error.message || 'Failed to get session'

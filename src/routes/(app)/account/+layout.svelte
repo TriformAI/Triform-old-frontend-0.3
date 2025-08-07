@@ -32,8 +32,6 @@
 			isCurrent: () => page.route.id === '/(app)/account/organizations/[id]'
 		}
 	])
-
-	$inspect(page)
 </script>
 
 <div class="grid h-dvh grid-rows-[auto_1fr]">
