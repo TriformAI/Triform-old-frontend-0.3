@@ -1,12 +1,11 @@
 <script lang="ts">
-	import { page } from '$app/state'
 	import { isAction, isFlow } from '$lib/schemas'
 	import { getCurrentContainer } from '$lib/stores/canvas.svelte'
 	import Flow from './Flow.svelte'
 	import Action from './Action.svelte'
 	import { selected } from '$lib/stores/panel.svelte'
 
-	const componentData = $derived(selected.node?.data?.trinode?.spec)
+	const componentData = $derived(selected.node?.data?.trinode?.spec ?? getCurrentContainer())
 
 	const NodeComponent = $derived.by(() => {
 		if (!componentData) return
