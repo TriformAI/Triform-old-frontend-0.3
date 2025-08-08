@@ -62,6 +62,12 @@ export const executeComponent = async (
 			state.result = JSON.stringify(event.data.output, null, 2)
 			break
 		}
+		if (event.event === 'failed') {
+			// TODO: make this identical to what an endpoint returns, and also visualise errors in some better way
+			state.result = JSON.stringify(event.data, null, 2)
+			state.abortController.abort()
+			break
+		}
 	}
 
 	state.isRunning = false
