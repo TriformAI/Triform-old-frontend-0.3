@@ -13,7 +13,7 @@
 <Panel {nodeId} {Icon}>
 	{#snippet panelItems(PanelItems)}
 		<PanelItems
-			items={['execute', 'metadata', 'variables', isTopLevelNode && 'triggers'].filter(Boolean)}
+			items={['execute', 'metadata', isTopLevelNode && 'triggers'].filter(Boolean)}
 			{nodeId}
 		/>
 	{/snippet}
