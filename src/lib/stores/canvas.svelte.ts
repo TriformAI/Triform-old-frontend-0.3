@@ -34,8 +34,10 @@ export const getEdges = () => edgesStore
 export const setNodes = (newNodes: CanvasNode[]) => (nodesStore = newNodes)
 export const setEdges = (newEdges: Edge[]) => (edgesStore = newEdges)
 
-let project = $derived(page.data.project)
+let project = $state(page.data.project as z.infer<typeof resolvedProjectModel>)
 export const getProject = () => project
+export const setProject = (newProject: z.infer<typeof resolvedProjectModel>) =>
+	(project = newProject)
 
 const currentNodePath = $derived.by(() => {
 	const path = page.url.pathname.split('/')

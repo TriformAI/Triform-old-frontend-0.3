@@ -3,6 +3,7 @@
 	import IconFlow from '~icons/material-symbols/network-node'
 	import IconAgent from '~icons/material-symbols/psychology-rounded'
 	import { twMerge } from 'tailwind-merge'
+	import type { NodeData } from '$lib/types/canvas'
 
 	const {
 		type,
@@ -17,7 +18,7 @@
 		class?: string
 		id?: string
 		openFn?: () => void
-		data: NodeData | MetaNodeData
+		data: NodeData
 	} = $props()
 
 	const borderClass = $derived.by(() => {

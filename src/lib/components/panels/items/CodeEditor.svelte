@@ -73,23 +73,6 @@
 	const currentFileName = $derived(filenames[currentFileKey])
 	const currentLanguage = $derived(currentFileName.split('.').pop() as 'py' | 'md' | 'txt')
 
-	// Create a reactive binding for current file content
-	let currentContent = $state('')
-
-	// Sync content when tab changes or component data changes
-	$effect(() => {
-		if (componentData) {
-			currentContent = componentData.spec[currentFileKey] || ''
-		}
-	})
-
-	// Update component data when content changes
-	$effect(() => {
-		if (componentData && currentContent !== undefined) {
-			componentData.spec[currentFileKey] = currentContent
-		}
-	})
-
 	const debouncedSave = debounce(async () => {
 		const res = await updateComponent(componentData)
 		if (!res.success) toast.error(`Failed saving ${componentData.meta.name}`)
@@ -109,7 +92,7 @@
 				{#key activeTab}
 					{#if currentLanguage === 'py'}
 						<Editor
-							bind:code={currentContent}
+							bind:code={componentData.spec[currentFileKey]}
 							class="h-full w-full rounded-md"
 							readOnly={isBuilding}
 							onUpdate={debouncedSave}
@@ -117,7 +100,7 @@
 					{:else}
 						<LightEditor
 							language={currentLanguage}
-							bind:value={currentContent}
+							bind:value={componentData.spec[currentFileKey]}
 							wordWrap={true}
 							class="bg-main-800 h-full w-full rounded-md ps-6 pt-2.5 text-sm"
 							readOnly={isBuilding}

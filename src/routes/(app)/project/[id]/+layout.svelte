@@ -8,12 +8,14 @@
 	import PropsPanel from '$lib/components/PropsPanel.svelte'
 	import Confirm from '$lib/components/common/Confirm.svelte'
 	import { loadComponents } from '$lib/stores/library.svelte'
-	import { refreshFlow } from '$lib/stores/canvas.svelte'
+	import { refreshFlow, setProject } from '$lib/stores/canvas.svelte'
 	import ComponentLibrary from '$lib/components/panels/Library/ComponentLibrary.svelte'
 	import { debounce } from '$lib/utils/debounce'
 	import { onMount } from 'svelte'
 	import { sleep } from '$lib/utils/sleep.js'
 	import { page } from '$app/state'
+	import type * as z from 'zod'
+	import { projectModel } from '$lib/schemas'
 
 	const { data, children } = $props()
 
@@ -22,6 +24,11 @@
 
 	onMount(() => {
 		loadComponents(data.components ?? [])
+	})
+
+	// ensure project is set before anything else happens
+	$effect.pre(() => {
+		setProject(page.data.project as z.infer<typeof projectModel>)
 	})
 
 	const DEFAULT_PROPS_PANEL_WIDTH = 600
