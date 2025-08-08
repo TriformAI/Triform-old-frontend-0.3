@@ -66,16 +66,6 @@
 
 	let isGoingDeeper = $state(false)
 
-	// Add or remove from url hash when selection changes
-	useOnSelectionChange(({ nodes }) => {
-		if (nodes.length === 0) {
-			history.replaceState(null, '', location.pathname + location.search)
-			return
-		} else if (nodes.length === 1) {
-			window.location.hash = nodes[0].id
-		}
-	})
-
 	onNavigate(async (navigation: OnNavigate) => {
 		if (!navigation.to || !navigation.from) return
 		const {
