@@ -5,7 +5,15 @@
 	import Action from './Action.svelte'
 	import { selected } from '$lib/stores/panel.svelte'
 
-	const nodeId = $derived(selected.node?.id ?? 'container')
+	const nodeId = $derived.by(() => {
+		if (
+			!selected.node ||
+			selected.node.id.endsWith(':input') ||
+			selected.node.id.endsWith(':output')
+		)
+			return 'container'
+		return selected.node.id
+	})
 
 	const NodeComponent = $derived.by(() => {
 		const componentData = getVisibleComponent(nodeId)
