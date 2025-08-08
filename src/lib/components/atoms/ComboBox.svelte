@@ -9,12 +9,14 @@
 
 	let {
 		value = $bindable(),
+		searchValue = $bindable(''),
 		items,
 		createNew,
 		placeholder,
 		target
 	}: {
 		value: string
+		searchValue?: string
 		placeholder?: string
 		items: {
 			value: string
@@ -26,8 +28,6 @@
 		}
 		target?: HTMLElement
 	} = $props()
-
-	let searchValue = $state('')
 
 	const filteredItems = $derived.by(() => {
 		const filteredItems =
@@ -74,7 +74,9 @@
 			bind:ref={input}
 			clearOnDeselect={true}
 			disabled={!!value}
-			oninput={e => (searchValue = e.currentTarget.value)}
+			oninput={e => {
+				searchValue = e.currentTarget.value
+			}}
 			class="input-text"
 			{placeholder}
 			aria-label={placeholder}

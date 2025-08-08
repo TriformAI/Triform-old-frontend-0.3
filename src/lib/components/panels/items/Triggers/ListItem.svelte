@@ -9,24 +9,46 @@
 	import { toast } from 'svelte-sonner'
 	import { invalidate } from '$app/navigation'
 	import { confirmStore } from '$lib/stores/confirm.svelte'
-	import { getVisibleComponent } from '$lib/stores/canvas.svelte'
+	import { getProject } from '$lib/stores/canvas.svelte'
+	import type { triggerModel } from '$lib/schemas'
+	import type * as z from 'zod'
+	import { saveProject } from '$lib/actions/project'
+	import { clone } from '$lib/utils/clone'
+	import IconCopy from '~icons/material-symbols/content-copy-rounded'
 
 	const api = new API()
 
 	let {
 		nodeId,
+		triggerId,
 		trigger
 	}: {
 		nodeId: string
-		trigger: Trigger
+		triggerId: string
+		trigger: z.infer<typeof triggerModel>
 	} = $props()
 
 	let dialog = $state<HTMLDialogElement>()
 	let data = $state<Trigger>()
 
-	const componentData = $derived(getVisibleComponent(nodeId) as Component)
+	// triggers can only exist on top-level nodes
+	const node = $derived(getProject().spec.nodes[nodeId])
 
 	const actions = $state([
+		...(trigger.resource === 'endpoint/v1'
+			? [
+					{
+						icon: IconCopy,
+						tooltip: 'Copy URL',
+						dangerous: false,
+						onClick: async () => {
+							const url = `https://triform.dev/api/in/${getProject().id}/${triggerId}`
+							await navigator.clipboard.writeText(url)
+							toast.success('URL copied to clipboard')
+						}
+					}
+				]
+			: []),
 		{
 			icon: IconDelete,
 			tooltip: 'Delete',
@@ -39,18 +61,16 @@
 
 				if (!confirmed) return
 
-				// await api.delete(`modifiers/${trigger.id}`)
-				// toast.success('Trigger removed')
+				const snapshot = clone($state.snapshot(node))
 
-				// to delete a trigger (before they're modifiers) we just need to set the
-				// component_id to some uuid that doesn't exist
-				// DISCLAIMER: this is genuinely the most brain-dead thing in this codebase
-				// but it's temporary, and I 100% blame christoffer for it :)
-				trigger.spec.component_id = '00000000-0000-0000-0000-000000000000'
-				await api.put(`components/${trigger.id}`, trigger)
-				toast.success('Trigger removed')
+				delete node.triggers[triggerId]
 
-				await invalidate('project')
+				const res = await saveProject(getProject())
+
+				if (!res.success) {
+					toast.error('Failed to delete trigger')
+					getProject().spec.nodes[nodeId] = snapshot
+				}
 			}
 		},
 		{
@@ -65,33 +85,33 @@
 	])
 </script>
 
-<Dialog bind:dialog {data} {nodeId} />
+<Dialog bind:dialog {data} {nodeId} {triggerId} />
 <div
 	class={[
 		'flex flex-row items-start justify-between',
 		'border-main-700 bg-main-850 rounded-md border px-4 py-3'
 	]}
 >
-	<div class="flex flex-row gap-3">
-		<div class="text-main-400 mt-1">
+	<div class="flex min-w-0 flex-1 flex-row gap-3">
+		<div class="text-main-400 mt-1 flex-shrink-0">
 			{#if trigger.resource === 'endpoint/v1'}
 				<EarthIcon class="size-6" />
 			{:else}
 				<AlarmIcon class="size-6" />
 			{/if}
 		</div>
-		<div class="flex flex-col text-sm">
-			<h4 class="text-main-200 font-semibold">
+		<div class="flex min-w-0 flex-1 flex-col text-sm">
+			<h4 class="text-main-200 truncate font-semibold">
 				{trigger.meta.name}
 			</h4>
-			<span class={['text-main-400', trigger.resource === 'cron/v1' && 'font-mono']}>
+			<span class={['text-main-400', trigger.resource === 'cron/v1' && 'font-mono', 'truncate']}>
 				{trigger.resource === 'endpoint/v1'
-					? `https://api.tricore.dev/v1/endpoints/${trigger.id}`
+					? `${trigger.spec.method} https://triform.dev/api/in/${getProject().id}/${triggerId}`
 					: (trigger as Cron).spec.schedule}
 			</span>
 		</div>
 	</div>
-	<div class="flex flex-row gap-2">
+	<div class="flex flex-shrink-0 flex-row gap-2">
 		{#each actions as action}
 			<button
 				type="button"

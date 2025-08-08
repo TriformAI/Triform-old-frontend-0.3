@@ -11,11 +11,12 @@
 	import { refreshFlow, setProject } from '$lib/stores/canvas.svelte'
 	import ComponentLibrary from '$lib/components/panels/Library/ComponentLibrary.svelte'
 	import { debounce } from '$lib/utils/debounce'
-	import { onMount } from 'svelte'
+	import { onMount, untrack } from 'svelte'
 	import { sleep } from '$lib/utils/sleep.js'
 	import { page } from '$app/state'
 	import type * as z from 'zod'
-	import { projectModel } from '$lib/schemas'
+	import { projectModel, resolvedProjectModel } from '$lib/schemas'
+	import { ingressTokens } from '$lib/stores/ingressTokens.svelte.js'
 
 	const { data, children } = $props()
 
@@ -28,7 +29,15 @@
 
 	// ensure project is set before anything else happens
 	$effect.pre(() => {
-		setProject(page.data.project as z.infer<typeof projectModel>)
+		console.log('setting project', page.data.project)
+		setProject(page.data.project as z.infer<typeof resolvedProjectModel>)
+	})
+	$effect.pre(() => {
+		const ref = page.data.ingressTokens
+		untrack(() => {
+			ingressTokens.length = 0
+			ingressTokens.push(...(ref ?? []))
+		})
 	})
 
 	const DEFAULT_PROPS_PANEL_WIDTH = 600

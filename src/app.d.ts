@@ -1,9 +1,10 @@
 import 'unplugin-icons/types/svelte'
+import { API } from '$lib/api'
 import type { Payload, Project, Variable } from '$lib/types/resources'
 import type { User, Session } from 'better-auth/types'
 import type { Organization } from 'better-auth/plugins/organization'
-
-import { API } from '$lib/api'
+import type { ingressTokenModel } from '$lib/schemas/triggers'
+import type * as z from 'zod'
 
 // See https://kit.svelte.dev/docs/types#app
 // for information about these interfaces
@@ -24,6 +25,7 @@ declare global {
 			project?: Project
 			variables?: Variable[]
 			payloads?: Payload[]
+			ingressTokens?: z.infer<typeof ingressTokenModel>[]
 		}
 		// interface PageState {}
 		// interface Platform {}

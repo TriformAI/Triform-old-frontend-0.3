@@ -34,6 +34,8 @@ export const getEdges = () => edgesStore
 export const setNodes = (newNodes: CanvasNode[]) => (nodesStore = newNodes)
 export const setEdges = (newEdges: Edge[]) => (edgesStore = newEdges)
 
+// TODO: create a proxy or something so all instances of the same component share the same reference to the same component object
+// so all changes to one node sync immediately to all other instances of the same component
 let project = $state(page.data.project as z.infer<typeof resolvedProjectModel>)
 export const getProject = () => project
 export const setProject = (newProject: z.infer<typeof resolvedProjectModel>) =>

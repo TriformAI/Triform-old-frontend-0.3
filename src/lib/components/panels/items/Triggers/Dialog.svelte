@@ -14,29 +14,43 @@
 	import type { Cron, Trigger, Modifier } from '$lib/types/resources'
 	import type { Component } from '$lib/types/resources'
 	import { sleep } from '$lib/utils/sleep'
-	import { getVisibleComponent } from '$lib/stores/canvas.svelte'
+	import { getProject, getVisibleComponent } from '$lib/stores/canvas.svelte'
+	import type * as z from 'zod'
+	import type { triggerModel } from '$lib/schemas'
+	import { validateJSONPath } from '$lib/utils/validateJSONPath'
+	import EndpointTrigger from './EndpointTrigger.svelte'
+	import CronTrigger from './CronTrigger.svelte'
+	import { saveProject } from '$lib/actions/project'
+	import { clone } from '$lib/utils/clone'
 
-	interface Props {
+	let {
+		dialog = $bindable(),
+		data: sourceData,
+		nodeId,
+		triggerId: sourceTriggerId
+	}: {
 		dialog: HTMLDialogElement | undefined
-		data?: Trigger
+		data?: z.infer<typeof triggerModel>
 		nodeId: string
-	}
+		triggerId?: string
+	} = $props()
 
-	let { dialog = $bindable(), data: sourceData, nodeId }: Props = $props()
-
-	const componentData = $derived(getVisibleComponent(nodeId) as Component)
+	// triggers can only exist on top-level nodes
+	const node = $derived(getProject()?.spec.nodes[nodeId])
+	const componentData = $derived(getVisibleComponent(nodeId))
 
 	const tabs = [
 		{
 			key: 'endpoint',
 			label: 'Endpoint',
 			icon: EarthIcon
-		},
-		{
-			key: 'cron',
-			label: 'Scheduled',
-			icon: AlarmIcon
 		}
+		// Cron tab disabled for now - we only support endpoints
+		// {
+		// 	key: 'cron',
+		// 	label: 'Scheduled',
+		// 	icon: AlarmIcon
+		// }
 	]
 
 	let activeTab = $state(0)
@@ -47,9 +61,10 @@
 	let hasJsonErrors = $state(false)
 	let isNew = $state(false)
 	let data = $state<Trigger>()
+	let triggerId = $state('')
 
 	const hasErrors = $derived.by(() => {
-		// no validation if it's an endpoint
+		// for endpoints the json paths need to be valid
 		if (activeTab === 0) return false
 
 		// crons need both valid cron syntax and valid payload
@@ -64,47 +79,123 @@
 		weekday: ''
 	})
 
-	const handleSubmit = async (e: SubmitEvent) => {
-		e.preventDefault()
-		const resource = `${tabs[activeTab].key === 'endpoint' ? 'endpoint' : 'cron'}/v1`
+	// Helper function to create default payload mapping for endpoint triggers
+	const createDefaultPayloadMapping = (existingMapping: Record<string, string> = {}) => {
+		let inputs: Record<string, unknown> = {}
 
-		if (hasCronErrors && resource === 'cron/v1') return toast.error('Invalid cron expression')
-
-		const api = new API()
-		const currTab = tabs[activeTab]
-		isCreating = true
-
-		const spec =
-			currTab.key === 'endpoint'
-				? {}
-				: {
-						schedule: Object.values(cronFields).join(' '),
-						input: JSON.parse(payload)
-					}
-
-		const body = {
-			resource,
-			meta: {
-				...data?.meta,
-				name,
-				id: data?.id ?? crypto.randomUUID()
-			},
-			spec: {
-				component_id: componentData.id,
-				...spec
+		// Different component types have inputs in different places
+		if (componentData?.spec) {
+			if ('inputs' in componentData.spec) {
+				inputs = (componentData.spec as any).inputs || {}
 			}
 		}
 
-		try {
-			if (isNew) {
-				await api.post<Modifier>('components', body)
-			} else {
-				await api.put<Modifier>(`components/${data?.id}`, body)
+		const mapping: Record<string, string> = { ...existingMapping }
+		for (const inputKey of Object.keys(inputs)) {
+			// Only add default mapping if one doesn't already exist
+			if (!(inputKey in mapping)) {
+				mapping[inputKey] = `$.${inputKey}`
 			}
-			await sleep(150)
-			await invalidate('project')
+		}
+		return mapping
+	}
+
+	// Use activeTab as single source of truth - derive trigger from it
+	const trigger = $derived.by(() => {
+		if (!componentData?.id) return undefined
+
+		if (activeTab === 0) {
+			// Endpoint trigger
+			return {
+				resource: 'endpoint/v1' as const,
+				meta: {
+					name: name || ''
+				},
+				spec: {
+					method: 'POST' as const,
+					payload_mapping: createDefaultPayloadMapping(
+						data?.resource === 'endpoint/v1' ? (data as any).spec.payload_mapping || {} : {}
+					),
+					ingress_tokens:
+						data?.resource === 'endpoint/v1' ? (data as any).spec.ingress_tokens || [] : []
+				}
+			}
+		} else {
+			// Cron trigger - build schedule from cronFields
+			const schedule = Object.values(cronFields).join(' ')
+			const parsedPayload = (() => {
+				if (!payload) return {}
+				try {
+					return JSON.parse(payload)
+				} catch {
+					return {}
+				}
+			})()
+
+			return {
+				resource: 'cron/v1' as const,
+				meta: {
+					name: name || ''
+				},
+				spec: {
+					schedule: schedule || '0 0 * * *',
+					timezone: data?.resource === 'cron/v1' ? (data as any).spec.timezone || 'UTC' : 'UTC',
+					payload: parsedPayload
+				}
+			}
+		}
+	})
+
+	const handleSubmit = async (e: SubmitEvent) => {
+		e.preventDefault()
+
+		if (!trigger) return toast.error('No trigger data')
+		if (!node) return toast.error('No node found')
+		if (!triggerId) return toast.error('No trigger ID')
+
+		if (hasCronErrors && activeTab === 1) return toast.error('Invalid cron expression')
+
+		if (activeTab === 0) {
+			// Validate all JSON paths in payload_mapping
+			for (const [key, path] of Object.entries(trigger.spec.payload_mapping || {})) {
+				const { success, error } = validateJSONPath(String(path))
+				if (!success) {
+					console.error('failed to validate json path', error)
+					return toast.error(`Invalid JSON path for ${key}: ${error}`)
+				}
+			}
+		}
+
+		isCreating = true
+
+		// Create snapshot of the node before making changes for rollback
+		const snapshot = clone($state.snapshot(node))
+
+		try {
+			// Initialize triggers object if it doesn't exist
+			if (!node.triggers) {
+				node.triggers = {}
+			}
+
+			// Update node.triggers[triggerId] with the new trigger data
+			node.triggers[triggerId] = trigger
+
+			// Save the project
+			const res = await saveProject(getProject())
+
+			if (!res.success) {
+				// Revert the node to its previous state using snapshot
+				getProject().spec.nodes[nodeId] = snapshot
+				toast.error('Failed to save trigger')
+				return
+			}
+
+			toast.success(isNew ? 'Trigger created successfully' : 'Trigger updated successfully')
 			dialog?.close()
 		} catch (e) {
+			// Revert the node to its previous state using snapshot
+			getProject().spec.nodes[nodeId] = snapshot
+			console.error('Failed to save trigger:', e)
 			toast.error('Failed to save trigger')
 		} finally {
 			isCreating = false
@@ -116,35 +207,42 @@
 		data = sourceData
 		// if it's a brand new trigger, default to endpoint
 		isNew = !data
-		if (!data) {
-			data = {
-				resource: 'endpoint/v1',
-				meta: {
-					id: crypto.randomUUID(),
-					name: ''
-				},
-				spec: {
-					component_id: componentData.id
-				}
-			}
-		}
-		activeTab = data.resource === 'endpoint/v1' ? 0 : 1
-		name = 'meta' in data ? (data.meta.name as string) : ''
-		if (data.resource === 'cron/v1') {
-			let unparsedPayload = (data as Cron).spec.input
+
+		// Set triggerId - use existing one or generate new one for new triggers
+		triggerId = sourceTriggerId || (isNew ? crypto.randomUUID() : '')
+
+		// Always default to endpoint (tab 0) since we only support endpoints now
+		activeTab = 0
+		name = data?.meta?.name || ''
+
+		if (data?.resource === 'cron/v1') {
+			let unparsedPayload = (data as any).spec.payload
 			payload =
 				typeof unparsedPayload === 'string'
 					? unparsedPayload
 					: JSON.stringify(unparsedPayload, null, 2)
-			const [minute, hour, day, month, weekday] = (data as Cron).spec.schedule.split(' ')
+			const [minute, hour, day, month, weekday] = (
+				(data as any).spec.schedule || '0 0 * * *'
+			).split(' ')
 			cronFields = {
-				minute,
-				hour,
-				day,
-				month,
-				weekday
+				minute: minute || '',
+				hour: hour || '',
+				day: day || '',
+				month: month || '',
+				weekday: weekday || ''
 			}
+		} else {
+			// Reset cron fields for endpoint triggers
+			cronFields = {
+				minute: '',
+				hour: '',
+				day: '',
+				month: '',
+				weekday: ''
+			}
+			payload = ''
 		}
+
 		setTimeout(() => {
 			dialog?.querySelector<HTMLInputElement>('input[name="name"]')?.focus()
 		})
@@ -165,18 +263,21 @@
 			<div class="flex flex-col gap-4">
 				<InputField name="name" label="Name" containerClass="" bind:value={name} class="mb-2" />
 
-				<Tabs {tabs} bind:activeTab />
+				{#if tabs.length > 1}
+					<Tabs {tabs} bind:activeTab />
+				{/if}
 
-				<div class="mx-2 flex flex-col gap-y-4 [&_h4]:mb-3">
-					{#if activeTab === 1}
-						<div>
-							<h4 class="eyebrow">Schedule</h4>
-							<CronInput bind:cronFields bind:hasErrors={hasCronErrors} />
-						</div>
-						<div>
-							<h4 class="eyebrow">Payload</h4>
-							<Payload usePortal={true} bind:value={payload} bind:hasJsonErrors />
-						</div>
+				<div class="mx-2 flex flex-col gap-y-6 [&_h4]:mb-3">
+					{#if activeTab === 0}
+						<EndpointTrigger {trigger} {componentData} {dialog} />
+					{:else if activeTab === 1}
+						<CronTrigger
+							{trigger}
+							bind:cronFields
+							bind:payload
+							bind:hasCronErrors
+							bind:hasJsonErrors
+						/>
 					{/if}
 				</div>
 			</div>
