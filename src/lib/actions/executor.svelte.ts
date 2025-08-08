@@ -3,10 +3,10 @@ import { source } from 'sveltekit-sse'
 import { toast } from 'svelte-sonner'
 import { selected } from '$lib/stores/panel.svelte'
 import type { Execution } from '$lib/types/execution'
-import type { Component, ResolvedComponent } from '$lib/types/resources'
+import type { Component, ResolvedComponent, ResolvedProject } from '$lib/types/resources'
 import type { UUID as Uuid } from 'crypto'
 import { getCurrentContainer } from '$lib/stores/canvas.svelte'
-import type { executionModel } from '$lib/schemas'
+import type { executionModel, resolvedProjectModel } from '$lib/schemas'
 import type * as z from 'zod'
 import { API } from '$lib/api'
 import { executionEventModel } from '$lib/schemas'
@@ -16,6 +16,7 @@ const api = new API()
 export const executeComponent = async (
 	payload: Record<string, unknown>,
 	component: ResolvedComponent,
+	modifiers: z.infer<typeof resolvedProjectModel>['spec']['modifiers'],
 	state: {
 		isRunning: boolean
 		state: string
@@ -30,7 +31,7 @@ export const executeComponent = async (
 		},
 		spec: {
 			component,
-			modifiers: {},
+			modifiers,
 			payload
 		}
 	} satisfies z.infer<typeof executionModel>

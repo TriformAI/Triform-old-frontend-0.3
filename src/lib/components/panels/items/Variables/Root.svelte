@@ -184,7 +184,7 @@
 								'border-main-700 border'
 							]}
 						>
-							{spec.spec.key}
+							{spec?.spec?.key}
 						</span>
 						<span class="text-main-300 font-medium"> = </span>
 						<span
@@ -194,7 +194,7 @@
 								'border-main-700 border'
 							]}
 						>
-							{spec.spec.value}
+							{spec?.spec?.value}
 						</span>
 					</div>
 

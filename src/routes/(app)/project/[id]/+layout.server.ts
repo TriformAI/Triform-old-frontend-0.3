@@ -13,27 +13,23 @@ export async function load({ locals, params, depends }) {
 
 	const [{ data: project }, { data: modifiers }, { data: components }, { data: ingressTokens }] =
 		await Promise.all([
-			locals.api.get<z.infer<typeof resolvedProjectModel>>(`projects/${id}?depth=999`),
-			locals.api.get<Modifier[]>(`modifiers?full=true`),
+			locals.api.get<{ data: z.infer<typeof resolvedProjectModel> }>(`projects/${id}?depth=999`),
+			locals.api.get<{ data: Modifier[] }>(`modifiers?full=true`),
 			//locals.api.get<Payload[]>(`payloads?full=true`),
-			locals.api.get<Component[]>(`components?full=true`),
-			locals.api.get<z.infer<typeof ingressTokenModel>[]>(`tokens/ingress`)
+			locals.api.get<{ data: Component[] }>(`components?full=true`),
+			locals.api.get<{ data: z.infer<typeof ingressTokenModel>[] }>(`tokens/ingress`)
 		])
+
+	console.log('project', project)
 
 	const payloads = { data: [] }
 	const triggers = { data: [] as Trigger[] }
 
-	const variables = modifiers.filter(m => m.resource === 'variable/v1') as Variable[]
-
-	const positions = { data: [] }
-
 	return {
 		project,
 		drafts: [],
-		positions,
 		components,
 		modifiers,
-		variables,
 		payloads,
 		triggers,
 		ingressTokens

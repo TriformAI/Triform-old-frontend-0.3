@@ -17,7 +17,7 @@
 	import IconChevronDown from '~icons/mdi/chevron-down'
 	import type * as z from 'zod'
 	import type { resolvedComponentModel } from '$lib/schemas'
-	import { getVisibleComponent } from '$lib/stores/canvas.svelte'
+	import { getCurrentNodePath, getProject, getVisibleComponent } from '$lib/stores/canvas.svelte'
 
 	const { nodeId }: { nodeId: string } = $props()
 
@@ -66,7 +66,14 @@
 
 		executorState.abortController = new AbortController()
 
-		executeComponent(JSON.parse(payload), componentData, executorState)
+		// TODO: include modifiers on parents as well, once we support modifiers on flows
+		// add the modifiers that are relevant to this node
+		const nodePath = [...getCurrentNodePath(), nodeId].join('/')
+		const modifiers = {
+			[nodePath]: getProject().spec.modifiers[[...getCurrentNodePath(), nodeId].join('/')]
+		}
+
+		executeComponent(JSON.parse(payload), componentData, modifiers, executorState)
 	}
 </script>
 
