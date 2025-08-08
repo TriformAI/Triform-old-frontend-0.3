@@ -42,7 +42,8 @@ export const unresolveProject = (
 		...project,
 		spec: {
 			...project.spec,
-			nodes: objectMap(project.spec.nodes, ({ spec: _spec, ...value }) => value)
+			nodes: objectMap(project.spec.nodes, ({ spec: _spec, ...value }) => value),
+			modifiers: objectMap(project.spec.modifiers, v => v.map(({ spec: _spec, ...value }) => value))
 		}
 	} as z.infer<typeof projectModel>
 }

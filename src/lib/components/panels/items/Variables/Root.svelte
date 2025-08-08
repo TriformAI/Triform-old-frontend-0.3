@@ -1,129 +1,224 @@
 <script lang="ts">
 	import { page } from '$app/state'
-	import VariableForm from '$lib/components/forms/Variable.svelte'
-	import { invalidate } from '$app/navigation'
-	import { API } from '$lib/api'
-	import Button from '$lib/components/atoms/Button.svelte'
-	import Item from './Item.svelte'
 	import PanelItem from '../../PanelItem.svelte'
+	import Dialog from './Dialog.svelte'
 	import ComboBox from '$lib/components/atoms/ComboBox.svelte'
-	import { getNodePath } from '$lib/stores/canvas.svelte'
-	import { type Component } from '$lib/types/resources'
-	import { getVisibleComponent } from '$lib/stores/canvas.svelte'
+	import { getProject, getNodePath, getCurrentNodePath } from '$lib/stores/canvas.svelte'
+	import { saveProject } from '$lib/actions/project'
+	import { clone } from '$lib/utils/clone'
+	import { toast } from 'svelte-sonner'
+	import { confirmStore } from '$lib/stores/confirm.svelte'
+	import type * as z from 'zod'
+	import type { modifierModel } from '$lib/schemas/modifiers'
+	import IconDetach from '~icons/mdi/link-variant-off'
+
+	let dialog = $state<HTMLDialogElement>()
 
 	const { nodeId }: { nodeId: string } = $props()
 
-	const componentData = $derived(getVisibleComponent(nodeId) as Component)
+	const project = $derived(getProject())
+	const nodePath = $derived([...getCurrentNodePath(), nodeId].join('/'))
 
-	let variableDialog = $state<HTMLDialogElement>()
-
-	let query = $state('')
-
-	const variables = $derived.by(() => {
-		const allModifiers = page.data.project?.spec.modifiers
-		if (!allModifiers) {
+	// Get modifiers for this node path from the project modifiers
+	const modifiers = $derived.by(() => {
+		if (!project?.spec.modifiers || !nodePath) {
 			return []
 		}
 
-		const path = getNodePath()
-
-		if (!path) {
-			return []
-		}
-
-		const variableIds = allModifiers[path]
-
-		if (!variableIds) {
-			return []
-		}
-
-		return page.data.variables?.filter(variable => variableIds.includes(variable.id)) ?? []
+		return project.spec.modifiers[nodePath] ?? []
 	})
 
-	let newVariable = $state('')
+	// Get all available variables from page data that aren't already attached
+	const availableVariables = $derived.by(() => {
+		const allVariables = page.data.variables || []
+		const attachedIds = modifiers.map(m => m.modifier_id)
+		return allVariables.filter(v => v.id && !attachedIds.includes(v.id))
+	})
 
-	const projectId = page.data.project?.id
-
-	const api = new API()
-
+	let selectedVariable = $state('')
+	let variableSearchValue = $state('')
 	let isAttaching = $state(false)
+	let comboBoxElement = $state<HTMLElement | null>(null)
 
-	async function attachVariable() {
+	// Auto-attach variable when selected
+	$effect(() => {
+		if (selectedVariable && !modifiers.some(m => m.modifier_id === selectedVariable)) {
+			attachVariable(selectedVariable)
+			// Explicitly blur the ComboBox and reset values
+			const input = comboBoxElement?.querySelector('input')
+			if (input) {
+				input.blur()
+			}
+			selectedVariable = ''
+			variableSearchValue = ''
+		}
+	})
+
+	async function attachVariable(variableId?: string) {
+		const targetVariable = variableId || selectedVariable
+		if (!targetVariable || !project) return
+
 		isAttaching = true
+		const snapshot = clone($state.snapshot(project))
 
-		const nodePath = getNodePath()
+		try {
+			// Find the variable to attach
+			const variableToAttach = page.data.variables?.find(v => v.id === targetVariable)
+			if (!variableToAttach) {
+				toast.error('Variable not found')
+				return
+			}
 
-		const result = await api.post(`projects/${projectId}/variable`, {
-			nodePath,
-			modifierId: newVariable
+			// Initialize modifiers object if it doesn't exist
+			if (!project.spec.modifiers) {
+				project.spec.modifiers = {}
+			}
+
+			// Initialize the array for this node path if it doesn't exist
+			if (!project.spec.modifiers[nodePath]) {
+				project.spec.modifiers[nodePath] = []
+			}
+
+			// Add the variable to the project
+			project.spec.modifiers[nodePath].push({
+				modifier_id: variableToAttach.id!,
+				spec: variableToAttach
+			})
+
+			// Save the project
+			const res = await saveProject(project)
+
+			if (!res.success) {
+				Object.assign(project, snapshot)
+				toast.error('Failed to attach variable')
+				return
+			}
+
+			toast.success('Variable attached successfully')
+		} catch (e) {
+			Object.assign(project, snapshot)
+			console.error('Failed to attach variable:', e)
+			toast.error('Failed to attach variable')
+		} finally {
+			isAttaching = false
+		}
+	}
+
+	async function detachVariable(modifierId: string) {
+		if (!project) return
+
+		// Find the variable name for the confirmation dialog
+		const variable = modifiers.find(m => m.modifier_id === modifierId)
+		const variableName = variable?.spec.spec.key || 'this variable'
+
+		// Show confirmation dialog
+		const confirmed = await confirmStore.show({
+			title: 'Detach Variable',
+			message: `Are you sure you want to detach "${variableName}"? This will remove it from this component.`
 		})
 
-		isAttaching = false
-		invalidate('project')
-		newVariable = ''
+		if (!confirmed) return
+
+		const snapshot = clone($state.snapshot(project))
+
+		try {
+			// Remove the modifier from the project array
+			if (project.spec.modifiers?.[nodePath]) {
+				project.spec.modifiers[nodePath] = project.spec.modifiers[nodePath].filter(
+					m => m.modifier_id !== modifierId
+				)
+
+				// Clean up empty arrays
+				if (project.spec.modifiers[nodePath].length === 0) {
+					delete project.spec.modifiers[nodePath]
+				}
+			}
+
+			const res = await saveProject(project)
+
+			if (!res.success) {
+				toast.error('Failed to detach variable')
+				Object.assign(project, snapshot)
+			} else {
+				toast.success('Variable detached successfully')
+			}
+		} catch (e) {
+			console.error('Failed to detach variable:', e)
+			toast.error('Failed to detach variable')
+			Object.assign(project, snapshot)
+		}
 	}
 </script>
 
+<Dialog bind:dialog {nodePath} />
+
 <PanelItem {nodeId} title="Environment Variables">
 	<div>
-		<!-- {#if variables.length > 0}
-		<div class=" mb-2 grid grid-cols-[1fr_auto] items-end gap-4">
-			<label class="-ms-3 block">
-				<span class="sr-only">Filter</span>
-				<input
-					type="text"
-					placeholder="Filter variables"
-					class="bg-main-800 w-full rounded-md px-3 py-1.5 outline-0"
-					bind:value={query}
-				/>
-			</label>
-		</div>
-	{/if} -->
-
-		<div class={[newVariable && 'grid grid-cols-[1fr_auto] gap-2']}>
-			{#key variables.length}
+		<div bind:this={comboBoxElement}>
+			{#key modifiers.length}
 				<ComboBox
-					bind:value={newVariable}
-					placeholder="Attach variable"
-					items={page.data.variables
-						?.filter(v => !variables.includes(v))
-						.map(v => ({ value: v.id, label: v.spec.key })) ?? []}
+					bind:value={selectedVariable}
+					bind:searchValue={variableSearchValue}
+					placeholder="Search variables or type to create new..."
+					items={availableVariables.map(v => ({ value: v.id!, label: v.spec.key }))}
 					createNew={{
 						label: 'Create new environment variable',
 						trigger: () => {
-							variableDialog?.showModal()
+							dialog?.showModal()
 						}
 					}}
 				/>
 			{/key}
-
-			{#if newVariable}
-				<Button
-					isLoading={isAttaching}
-					class="py-1 text-sm font-medium"
-					variation="vibrant"
-					type="button"
-					onClick={async () => {
-						await attachVariable()
-					}}
-				>
-					{#snippet body()}
-						Add
-					{/snippet}
-				</Button>
-			{/if}
 		</div>
 
 		<ul class="mt-2 font-medium">
-			{#each variables as variable (variable.id)}
-				{#if variable.spec.key.toLowerCase().includes(query.toLowerCase())}
-					<Item {variable} onEdit={() => variableDialog?.showModal()} />
-				{/if}
+			{#each modifiers as { modifier_id, spec }}
+				<li
+					class="group animate-fade-in flex flex-row items-center justify-between gap-3 py-1.5 text-sm"
+				>
+					<div class="grid grid-cols-[auto_auto_auto] items-center gap-2">
+						<span
+							class={[
+								'text-main-300 w-fit max-w-full truncate font-mono',
+								'bg-main-800 rounded-md px-2 py-1',
+								'border-main-700 border'
+							]}
+						>
+							{spec.spec.key}
+						</span>
+						<span class="text-main-300 font-medium"> = </span>
+						<span
+							class={[
+								'text-main-300 w-fit max-w-full truncate font-mono',
+								'bg-main-800 rounded-md px-2 py-1',
+								'border-main-700 border'
+							]}
+						>
+							{spec.spec.value}
+						</span>
+					</div>
+
+					<div
+						class={[
+							'pointer-events-none ms-auto flex transform items-center gap-2 opacity-50 *:transition',
+							'group-hover:pointer-events-auto group-hover:opacity-100',
+							'*:hover:text-main-200 text-main-500 transition *:active:scale-95'
+						]}
+					>
+						<button
+							type="button"
+							title="Detach"
+							onclick={() => detachVariable(modifier_id)}
+							class="hover:text-danger-300"
+							aria-label="Detach variable"
+						>
+							<IconDetach class="size-5"></IconDetach>
+						</button>
+					</div>
+				</li>
 			{:else}
 				<li class="pt-2 text-sm text-main-500">No added variables</li>
 			{/each}
 		</ul>
 	</div>
 </PanelItem>
-
-<VariableForm bind:dialog={variableDialog} />
