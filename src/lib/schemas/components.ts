@@ -67,7 +67,14 @@ const flowNodeValueModel = z.strictObject({
 	position: positionModel.default({ x: 0, y: 0 })
 })
 
-const flowNodeModel = z.record(z.string(), flowNodeValueModel)
+export const resolvedFlowNodeModel = z.record(
+	z.string(),
+	flowNodeValueModel.extend({
+		get spec() {
+			return resolvedComponentModel
+		}
+	})
+)
 
 const flowSpecModel = z.strictObject({
 	readme: z.string().optional().default(''),
@@ -93,7 +100,7 @@ export const flowModel = abstractComponentModel.extend({
 
 export const resolvedFlowModel = flowModel.extend({
 	spec: flowModel.shape.spec.extend({
-		nodes: flowNodeModel
+		nodes: resolvedFlowNodeModel
 	})
 })
 

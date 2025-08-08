@@ -38,36 +38,36 @@ export const executeComponent = async (
 	state.state = 'Starting...'
 	state.isRunning = true
 
-	let stream
-	try {
-		stream = api.stream<z.infer<typeof executionEventModel>>(
-			'execute/trace',
-			execution,
-			'POST',
-			undefined,
-			state.abortController.signal
-		)
-	} catch (e) {
-		console.error(e)
-		state.state = 'Error'
-		state.result = JSON.stringify(e, null, 2)
-		state.isRunning = false
-		return
-	}
+	let stream = api.stream<z.infer<typeof executionEventModel>>(
+		'execute/trace',
+		execution,
+		'POST',
+		undefined,
+		state.abortController.signal
+	)
 
-	for await (const event of stream) {
-		console.log(event)
-		if (event.event === 'running') state.state = `Running node ${event.data.path.pop()}`
-		if (event.event === 'completed' && event.data.path.length === 1) {
-			state.result = JSON.stringify(event.data.output, null, 2)
-			break
+	try {
+		for await (const event of stream) {
+			console.log(event)
+			if (event.event === 'running') state.state = `Running node ${event.data.path.pop()}`
+			if (event.event === 'completed' && event.data.path.length === 1) {
+				state.result = JSON.stringify(event.data.output, null, 2)
+				break
+			}
+			if (event.event === 'failed') {
+				// TODO: make this identical to what an endpoint returns, and also visualise errors in some better way
+				state.result = JSON.stringify(event.data, null, 2)
+				state.abortController.abort()
+				break
+			}
 		}
-		if (event.event === 'failed') {
-			// TODO: make this identical to what an endpoint returns, and also visualise errors in some better way
-			state.result = JSON.stringify(event.data, null, 2)
-			state.abortController.abort()
-			break
-		}
+	} catch (err) {
+		console.error('Execution failed', err)
+		state.state = 'Error'
+		state.result =
+			err && typeof err === 'object' && 'json' in err
+				? JSON.stringify(await (err as any).json?.(), null, 2)
+				: 'Unknown error'
 	}
 
 	state.isRunning = false
