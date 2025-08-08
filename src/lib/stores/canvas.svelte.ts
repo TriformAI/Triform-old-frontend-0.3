@@ -44,6 +44,7 @@ const currentNodePath = $derived.by(() => {
 	// remove /project/projectId
 	return path.slice(path.indexOf('project') + 2)
 })
+export const getCurrentNodePath = () => currentNodePath
 export const getCurrentContainer = (): NodeContainer => {
 	const path = page.url.pathname.split('/')
 	// remove /project/projectId

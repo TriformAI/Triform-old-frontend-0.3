@@ -13,7 +13,9 @@
 
 	const componentData = $derived(getVisibleComponent(nodeId))
 	const title = $derived(componentData?.meta?.name ?? 'Project')
-	const desc = $derived(componentData?.meta?.intention)
+	const desc = $derived(
+		'intention' in componentData?.meta ? (componentData?.meta?.intention ?? '') : ''
+	)
 </script>
 
 <div class="h-full">

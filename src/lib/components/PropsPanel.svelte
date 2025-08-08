@@ -18,7 +18,7 @@
 >
 	{#if selected.isMultiple}
 		<p class="mx-3">Multiple nodes selected</p>
-	{:else if isProject(getCurrentContainer())}
+	{:else if isProject(getCurrentContainer()) && !selected.node}
 		<Project />
 	{:else}
 		<PanelWrapper />

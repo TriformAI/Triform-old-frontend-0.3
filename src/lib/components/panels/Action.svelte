@@ -6,6 +6,6 @@
 
 <Panel {nodeId} {Icon}>
 	{#snippet panelItems(PanelItems)}
-		<PanelItems items={['execute', 'codeEditor', 'metadata', 'variables', 'triggers']} {nodeId} />
+		<PanelItems items={['codeEditor', 'execute', 'metadata', 'variables']} {nodeId} />
 	{/snippet}
 </Panel>

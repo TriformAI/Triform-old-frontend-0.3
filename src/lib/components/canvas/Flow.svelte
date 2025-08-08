@@ -31,7 +31,7 @@
 	import { scale } from 'svelte/transition'
 	import { type OnNavigate } from '@sveltejs/kit'
 	import { onNavigate } from '$app/navigation'
-	import { getComponent, createComponent } from '$lib/actions/components'
+	import { getComponent } from '$lib/actions/components'
 	import { isFlow } from '$lib/types/resources'
 	import { type UUID as Uuid } from 'crypto'
 	import { getFlowModel } from '$lib/nodeModels'
