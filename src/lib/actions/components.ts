@@ -12,19 +12,19 @@ export const updateComponent = async (
 	component: Partial<z.infer<typeof componentModel> | ResolvedComponent>
 ) => {
 	const unresolved = unresolveComponent(component as ResolvedComponent)
-	return await api.patch<Component>(
+	return await api.patch<{ data: Component }>(
 		`components/${component.id}`,
 		pick(unresolved, ['spec', 'meta'])
 	)
 }
 
 export const createComponent = async (component: Omit<ResolvedComponent, 'id'>) => {
-	const result = await api.post<ResolvedComponent>('components', component)
+	const result = await api.post<{ data: ResolvedComponent }>('components', component)
 	console.log(result)
 
-	return result.data
+	return result
 }
 
 export const getComponent = async (id: Uuid) => {
-	return await api.get<ResolvedComponent>(`components/${id}`)
+	return await api.get<{ data: ResolvedComponent }>(`components/${id}`)
 }

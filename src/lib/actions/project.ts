@@ -8,11 +8,11 @@ import type * as z from 'zod'
 const api = new API()
 
 export const createProject = async (payload: unknown) => {
-	return await api.post<Project>(`projects`, payload)
+	return await api.post<{ data: Project }>(`projects`, payload)
 }
 
 export const saveProject = async (project: z.infer<typeof resolvedProjectModel>) => {
-	return await api.patch<Project>(
+	return await api.patch<{ data: Project }>(
 		`projects/${project.id}`,
 		pick(unresolveProject(project), ['spec', 'meta'])
 	)

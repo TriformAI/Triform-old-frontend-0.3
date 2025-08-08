@@ -5,13 +5,11 @@ import { ingressTokenModel } from '$lib/schemas/triggers'
 const api = new API()
 
 export const getIngressTokens = async () => {
-	const res = await api.get<z.infer<typeof ingressTokenModel>[]>('/tokens/ingress')
-	return res.data
+	return await api.get<{ data: z.infer<typeof ingressTokenModel>[] }>('/tokens/ingress')
 }
 
 const _createIngressTokenSchema = ingressTokenModel.pick({ meta: true })
 
 export const createIngressToken = async (payload: z.infer<typeof _createIngressTokenSchema>) => {
-	const res = await api.post('/tokens/ingress', payload)
-	return res as { data: z.infer<typeof ingressTokenModel>; token: string }
+	return await api.post<{ data: z.infer<typeof ingressTokenModel> }>('/tokens/ingress', payload)
 }

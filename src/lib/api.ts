@@ -22,14 +22,12 @@ export class ApiError extends Error {
 
 export type ApiErrorType = InstanceType<typeof ApiError>
 
-type ReturnDataWithHeaders<T> = {
-	data: T
+type ReturnDataWithHeaders<T> = T & {
 	success: boolean
 	headers: Headers
 }
 
-type ReturnData<T> = {
-	data: T
+type ReturnData<T> = T & {
 	success: boolean
 }
 
@@ -149,17 +147,33 @@ export class API<TEvent extends RequestEvent | undefined = undefined> {
 			return returnData
 		} catch (error) {
 			console.error('API error: ', error)
-			return { success: false, status: 500, message: 'Server error' }
+			return { ...({} as T), success: false }
 		}
 	}
 
 	// --- Public Methods ---
+	// Overloads for GET method
+	get<T>(
+		endpoint: string,
+		headers: Record<string, string>,
+		returnHeaders: true
+	): Promise<ReturnDataWithHeaders<T>>
+
+	get<T>(
+		endpoint: string,
+		headers?: Record<string, string>,
+		returnHeaders?: false
+	): Promise<ReturnData<T>>
+
 	get<T>(
 		endpoint: string,
 		headers: Record<string, string> = {},
 		returnHeaders: boolean = false
 	): Promise<ReturnData<T> | ReturnDataWithHeaders<T>> {
-		return this.#request<T>('GET', endpoint, undefined, headers, returnHeaders as any)
+		if (returnHeaders) {
+			return this.#request<T>('GET', endpoint, undefined, headers, true)
+		}
+		return this.#request<T>('GET', endpoint, undefined, headers, false)
 	}
 
 	post<T>(
