@@ -300,8 +300,10 @@ export async function addNode(
 		newNode = {
 			...baseNode,
 			order:
-				(Math.max(...Object.values(container.spec.nodes).map(n => n.order)) ??
-					Object.keys(container.spec.nodes).length) + 1
+				Math.max(
+					...Object.values(container.spec.nodes).map(n => n.order ?? 0),
+					Object.keys(container.spec.nodes).length
+				) + 1
 		} as
 			| z.infer<typeof projectModel>['spec']['nodes'][string]
 			| z.infer<typeof agentModel>['spec']['nodes'][string]
