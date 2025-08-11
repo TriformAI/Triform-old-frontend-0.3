@@ -42,7 +42,7 @@
 
 	// Auto-add token when selected
 	$effect(() => {
-		if (tokenComboValue && !selectedTokens.includes(tokenComboValue)) {
+		if (tokenComboValue && tokenComboValue !== 'new' && !selectedTokens.includes(tokenComboValue)) {
 			selectedTokens.push(tokenComboValue)
 			// Explicitly blur the ComboBox and reset values
 			const input = comboBoxElement?.querySelector('input')
@@ -69,10 +69,9 @@
 				trigger: () => {
 					// Prompt for token name
 					// TODO: replace this with some better modal or something
-					const tokenName = prompt('Enter a name for the new token:')
-					if (tokenName?.trim()) {
-						handleCreateToken(tokenName.trim())
-					}
+					const tokenName = (prompt('Enter a name for the new token:') as string)?.trim()
+					if (!tokenName) return
+					handleCreateToken(tokenName)
 				}
 			}
 		}
