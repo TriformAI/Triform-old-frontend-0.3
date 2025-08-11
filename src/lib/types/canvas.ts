@@ -8,7 +8,6 @@ export interface NodeProps {
 	expanded: boolean
 	deleted: boolean
 	creating: boolean
-	isDirty: boolean
 	payload: string
 }
 
@@ -16,7 +15,6 @@ export const defaultProps: NodeProps = {
 	expanded: false,
 	deleted: false,
 	creating: false,
-	isDirty: false,
 	payload: ''
 }
 

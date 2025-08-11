@@ -79,7 +79,7 @@
 	}, 500)
 </script>
 
-<PanelItem title="Code" {nodeId} isDirty={dataIsDirty}>
+<PanelItem title="Code" {nodeId}>
 	<div class="relative">
 		<Tabs {tabs} bind:activeTab />
 		<div

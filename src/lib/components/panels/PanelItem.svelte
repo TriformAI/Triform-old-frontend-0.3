@@ -7,7 +7,6 @@
 		nodeId: string
 		title: string
 		children: Snippet
-		isDirty?: boolean
 		forceOpen?: boolean
 		isListContainer?: boolean
 		onAddClick?: () => void
@@ -17,7 +16,6 @@
 		nodeId,
 		title,
 		children,
-		isDirty = false,
 		forceOpen = false,
 		isListContainer = false,
 		onAddClick
@@ -44,15 +42,6 @@
 			<h2 class={['eyebrow text-main-300 whitespace-nowrap transition-colors']}>
 				{title}
 			</h2>
-
-			<div
-				class={[
-					'bg-warning-600 ms-1 size-1.5 -translate-y-0.5 rounded-full transition-all',
-					isDirty ? 'scale-100' : 'scale-0'
-				]}
-				aria-label="Unsaved changes"
-				data-balloon-pos="right"
-			></div>
 
 			{#if isListContainer}
 				<button

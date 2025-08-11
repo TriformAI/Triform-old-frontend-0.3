@@ -12,14 +12,6 @@ export const selected = {
 		return getNodes().filter(node => node.selected).length > 1
 	},
 
-	get isDirty() {
-		if (!this.node || !isRegularNode(this.node)) {
-			return false
-		}
-
-		return this.node.data.props.isDirty
-	},
-
 	get payload() {
 		if (!this.node || !isRegularNode(this.node)) {
 			return ''

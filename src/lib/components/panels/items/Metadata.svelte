@@ -15,24 +15,14 @@
 		getVisibleComponent(nodeId) as z.infer<typeof resolvedComponentModel>
 	)
 
-	const dataIsDirty = false // FIXME
-
 	const debouncedSave = debounce(async () => {
 		const res = await updateComponent(componentData)
 		if (!res.success) toast.error(`Failed saving ${componentData.meta.name}`)
 	}, 500)
 </script>
 
-<!-- {#if draftData}
-	<p>{JSON.stringify(draftData.meta)}</p>
-{/if}
-<p>---</p>
 {#if componentData}
-	<p>{JSON.stringify(componentData.meta)}</p>
-{/if} -->
-
-{#if componentData}
-	<PanelItem {nodeId} title="Metadata" isDirty={dataIsDirty}>
+	<PanelItem {nodeId} title="Metadata">
 		<div class="grid grid-cols-2 gap-3">
 			<InputField
 				containerClass="col-span-2"
