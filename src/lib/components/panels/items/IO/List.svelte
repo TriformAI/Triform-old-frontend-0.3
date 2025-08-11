@@ -22,12 +22,9 @@
 				? Object.entries(component.spec.inputs)
 				: []
 			: 'outputs' in component?.spec
-				? // @ts-expect-error typing
-					Object.entries(component.spec.outputs)
+				? Object.entries(component.spec.outputs)
 				: []
 	)
-
-	const validateType = (value: string) => jsonSchemaTypeModel.safeParse(value).success
 
 	const saveComponent = debounce(async () => {
 		const res = await updateComponent(component)
