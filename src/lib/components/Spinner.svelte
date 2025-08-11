@@ -1,5 +1,11 @@
+<script lang="ts">
+	import { twMerge } from 'tailwind-merge'
+
+	const { class: classes = 'size-5' }: { class?: string } = $props()
+</script>
+
 <svg
-	class="h-5 w-5 animate-spin text-white"
+	class={twMerge('animate-spin text-white', classes)}
 	xmlns="http://www.w3.org/2000/svg"
 	fill="none"
 	viewBox="0 0 24 24"

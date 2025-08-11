@@ -4,6 +4,8 @@
 	import { page } from '$app/state'
 	import { sessionStore } from '$lib/stores/session.svelte'
 	import { authClient } from '$lib/auth-client'
+	import { apiStatus } from '$lib/stores/apiStatus.svelte'
+	import Spinner from './Spinner.svelte'
 
 	const activeOrganization = authClient.useActiveOrganization()
 
@@ -24,6 +26,18 @@
 					<span class="font-medium">Projects</span>
 				{/if}
 			{/if}
+
+			<p class="text-complement-500 ms-5 grid text-sm font-semibold *:col-start-1 *:row-start-1">
+				<span
+					class={[
+						'transition-opacity duration-300',
+						apiStatus.saving ? 'opacity-100' : 'opacity-0'
+					]}
+				>
+					<Spinner class="size-4" />
+				</span>
+				<!-- <span class={[!apiStatus.loading ? 'opacity-100' : 'opacity-0']}>Saved</span> -->
+			</p>
 		</div>
 	</div>
 

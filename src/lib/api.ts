@@ -1,6 +1,7 @@
 import { browser } from '$app/environment'
 import { error, fail, type ActionFailure, type RequestEvent } from '@sveltejs/kit'
 import { stream as eventStream } from 'fetch-event-stream'
+import { apiStatus } from '$lib/stores/apiStatus.svelte'
 
 type RequestMethod = 'GET' | 'POST' | 'PUT' | 'PATCH' | 'DELETE'
 
@@ -99,6 +100,10 @@ export class API<TEvent extends RequestEvent | undefined = undefined> {
 		headers: Record<string, string> = {},
 		returnHeaders = false
 	): Promise<ReturnData<T> | ReturnDataWithHeaders<T> | ActionFailure> {
+		if (method !== 'GET') {
+			apiStatus.saving = true
+		}
+
 		try {
 			console.log(`--> ${method} ${this.#baseURL}/${endpoint}`)
 			const response = await this.#fetch(`${this.#baseURL}/${endpoint}`, {
@@ -124,7 +129,7 @@ export class API<TEvent extends RequestEvent | undefined = undefined> {
 			// Return fail or error if response not ok and if we're on server
 			if (!response.ok) {
 				console.error('API error: ', result)
-				if (['POST', 'PUT', 'DELETE'].includes(method)) {
+				if (method !== 'GET') {
 					return fail(response.status, result)
 				}
 
@@ -148,6 +153,8 @@ export class API<TEvent extends RequestEvent | undefined = undefined> {
 		} catch (error) {
 			console.error('API error: ', error)
 			return { ...({} as T), success: false }
+		} finally {
+			setTimeout(() => (apiStatus.saving = false), 300)
 		}
 	}
 
