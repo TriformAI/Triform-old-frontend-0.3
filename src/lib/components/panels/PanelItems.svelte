@@ -6,6 +6,7 @@
 	import ProjectSettings from './items/ProjectSettings.svelte'
 	import Variables from './items/Variables/Root.svelte'
 	import Triggers from './items/Triggers/Root.svelte'
+	import IO from './items/IO/Root.svelte'
 
 	import IconExecute from '~icons/mdi/lightning-bolt'
 	import IconCode from '~icons/material-symbols/code-rounded'
@@ -13,6 +14,7 @@
 	import IconTriggers from '~icons/material-symbols/input-rounded'
 	import IconVariables from '~icons/material-symbols/vpn-key-rounded'
 	import IconProject from '~icons/mdi/shape'
+	import IconIO from '~icons/material-symbols/input-circle-rounded'
 
 	import {
 		openPanelItems,
@@ -35,7 +37,8 @@
 		metadata: { label: 'Metadata', component: Metadata, icon: IconMetadata },
 		projectSettings: { label: 'Project Settings', component: ProjectSettings, icon: IconProject },
 		variables: { label: 'Variables', component: Variables, icon: IconVariables },
-		triggers: { label: 'Triggers', component: Triggers, icon: IconTriggers }
+		triggers: { label: 'Triggers', component: Triggers, icon: IconTriggers },
+		io: { label: 'IO', component: IO, icon: IconIO }
 	}
 
 	let { items, nodeId, showNav = true }: Props = $props()

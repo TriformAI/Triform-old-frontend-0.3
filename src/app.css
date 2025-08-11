@@ -330,7 +330,7 @@
 	}
 
 	.input-text {
-		@apply border-main-700 bg-main-800 text-main-200 group-hover:border-main-600 focus:border-main-600 w-full rounded-md border px-3 py-2 text-sm transition outline-none;
+		@apply border-main-700 bg-main-800 text-main-200 not-disabled:group-hover:border-main-600 not-disabled:focus:border-main-600 w-full rounded-md border px-3 py-2 text-sm transition outline-none;
 	}
 
 	.radio {

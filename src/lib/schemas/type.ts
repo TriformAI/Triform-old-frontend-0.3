@@ -77,3 +77,275 @@ export const jsonSchemaTypeToPython = (
 			return 'Any'
 	}
 }
+
+type JsonSchemaType =
+	| z.infer<typeof jsonSchemaTypeModel>
+	| Record<string, never>
+
+export const pythonTypeToJsonSchema = (pythonType: string): JsonSchemaType => {
+	// Trim whitespace
+	const type = pythonType.trim()
+
+	// Handle empty string or None
+	if (!type || type === 'None') {
+		return { type: 'null' } as const
+	}
+
+	// Handle primitive types
+	if (type === 'str') return { type: 'string' } as const
+	if (type === 'int' || type === 'float') return { type: 'number' } as const
+	if (type === 'bool') return { type: 'boolean' } as const
+	if (type === 'Any') return {} as Record<string, never>
+
+	// Handle basic container types without parameters
+	if (type === 'List' || type === 'list') return { type: 'array' } as const
+	if (type === 'Dict' || type === 'dict') return { type: 'object' } as const
+
+	// Handle parameterized types
+	if (type.includes('[') && type.includes(']')) {
+		const match = type.match(
+			/^(List|list|Dict|dict|Set|set|Tuple|tuple|Union|Optional|Callable|Any)\[(.*)\]$/
+		)
+		if (match) {
+			const [, containerType, params] = match
+			const containerTypeLower = containerType.toLowerCase()
+
+			if (containerTypeLower === 'list') {
+				const typeParams = parseTypeParameters(params)
+				if (typeParams.length > 0 && typeParams[0].trim()) {
+					const itemType = typeParams[0]
+					const items = pythonTypeToJsonSchema(itemType) as z.infer<
+						typeof jsonSchemaTypeModel
+					>
+					return {
+						type: 'array',
+						items
+					}
+				}
+				// Empty brackets - treat as generic array
+				return { type: 'array' } as const
+			}
+
+			if (containerTypeLower === 'dict') {
+				const typeParams = parseTypeParameters(params)
+				if (typeParams.length >= 2) {
+					// Dict[key, value] - we assume string keys
+					const valueType = typeParams[1]
+					const additionalProperties = pythonTypeToJsonSchema(
+						valueType
+					) as z.infer<typeof jsonSchemaTypeModel>
+					return {
+						type: 'object',
+						additionalProperties
+					}
+				}
+				// Dict with single parameter or malformed - treat as generic object
+				return { type: 'object' } as const
+			}
+
+			if (containerTypeLower === 'optional') {
+				// Optional[T] is equivalent to Union[T, None], we just return T's schema
+				const innerType = parseTypeParameters(params)[0]
+				return pythonTypeToJsonSchema(innerType)
+			}
+
+			// Complex types that get rasterized to basic types
+			if (['set', 'tuple'].includes(containerTypeLower)) {
+				return { type: 'array' } as const
+			}
+
+			if (['union', 'callable'].includes(containerTypeLower)) {
+				return { type: 'object' } as const
+			}
+		}
+	}
+
+	// Fallback for unknown types
+	return { type: 'object' } as const
+}
+
+// Helper function to parse type parameters, handling nested brackets
+const parseTypeParameters = (params: string): string[] => {
+	const result: string[] = []
+	let current = ''
+	let depth = 0
+	let i = 0
+
+	while (i < params.length) {
+		const char = params[i]
+
+		if (char === '[') {
+			depth++
+			current += char
+		} else if (char === ']') {
+			depth--
+			current += char
+		} else if (char === ',' && depth === 0) {
+			result.push(current.trim())
+			current = ''
+		} else {
+			current += char
+		}
+
+		i++
+	}
+
+	if (current.trim()) {
+		result.push(current.trim())
+	}
+
+	return result
+}
+
+export type ValidationResult = { error: string | undefined }
+
+export const validatePythonTypeString = (
+	pythonType: string
+): ValidationResult => {
+	// Trim whitespace
+	const type = pythonType.trim()
+
+	// Handle empty string
+	if (!type) {
+		return { error: 'Type string cannot be empty' }
+	}
+
+	// Valid primitive types
+	const primitiveTypes = [
+		'str',
+		'int',
+		// 'float',
+		'bool',
+		'None'
+		// 'Any'
+	]
+	if (primitiveTypes.includes(type)) {
+		return { error: undefined }
+	}
+
+	// Valid container types without parameters
+	const containerTypes = ['List', 'list', 'Dict', 'dict']
+	if (containerTypes.includes(type)) {
+		return { error: undefined }
+	}
+
+	// Check for parameterized types
+	if (type.includes('[') || type.includes(']')) {
+		// Check for balanced brackets
+		let bracketCount = 0
+		for (const char of type) {
+			if (char === '[') bracketCount++
+			if (char === ']') bracketCount--
+			if (bracketCount < 0) {
+				return { error: 'Unmatched closing bracket "]"' }
+			}
+		}
+		if (bracketCount > 0) {
+			return { error: 'Unmatched opening bracket "["' }
+		}
+
+		// Check for valid parameterized type structure
+		const match = type.match(
+			/^(List|list|Dict|dict|Set|set|Tuple|tuple|Union|Optional|Callable|Any)\[(.*)\]$/
+		)
+
+		if (!match) {
+			// Check if it looks like a parameterized type but with invalid container
+			const invalidMatch = type.match(/^([A-Za-z_][A-Za-z0-9_]*)\[.*\]$/)
+			if (invalidMatch) {
+				const [, containerType] = invalidMatch
+				return {
+					error: `Unknown generic type "${containerType}". Valid types are: List, Dict, Set`
+				}
+			}
+			return { error: 'Invalid type syntax' }
+		}
+
+		const [, containerType, params] = match
+		const containerTypeLower = containerType.toLowerCase()
+
+		// Validate parameters are not empty (except for specific cases)
+		if (!params.trim()) {
+			if (['list', 'dict'].includes(containerTypeLower)) {
+				return { error: undefined } // List[] and Dict[] are valid (generic containers)
+			}
+			return { error: `${containerType} requires type parameters` }
+		}
+
+		// Parse and validate parameters
+		const typeParams = parseTypeParameters(params)
+
+		if (containerTypeLower === 'list') {
+			if (typeParams.length > 1) {
+				return { error: 'List takes exactly one type parameter' }
+			}
+			if (typeParams.length === 1) {
+				const itemValidation = validatePythonTypeString(typeParams[0])
+				if (itemValidation.error) {
+					return { error: `Invalid List item type: ${itemValidation.error}` }
+				}
+			}
+			return { error: undefined }
+		}
+
+		if (containerTypeLower === 'dict') {
+			if (typeParams.length > 2) {
+				return { error: 'Dict takes at most two type parameters' }
+			}
+			if (typeParams.length === 1) {
+				return {
+					error:
+						'Dict with one parameter is not valid. Use Dict[KeyType, ValueType] or simply Dict'
+				}
+			}
+			if (typeParams.length === 2) {
+				const [keyType, valueType] = typeParams
+				const keyValidation = validatePythonTypeString(keyType)
+				if (keyValidation.error) {
+					return { error: `Invalid Dict key type: ${keyValidation.error}` }
+				}
+				const valueValidation = validatePythonTypeString(valueType)
+				if (valueValidation.error) {
+					return { error: `Invalid Dict value type: ${valueValidation.error}` }
+				}
+			}
+			return { error: undefined }
+		}
+
+		if (containerTypeLower === 'optional') {
+			if (typeParams.length !== 1) {
+				return { error: 'Optional takes exactly one type parameter' }
+			}
+			const innerValidation = validatePythonTypeString(typeParams[0])
+			if (innerValidation.error) {
+				return { error: `Invalid Optional type: ${innerValidation.error}` }
+			}
+			return { error: undefined }
+		}
+
+		// TODO: maybe not support these
+		// Complex types that are valid but get rasterized
+		if (['set', 'tuple', 'union', 'callable'].includes(containerTypeLower)) {
+			// Basic validation - just check that parameters exist
+			if (typeParams.length === 0) {
+				return { error: `${containerType} requires type parameters` }
+			}
+			// For these complex types, we accept any non-empty parameters
+			// as they get rasterized anyway
+			return { error: undefined }
+		}
+
+		return { error: `Unknown generic type "${containerType}"` }
+	}
+
+	// Check if it looks like a valid identifier but is unknown
+	if (/^[A-Za-z_][A-Za-z0-9_]*$/.test(type)) {
+		return {
+			error: `Unknown type "${type}". Valid primitive types are: ${primitiveTypes.join(
+				', '
+			)}`
+		}
+	}
+
+	return { error: 'Invalid type syntax' }
+}

@@ -19,7 +19,8 @@
 		onkeydown,
 		oninput,
 		onpaste,
-		use = () => {}
+		use = () => {},
+		validationFn = () => true
 	}: {
 		value?: string
 		el?: HTMLInputElement
@@ -39,9 +40,16 @@
 		oninput?: (e: Event) => void
 		onpaste?: (e: ClipboardEvent) => void
 		use?: (el: HTMLInputElement) => void
+		validationFn?: (value: string) => boolean | string | undefined
 	} = $props()
 
 	const id = Math.random().toString(36).substring(2, 15)
+
+	const validation = $derived.by(() => {
+		const res = validationFn(value ?? '')
+		if (typeof res === 'boolean') return { success: res, error: undefined }
+		return { success: !res, error: res }
+	})
 </script>
 
 <div class={['grid gap-1', containerClass]}>
@@ -57,13 +65,17 @@
 			{autocomplete}
 			{required}
 			{readonly}
+			disabled={readonly}
 			bind:this={el}
 			bind:value
 			class={[
 				'input-text peer',
+				'disabled:text-main-400',
 				prefix && 'rounded-l-none border-l-0',
 				variation === 'default' && 'px-3 py-2',
 				variation === 'tight' && 'px-2 py-1',
+				!validation.success &&
+					'border-danger-400/60 bg-danger-400/5 not-disabled:focus:border-danger-400/80 not-disabled:focus:bg-danger-400/10',
 				classProp
 			]}
 			{onblur}
@@ -84,4 +96,7 @@
 			>
 		{/if}
 	</div>
+	{#if validation.error}
+		<p class="text-danger-400 text-sm">{validation.error}</p>
+	{/if}
 </div>
