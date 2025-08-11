@@ -3,6 +3,7 @@
 	import TextField from '$lib/components/atoms/TextField.svelte'
 	import Button from '$lib/components/atoms/Button.svelte'
 	import { toast } from 'svelte-sonner'
+	import { debounce } from '$lib/utils/debounce'
 	import { clone } from '$lib/utils/clone'
 	import PanelItem from '../PanelItem.svelte'
 	import { saveProject } from '$lib/actions/project'
@@ -17,44 +18,18 @@
 		getVisibleComponent(nodeId) as z.infer<typeof resolvedProjectModel>
 	)
 
-	interface FormData {
-		name: string
-	}
-
-	let initialData = $state<FormData>()!
-	let formData = $state<FormData>()!
-
-	function setFormdata() {
-		const meta = componentData.meta
-
-		initialData = {
-			name: meta.name
-		}
-
-		formData = clone(initialData)
-	}
-
-	setFormdata()
-
-	const { handleSubmit, isLoading } = $derived(
-		createFormHandler({
-			onSubmit: async data => await saveProject(componentData),
-			successMessage: 'Project settings updated!',
-			errorMessage: 'Failed to update project settings'
-		})
-	)
+	const debouncedSave = debounce(async () => {
+		const res = await saveProject(componentData)
+		console.log(res)
+	}, 500)
 </script>
 
 <PanelItem {nodeId} title="Project Settings" forceOpen={true}>
-	<form class="grid gap-3" onsubmit={e => handleSubmit(e, formData)}>
-		<InputField required label="Name" name="name" bind:value={formData.name} />
-
-		<div class="flex justify-end">
-			<Button variation="vibrant" type="submit" class="py-2" {isLoading}>
-				{#snippet body()}
-					Save
-				{/snippet}
-			</Button>
-		</div>
-	</form>
+	<InputField
+		required
+		label="Name"
+		name="name"
+		bind:value={componentData.meta.name}
+		oninput={debouncedSave}
+	/>
 </PanelItem>
