@@ -17,7 +17,7 @@
 		readonly = false
 	}: {
 		typeValue: z.infer<typeof jsonSchemaTypeModel>
-		onblur: () => void
+		onblur?: () => void
 		readonly?: boolean
 	} = $props()
 

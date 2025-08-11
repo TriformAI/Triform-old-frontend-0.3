@@ -7,7 +7,7 @@
 		deleteEdge,
 		saveContainer
 	} from '$lib/stores/canvas.svelte'
-	import { jsonSchemaTypeModel } from '$lib/schemas'
+	import { jsonSchemaTypeModel, pythonTypeToJsonSchema } from '$lib/schemas'
 	import * as z from 'zod'
 	import { debounce } from '$lib/utils/debounce'
 	import { updateComponent } from '$lib/actions/components'
@@ -17,6 +17,9 @@
 	import IconDelete from '~icons/material-symbols/delete-rounded'
 	import { clone } from '$lib/utils/clone'
 	import { confirmStore } from '$lib/stores/confirm.svelte'
+	import IconAdd from '~icons/mdi/plus-circle-outline'
+	import InputField from '$lib/components/atoms/InputField.svelte'
+	import IconCreate from '~icons/material-symbols/check-rounded'
 
 	let {
 		nodeId,
@@ -74,12 +77,42 @@
 		await saveContainer(containerSnapshot)
 		await refreshFlow()
 	}
+
+	let isAddingPort = $state(false)
+	let newPortName = $state('')
+	let newPortType = $state(pythonTypeToJsonSchema('str') as z.infer<typeof jsonSchemaTypeModel>)
+
+	const startAddingPort = () => {
+		if (isAddingPort) {
+			isAddingPort = false
+			return
+		}
+		isAddingPort = true
+		newPortName = ''
+		newPortType = pythonTypeToJsonSchema('str') as z.infer<typeof jsonSchemaTypeModel>
+	}
+	const addPort = async () => {
+		component.spec[`${type}s`][newPortName] = {
+			type: newPortType,
+			description: ''
+		}
+		isAddingPort = false
+		const res = await saveComponent()
+		if (!res.success) {
+			isAddingPort = true
+			delete component.spec[`${type}s`][newPortName]
+			toast.error('Failed to add port')
+		}
+	}
 </script>
 
 <div>
-	<h4 class="text-main-300 flex flex-row items-center gap-3 text-sm capitalize">
+	<h4 class="text-main-400 flex flex-row items-center gap-2 text-xs font-bold uppercase">
 		{type}s
-		<div class="bg-main-700/80 h-px w-full"></div>
+		<button class="icon-btn hover:text-main-200" disabled={readonly} onclick={startAddingPort}>
+			<IconAdd />
+		</button>
+		<div class="bg-main-700/80 ml-1 h-px w-full"></div>
 	</h4>
 	<div class="mt-1 grid w-full grid-cols-[max-content_1fr] items-center gap-2">
 		<p class="text-main-400 min-w-32 text-sm">Port name</p>
@@ -105,8 +138,17 @@
 			</div>
 		{:else}
 			<p class="text-main-500 text-center w-full col-span-2 mt-4">
-				No {type}s defined
+				No {type}s defined yet
 			</p>
 		{/each}
+		{#if isAddingPort}
+			<InputField bind:value={newPortName} placeholder={`new_${type}`} class="font-mono" />
+			<div class="flex flex-row items-center gap-3">
+				<TypeEditor bind:typeValue={newPortType} />
+				<button class="icon-btn hover:text-main-200" onclick={addPort}>
+					<IconCreate />
+				</button>
+			</div>
+		{/if}
 	</div>
 </div>
