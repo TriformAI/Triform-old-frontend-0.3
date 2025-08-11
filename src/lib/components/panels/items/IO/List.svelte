@@ -20,6 +20,7 @@
 	import IconAdd from '~icons/mdi/plus-circle-outline'
 	import InputField from '$lib/components/atoms/InputField.svelte'
 	import IconCreate from '~icons/material-symbols/check-rounded'
+	import { tick } from 'svelte'
 
 	let {
 		nodeId,
@@ -82,7 +83,7 @@
 	let newPortName = $state('')
 	let newPortType = $state(pythonTypeToJsonSchema('str') as z.infer<typeof jsonSchemaTypeModel>)
 
-	const startAddingPort = () => {
+	const startAddingPort = async () => {
 		if (isAddingPort) {
 			isAddingPort = false
 			return
@@ -90,7 +91,10 @@
 		isAddingPort = true
 		newPortName = ''
 		newPortType = pythonTypeToJsonSchema('str') as z.infer<typeof jsonSchemaTypeModel>
+		await tick()
+		newPortNameEl?.focus()
 	}
+
 	const addPort = async () => {
 		component.spec[`${type}s`][newPortName] = {
 			type: newPortType,
@@ -104,25 +108,32 @@
 			toast.error('Failed to add port')
 		}
 	}
+
+	let newPortNameEl = $state<HTMLInputElement>()
 </script>
 
 <div>
 	<h4 class="text-main-400 flex flex-row items-center gap-2 text-xs font-bold uppercase">
 		{type}s
 		<button class="icon-btn hover:text-main-200" disabled={readonly} onclick={startAddingPort}>
-			<IconAdd />
+			<IconAdd class="size-4" />
 		</button>
 		<div class="bg-main-700/80 ml-1 h-px w-full"></div>
 	</h4>
-	<div class="mt-1 grid w-full grid-cols-[max-content_1fr] items-center gap-2">
-		<p class="text-main-400 min-w-32 text-sm">Port name</p>
-		<p class="text-main-400 text-sm">Type</p>
+
+	<div class="mt-1 grid w-full grid-cols-[1fr_1.5fr] items-center gap-2">
+		{#if ports.length || isAddingPort}
+			<p class="text-main-400 text-sm">Port name</p>
+			<p class="text-main-400 text-sm">Type</p>
+		{/if}
+
 		{#each ports as [key, port]}
 			<div
 				class="text-main-300 bg-main-950/70 flex w-fit items-center rounded-md px-3 py-1.5 font-mono text-sm"
 			>
 				<span>{key}</span>
 			</div>
+
 			<div class="flex flex-row items-center gap-3">
 				<TypeEditor
 					bind:typeValue={port.type as z.infer<typeof jsonSchemaTypeModel>}
@@ -136,19 +147,30 @@
 					/>
 				{/if}
 			</div>
-		{:else}
-			<p class="text-main-500 text-center w-full col-span-2 mt-4">
+		{/each}
+
+		{#if !ports.length && !isAddingPort}
+			<p class="text-main-500 col-span-2 mt-4 w-full text-center">
 				No {type}s defined yet
 			</p>
-		{/each}
+		{/if}
+
 		{#if isAddingPort}
-			<InputField bind:value={newPortName} placeholder={`new_${type}`} class="font-mono" />
-			<div class="flex flex-row items-center gap-3">
-				<TypeEditor bind:typeValue={newPortType} />
-				<button class="icon-btn hover:text-main-200" onclick={addPort}>
-					<IconCreate />
-				</button>
-			</div>
+			<form class="contents" onsubmit={addPort}>
+				<InputField
+					required
+					bind:el={newPortNameEl}
+					bind:value={newPortName}
+					placeholder={`new_${type}`}
+					class="font-mono"
+				/>
+				<div class="flex flex-row items-center gap-3">
+					<TypeEditor bind:typeValue={newPortType} />
+					<button class="icon-btn hover:text-main-200" type="submit">
+						<IconCreate />
+					</button>
+				</div>
+			</form>
 		{/if}
 	</div>
 </div>
