@@ -42,24 +42,17 @@
 				id={`${container.id}:${ioType}`}
 				style={`--node-color: ${visualData.color}`}
 				class={[
-					'relative flex h-15 w-60 items-center justify-center border border-[color-mix(in_oklab,var(--node-color)70%,transparent)] p-2 transition-all',
-					'rounded-md'
+					'relative flex h-15 w-md items-center justify-center border-[color-mix(in_oklab,var(--node-color)70%,transparent)] p-2 transition-all',
+					'to-complement-400/10 from-complement-800/0 border-main-200',
+					ioType === 'input' ? 'bg-to border-b' : 'border-t'
 				]}
 			>
 				<span class="flex flex-row items-center justify-center gap-3">
-					{#if ioType === 'input'}
-						<visualData.icon
-							class="size-5 drop-shadow-[0px_0px_10px_var(--node-color)]"
-							style={`color: ${visualData.color}`}
-						></visualData.icon>
-						<span class="text-main-300 truncate">{container.meta.name}</span>
-					{:else}
-						<IconOutput
-							class="size-5 drop-shadow-[0px_0px_10px_var(--node-color)]"
-							style={`color: ${visualData.color}`}
-						/>
-						<span class="text-main-300 truncate capitalize">{ioType}</span>
-					{/if}
+					<IconOutput
+						class="size-5 drop-shadow-[0px_0px_10px_var(--node-color)]"
+						style={`color: ${visualData.color}`}
+					/>
+					<span class="text-main-300 truncate capitalize">{ioType}</span>
 				</span>
 			</div>
 		{/snippet}

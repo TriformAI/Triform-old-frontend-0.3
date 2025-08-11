@@ -27,7 +27,7 @@
 						class={[
 							'mr-1 size-6 drop-shadow-[0px_0px_5px]',
 							componentData.resource === 'flow/v1'
-								? 'text-accent-400 drop-shadow-accent-500'
+								? 'text-complement-400 drop-shadow-complement-500'
 								: 'text-main-300 drop-shadow-main-300/50'
 						]}
 					/>

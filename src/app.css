@@ -76,6 +76,15 @@
 	--color-complement-900: oklch(0.386 0.063 188.416);
 	--color-complement-950: oklch(0.277 0.046 192.524);
 
+	/* tailwind: cyan */
+  --color-tertiary-50: oklch(0.984 0.019 200.873);
+  --color-tertiary-100: oklch(0.956 0.045 203.388);
+  --color-tertiary-200: oklch(0.917 0.08 205.041);
+  --color-tertiary-300: oklch(0.865 0.127 207.078);
+  --color-tertiary-400: oklch(0.789 0.154 211.53);
+  --color-tertiary-500: oklch(0.715 0.143 215.221);
+  --color-tertiary-600: oklch(0.609 0.126 221.723);
+
 	--color-success: oklch(0.696 0.17 162.48); /* emerald 500 */
 
 	--easing-circ: cubic-bezier(0.85, 0.09, 0.15, 0.91);

@@ -36,7 +36,7 @@
 		return {
 			action: {
 				icon: IconAction,
-				color: 'var(--color-main-300)',
+				color: 'var(--color-tertiary-300)',
 				shape: 'circle'
 			},
 			flow: {
@@ -47,7 +47,7 @@
 			},
 			agent: {
 				icon: IconAgent,
-				color: 'var(--color-accent-300)',
+				color: 'var(--color-accent-400)',
 				shape: 'circle'
 			}
 		}[type]
@@ -59,7 +59,7 @@
 	{id}
 	style={`--node-color: ${typeData.color}`}
 	class={twMerge([
-		'relative flex h-20 w-60 items-center justify-center border border-[var(--node-color)] p-2 transition-all',
+		'border-main-300 relative flex h-20 w-60 items-center justify-center border p-2 transition-all',
 		typeData.shape === 'circle' && 'rounded-full',
 		typeData.shape === 'square' && 'rounded-md',
 		borderClass,
