@@ -65,6 +65,7 @@
 		"@monaco-editor/loader": "^1.5.0",
 		"@neondatabase/serverless": "^1.0.1",
 		"@sveltejs/adapter-node": "^5.2.13",
+		"@tailwindcss/vite": "^4.1.11",
 		"@tolgee/svelte": "^6.2.7",
 		"@xyflow/svelte": "^1.2.2",
 		"balloon-css": "^1.2.0",
