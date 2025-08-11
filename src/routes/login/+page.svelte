@@ -6,7 +6,6 @@
 	import logo from '$lib/images/Logo.svg'
 	import DiscordIcon from '~icons/bxl/discord-alt'
 	import GithubIcon from '~icons/bxl/github'
-	import { PUBLIC_TRICORE_AUTH_URL } from '$env/static/public'
 	import { authClient } from '$lib/auth-client'
 
 	const providers = [
@@ -21,8 +20,6 @@
 			icon: GithubIcon
 		}
 	]
-
-	const apiUrl = PUBLIC_TRICORE_AUTH_URL
 
 	// Disable others
 	let chosenProvider = $state<string | null>(null)
