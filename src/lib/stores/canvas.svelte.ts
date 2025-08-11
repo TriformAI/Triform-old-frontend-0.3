@@ -250,27 +250,31 @@ export const getNodeByPath = (sourcePath: string[]): TriNode | undefined => {
 	return node
 }
 
+const rollbackContainer = (snapshot: NodeContainer) => {
+	if (isProject(snapshot)) {
+		if (!project) {
+			toast.error('No project found')
+			throw new Error('No project found')
+		}
+		project.spec = snapshot.spec
+		return
+	}
+	const parent = getNodeByPath(currentNodePath)?.spec as NodeContainer | undefined
+	if (!parent) {
+		toast.error('No parent container found')
+		throw new Error(`No parent container found for ${currentNodePath.join('/')}`)
+	}
+	parent.spec = snapshot.spec
+}
+
 // TODO: update the local component with the new one we get back from the api
-const saveContainer = async (snapshot: NodeContainer) => {
+export const saveContainer = async (snapshot: NodeContainer) => {
 	const container = getCurrentContainer()
 	const res = isProject(container) ? await saveProject(container) : await updateComponent(container)
 	if (!res.success) {
 		toast.error('There was an error saving the container')
 		console.log('failed', res.data)
-		if (isProject(snapshot)) {
-			if (!project) {
-				toast.error('No project found')
-				throw new Error('No project found')
-			}
-			project.spec = snapshot.spec
-			return res
-		}
-		const parent = getNodeByPath(currentNodePath)?.spec as NodeContainer | undefined
-		if (!parent) {
-			toast.error('No parent container found')
-			throw new Error(`No parent container found for ${currentNodePath.join('/')}`)
-		}
-		parent.spec = snapshot.spec
+		rollbackContainer(snapshot)
 	}
 	return res
 }
@@ -374,7 +378,7 @@ export const addEdge = async (source: EdgeConnection, target: EdgeConnection) =>
 	await refreshFlow()
 }
 
-export const deleteEdge = async (edgeId: Edge['id']) => {
+export const deleteEdge = async (edgeId: Edge['id'], save: boolean = true) => {
 	const edge = edgesStore.find(e => e.id === edgeId)
 	if (!edge || !edge.targetHandle) throw new Error(`Tried to remove non-existent edge ${edgeId}`)
 	const container = getCurrentContainer()
@@ -398,9 +402,10 @@ export const deleteEdge = async (edgeId: Edge['id']) => {
 	}
 
 	// TODO: revert if this fails
-	await saveContainer(snapshot)
-
-	await refreshFlow()
+	if (save) {
+		await saveContainer(snapshot)
+		await refreshFlow()
+	}
 }
 
 export const getBreadcrumbs = () => {

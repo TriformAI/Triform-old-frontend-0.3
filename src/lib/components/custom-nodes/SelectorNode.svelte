@@ -61,14 +61,12 @@
 		const node = sourceIsParent
 			? (container as ResolvedComponent)
 			: container.spec.nodes[data.sourceNode.id].spec
-		console.log('node', data.sourceNode.id, node)
 		if (!node) return [{}, {}]
 		let input: z.infer<typeof ioModel>['input']
 		// if it's an input node, we'll have to yoink the input from the input of the source node
 		if (data.sourceNode.type === 'input-node') input = node.spec.inputs[inputName]
 		// otherwise, it should come from the output of the source node
 		else {
-			// @ts-expect-error typescript gives up when there's a circular dependency
 			input = pick(node.spec.outputs[inputName], ['description', 'type'])
 		}
 		return [
@@ -112,7 +110,7 @@
 				toast.error('Name is required')
 				return
 			}
-			const newComponent = await createComponent(pendingComponent)
+			const newComponent = (await createComponent(pendingComponent)).data
 			await addNode(newComponent, getNode(id)!.position, nodeInput)
 		} catch (error) {
 			console.error(error)

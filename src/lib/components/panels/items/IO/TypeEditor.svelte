@@ -34,7 +34,8 @@
 <InputField
 	bind:value={updatedValue}
 	placeholder="Eg int, List[str], ..."
-	class="w-full font-mono text-sm"
+	class="font-mono text-sm"
+	containerClass="w-full"
 	{onblur}
 	{validationFn}
 	{readonly}

@@ -41,7 +41,7 @@
 		const flow = getFlowModel({})
 		flow.meta.name = name
 		try {
-			const newFlow = await createComponent(flow)
+			const newFlow = (await createComponent(flow)).data
 
 			await addNode(
 				newFlow,
