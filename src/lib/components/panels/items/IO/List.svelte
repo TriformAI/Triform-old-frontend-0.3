@@ -100,6 +100,10 @@
 			type: newPortType,
 			description: ''
 		}
+		if (type === 'output') {
+			component.spec[`${type}s`][newPortName].source = ''
+			component.spec[`${type}s`][newPortName].target = ''
+		}
 		isAddingPort = false
 		const res = await saveComponent()
 		if (!res.success) {
