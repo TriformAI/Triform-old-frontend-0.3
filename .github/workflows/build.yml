@@ -1,0 +1,45 @@
+name: Deploy
+
+on:
+  push:
+    tags:
+    - 'v*.*.*'
+  workflow_dispatch:
+
+env:
+  REGISTRY: europe-docker.pkg.dev
+  GKE_CLUSTER: stage
+  GKE_REGION: europe-west3
+  VITE_TOLGEE_API_URL: https://app.tolgee.io
+  VITE_TRICORE_URL: https://api.tricore.dev/v1
+  VITE_TRICORE_INTERNAL_URL: http://proxy:8080/v1
+  VITE_TRICORE_AUTH_URL: https://api.tricore.dev/v1
+  PUBLIC_TRICORE_AUTH_URL: https://api.tricore.dev/v1
+  NODE_ENV: production
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      id-token: write
+
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v4
+      with:
+        fetch-depth: 0
+
+    - name: Authenticate with Scaleway
+      id: auth
+      uses: docker/login-action@v3
+      with:
+        username: nologin
+        password: ${{ secrets.SCW_API_KEY }}
+        registry: rg.fr-par.scw.cloud/tf-dev # TODO: make this dynamic based on environment
+
+    - name: Build image
+      run: docker build . -t rg.fr-par.scw.cloud/tf-dev/nexus-frontend:latest --platform linux/amd64
+
+    - name: Push image
+      run: docker push rg.fr-par.scw.cloud/tf-dev/nexus-frontend:latest
