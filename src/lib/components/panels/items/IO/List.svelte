@@ -160,7 +160,7 @@
 				<InputField
 					required
 					bind:el={newPortNameEl}
-					bind:value={newPortName}
+					bind:value={() => newPortName, value => (newPortName = value.replace(/\s+/g, '_'))}
 					placeholder={`new_${type}`}
 					class="font-mono"
 				/>
