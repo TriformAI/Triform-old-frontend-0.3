@@ -3,6 +3,7 @@
 	import 'prism-code-editor/prism/languages/markdown'
 	import 'prism-code-editor/prism/languages/python'
 	import 'prism-code-editor/prism/languages/json'
+	import 'prism-code-editor/prism/languages/handlebars'
 
 	import 'prism-code-editor/layout.css'
 	import 'prism-code-editor/scrollbar.css'
@@ -18,8 +19,8 @@
 
 	interface Props {
 		value?: string
-		language: 'json' | 'md' | 'txt'
-		class: string | string[]
+		language: 'json' | 'md' | 'txt' | 'handlebars'
+		class?: string | string[]
 		wordWrap?: boolean
 		readOnly?: boolean
 		onUpdate?: (value: string) => void

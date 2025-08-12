@@ -41,13 +41,15 @@ export interface OpenPanelItems {
 	flow: string[]
 	action: string[]
 	endpoint: string[]
+	agent: string[]
 }
 
 const defaultOpenPanelItems: OpenPanelItems = {
 	project: [],
 	flow: [],
 	action: [],
-	endpoint: []
+	endpoint: [],
+	agent: []
 }
 
 function getPersistedOpenPanelItems(): OpenPanelItems {
@@ -60,7 +62,9 @@ function getPersistedOpenPanelItems(): OpenPanelItems {
 export const openPanelItems = $state<OpenPanelItems>(getPersistedOpenPanelItems())
 
 export function toggleOpenPanelItem(nodeType: keyof typeof openPanelItems, title: string) {
-	console.log('toggleOpenPanelItem', nodeType, title)
+	if (!(nodeType in openPanelItems)) {
+		openPanelItems[nodeType] = []
+	}
 
 	const openItemsForType = openPanelItems[nodeType]
 

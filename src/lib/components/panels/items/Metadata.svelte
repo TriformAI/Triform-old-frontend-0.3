@@ -1,6 +1,7 @@
 <script lang="ts">
 	import InputField from '$lib/components/atoms/InputField.svelte'
 	import TextField from '$lib/components/atoms/TextField.svelte'
+	import LightEditor from '$lib/components/atoms/LightEditor.svelte'
 	import { toast } from 'svelte-sonner'
 	import { debounce } from '$lib/utils/debounce'
 	import PanelItem from '../PanelItem.svelte'
@@ -41,6 +42,17 @@
 				oninput={debouncedSave}
 				bind:value={componentData.meta.intention}
 			/>
+
+			<div class="col-span-2">
+				<span class="input-title">Readme</span>
+				<LightEditor
+					language="md"
+					bind:value={componentData.spec.readme}
+					wordWrap={true}
+					class="bg-main-800  h-24 w-full rounded-md ps-6 pt-2.5 text-sm"
+					onUpdate={debouncedSave}
+				/>
+			</div>
 		</div>
 	</PanelItem>
 {/if}
