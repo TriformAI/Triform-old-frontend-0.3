@@ -54,7 +54,7 @@
 
 <div class={['grid gap-1', containerClass]}>
 	{#if label}
-		<label data-label for={id} class="text-sm font-medium">{label}</label>
+		<label data-label for={id} class="input-title">{label}</label>
 	{/if}
 	<div class="group flex flex-row-reverse items-center">
 		<input

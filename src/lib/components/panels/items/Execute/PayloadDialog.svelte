@@ -51,7 +51,7 @@
 				<InputField required label="Name" name="name" bind:value={name} />
 
 				<div>
-					<p class="mb-2 text-sm font-medium">Payload</p>
+					<p class="input-title mb-2">Payload</p>
 					<div class="bg-main-800/50 rounded-lg p-3">
 						<LightEditor
 							language="json"

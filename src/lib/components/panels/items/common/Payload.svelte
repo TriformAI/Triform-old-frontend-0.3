@@ -64,9 +64,10 @@
 
 		<div class="bg-main-800/50 rounded-lg p-3">
 			<div class=" -mt-1 mb-4 flex items-end justify-between">
-				<p class="text-sm font-medium">
+				<p class="input-title">
 					<span class="text-main-300">JSON Payload</span>
 				</p>
+
 				<button
 					aria-label="Save payload"
 					data-balloon-pos="left"

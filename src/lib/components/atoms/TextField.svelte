@@ -30,7 +30,7 @@
 </script>
 
 <label class={['grid gap-1', classes]}>
-	<span class="text-sm font-medium">{label}</span>
+	<span class="input-title">{label}</span>
 
 	<textarea
 		{name}
