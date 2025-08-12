@@ -51,7 +51,10 @@ export const getCurrentNodePath = () => currentNodePath
 export const getCurrentContainer = (): NodeContainer => {
 	const path = page.url.pathname.split('/')
 	// remove /project/projectId
-	const nodePath = path.slice(path.indexOf('project') + 2)
+	const projectIdx = path.indexOf('project')
+	// if we're exiting the canvas, just return the project to avoid breaking
+	if (projectIdx === -1) return project
+	const nodePath = path.slice(projectIdx + 2)
 	if (!project) {
 		toast.error('No project found')
 		throw new Error('No project found')
