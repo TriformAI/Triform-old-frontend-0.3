@@ -48,7 +48,7 @@
 			agent: {
 				icon: IconAgent,
 				color: 'var(--color-accent-400)',
-				shape: 'circle'
+				shape: 'square'
 			}
 		}[type]
 	})

@@ -7,6 +7,7 @@ export default defineConfig({
 	plugins: [
 		// @ts-expect-error expects plugin, but gets promise<plugin>
 		tailwindcss(),
+		// @ts-expect-error expects plugin, but gets promise<plugin>
 		sveltekit(),
 		// @ts-expect-error expects plugin, but gets promise<plugin>
 		Icons({

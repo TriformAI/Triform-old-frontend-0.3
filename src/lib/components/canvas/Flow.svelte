@@ -43,7 +43,7 @@
 	import { isAction, type resolvedProjectModel } from '$lib/schemas'
 	import type * as z from 'zod'
 	import IoNode from '../custom-nodes/IONode.svelte'
-
+	import AgentNode from '../custom-nodes/AgentNode.svelte'
 	const useSvelteFlow = svelteFlowHook()
 	const { fitView, screenToFlowPosition } = useSvelteFlow
 	export { fitView }
@@ -52,6 +52,7 @@
 	const nodeTypes: Record<NodeType | MetaNodeType, Component> = {
 		'action-node': ActionNode,
 		'flow-node': FlowNode,
+		'agent-node': AgentNode,
 		'selector-node': SelectorNode,
 		'loading-node': LoadingNode,
 		'create-node': CreateNode,

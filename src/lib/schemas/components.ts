@@ -16,7 +16,7 @@ const abstractComponentModel = z.strictObject({
 })
 
 export const ioModel = z.record(
-	z.string(),
+	z.string().nonempty('IO name is required'),
 	z.strictObject({
 		description: z.string().default(''),
 		type: z.union([jsonSchemaTypeModel, z.record(z.never(), z.never())])

@@ -64,19 +64,17 @@ export const deleteNode = {
 	}
 }
 
+const expandNode = {
+	label: 'Expand',
+	icon: IconExpand,
+	isDangerous: false,
+	onClick: async (node: CanvasNode) => {
+		if (!node) return
+		await goto(page.url.pathname + '/' + node.id)
+	}
+}
+
 // Populate map
 actionsMapStore.set('action-node', [getDebugData, deleteNode])
-actionsMapStore.set('flow-node', [
-	{
-		label: 'Expand',
-		icon: IconExpand,
-		isDangerous: false,
-		onClick: async (node: CanvasNode) => {
-			if (!node) return
-			await goto(page.url.pathname + '/' + node.id)
-		}
-	},
-
-	getDebugData,
-	deleteNode
-])
+actionsMapStore.set('flow-node', [expandNode, getDebugData, deleteNode])
+actionsMapStore.set('agent-node', [expandNode, getDebugData, deleteNode])

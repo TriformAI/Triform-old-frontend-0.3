@@ -23,6 +23,7 @@ import { type NodeContainer } from '$lib/types/flow'
 import { toast } from 'svelte-sonner'
 import type * as z from 'zod'
 import { clone } from '$lib/utils/clone'
+import { average } from '$lib/utils/average'
 
 let nodesStore = $state<CanvasNode[]>([])
 let edgesStore = $state<Edge[]>([])
@@ -80,32 +81,41 @@ export async function refreshFlow() {
 	console.log('nodes', nodes, 'edges', edges)
 
 	// add meta nodes
-	if (isFlow(container)) {
+	if (isFlow(container) || isAgent(container)) {
 		nodes.push({
 			id: `${container.id as Uuid}:input`,
 			type: 'input-node',
-			draggable: true,
-			position: container.spec.io_nodes.input,
+			draggable: isFlow(container),
+			position: isFlow(container)
+				? container.spec.io_nodes.input
+				: {
+						x: 0,
+						y: 0
+					},
 			data: {
 				props: { ...defaultProps }
 			}
 		})
-		nodes.push({
-			id: `${container.id as Uuid}:output`,
-			type: 'output-node',
-			draggable: true,
-			position: container.spec.io_nodes.output,
-			data: {
-				props: { ...defaultProps }
-			}
-		})
+		if ('io_nodes' in container.spec && 'output' in container.spec.io_nodes)
+			nodes.push({
+				id: `${container.id as Uuid}:output`,
+				type: 'output-node',
+				draggable: true,
+				position: container.spec.io_nodes.output,
+				data: {
+					props: { ...defaultProps }
+				}
+			})
 	}
 	if (isProject(container) || isAgent(container)) {
 		// find where to place the create node for agents and flow
 		// should be the last node, so added one step after the last node
 		const lastNode = nodes[nodes.length - 1]
 		let x = (lastNode?.position.x ?? 0) + nodeSize.x + gap
-		let y = lastNode?.position.y ?? 0
+		let y = (lastNode?.position.y ?? 0) + 8 // 8=temp offset till we fix the node layout
+		if (isAgent(container)) {
+			y += nodeSize.y + gap
+		}
 		if (x > maxWidth) {
 			x = 0
 			y += nodeSize.y + gap
@@ -139,6 +149,9 @@ export function parseNodes(root: NodeContainer) {
 			x = i * (nodeSize.x + gap)
 			if (x > maxWidth) {
 				x = 0
+				y += nodeSize.y + gap
+			}
+			if (isAgent(root)) {
 				y += nodeSize.y + gap
 			}
 		} else if ('position' in node) {

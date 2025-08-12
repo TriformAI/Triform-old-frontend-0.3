@@ -5,11 +5,12 @@
 	import { Handle, Position, useSvelteFlow as useSvelteFlowHook } from '@xyflow/svelte'
 
 	import IconFlow from '~icons/material-symbols/network-node'
-	import IconClose from '~icons/mdi/close'
 	import IconAction from '~icons/mdi/rhombus'
+	import IconAgent from '~icons/material-symbols/psychology-rounded'
+	import IconClose from '~icons/mdi/close'
 	import Button from '$lib/components/atoms/Button.svelte'
 	import type { UUID as Uuid } from 'crypto'
-	import { getFlowModel, getActionModel } from '$lib/nodeModels'
+	import { getFlowModel, getActionModel, getAgentModel } from '$lib/nodeModels'
 	import { createComponent } from '$lib/actions/components'
 	import type { Component, ResolvedComponent, ResolvedFlow } from '$lib/types/resources'
 	import { blur, slide } from 'svelte/transition'
@@ -96,6 +97,16 @@
 					pendingComponent.meta.name = 'Action'
 					setTimeout(focusInput, 50)
 				}
+			},
+			{
+				label: 'Agent',
+				value: 'agent',
+				icon: IconAgent,
+				handler: async () => {
+					pendingComponent = getAgentModel(sourceInput)
+					pendingComponent.meta.name = 'Agent'
+					setTimeout(focusInput, 50)
+				}
 			}
 		]
 	})
@@ -124,7 +135,7 @@
 		const node = getNode(id)
 		if (!node) return
 
-		// We cn use deleteElements here because this is a temporary node
+		// We can use deleteElements here because this is a temporary node
 		const _result = await deleteElements({ nodes: [node] })
 	}
 </script>
