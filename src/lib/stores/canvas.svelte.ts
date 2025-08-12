@@ -126,7 +126,7 @@ export async function refreshFlow() {
 		nodes.push({
 			id: `${container.id as Uuid}:create`,
 			type: 'create-node',
-			draggable: true,
+			draggable: false,
 			position: { x, y },
 			data: {
 				props: { ...defaultProps }
