@@ -38,8 +38,14 @@ jobs:
         password: ${{ secrets.SCW_API_KEY }}
         registry: rg.fr-par.scw.cloud/tf-dev # TODO: make this dynamic based on environment
 
-    - name: Build image
-      run: docker build . -t rg.fr-par.scw.cloud/tf-dev/nexus-frontend:latest --platform linux/amd64
+    - name: Set up Docker Buildx
+      uses: docker/setup-buildx-action@v3
 
-    - name: Push image
-      run: docker push rg.fr-par.scw.cloud/tf-dev/nexus-frontend:latest
+    - name: Build and push Docker image
+      uses: docker/build-push-action@v5
+      with:
+        context: .
+        push: true
+        tags: rg.fr-par.scw.cloud/tf-dev/nexus-frontend:latest
+        cache-from: type=gha
+        cache-to: type=gha,mode=max
