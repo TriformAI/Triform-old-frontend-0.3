@@ -13,9 +13,8 @@ export const handleBeforeDelete = async ({ nodes }: { nodes: (Node | TemporaryNo
 		return true
 	}
 
-	// Don't allow deleting of endpoint nodes
-	if (allNodes.find(node => node.type === 'endpoint-node')) {
-		toast.error("You can't delete an endpoint node.")
+	// Don't allow deleting of these nodes
+	if (allNodes.find(node => ['endpoint-node', 'input-node', 'output-node'].includes(node.type))) {
 		return false
 	}
 
