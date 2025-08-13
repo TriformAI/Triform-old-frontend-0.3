@@ -10,8 +10,11 @@
 	let { class: classes }: { class?: string } = $props()
 
 	const loaderState = new LoaderState()
+
 	let loadedSoFar = $state(0)
+
 	const loadedComponents = $state<Component[]>([])
+
 	// super rudimentary search for now
 	const filteredComponents = $derived(
 		loadedComponents.filter(
@@ -32,8 +35,9 @@
 
 <!-- Keep these, needed for preview of components on drag -->
 <div class="absolute left-[-999em]">
-	<InnerNode type="flow" id="flow-preview" />
-	<InnerNode type="action" id="action-preview" />
+	<InnerNode type="flow" id="flow-preview" name="Flow" />
+	<InnerNode type="action" id="action-preview" name="Action" />
+	<InnerNode type="agent" id="agent-preview" name="Agent" />
 </div>
 
 <div

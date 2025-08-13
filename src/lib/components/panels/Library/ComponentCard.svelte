@@ -1,11 +1,10 @@
 <script lang="ts">
 	import type { Component } from '$lib/types/resources'
-	import DescriptionIcon from '~icons/material-symbols/description-rounded'
-	import InputIcon from '~icons/material-symbols/input-circle-rounded'
-	import ArrowRightIcon from '~icons/material-symbols/arrow-right-alt-rounded'
-	import DragIcon from '~icons/material-symbols/drag-indicator'
-	import FlowIcon from '~icons/material-symbols/network-node'
-	import ActionIcon from '~icons/mdi/rhombus'
+	import IconDescription from '~icons/material-symbols/description-rounded'
+	import IconDrag from '~icons/material-symbols/drag-indicator'
+	import IconFlow from '~icons/material-symbols/network-node'
+	import IconAgent from '~icons/material-symbols/psychology-rounded'
+	import IconAction from '~icons/mdi/rhombus'
 
 	interface Props {
 		component: Component
@@ -15,18 +14,32 @@
 
 	const meta = $derived(component.meta)
 
+	const nodeType = $derived(component.resource.split('/')[0])
+
 	function handleDragStart(event: DragEvent) {
 		if (event.dataTransfer) {
-			const preview = document.getElementById(
-				component.resource === 'flow/v1' ? 'flow-preview' : 'action-preview'
-			)!
+			const preview = document.getElementById(`${nodeType}-preview`)!
 			event.dataTransfer.setData('text/plain', component.id)
 			event.dataTransfer.setDragImage(preview, 40, 40)
 			event.dataTransfer.effectAllowed = 'copy'
 		}
 	}
 
-	const Icon = $derived(component.resource === 'flow/v1' ? FlowIcon : ActionIcon)
+	const Icon = $derived.by(() => {
+		return {
+			flow: IconFlow,
+			action: IconAction,
+			agent: IconAgent
+		}[nodeType]
+	})
+
+	const iconClasses = $derived.by(() => {
+		return {
+			flow: 'text-complement-400 drop-shadow-complement-500',
+			action: 'text-main-300 drop-shadow-main-300/40',
+			agent: 'text-accent-400 drop-shadow-accent-500'
+		}[nodeType]
+	})
 </script>
 
 <div
@@ -41,30 +54,20 @@
 		'hover:border-main-700 hover:bg-main-800'
 	]}
 >
-	<DragIcon
+	<IconDrag
 		class="group-hover/card:text-main-200 text-main-400 mt-1 mr-2 -ml-2 size-4 shrink-0 transition"
 	/>
 
 	<div>
 		<h3 class="text-main-200 mb-2">
-			<Icon
-				class={[
-					'me-1.5 inline-block size-5 drop-shadow-[0px_0px_7px]',
-					component.resource === 'flow/v1'
-						? 'text-complement-400 drop-shadow-complement-500'
-						: 'text-main-300 drop-shadow-main-300/40'
-				]}
-			/>
+			<Icon class={['me-1.5 inline-block size-5 drop-shadow-[0px_0px_7px]', iconClasses]} />
 			{meta.name}
 		</h3>
 
 		<div class="[&_svg]:text-main-300 ms-0.5 flex flex-col gap-1 text-sm">
-			<div class="text-main-400 flex gap-2">
-				<DescriptionIcon class="flex-shrink-0" />
-				<p class="truncate-lines-2 ms-1 -mt-1">
-					{meta.intention || 'No intention'}
-				</p>
-			</div>
+			<p class="truncate-lines-2 text-main-400 ms-7 -mt-1">
+				{meta.intention || 'No intention'}
+			</p>
 
 			<!-- <div class="text-main-400 grid max-w-full grid-cols-[auto_auto] gap-2">
 				<p class="truncate">

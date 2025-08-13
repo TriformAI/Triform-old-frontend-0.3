@@ -7,18 +7,18 @@
 
 	const {
 		type,
+		name,
 		selected = false,
 		class: classes,
 		id,
-		openFn,
-		data
+		openFn
 	}: {
 		type: 'action' | 'flow' | 'agent'
+		name: string
 		selected?: boolean
 		class?: string
 		id?: string
 		openFn?: () => void
-		data: NodeData
 	} = $props()
 
 	const borderClass = $derived.by(() => {
@@ -75,6 +75,6 @@
 			class="size-5 drop-shadow-[0px_0px_10px_var(--node-color)]"
 			style={`color: ${typeData.iconColor ?? typeData.color}`}
 		/>
-		<span class="truncate">{data?.trinode?.spec.meta.name || 'Untitled'}</span>
+		<span class="truncate">{name || 'Untitled'}</span>
 	</span>
 </svelte:element>
