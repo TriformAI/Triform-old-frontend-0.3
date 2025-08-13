@@ -81,8 +81,6 @@ export async function refreshFlow() {
 	// parse in all the nodes into the nodesStore
 	const { nodes, edges } = parseNodes(container)
 
-	console.log('nodes', nodes, 'edges', edges)
-
 	// add meta nodes
 	if (isFlow(container) || isAgent(container)) {
 		nodes.push({
