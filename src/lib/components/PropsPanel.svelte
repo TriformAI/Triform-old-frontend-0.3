@@ -1,7 +1,7 @@
 <script lang="ts">
 	import Project from '$lib/components/panels/Project.svelte'
 	import { selected } from '$lib/stores/panel.svelte'
-	import { getCurrentContainer } from '$lib/stores/canvas.svelte'
+	import { getCurrentContainer, getProject } from '$lib/stores/canvas.svelte'
 	import { twMerge } from 'tailwind-merge'
 	import PanelWrapper from './panels/PanelWrapper.svelte'
 	import { isProject } from '$lib/schemas'
@@ -18,7 +18,7 @@
 >
 	{#if selected.isMultiple}
 		<p class="mx-3">Multiple nodes selected</p>
-	{:else if isProject(getCurrentContainer()) && !selected.node}
+	{:else if getProject() && isProject(getCurrentContainer()) && !selected.node}
 		<Project />
 	{:else}
 		<PanelWrapper />

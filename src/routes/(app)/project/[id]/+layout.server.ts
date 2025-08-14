@@ -11,14 +11,20 @@ export async function load({ locals, params, depends }) {
 	const id = params.id
 	if (!id) return fail(404, { message: 'Project not found' })
 
-	const [{ data: project }, { data: modifiers }, { data: components }, { data: ingressTokens }] =
-		await Promise.all([
-			locals.api.get<{ data: z.infer<typeof resolvedProjectModel> }>(`projects/${id}?depth=999`),
-			locals.api.get<{ data: Modifier[] }>(`modifiers?full=true`),
-			//locals.api.get<Payload[]>(`payloads?full=true`),
-			locals.api.get<{ data: Component[] }>(`components?full=true`),
-			locals.api.get<{ data: z.infer<typeof ingressTokenModel>[] }>(`tokens/ingress`)
-		])
+	const [
+		{ data: project, success: projectSuccess },
+		{ data: modifiers },
+		{ data: components },
+		{ data: ingressTokens }
+	] = await Promise.all([
+		locals.api.get<{ data: z.infer<typeof resolvedProjectModel> }>(`projects/${id}?depth=999`),
+		locals.api.get<{ data: Modifier[] }>(`modifiers?full=true`),
+		//locals.api.get<Payload[]>(`payloads?full=true`),
+		locals.api.get<{ data: Component[] }>(`components?full=true`),
+		locals.api.get<{ data: z.infer<typeof ingressTokenModel>[] }>(`tokens/ingress`)
+	])
+
+	if (!projectSuccess) throw new Error('Project not found')
 
 	console.log('project', project)
 
