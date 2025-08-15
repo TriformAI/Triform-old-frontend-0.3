@@ -58,7 +58,7 @@
 
 <div
 	class={[
-		'border-main-500 relative grid h-20 overflow-hidden rounded-xl border border-dashed transition-all ease-(--easing-circ) *:col-start-1 *:row-start-1',
+		'border-main-500 relative grid h-20 overflow-hidden rounded-md border border-dashed transition-all ease-(--easing-circ) *:col-start-1 *:row-start-1',
 		isSelectMode ? 'w-max' : 'w-20'
 	]}
 	use:clickOutside={{
@@ -78,12 +78,12 @@
 		/>
 	</button>
 
-	<div class={['flex gap-2 leading-none', isSelectMode ? 'opacity-100' : 'opacity-0']}>
+	<div class={['flex p-1 leading-none', isSelectMode ? 'opacity-100' : 'opacity-0']}>
 		{#each filteredNodeTypes as nodeType}
 			<button
 				onclick={() => create(nodeType.type)}
 				type="button"
-				class="group hover:bg-main-500/10 my-1 grid w-20 place-items-center rounded-lg transition"
+				class="group hover:bg-main-500/10 grid w-20 place-items-center rounded-sm transition"
 			>
 				<nodeType.icon
 					style={`color: ${nodeType.iconColor}`}
