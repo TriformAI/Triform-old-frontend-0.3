@@ -8,6 +8,7 @@
 		onResizeEnd?: () => void
 		size: number
 		gutterSize?: number
+		side?: 'left' | 'right' | 'top' | 'bottom'
 	}
 
 	let {
@@ -16,7 +17,8 @@
 		gridContainer,
 		onResizeEnd,
 		size = $bindable(),
-		gutterSize = 10
+		gutterSize = 10,
+		side = 'right'
 	}: Props = $props()
 
 	const DEFAULT_SIZE = axis === 'x' ? 500 : 200
@@ -34,21 +36,22 @@
 	let lastMouseX = $state(0)
 	let lastMouseY = $state(0)
 	let direction = $state<'left' | 'right' | 'up' | 'down' | null>(null)
+	let initialContainerRect = $state<DOMRect>()
 
 	const isMinified = $derived(size <= TEASE_SIZE)
 
 	function handleResize(event: MouseEvent) {
 		isResizing = true
-
-		// Initialize the starting mouse position
 		lastMouseX = event.clientX
 		lastMouseY = event.clientY
 		direction = null
 
+		// Freeze the starting rect
+		initialContainerRect = gridContainer.getBoundingClientRect()
+
 		document.addEventListener('mousemove', resize)
 		document.addEventListener('mouseup', () => {
 			onResizeEnd?.()
-
 			isResizing = false
 			direction = null
 			document.removeEventListener('mousemove', resize)
@@ -57,17 +60,13 @@
 
 	function resize(event: MouseEvent) {
 		if (!isResizing || !gridContainer) return
-		if (size < MINIFIED_SIZE) return
 
-		// Calculate direction based on mouse movement
 		updateDirection(event)
 
 		axis === 'x' ? resizeX(event) : resizeY(event)
 
-		// Update last mouse position for next calculation
 		lastMouseX = event.clientX
 		lastMouseY = event.clientY
-
 		lastDraggedSize = size
 
 		persistSize()
@@ -93,20 +92,34 @@
 	}
 
 	function resizeX(event: MouseEvent) {
-		if (size < MIN_SIZE_THRESHOLD && direction === 'right') {
-			transitionToSize(MINIFIED_SIZE)
-		} else {
-			const containerRect = gridContainer.getBoundingClientRect()
-			size = containerRect.right - event.clientX
+		const rect = initialContainerRect
+
+		if (side === 'right' && rect) {
+			if (size < MIN_SIZE_THRESHOLD && direction === 'right') {
+				transitionToSize(MINIFIED_SIZE)
+				return
+			}
+			size = rect.right - event.clientX
+		} else if (side === 'left' && rect) {
+			if (size < MIN_SIZE_THRESHOLD && direction === 'left') {
+				transitionToSize(MINIFIED_SIZE)
+				return
+			}
+			size = event.clientX - rect.left
 		}
 	}
 
 	function resizeY(event: MouseEvent) {
-		if (size < 100 && direction === 'down') {
+		const containerRect = gridContainer.getBoundingClientRect()
+
+		if (size < MIN_SIZE_THRESHOLD && direction === 'down') {
 			transitionToSize(MINIFIED_SIZE)
 		} else {
-			const containerRect = gridContainer.getBoundingClientRect()
-			size = containerRect.bottom - event.clientY
+			if (side === 'bottom') {
+				size = containerRect.bottom - event.clientY
+			} else if (side === 'top') {
+				size = event.clientY - containerRect.top
+			}
 		}
 	}
 

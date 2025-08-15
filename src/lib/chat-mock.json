@@ -1,0 +1,99 @@
+[
+  {
+    "id": "123-1",
+    "type": "text_message_started",
+    "data": {
+      "role": "user",
+      "context": {
+        "@selectedNode": {
+          "type": "node"
+        }
+      }
+    }
+  },
+  {
+    "id": "123-2",
+    "type": "text_message_content",
+    "sourceId": "123-1",
+    "data": {
+      "delta": "Hello Mr Sir, can you please build a hackernews scraper for me?"
+    }
+  },
+  {
+    "id": "123-3",
+    "type": "text_message_end",
+    "sourceId": "123-1",
+    "data": {}
+  },
+  {
+    "id": "123-4",
+    "type": "run_started",
+    "data": {}
+  },
+  {
+    "id": "123-5",
+    "type": "text_message_started",
+    "runId": "123-4",
+    "data": {
+      "role": "assistant"
+    }
+  },
+  {
+    "id": "123-6",
+    "type": "text_message_content",
+    "sourceId": "123-5",
+    "runId": "123-4",
+    "data": {
+      "delta": "I'll need to use the scraper component to build the scraper. I'll also need to use the database component to store the data."
+    }
+  },
+  {
+    "id": "123-7",
+    "type": "text_message_end",
+    "sourceId": "123-5",
+    "runId": "123-4",
+    "data": {}
+  },
+  {
+    "id": "123-8",
+    "type": "step_started",
+    "runId": "123-4",
+    "data": {
+      "title": "Building hackernews scraper"
+    }
+  },
+  {
+    "id": "123-9",
+    "type": "step_started",
+    "parentId": "123-8",
+    "runId": "123-4",
+    "data": {
+      "title": "Scoring hackernews"
+    }
+  },
+  {
+    "id": "123-10",
+    "type": "step_completed",
+    "parentId": "123-8",
+    "sourceId": "123-9",
+    "runId": "123-4",
+    "data": {
+      "title": "Finished scoring"
+    }
+  },
+  {
+    "id": "123-11",
+    "type": "step_completed",
+    "sourceId": "123-8",
+    "runId": "123-4",
+    "data": {
+      "title": "Finished building"
+    }
+  },
+  {
+    "id": "123-12",
+    "type": "run_completed",
+    "sourceId": "123-4",
+    "data": {}
+  }
+]

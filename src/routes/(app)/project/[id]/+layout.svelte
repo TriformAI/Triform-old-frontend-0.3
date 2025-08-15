@@ -17,6 +17,7 @@
 	import type * as z from 'zod'
 	import { projectModel, resolvedProjectModel } from '$lib/schemas'
 	import { ingressTokens } from '$lib/stores/ingressTokens.svelte.js'
+	import Chat from '$lib/components/Chat/Chat.svelte'
 
 	const { data, children } = $props()
 
@@ -32,6 +33,7 @@
 		console.log('setting project', page.data.project)
 		setProject(page.data.project as z.infer<typeof resolvedProjectModel>)
 	})
+
 	$effect.pre(() => {
 		const ref = page.data.ingressTokens
 		untrack(() => {
@@ -41,11 +43,16 @@
 	})
 
 	const DEFAULT_PROPS_PANEL_WIDTH = 600
+	const DEFAULT_CHAT_PANEL_WIDTH = 300
 	const DEFAULT_COMPONENT_PANEL_HEIGHT = 180
 	const GUTTER_SIZE = 8
 
 	let propsPanelWidth = $state(
 		Number(localStorage.getItem('propsPanelWidth') || DEFAULT_PROPS_PANEL_WIDTH)
+	)
+
+	let chatPanelWidth = $state(
+		Number(localStorage.getItem('chatPanelWidth') || DEFAULT_CHAT_PANEL_WIDTH)
 	)
 
 	let componentPanelHeight = $state(
@@ -64,11 +71,28 @@
 		<SvelteFlowProvider>
 			<div
 				bind:this={gridContainer}
-				style={`grid-template-columns: 1fr ${GUTTER_SIZE}px ${propsPanelWidth}px; grid-template-rows: 1fr ${GUTTER_SIZE}px ${componentPanelHeight}px`}
-				class={`bg-main-850 grid h-full pt-1 ease-(--easing-circ)`}
+				style={`grid-template-columns: ${chatPanelWidth}px ${GUTTER_SIZE}px 1fr ${GUTTER_SIZE}px ${propsPanelWidth}px; grid-template-rows: 1fr ${GUTTER_SIZE}px ${componentPanelHeight}px`}
+				class={`bg-main-850 grid h-full px-2 pt-1 pb-2 ease-(--easing-circ)`}
 			>
+				<Chat />
+
+				<GridResizerHandle
+					name="chatPanel"
+					axis="x"
+					side="left"
+					bind:size={chatPanelWidth}
+					gutterSize={GUTTER_SIZE}
+					{gridContainer}
+					onResizeEnd={debounce(() => {
+						flowComponent?.fitView({
+							maxZoom: 1,
+							duration: 500
+						})
+					}, 300)}
+				/>
+
 				<div
-					class="bg-main-900 border-main-800 flow-container ms-2 grid place-items-center overflow-hidden border"
+					class="bg-main-900 border-main-800 flow-container grid place-items-center overflow-hidden border"
 				>
 					{#key page.url.pathname}
 						<Flow bind:this={flowComponent} />
@@ -78,6 +102,7 @@
 				<GridResizerHandle
 					name="propsPanel"
 					axis="x"
+					side="right"
 					bind:size={propsPanelWidth}
 					gutterSize={GUTTER_SIZE}
 					{gridContainer}
@@ -94,6 +119,7 @@
 				<GridResizerHandle
 					name="componentsLibPanel"
 					axis="y"
+					side="bottom"
 					bind:size={componentPanelHeight}
 					gutterSize={GUTTER_SIZE}
 					{gridContainer}
