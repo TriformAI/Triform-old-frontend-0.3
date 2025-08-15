@@ -5,6 +5,7 @@
  */
 
 import * as z from 'zod'
+import * as z3 from 'zod/v3'
 
 // Primitive types
 const primitiveTypeSchema = z.object({
@@ -198,6 +199,54 @@ const parseTypeParameters = (params: string): string[] => {
 }
 
 export type ValidationResult = { error: string | undefined }
+
+export const jsonSchemaTypeToZod = (
+	typeModel: z.infer<typeof jsonSchemaTypeModel> | Record<string, never>
+): z.ZodTypeAny => {
+	// Handle empty object (no type information) - return z.unknown()
+	if (Object.keys(typeModel).length === 0) {
+		return z.unknown()
+	}
+
+	const type = typeModel as z.infer<typeof jsonSchemaTypeModel>
+
+	switch (type.type) {
+		case 'string':
+			return z.string()
+		case 'number':
+			return z.number()
+		case 'boolean':
+			return z.boolean()
+		case 'null':
+			return z.null()
+		case 'array':
+			if (type.items) {
+				const itemSchema = jsonSchemaTypeToZod(type.items)
+				return z.array(itemSchema)
+			}
+			// Generic array with unknown items
+			return z.array(z.unknown())
+		case 'object':
+			if (type.properties) {
+				// Object with specific properties
+				const shape: Record<string, z.ZodTypeAny> = {}
+				for (const [key, value] of Object.entries(type.properties)) {
+					shape[key] = jsonSchemaTypeToZod(value)
+				}
+				return z.object(shape)
+			}
+			if (type.additionalProperties) {
+				// Object with dynamic keys (record)
+				const valueSchema = jsonSchemaTypeToZod(type.additionalProperties)
+				return z.record(z.string(), valueSchema)
+			}
+			// Generic object
+			return z.record(z.string(), z.unknown())
+		default:
+			// Fallback for unknown types
+			return z.unknown()
+	}
+}
 
 export const validatePythonTypeString = (
 	pythonType: string
