@@ -1,10 +1,7 @@
 <script lang="ts">
 	import type { Component } from '$lib/types/resources'
-	import IconDescription from '~icons/material-symbols/description-rounded'
 	import IconDrag from '~icons/material-symbols/drag-indicator'
-	import IconFlow from '~icons/material-symbols/network-node'
-	import IconAgent from '~icons/material-symbols/psychology-rounded'
-	import IconAction from '~icons/mdi/rhombus'
+	import { nodeTypesDict, type NodeType } from '$lib/constants/nodeTypes'
 
 	interface Props {
 		component: Component
@@ -14,7 +11,10 @@
 
 	const meta = $derived(component.meta)
 
-	const nodeType = $derived(component.resource.split('/')[0])
+	const nodeType = $derived(component.resource.split('/')[0]) as NodeType
+
+	const Icon = $derived(nodeTypesDict[nodeType].icon)
+	const iconClasses = $derived(nodeTypesDict[nodeType].iconClasses)
 
 	function handleDragStart(event: DragEvent) {
 		if (event.dataTransfer) {
@@ -24,22 +24,6 @@
 			event.dataTransfer.effectAllowed = 'copy'
 		}
 	}
-
-	const Icon = $derived.by(() => {
-		return {
-			flow: IconFlow,
-			action: IconAction,
-			agent: IconAgent
-		}[nodeType]
-	})
-
-	const iconClasses = $derived.by(() => {
-		return {
-			flow: 'text-complement-400 drop-shadow-complement-500',
-			action: 'text-main-300 drop-shadow-main-300/40',
-			agent: 'text-accent-400 drop-shadow-accent-500'
-		}[nodeType]
-	})
 </script>
 
 <div

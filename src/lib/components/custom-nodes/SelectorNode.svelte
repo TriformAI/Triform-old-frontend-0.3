@@ -4,9 +4,7 @@
 
 	import { Handle, Position, useSvelteFlow as useSvelteFlowHook } from '@xyflow/svelte'
 
-	import IconFlow from '~icons/material-symbols/network-node'
-	import IconAction from '~icons/mdi/rhombus'
-	import IconAgent from '~icons/material-symbols/psychology-rounded'
+	import { nodeTypesDict } from '$lib/constants/nodeTypes'
 	import IconClose from '~icons/mdi/close'
 	import Button from '$lib/components/atoms/Button.svelte'
 	import type { UUID as Uuid } from 'crypto'
@@ -79,9 +77,7 @@
 	const componentTypes = $derived.by(() => {
 		return [
 			{
-				label: 'Flow',
-				value: 'flow',
-				icon: IconFlow,
+				...nodeTypesDict.flow,
 				handler: async () => {
 					pendingComponent = getFlowModel(sourceInput)
 					pendingComponent!.meta.name = 'Flow'
@@ -89,9 +85,7 @@
 				}
 			},
 			{
-				label: 'Action',
-				value: 'action',
-				icon: IconAction,
+				...nodeTypesDict.action,
 				handler: async () => {
 					pendingComponent = getActionModel(sourceInput)
 					pendingComponent.meta.name = 'Action'
@@ -99,9 +93,7 @@
 				}
 			},
 			{
-				label: 'Agent',
-				value: 'agent',
-				icon: IconAgent,
+				...nodeTypesDict.agent,
 				handler: async () => {
 					pendingComponent = getAgentModel(sourceInput)
 					pendingComponent.meta.name = 'Agent'

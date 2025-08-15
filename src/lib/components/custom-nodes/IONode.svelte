@@ -2,10 +2,9 @@
 	import { getCurrentContainer } from '$lib/stores/canvas.svelte'
 	import type { MetaNodeType } from '$lib/types/canvas'
 	import NodeContainer from './NodeContainer.svelte'
-	import IconFlow from '~icons/material-symbols/network-node'
-	import IconAgent from '~icons/material-symbols/psychology-rounded'
 	import { isAgent, isFlow } from '$lib/schemas'
 	import IconOutput from '~icons/material-symbols/output-circle-rounded'
+	import { nodeTypes, nodeTypesDict } from '$lib/constants/nodeTypes'
 
 	const {
 		type
@@ -16,16 +15,8 @@
 	const container = $derived(getCurrentContainer())
 
 	const visualData = $derived.by(() => {
-		if (isFlow(container))
-			return {
-				icon: IconFlow,
-				color: 'var(--color-complement-500)'
-			}
-		if (isAgent(container))
-			return {
-				icon: IconAgent,
-				color: 'var(--color-accent-500)'
-			}
+		if (isFlow(container)) return nodeTypesDict.flow
+		if (isAgent(container)) return nodeTypesDict.agent
 	})
 
 	const ioType = $derived(type.split('-')[0]) as 'input' | 'output'

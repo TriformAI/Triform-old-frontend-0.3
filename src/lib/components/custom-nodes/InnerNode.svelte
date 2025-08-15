@@ -1,9 +1,6 @@
 <script lang="ts">
-	import IconAction from '~icons/mdi/rhombus'
-	import IconFlow from '~icons/material-symbols/network-node'
-	import IconAgent from '~icons/material-symbols/psychology-rounded'
 	import { twMerge } from 'tailwind-merge'
-	import type { NodeData } from '$lib/types/canvas'
+	import { nodeTypesDict, type NodeType } from '$lib/constants/nodeTypes'
 
 	const {
 		type,
@@ -13,7 +10,7 @@
 		id,
 		openFn
 	}: {
-		type: 'action' | 'flow' | 'agent'
+		type: NodeType
 		name: string
 		selected?: boolean
 		class?: string
@@ -21,37 +18,7 @@
 		openFn?: () => void
 	} = $props()
 
-	const borderClass = $derived.by(() => {
-		return ''
-		// if (!nodeState) return ''
-
-		// return {
-		// 	success: 'border-emerald-500',
-		// 	error: 'border-red-500',
-		// 	running: 'border-accent-500'
-		// }[nodeState]
-	})
-
-	const typeData = $derived.by(() => {
-		return {
-			action: {
-				icon: IconAction,
-				color: 'var(--color-tertiary-300)',
-				shape: 'circle'
-			},
-			flow: {
-				icon: IconFlow,
-				color: 'var(--color-complement-300)',
-				iconColor: 'var(--color-complement-500)',
-				shape: 'square'
-			},
-			agent: {
-				icon: IconAgent,
-				color: 'var(--color-accent-400)',
-				shape: 'square'
-			}
-		}[type]
-	})
+	const typeData = $derived(nodeTypesDict[type])
 </script>
 
 <svelte:element
@@ -62,7 +29,6 @@
 		'border-main-500 relative flex h-20 w-60 items-center justify-center border p-2 transition-all',
 		typeData.shape === 'circle' && 'rounded-full',
 		typeData.shape === 'square' && 'rounded-md',
-		borderClass,
 		classes
 	])}
 	style:background-color={selected
@@ -73,7 +39,7 @@
 	<span class="flex flex-row items-center justify-center gap-3">
 		<typeData.icon
 			class="size-5 drop-shadow-[0px_0px_10px_var(--node-color)]"
-			style={`color: ${typeData.iconColor ?? typeData.color}`}
+			style={`color: ${typeData.iconColor}`}
 		/>
 		<span class="truncate">{name || 'Untitled'}</span>
 	</span>

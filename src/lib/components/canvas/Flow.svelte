@@ -1,9 +1,7 @@
 <script lang="ts">
 	import ActionNode from '$lib/components/custom-nodes/ActionNode.svelte'
-	import EndpointNode from '$lib/components/custom-nodes/EndpointNode.svelte'
 	import FlowNode from '$lib/components/custom-nodes/FlowNode.svelte'
 	import LoadingNode from '$lib/components/custom-nodes/LoadingNode.svelte'
-	import ParentNode from '$lib/components/custom-nodes/ParentNode.svelte'
 	import SelectorNode from '$lib/components/custom-nodes/SelectorNode.svelte'
 	import CreateNode from '$lib/components/custom-nodes/CreateNode.svelte'
 	import Edge from './Edge.svelte'
