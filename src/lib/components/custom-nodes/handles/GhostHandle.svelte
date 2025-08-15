@@ -14,8 +14,8 @@
 		id={`ghost-${type}`}
 		{type}
 		position={type === 'source' ? Position.Bottom : Position.Top}
-		class="!bg-main-600 z-10 flex size-6! items-center justify-center rounded-full !border-none p-1.5"
+		class="!bg-main-700 !border-main-400 z-10 flex size-6! items-center justify-center rounded-full border !border-dashed p-1.5"
 	>
-		<div class="bg-main-400 h-full w-full rounded-full"></div>
+		<div class="bg-main-300 h-full w-full rounded-full"></div>
 	</Handle>
 </div>
