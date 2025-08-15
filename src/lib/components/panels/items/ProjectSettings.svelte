@@ -1,13 +1,8 @@
 <script lang="ts">
 	import InputField from '$lib/components/atoms/InputField.svelte'
-	import TextField from '$lib/components/atoms/TextField.svelte'
-	import Button from '$lib/components/atoms/Button.svelte'
-	import { toast } from 'svelte-sonner'
 	import { debounce } from '$lib/utils/debounce'
-	import { clone } from '$lib/utils/clone'
 	import PanelItem from '../PanelItem.svelte'
 	import { saveProject } from '$lib/actions/project'
-	import { createFormHandler } from '$lib/stores/formHandler.svelte'
 	import type { z } from 'zod'
 	import type { resolvedProjectModel } from '$lib/schemas'
 	import { getVisibleComponent } from '$lib/stores/canvas.svelte'
@@ -25,11 +20,19 @@
 </script>
 
 <PanelItem {nodeId} title="Project Settings" forceOpen={true}>
-	<InputField
-		required
-		label="Name"
-		name="name"
-		bind:value={componentData.meta.name}
-		oninput={debouncedSave}
-	/>
+	<div class="flex flex-col gap-y-4">
+		<InputField
+			label="Name"
+			name="name"
+			bind:value={componentData.meta.name}
+			oninput={debouncedSave}
+			required
+		/>
+		<InputField
+			label="MCP Server"
+			value={`https://${document.location.host}/api/projects/${componentData.id}/mcp`}
+			oninput={debouncedSave}
+			readonly
+		/>
+	</div>
 </PanelItem>
