@@ -27,6 +27,7 @@
 	style={`--node-color: ${typeData.color}`}
 	class={twMerge([
 		'border-main-500 relative flex h-20 w-60 items-center justify-center border p-2 transition-all',
+		'bg-main-900/20 backdrop-blur-sm',
 		typeData.shape === 'circle' && 'rounded-full',
 		typeData.shape === 'square' && 'rounded-md',
 		classes
