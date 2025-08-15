@@ -1,100 +1,100 @@
 <script lang="ts">
-	import InputField from '../atoms/InputField.svelte'
 	import AddIcon from '~icons/material-symbols/add-rounded'
-	import RightIcon from '~icons/material-symbols/arrow-right-alt-rounded'
+	import { clickOutside } from '$lib/utils/clickOutside'
+	import { getFlowModel, getActionModel, getAgentModel } from '$lib/nodeModels'
 	import { createComponent } from '$lib/actions/components'
 	import { addNode } from '$lib/stores/canvas.svelte'
-	import { getFlowModel } from '$lib/nodeModels'
+
+	import { nodeTypes, type NodeType } from '$lib/constants/nodeTypes'
 	import { toast } from 'svelte-sonner'
-	import { clickOutside } from '$lib/utils/clickOutside'
 
-	const props = $props()
+	interface Props {
+		positionAbsoluteX: number
+		positionAbsoluteY: number
+		data: { activeNodeTypes: NodeType[] }
+	}
 
-	let name = $state('')
-	let inputRef = $state<HTMLInputElement>()
-	let isEditing = $state(false)
+	const { positionAbsoluteX, positionAbsoluteY, data }: Props = $props()
+
+	let isSelectMode = $state(false)
 	let isCreating = $state(false)
 
-	function startEditing() {
-		isEditing = true
-		setTimeout(() => {
-			inputRef?.focus()
-			inputRef?.select()
-		}, 0)
+	function cancelSelectMode() {
+		isSelectMode = false
 	}
 
-	function stopEditing() {
-		isEditing = false
-	}
-
-	function handleKeydown(e: KeyboardEvent) {
-		if (e.key === 'Enter') {
-			createFlow()
-		} else if (e.key === 'Escape') {
-			stopEditing()
-		}
-	}
-
-	const createFlow = async () => {
+	const create = async (type: NodeType) => {
 		isCreating = true
-		isEditing = false
-		const flow = getFlowModel({})
-		flow.meta.name = name
+
+		const model = {
+			flow: getFlowModel,
+			action: getActionModel,
+			agent: getAgentModel
+		}[type]
+
 		try {
-			const newFlow = (await createComponent(flow)).data
+			const newFlow = (await createComponent(model({}))).data
 
 			await addNode(
 				newFlow,
 				{
-					x: props.positionAbsoluteX,
-					y: props.positionAbsoluteY
+					x: positionAbsoluteX,
+					y: positionAbsoluteY
 				},
 				{}
 			)
-			stopEditing()
 		} catch (e) {
 			console.log(e)
 
 			toast.error('Failed to create flow')
 		} finally {
+			isSelectMode = false
 			isCreating = false
 		}
 	}
+
+	const filteredNodeTypes = $derived(nodeTypes.filter(n => data.activeNodeTypes.includes(n.type)))
 </script>
 
 <div
-	class="relative grid items-end justify-center pb-1 transition-all"
+	class={[
+		'border-main-500 relative grid h-20 overflow-hidden rounded-xl border border-dashed transition-all ease-(--easing-circ) *:col-start-1 *:row-start-1',
+		isSelectMode ? 'w-max' : 'w-20'
+	]}
 	use:clickOutside={{
-		handler: stopEditing
+		handler: cancelSelectMode
 	}}
 >
-	<div
-		role={isEditing ? 'div' : 'button'}
+	<button
+		onclick={() => (isSelectMode = true)}
+		type="button"
 		class={[
-			'place-items-center justify-self-center rounded-md border border-dashed transition-all duration-200',
-			isEditing
-				? 'bg-main-900 border-main-300 mt-5 ml-10 h-12 w-40 -translate-x-1/2'
-				: 'border-main-500 hover:border-main-300 size-20 cursor-pointer active:scale-95',
-			isCreating && 'animate-pulse',
-			'group flex items-center justify-center'
+			'group hover:bg-main-500/5 relative z-10 grid w-20 place-items-center transition',
+			isSelectMode ? 'pointer-events-none opacity-0' : 'opacity-100'
 		]}
-		onclick={!isEditing ? startEditing : undefined}
-		tabindex="-1"
 	>
-		{#if isEditing}
-			<InputField
-				bind:value={name}
-				bind:el={inputRef}
-				placeholder="Name of flow"
-				onkeydown={handleKeydown}
-				variation="tight"
-				class="ml-2 border-none bg-transparent text-white"
-			/>
-			<button onclick={createFlow} class="text-main-500 hover:text-main-300 mr-2">
-				<RightIcon />
+		<AddIcon
+			class="text-main-500 group-hover:text-main-400 mt-1 size-6 transition group-hover:scale-110"
+		/>
+	</button>
+
+	<div class={['flex gap-2 leading-none', isSelectMode ? 'opacity-100' : 'opacity-0']}>
+		{#each filteredNodeTypes as nodeType}
+			<button
+				onclick={() => create(nodeType.type)}
+				type="button"
+				class="group hover:bg-main-500/10 my-1 grid w-20 place-items-center rounded-lg transition"
+			>
+				<nodeType.icon
+					style={`color: ${nodeType.iconColor}`}
+					class="text-main-300 group-hover:text-main-400 size-5 -translate-y-3 transition group-hover:scale-110"
+				/>
+
+				<span
+					class="text-main-400 group-hover:text-main-200 absolute translate-y-4 text-xs font-semibold transition"
+					>{nodeType.label}</span
+				>
 			</button>
-		{:else}
-			<AddIcon class="text-main-500 group-hover:text-main-300 size-6 transition" />
-		{/if}
+		{/each}
 	</div>
 </div>

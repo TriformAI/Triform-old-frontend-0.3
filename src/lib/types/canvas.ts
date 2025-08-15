@@ -35,6 +35,7 @@ export type MetaNodeType =
 	| 'loading-node'
 	| 'input-node'
 	| 'output-node'
+
 export type MetaNodeData = Omit<Omit<NodeData, 'trinode'>, 'props'> & {
 	sourceNode?: CanvasNode
 	sourceHandle?: Handle
