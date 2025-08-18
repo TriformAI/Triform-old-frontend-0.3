@@ -34,7 +34,7 @@ export const textMessageStartedModel = baseMessageModel.extend({
 	event: z.literal('text_message_started'),
 	data: z.object({
 		role: roleModel,
-		context: z.record(z.string(), z.never())
+		context: contextModel.default({})
 	})
 })
 
@@ -114,6 +114,17 @@ export const messageModel = z.discriminatedUnion('event', [
 	ackMessageModel,
 	errorMessageModel
 ])
+
+// same but without id
+export const newMessageModel = z.discriminatedUnion('event', [
+	textMessageStartedModel.omit({ id: true }),
+	textMessageContentModel.omit({ id: true }),
+	textMessageEndModel.omit({ id: true }),
+	runStartedModel.omit({ id: true }),
+	runCompletedModel.omit({ id: true }),
+	stepStartedModel.omit({ id: true }),
+	stepCompletedModel.omit({ id: true })
+] as const)
 
 // Array of messages
 export const uiMessagesModel = z.array(uiMessageModel)

@@ -260,14 +260,7 @@ export const validatePythonTypeString = (
 	}
 
 	// Valid primitive types
-	const primitiveTypes = [
-		'str',
-		'int',
-		// 'float',
-		'bool',
-		'None',
-		'Any'
-	]
+	const primitiveTypes = ['str', 'int', 'float', 'bool', 'None', 'Any']
 	if (primitiveTypes.includes(type)) {
 		return { error: undefined }
 	}

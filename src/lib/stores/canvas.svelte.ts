@@ -15,6 +15,7 @@ import {
 	flowModel,
 	agentModel,
 	resolvedProjectModel,
+	componentModel,
 	isProject,
 	resolvedComponentModel,
 	nodePortModel
@@ -23,7 +24,8 @@ import { type NodeContainer } from '$lib/types/flow'
 import { toast } from 'svelte-sonner'
 import type * as z from 'zod'
 import { clone } from '$lib/utils/clone'
-import { average } from '$lib/utils/average'
+import { exclude } from '$lib/utils/exclude'
+import { resolveComponentCached } from '$lib/utils/resolveComponent'
 
 let nodesStore = $state<CanvasNode[]>([])
 let edgesStore = $state<Edge[]>([])
@@ -128,7 +130,7 @@ export async function refreshFlow() {
 						return highest
 					})
 				: undefined
-		console.log('lastNode', lastNode)
+
 		let x = lastNode ? (lastNode.position.x ?? 0) + nodeSize.x + gap : 0
 		let y = (lastNode?.position.y ?? 0) + 8 // 8=temp offset till we fix the node layout
 
@@ -197,6 +199,7 @@ export function parseNodes(root: NodeContainer) {
 			type: getType(),
 			draggable: !ordered,
 			position: { x, y },
+			selected: getNodes().find(n => n.id === id)?.selected ?? false,
 			data: {
 				trinode: node,
 				props: { ...defaultProps }
@@ -500,4 +503,33 @@ export const getVisibleComponent = (nodeId: string | 'container') => {
 	const container = getCurrentContainer()
 	if (nodeId === 'container') return container
 	return container.spec.nodes[nodeId]?.spec as z.infer<typeof resolvedComponentModel>
+}
+
+// replaces all instances of a given component with an updated one in the current project (locally)
+// important to note that it isn't fully recursive, but rather just updates the unresolved component spec
+export const updateLocalComponent = async (component: z.infer<typeof componentModel>) => {
+	const processNode = async (node: TriNode) => {
+		if (node.component_id === component.id) {
+			console.log('updating node', node.component_id, component.id)
+			// if it has nodes, we need to update them all
+			if ('nodes' in component.spec && 'nodes' in node.spec.spec) {
+				const existentComponents = Object.fromEntries(
+					Object.values(node.spec.spec.nodes)
+						.map(n => [n.component_id, n.spec])
+						.filter(([_id, spec]) => spec)
+				)
+				// resolve, in case a new node was added, but also to ensure that node settings such as
+				// inputs etc are updated properly (hence the existentComponents)
+				const resolved = await resolveComponentCached(component, existentComponents)
+				component.spec = resolved.spec
+				console.log('new spec', component.spec)
+			}
+			node.spec.spec = component.spec
+			node.spec.meta = component.meta
+		}
+		// recursively process all nodes in the component
+		if ('nodes' in node.spec.spec)
+			await Promise.all(Object.values(node.spec.spec.nodes).map(processNode))
+	}
+	await Promise.all(Object.values(project.spec.nodes).map(processNode))
 }

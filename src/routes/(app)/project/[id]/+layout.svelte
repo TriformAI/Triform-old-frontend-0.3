@@ -8,7 +8,7 @@
 	import PropsPanel from '$lib/components/PropsPanel.svelte'
 	import Confirm from '$lib/components/common/Confirm.svelte'
 	import { loadComponents } from '$lib/stores/library.svelte'
-	import { refreshFlow, setProject } from '$lib/stores/canvas.svelte'
+	import { refreshFlow, setProject, updateLocalComponent } from '$lib/stores/canvas.svelte'
 	import ComponentLibrary from '$lib/components/panels/Library/ComponentLibrary.svelte'
 	import { debounce } from '$lib/utils/debounce'
 	import { onMount, untrack } from 'svelte'
@@ -18,6 +18,8 @@
 	import { projectModel, resolvedProjectModel } from '$lib/schemas'
 	import { ingressTokens } from '$lib/stores/ingressTokens.svelte.js'
 	import Chat from '$lib/components/Chat/Chat.svelte'
+	import { WebSocket } from 'partysocket'
+	import { socketEventModel } from '$lib/schemas/socket.js'
 
 	const { data, children } = $props()
 
@@ -58,6 +60,29 @@
 	let componentPanelHeight = $state(
 		Number(localStorage.getItem('componentsLibPanelHeight') || DEFAULT_COMPONENT_PANEL_HEIGHT)
 	)
+
+	onMount(() => {
+		const ws = new WebSocket('/api/organizations/@me/socket')
+		ws.onmessage = async e => {
+			try {
+				const payload = JSON.parse(e.data) as z.infer<typeof socketEventModel>
+				console.log('payload', payload)
+				if (payload.event === 'component:updated') {
+					await updateLocalComponent(payload.data.component)
+					refreshFlow()
+				}
+			} catch (err) {
+				console.error('error parsing message', err)
+			}
+		}
+		return () => {
+			try {
+				ws.close()
+			} catch (err) {
+				console.error('error closing socket', err)
+			}
+		}
+	})
 </script>
 
 {@render children()}

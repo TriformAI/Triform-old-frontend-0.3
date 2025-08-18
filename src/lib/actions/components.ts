@@ -25,6 +25,6 @@ export const createComponent = async (component: Omit<ResolvedComponent, 'id'>) 
 	return result
 }
 
-export const getComponent = async (id: Uuid) => {
+export const getComponent = async (id: string) => {
 	return await api.get<{ data: ResolvedComponent }>(`components/${id}`)
 }
