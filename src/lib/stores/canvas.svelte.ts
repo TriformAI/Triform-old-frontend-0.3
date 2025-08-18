@@ -73,7 +73,7 @@ const nodeSize = {
 	y: 20 * 4
 }
 const gap = 50
-const maxWidth = 1500
+const maxWidth = 600
 
 // Initialize the nodes on project or flow level
 export async function refreshFlow() {
@@ -112,16 +112,29 @@ export async function refreshFlow() {
 	if (isProject(container) || isAgent(container)) {
 		// find where to place the create node for agents and flow
 		// should be the last node, so added one step after the last node
-		const lastNode = nodes[nodes.length - 1]
-		let x = (lastNode?.position.x ?? 0) + nodeSize.x + gap
+		const validNodes = nodes.filter(n => n.type !== 'input-node' && n.type !== 'output-node')
+		const lastNode =
+			validNodes.length > 0
+				? validNodes.reduce((highest, current) => {
+						if (current.position.y > highest.position.y) {
+							return current
+						}
+						if (
+							current.position.y === highest.position.y &&
+							current.position.x > highest.position.x
+						) {
+							return current
+						}
+						return highest
+					})
+				: undefined
+		console.log('lastNode', lastNode)
+		let x = lastNode ? (lastNode.position.x ?? 0) + nodeSize.x + gap : 0
 		let y = (lastNode?.position.y ?? 0) + 8 // 8=temp offset till we fix the node layout
 
-		const activeNodeTypes = ['flow', 'agent']
+		const activeNodeTypes = ['flow', 'agent', isAgent(container) && 'action'].filter(Boolean)
 
-		if (isAgent(container)) {
-			activeNodeTypes.unshift('action')
-			y += nodeSize.y + gap
-		}
+		if (isAgent(container) && y === 8) y += nodeSize.y + gap
 
 		if (x > maxWidth) {
 			x = 0
