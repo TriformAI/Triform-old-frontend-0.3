@@ -8,6 +8,7 @@
 	}
 
 	const { item }: Props = $props()
+	$inspect(item)
 </script>
 
 <ul class="grid gap-2">
@@ -15,7 +16,7 @@
 		<li>
 			{#if child.type === 'message'}
 				<ChatMessage item={child} />
-			{:else if child.type === 'step_event'}
+			{:else if child.type === 'step'}
 				<ChatStep item={child} />
 			{/if}
 		</li>

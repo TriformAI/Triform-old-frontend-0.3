@@ -147,7 +147,16 @@
 	}
 
 	button {
-		@apply inline-flex cursor-pointer items-center gap-3 font-medium outline-none;
+		@apply flex cursor-pointer items-center gap-3 font-medium outline-none;
+
+		kbd {
+			@apply bg-accent-50/25 my-auto grid place-content-center rounded px-1 py-0.5 leading-none;
+			font-size: 0.85em;
+
+			&:first-child {
+				@apply ms-2;
+			}
+		}
 	}
 
 	strong {
