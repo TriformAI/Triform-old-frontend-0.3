@@ -40,7 +40,9 @@
 		return rawClasses
 	})
 	let editor: ReturnType<typeof createEditor>
+	let isInitializing = false
 	export const initEditor = (el: HTMLDivElement) => {
+		isInitializing = true
 		editor = createEditor(
 			el,
 			{
@@ -49,7 +51,10 @@
 				wordWrap,
 				onUpdate: newValue => {
 					value = newValue
-					onUpdate?.(newValue)
+					// Only call onUpdate if we're not in the middle of initialization
+					if (!isInitializing) {
+						onUpdate?.(newValue)
+					}
 				},
 				readOnly
 			},
@@ -59,6 +64,7 @@
 			matchBrackets(),
 			cursorPosition()
 		)
+		isInitializing = false
 		return editor
 	}
 
@@ -82,7 +88,10 @@
 	// update the editor value if it's changed after the editor is initialized
 	$effect(() => {
 		if (!editor) return
-		editor.setOptions({ value })
+		// Only update if the value is actually different from current editor value
+		if (editor.value !== value) {
+			editor.setOptions({ value })
+		}
 	})
 </script>
 
