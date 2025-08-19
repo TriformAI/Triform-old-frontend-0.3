@@ -6,6 +6,6 @@
 
 <Panel {nodeId} Icon={nodeTypesDict.agent.icon}>
 	{#snippet panelItems(PanelItems)}
-		<PanelItems items={['agentSettings', 'io', 'metadata']} {nodeId} />
+		<PanelItems items={['agentSettings', 'io', 'metadata', 'execute']} {nodeId} />
 	{/snippet}
 </Panel>
