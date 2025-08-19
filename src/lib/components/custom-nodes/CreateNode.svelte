@@ -27,13 +27,20 @@
 		isCreating = true
 
 		const model = {
-			flow: getFlowModel,
-			action: getActionModel,
-			agent: getAgentModel
+			flow: getFlowModel({}),
+			action: getActionModel({
+				sample_input: {
+					description: 'Example input/output, replace me',
+					type: {
+						type: 'string'
+					}
+				}
+			}),
+			agent: getAgentModel({})
 		}[type]
 
 		try {
-			const newFlow = (await createComponent(model({}))).data
+			const newFlow = (await createComponent(model)).data
 
 			await addNode(
 				newFlow,
