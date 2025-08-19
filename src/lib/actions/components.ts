@@ -11,10 +11,12 @@ export const updateComponent = async (
 	component: Partial<z.infer<typeof componentModel> | ResolvedComponent>
 ) => {
 	const unresolved = unresolveComponent(component as ResolvedComponent)
-	return await api.patch<{ data: Component }>(
+	const res = await api.patch<{ data: Component }>(
 		`components/${component.id}`,
 		pick(unresolved, ['spec', 'meta'])
 	)
+	if (res.success) updateLocalComponent(res.data)
+	return res
 }
 
 export const createComponent = async (component: Omit<ResolvedComponent, 'id'>) => {
