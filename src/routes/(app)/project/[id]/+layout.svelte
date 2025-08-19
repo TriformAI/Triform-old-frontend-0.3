@@ -8,11 +8,15 @@
 	import PropsPanel from '$lib/components/PropsPanel.svelte'
 	import Confirm from '$lib/components/common/Confirm.svelte'
 	import { loadComponents } from '$lib/stores/library.svelte'
-	import { refreshFlow, setProject, updateLocalComponent } from '$lib/stores/canvas.svelte'
+	import {
+		getProject,
+		refreshFlow,
+		setProject,
+		updateLocalComponent
+	} from '$lib/stores/canvas.svelte'
 	import ComponentLibrary from '$lib/components/panels/Library/ComponentLibrary.svelte'
 	import { debounce } from '$lib/utils/debounce'
 	import { onMount, untrack } from 'svelte'
-	import { sleep } from '$lib/utils/sleep.js'
 	import { page } from '$app/state'
 	import type * as z from 'zod'
 	import { projectModel, resolvedProjectModel } from '$lib/schemas'
@@ -32,6 +36,8 @@
 
 	// ensure project is set before anything else happens
 	$effect.pre(() => {
+		// don't replace the project if one is already loaded
+		if (getProject()) return
 		console.log('setting project', page.data.project)
 		setProject(page.data.project as z.infer<typeof resolvedProjectModel>)
 	})
@@ -65,7 +71,7 @@
 		const ws = new WebSocket('/api/organizations/@me/socket')
 		ws.onmessage = async e => {
 			try {
-				const payload = JSON.parse(e.data) as z.infer<typeof socketEventModel>
+				const payload = socketEventModel.parse(JSON.parse(e.data))
 				console.log('payload', payload)
 				if (payload.event === 'component:updated') {
 					await updateLocalComponent(payload.data.component)

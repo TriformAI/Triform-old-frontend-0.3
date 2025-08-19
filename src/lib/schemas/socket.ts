@@ -9,14 +9,14 @@ import { componentModel } from './components.js'
 
 const baseModel = z.strictObject({
 	event: z.string(),
-	data: z.unknown()
+	data: z.record(z.string(), z.unknown())
 })
 
 const componentUpdated = baseModel.extend({
 	event: z.literal('component:updated'),
-	data: {
+	data: z.strictObject({
 		component: componentModel
-	}
+	})
 })
 
 export const socketEventModel = z.discriminatedUnion('event', [
