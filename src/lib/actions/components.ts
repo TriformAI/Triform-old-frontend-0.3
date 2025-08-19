@@ -1,5 +1,4 @@
 import { API } from '$lib/api'
-import type { UUID as Uuid } from 'crypto'
 import type { Component, ResolvedComponent } from '$lib/types/resources'
 import { componentModel } from '$lib/schemas'
 import type * as z from 'zod'

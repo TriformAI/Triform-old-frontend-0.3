@@ -1,6 +1,5 @@
 <script lang="ts">
 	import { API } from '$lib/api'
-	import { saveDraft } from '$lib/actions/drafts'
 	import Editor from '$lib/components/atoms/Editor.svelte'
 	import LightEditor from '$lib/components/atoms/LightEditor.svelte'
 	import Tabs from '$lib/components/atoms/Tabs.svelte'

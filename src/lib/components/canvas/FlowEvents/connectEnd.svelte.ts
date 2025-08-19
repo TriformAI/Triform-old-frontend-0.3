@@ -16,6 +16,9 @@ import {
 } from '$lib/stores/canvas.svelte'
 import { getNodeSelector } from '$lib/utils/getNodeSelector'
 import type { FinalConnectionState } from '@xyflow/system'
+import type { resolvedFlowModel, resolvedAgentModel } from '$lib/schemas'
+import type * as z from 'zod'
+import { toast } from 'svelte-sonner'
 
 type ConnectEnd = AddParameters<OnConnectEnd, [ReturnType<typeof svelteFlowHook>]>
 
@@ -24,7 +27,9 @@ async function handleGhostConnection(connectionState: FinalConnectionState) {
 		return
 	}
 
-	const currentContainer = getCurrentContainer()
+	const currentContainer = getCurrentContainer() as
+		| z.infer<typeof resolvedFlowModel>
+		| z.infer<typeof resolvedAgentModel>
 
 	const isCreatingInput = connectionState.fromHandle!.type === 'target'
 
@@ -73,6 +78,7 @@ async function handleRegularConnection(connectionState: FinalConnectionState) {
 		id: fromIsTarget ? connectionState.fromNode?.id : connectionState.toNode?.id,
 		handle: fromIsTarget ? connectionState.fromHandle?.id : connectionState.toHandle?.id
 	}
+	if (!source.id) return toast.error('Invalid source')
 
 	await addEdge(source, target)
 }
