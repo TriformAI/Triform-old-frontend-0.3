@@ -33,6 +33,8 @@
 
 	onMount(() => {
 		loadComponents(data.components ?? [])
+
+		return () => setProject(undefined)
 	})
 
 	// ensure project is set before anything else happens
