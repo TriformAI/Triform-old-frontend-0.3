@@ -34,6 +34,14 @@ export const getActionModel = (inputs: z.infer<typeof ioModel>) => {
 			source: `
 from typing import TypedDict
 
+@triform.output
+class Output(TypedDict):
+  """The output of the action.
+	Attributes:
+${outputDescriptions}
+	"""
+${outputModelAttributes}
+
 @triform.entrypoint
 def simple(${inputArgs}) -> Output:
   """A simple placeholder action.
@@ -43,14 +51,6 @@ ${inputDescriptions}
   return Output(
 ${outputKeys}
 	)
-
-@triform.output
-class Output(TypedDict):
-  """The output of the action.
-	Attributes:
-${outputDescriptions}
-	"""
-${outputModelAttributes}
 				`.trim(),
 			readme: '',
 			requirements: '',
