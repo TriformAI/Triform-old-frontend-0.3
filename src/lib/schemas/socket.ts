@@ -9,7 +9,16 @@ import { componentModel } from './components.js'
 
 const baseModel = z.strictObject({
 	event: z.string(),
+	// arbitrary ID to ensure the author of updates don't receive an "echo" when they do stuff
+	author: z.string().optional(),
 	data: z.record(z.string(), z.unknown())
+})
+
+const connected = baseModel.extend({
+	event: z.literal('connected'),
+	data: z.strictObject({
+		id: z.string()
+	})
 })
 
 const componentUpdated = baseModel.extend({
@@ -20,5 +29,6 @@ const componentUpdated = baseModel.extend({
 })
 
 export const socketEventModel = z.discriminatedUnion('event', [
-	componentUpdated
+	componentUpdated,
+	connected
 ])

@@ -24,6 +24,7 @@
 	import Chat from '$lib/components/Chat/Chat.svelte'
 	import { WebSocket } from 'partysocket'
 	import { socketEventModel } from '$lib/schemas/socket.js'
+	import { setSocketId } from '$lib/stores/socket.svelte.js'
 
 	const { data, children } = $props()
 
@@ -76,6 +77,8 @@
 				if (payload.event === 'component:updated') {
 					await updateLocalComponent(payload.data.component)
 					refreshFlow()
+				} else if (payload.event === 'connected') {
+					setSocketId(payload.data.id)
 				}
 			} catch (err) {
 				console.error('error parsing message', err)

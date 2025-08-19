@@ -2,6 +2,7 @@ import { browser } from '$app/environment'
 import { error, fail, type ActionFailure, type RequestEvent } from '@sveltejs/kit'
 import { stream as eventStream } from 'fetch-event-stream'
 import { apiStatus } from '$lib/stores/apiStatus.svelte'
+import { getSocketId } from './stores/socket.svelte'
 
 type RequestMethod = 'GET' | 'POST' | 'PUT' | 'PATCH' | 'DELETE'
 
@@ -103,6 +104,9 @@ export class API<TEvent extends RequestEvent | undefined = undefined> {
 		if (method !== 'GET') {
 			apiStatus.saving = true
 		}
+
+		const socketId = getSocketId()
+		if (socketId) headers['x-socket-id'] = socketId
 
 		try {
 			console.log(`--> ${method} ${this.#baseURL}/${endpoint}`)
