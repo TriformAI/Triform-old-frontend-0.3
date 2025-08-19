@@ -10,17 +10,15 @@
 	import compare from 'just-compare'
 	import PanelItem from '../PanelItem.svelte'
 	import { inProgressComponents } from '$lib/stores/builder.svelte'
-	import { blur } from 'svelte/transition'
+	import { blur, fade } from 'svelte/transition'
 	import { debounce } from '$lib/utils/debounce'
-	import { updateComponent } from '$lib/actions/components'
+	import { buildComponent, updateComponent } from '$lib/actions/components'
 	import { getVisibleComponent } from '$lib/stores/canvas.svelte'
 
 	const { nodeId }: { nodeId: string } = $props()
 
 	// Get the component data directly from the store
 	const componentData = $derived(getVisibleComponent(nodeId) as z.infer<typeof actionModel>)
-
-	const dataIsDirty = false // FIXME
 
 	const filenames = {
 		source: 'action.py',
@@ -76,10 +74,19 @@
 		const res = await updateComponent(componentData)
 		if (!res.success) toast.error(`Failed saving ${componentData.meta.name}`)
 	}, 500)
+
+	let isBuildingDeps = $state(false)
+	const buildAction = async () => {
+		isBuildingDeps = true
+		const res = await buildComponent(componentId)
+		if (!res.success) toast.error(`Failed building ${componentData.meta.name}`)
+		else toast.success('Successfully built dependencies')
+		isBuildingDeps = false
+	}
 </script>
 
 <PanelItem title="Code" {nodeId}>
-	<div class="relative">
+	<div class="relative h-fit">
 		<Tabs {tabs} bind:activeTab />
 		<div
 			class={[
@@ -109,6 +116,20 @@
 				{/key}
 			{/if}
 		</div>
+
+		{#if !componentData.spec.checksum && componentData.spec.requirements}
+			<div class="mt-4 flex flex-row justify-end gap-2" transition:fade={{ duration: 150 }}>
+				<p class="text-main-400 shrink">
+					Your requirements.txt file has changed, please re-build your dependencies before executing
+					this action
+				</p>
+				<Button variation="primary" class="w-max" onClick={buildAction} isLoading={isBuildingDeps}>
+					{#snippet body()}
+						Build
+					{/snippet}
+				</Button>
+			</div>
+		{/if}
 
 		{#if isBuilding && componentId}
 			{@const message = inProgressComponents[componentId]?.message}

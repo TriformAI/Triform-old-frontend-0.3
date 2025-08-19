@@ -1,9 +1,10 @@
 import { API } from '$lib/api'
 import type { Component, ResolvedComponent } from '$lib/types/resources'
-import { componentModel } from '$lib/schemas'
+import { actionModel, componentModel } from '$lib/schemas'
 import type * as z from 'zod'
 import { pick } from '$lib/utils/pick'
 import { unresolveComponent } from '$lib/utils/unresolveComponent'
+import { updateLocalComponent } from '$lib/stores/canvas.svelte'
 
 const api = new API()
 
@@ -28,4 +29,8 @@ export const createComponent = async (component: Omit<ResolvedComponent, 'id'>) 
 
 export const getComponent = async (id: string) => {
 	return await api.get<{ data: ResolvedComponent }>(`components/${id}`)
+}
+
+export const buildComponent = async (id: string) => {
+	return await api.post<{ data: z.infer<typeof actionModel> }>(`components/${id}/build`, {})
 }
