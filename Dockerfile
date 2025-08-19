@@ -14,11 +14,12 @@ RUN bun run build
 FROM oven/bun:1-slim
 WORKDIR /app
 
-COPY --from=builder /app/build/ /app/build/
 COPY package.json bun.lockb .
 
 # Keep only production deps in the final image
 RUN bun install --production
+
+COPY --from=builder /app/build/ /app/build/
 
 WORKDIR /app/build
 
