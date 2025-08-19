@@ -3,7 +3,7 @@
 	import '@fontsource-variable/figtree'
 	import '../app.css'
 	import { onMount, type Snippet } from 'svelte'
-	import { Toaster } from 'svelte-sonner'
+	import { toast, Toaster } from 'svelte-sonner'
 	import { browser } from '$app/environment'
 	import { page } from '$app/state'
 	import type { Organization } from '$lib/types/auth'
@@ -24,5 +24,12 @@
 <div class="relative transform">{@render children?.()}</div>
 
 {#if showToaster}
-	<Toaster richColors position="top-left" />
+	<Toaster
+		richColors
+		position="top-left"
+		onclick={() => {
+			// TODO: dismiss only this toast, not all
+			toast.dismiss()
+		}}
+	/>
 {/if}
