@@ -34,6 +34,7 @@
 	onMount(() => {
 		loadComponents(data.components ?? [])
 
+		// @ts-expect-error undefined
 		return () => setProject(undefined)
 	})
 

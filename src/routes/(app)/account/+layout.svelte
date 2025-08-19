@@ -21,15 +21,8 @@
 			name: 'Organizations',
 			url: '/account/organizations',
 			icon: IconOrganization,
-			show: () => $organizations.data && $organizations.data?.length > 1,
+			show: () => $organizations.data,
 			isCurrent: () => page.url.pathname.startsWith('/account/organizations')
-		},
-		{
-			name: 'Organization',
-			url: `/account/organizations/${$organizations.data?.[0].id}`,
-			icon: IconOrganization,
-			show: () => $organizations.data && $organizations.data?.length === 1,
-			isCurrent: () => page.route.id === '/(app)/account/organizations/[id]'
 		}
 	])
 </script>
