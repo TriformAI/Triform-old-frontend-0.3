@@ -123,7 +123,7 @@
 					Your requirements.txt file has changed, please re-build your dependencies before executing
 					this action
 				</p>
-				<Button variation="primary" class="w-max" onClick={buildAction} isLoading={isBuildingDeps}>
+				<Button variation="vibrant" class="w-max" onClick={buildAction} isLoading={isBuildingDeps}>
 					{#snippet body()}
 						Build
 					{/snippet}
