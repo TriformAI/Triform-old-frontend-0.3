@@ -6,6 +6,7 @@
 	import Button from '../atoms/Button.svelte'
 	import { page } from '$app/state'
 	import { getMessages } from '$lib/remote/chat.remote'
+	import { WebSocket } from 'partysocket'
 
 	let socket = $state<WebSocket>()
 
