@@ -7,13 +7,17 @@
 	import { page } from '$app/state'
 	import { getMessages } from '$lib/remote/chat.remote'
 	import { WebSocket } from 'partysocket'
+	import { sleep } from '$lib/utils/sleep'
 
 	let socket = $state<WebSocket>()
+
+	//$inspect(chat.data)
 
 	$effect(() => {
 		;(async () => {
 			chat.data = []
 			const messages = await getMessages(page.params.id!)
+			console.log(messages)
 
 			parseHistory(messages)
 		})()
@@ -26,29 +30,11 @@
 			console.log('WebSocket connected')
 		}
 
-		socket.onmessage = e => {
+		socket.onmessage = async e => {
 			const { event, data } = JSON.parse(e.data)
 
 			if (event === 'ack' && data.event === 'text_message_started') {
-				socket?.send(
-					JSON.stringify({
-						event: 'text_message_content',
-						sourceId: data.id,
-						data: {
-							delta: message
-						}
-					})
-				)
-
-				message = ''
-
-				socket?.send(
-					JSON.stringify({
-						event: 'text_message_end',
-						sourceId: data.id,
-						data: {}
-					})
-				)
+				sendMessage(data.id)
 			}
 
 			if (data) {
@@ -67,7 +53,29 @@
 
 	let message = $state('')
 
-	function sendMessage(event: Event) {
+	async function sendMessage(sourceId: string) {
+		socket?.send(
+			JSON.stringify({
+				event: 'text_message_content',
+				sourceId,
+				data: {
+					delta: message
+				}
+			})
+		)
+
+		message = ''
+
+		socket?.send(
+			JSON.stringify({
+				event: 'text_message_end',
+				sourceId,
+				data: {}
+			})
+		)
+	}
+
+	function initMessage(event: Event) {
 		if (message.trim().length === 0) {
 			return
 		}
@@ -102,11 +110,9 @@
 		<form onsubmit={sendMessage} class="grid *:col-start-1 *:row-start-1">
 			<textarea
 				onkeydown={e => {
-					console.log('e.key === && e.metaKey', e.key === 'Enter' && e.metaKey)
-
 					if (e.key === 'Enter' && e.metaKey) {
 						e.preventDefault()
-						sendMessage(e)
+						initMessage(e)
 					}
 				}}
 				bind:value={message}

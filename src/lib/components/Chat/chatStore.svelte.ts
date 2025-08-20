@@ -3,15 +3,6 @@ import type z from 'zod'
 
 export type Message = z.infer<typeof uiMessageModel>
 
-// export interface EventData {
-// 	id: string
-// 	event: string
-// 	data: any
-// 	sourceId?: string
-// 	runId?: string
-// 	parentId?: string
-// }
-
 export interface MessageData {
 	type: 'message'
 	role: 'user' | 'assistant'
@@ -36,95 +27,247 @@ export interface RunData {
 
 export type ParsedItem = MessageData | RunData | StepData
 
-export const chat = $state<{ data: ParsedItem[] }>({
-	data: []
-})
+export const chat = $state<{ data: ParsedItem[] }>({ data: [] })
 
-const messages = $state(new Map<string, MessageData>())
+// ---- internal state ---------------------------------------------------------
 const runs = $state(new Map<string, RunData>())
-// Keeps track of active step's data and its parent array for nesting
-const activeSteps = new Map<string, { step: StepData; parentArray: (StepData | MessageData)[] }>()
+const steps = $state(new Map<string, StepData>())
+const stepAttached = $state(new Set<string>())
 
-export function handleMessage(message: Message) {
-	const { id, data, event, sourceId, runId, parentId } = message
+const messageBuffers = $state(new Map<string, { role?: 'user' | 'assistant'; content: string }>())
 
-	// Handle messages
-	if (event === 'text_message_started') {
-		messages.set(id, { type: 'message', role: data.role, content: '' })
-	} else if (event === 'text_message_content' && sourceId && messages.has(sourceId)) {
-		messages.get(sourceId)!.content += data.delta
-	} else if (event === 'text_message_end' && sourceId && messages.has(sourceId)) {
-		const message = messages.get(sourceId)!
+// After a message is rendered, keep:
+// 1) reference to the message object
+// 2) reference to its parent array (to replace immutably later)
+const finalizedMessages = $state(new Map<string, MessageData>())
+const messageParentArrays = $state(new Map<string, (StepData | MessageData)[]>())
 
-		if (runId && runs.has(runId)) {
-			runs.get(runId)!.children.push(message)
-		} else {
-			chat.data.push(message)
-		}
-		messages.delete(sourceId)
-	}
+const pendingChildrenForStep = $state(new Map<string, (StepData | MessageData)[]>())
+const pendingChildrenForRun = $state(new Map<string, (StepData | MessageData)[]>())
 
-	// Handle runs
-	if (event === 'run_started') {
-		const run: RunData = {
-			type: 'run',
-			id: id,
-			children: [],
-			completed: false
-		}
-		runs.set(id, run)
+// ---- helpers ----------------------------------------------------------------
+function ensureRun(runId: string): RunData {
+	let run = runs.get(runId)
+	if (!run) {
+		run = { type: 'run', id: runId, children: [], completed: false }
+		runs.set(runId, run)
 		chat.data.push(run)
-	} else if (event === 'run_completed' && sourceId && runs.has(sourceId)) {
-		runs.get(sourceId)!.completed = true
-		runs.delete(sourceId)
+		const pending = pendingChildrenForRun.get(runId)
+		if (pending?.length) {
+			run.children = [...run.children, ...pending]
+			pendingChildrenForRun.delete(runId)
+		}
 	}
+	return run
+}
 
-	// Handle steps and nested steps
-	if (event === 'step_started') {
-		const newStep: StepData = {
+function ensureStep(stepId: string): StepData {
+	let step = steps.get(stepId)
+	if (!step) {
+		step = {
 			type: 'step',
-			id: id,
+			id: stepId,
 			event: 'started',
-			title: data.title,
+			title: '(untitled)',
 			children: [],
 			completed: false
 		}
+		steps.set(stepId, step)
+	}
+	return step
+}
 
-		let parentArray: (StepData | MessageData)[] = []
-
-		if (runId && runs.has(runId)) {
-			if (parentId && activeSteps.has(parentId)) {
-				// Nested step
-				parentArray = activeSteps.get(parentId)!.step.children
-				parentArray.push(newStep)
-			} else {
-				// Top-level step
-				parentArray = runs.get(runId)!.children
-				parentArray.push(newStep)
-			}
+function attachToParentOrRun(
+	item: StepData | MessageData,
+	runId?: string,
+	parentId?: string
+): (StepData | MessageData)[] {
+	// returns the parent array we attached to
+	if (parentId) {
+		const parentStep = steps.get(parentId)
+		if (parentStep) {
+			parentStep.children = [...parentStep.children, item]
+			if ((item as StepData).type === 'step') stepAttached.add((item as StepData).id)
+			return parentStep.children
+		} else {
+			const q = pendingChildrenForStep.get(parentId) ?? []
+			q.push(item)
+			pendingChildrenForStep.set(parentId, q)
+			return q
 		}
-		activeSteps.set(id, { step: newStep, parentArray: parentArray })
-	} else if (event === 'step_completed') {
-		if (sourceId && activeSteps.has(sourceId)) {
-			const { step, parentArray } = activeSteps.get(sourceId)!
-			step.completed = true
+	}
 
-			// const completedEvent: StepData = {
-			// 	type: 'step',
-			// 	id: sourceId,
-			// 	event: 'completed',
-			// 	title: data.title,
-			// 	children: []
-			// }
-			// parentArray.push(completedEvent)
+	if (runId) {
+		const run = runs.get(runId)
+		if (run) {
+			run.children = [...run.children, item]
+			if ((item as StepData).type === 'step') stepAttached.add((item as StepData).id)
+			return run.children
+		} else {
+			const q = pendingChildrenForRun.get(runId) ?? []
+			q.push(item)
+			pendingChildrenForRun.set(runId, q)
+			return q
+		}
+	}
 
-			activeSteps.delete(sourceId)
+	chat.data = [...chat.data, item]
+	if ((item as StepData).type === 'step') stepAttached.add((item as StepData).id)
+	return chat.data
+}
+
+function tryAdoptPendingChildren(stepId: string) {
+	const pending = pendingChildrenForStep.get(stepId)
+	if (pending?.length) {
+		const step = steps.get(stepId)
+		if (step) {
+			step.children = [...step.children, ...pending]
+			pendingChildrenForStep.delete(stepId)
 		}
 	}
 }
 
-export function parseHistory(data: Message[]) {
-	for (const message of data) {
-		handleMessage(message)
+// Replace a finalized message in its parent array with a fresh object to trigger reactivity
+function replaceFinalizedMessage(id: string, newObj: MessageData) {
+	const parentArr = messageParentArrays.get(id)
+	const oldObj = finalizedMessages.get(id)
+	if (!parentArr || !oldObj) return
+
+	const idx = parentArr.indexOf(oldObj)
+	if (idx === -1) {
+		// parent array might have been replaced; try to find by shallow equality
+		const altIdx = parentArr.findIndex(
+			it => (it as MessageData).type === 'message' && (it as MessageData).content === oldObj.content
+		)
+		if (altIdx === -1) return
+		parentArr.splice(altIdx, 1, newObj)
+	} else {
+		parentArr.splice(idx, 1, newObj)
 	}
+
+	// Reassign the parent array to ensure update
+	if (parentArr === chat.data) {
+		chat.data = [...parentArr]
+	} else {
+		// Could be a run or step children; find and reassign that container too
+		for (const run of runs.values()) {
+			if (run.children === parentArr) {
+				run.children = [...parentArr]
+				return
+			}
+		}
+		for (const step of steps.values()) {
+			if (step.children === parentArr) {
+				step.children = [...parentArr]
+				return
+			}
+		}
+	}
+	// Update our reference
+	finalizedMessages.set(id, newObj)
+}
+
+// ---- main handler -----------------------------------------------------------
+export function handleMessage(msg: Message) {
+	const { id, event, data, sourceId, runId, parentId } = msg
+
+	switch (event) {
+		// -------- TEXT MESSAGES --------
+		case 'text_message_started': {
+			const buf = messageBuffers.get(id) ?? { content: '' }
+			buf.role = data?.role as 'user' | 'assistant'
+			messageBuffers.set(id, buf)
+			break
+		}
+
+		case 'text_message_content': {
+			if (!sourceId) break
+			const delta = data?.delta ?? ''
+
+			// 1) Still buffering?
+			const buf = messageBuffers.get(sourceId)
+			if (buf) {
+				buf.content += delta
+				messageBuffers.set(sourceId, buf)
+				break
+			}
+
+			// 2) Already finalized → replace object in parent array (immutably)
+			const finalized = finalizedMessages.get(sourceId)
+			if (finalized) {
+				const updated: MessageData = {
+					...finalized,
+					content: finalized.content + delta
+				}
+				replaceFinalizedMessage(sourceId, updated)
+				break
+			}
+
+			// 3) Neither → start buffer implicitly
+			messageBuffers.set(sourceId, { content: delta })
+			break
+		}
+
+		case 'text_message_end': {
+			if (!sourceId) break
+			if (finalizedMessages.has(sourceId)) break // duplicate end
+
+			const buf = messageBuffers.get(sourceId) ?? { content: '' }
+			const role = (buf.role ?? 'assistant') as 'user' | 'assistant'
+			const messageObj: MessageData = { type: 'message', role, content: buf.content }
+
+			const parentArr = attachToParentOrRun(messageObj, runId, undefined)
+
+			// keep references for late deltas
+			messageBuffers.delete(sourceId)
+			finalizedMessages.set(sourceId, messageObj)
+			messageParentArrays.set(sourceId, parentArr)
+			break
+		}
+
+		// -------- RUNS --------
+		case 'run_started': {
+			ensureRun(id)
+			break
+		}
+
+		case 'run_completed': {
+			if (!sourceId) break
+			const run = ensureRun(sourceId)
+			run.completed = true
+			break
+		}
+
+		// -------- STEPS (nested) --------
+		case 'step_started': {
+			const step = ensureStep(id)
+			step.event = 'started'
+			step.title = data?.title ?? step.title
+			if (!stepAttached.has(id)) {
+				attachToParentOrRun(step, runId, parentId)
+			}
+			tryAdoptPendingChildren(id)
+			break
+		}
+
+		case 'step_completed': {
+			if (!sourceId) break
+			const step = ensureStep(sourceId)
+			step.completed = true
+			step.event = 'completed'
+			if (!stepAttached.has(sourceId)) {
+				attachToParentOrRun(step, runId, parentId)
+				tryAdoptPendingChildren(sourceId)
+			}
+			break
+		}
+
+		default:
+			break
+	}
+}
+
+// Replay a backlog/history
+export function parseHistory(history: Message[]) {
+	for (const m of history) handleMessage(m)
 }
