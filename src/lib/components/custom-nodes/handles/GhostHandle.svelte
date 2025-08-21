@@ -15,6 +15,13 @@
 	let isAddingPort = $state(false)
 	let newPortName = $state('')
 
+	const isIoNode = $derived(nodeId?.endsWith(':input') || nodeId?.endsWith(':output'))
+
+	const portType = $derived.by(() => {
+		if (isIoNode) return type === 'source' ? 'input' : 'output'
+		return type === 'source' ? 'output' : 'input'
+	})
+
 	// turn the handle into a text field
 	const initAddPort = () => {
 		isAddingPort = true
@@ -25,14 +32,8 @@
 	// actually add the port after the user has finished typing
 	const finalisePort = async () => {
 		if (!nodeId) return
-		const currNodeId =
-			nodeId.endsWith(':input') || nodeId.endsWith(':output') ? 'container' : nodeId
-		await addPort(
-			currNodeId,
-			newPortName,
-			{ type: 'string' },
-			type === 'source' ? 'input' : 'output'
-		)
+		const currNodeId = isIoNode ? 'container' : nodeId
+		await addPort(currNodeId, newPortName, { type: 'string' }, portType)
 		isAddingPort = false
 		newPortName = ''
 	}

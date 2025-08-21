@@ -66,9 +66,28 @@
 		let newInput: ResolvedFlow['spec']['nodes'][string]['inputs'] | undefined
 
 		const nodeData = sourceNode.data as NodeData
-		// if the node selector is attached to the top (target) handle of a node,
-		// then we should copy that nodes input schema
-		if (data.sourceHandle?.type === 'target') {
+		if (data.sourceNode?.type === 'input-node') {
+			// if the node selector is attached to the input (meta) node, copy from the container
+			const container = getCurrentContainer()
+			if (!('inputs' in container.spec)) return [{}, {}]
+			inputSchema = container.spec.inputs[handleId]
+			if (!inputSchema) console.error('No input schema found for container', container.id)
+			newInput = {
+				[inputName]: {
+					source: 'parent',
+					target: inputName
+				}
+			}
+			return [{ [inputName]: inputSchema }, newInput]
+		} else if (data.sourceNode?.type === 'output-node') {
+			// if the node selector is attached to the output (meta) node, copy from the container
+			const container = getCurrentContainer()
+			if (!('outputs' in container.spec)) return [{}, {}]
+			inputSchema = container.spec.outputs[handleId]
+			if (!inputSchema) console.error('No output schema found for container', container.id)
+		} else if (data.sourceHandle?.type === 'target') {
+			// if the node selector is attached to the top (target) handle of a node,
+			// then we should copy that nodes input schema
 			const inputSchemaFromNode = nodeData.trinode.spec.spec.inputs?.[handleId]
 			if (inputSchemaFromNode) inputSchema = inputSchemaFromNode
 			else console.error('No input schema found for node', sourceNode.id)
