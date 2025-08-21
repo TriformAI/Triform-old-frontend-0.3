@@ -1,6 +1,6 @@
 <script lang="ts">
 	import data from '$lib/chat-mock.json'
-	import { onMount } from 'svelte'
+	import { onMount, tick } from 'svelte'
 	import ChatItem from './ChatItem.svelte'
 	import { handleMessage, parseHistory, chat } from './chatStore.svelte'
 	import Button from '../atoms/Button.svelte'
@@ -10,8 +10,18 @@
 	import { sleep } from '$lib/utils/sleep'
 
 	let socket = $state<WebSocket>()
+	let chatMessagesContainer = $state<HTMLElement>()
 
 	//$inspect(chat.data)
+
+	function scrollToBottom() {
+		if (chatMessagesContainer) {
+			chatMessagesContainer.scrollTo({
+				top: chatMessagesContainer.scrollHeight,
+				behavior: 'smooth'
+			})
+		}
+	}
 
 	$effect(() => {
 		;(async () => {
@@ -19,7 +29,17 @@
 			const messages = await getMessages(page.params.id!)
 
 			parseHistory(messages)
+			await tick()
+			// Scroll to bottom after loading messages
+			setTimeout(scrollToBottom, 100)
 		})()
+	})
+
+	// Scroll to bottom when new messages are added
+	$effect(() => {
+		if (chat.data.length > 0) {
+			setTimeout(scrollToBottom, 100)
+		}
 	})
 
 	onMount(async () => {
@@ -94,9 +114,9 @@
 </script>
 
 <div
-	class="bg-main-950/60 custom-scrollbar scroll-gutter-stable border-main-800 row-span-3 grid grid-rows-[1fr_auto] rounded-lg border py-4"
+	class="bg-main-950/60 custom-scrollbar scroll-gutter-stable border-main-800 row-span-3 grid grid-rows-[1fr_auto] rounded-lg border"
 >
-	<div class="overflow-y-auto px-4">
+	<div class="overflow-y-auto p-4" bind:this={chatMessagesContainer}>
 		<ul class="chat grid gap-4 pb-6 text-sm">
 			{#each chat.data as item}
 				<li>
