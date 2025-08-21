@@ -99,12 +99,6 @@
 			}
 		}
 	})
-
-	const gridStyles = $derived(
-		currentIsProject
-			? `${chatPanelWidth}px ${GUTTER_SIZE}px 1fr ${GUTTER_SIZE}px ${propsPanelWidth}px; grid-template-rows: 1fr ${GUTTER_SIZE}px ${componentPanelHeight}px`
-			: `1fr ${GUTTER_SIZE}px ${propsPanelWidth}px; grid-template-rows: 1fr ${GUTTER_SIZE}px ${componentPanelHeight}px`
-	)
 </script>
 
 {@render children()}
@@ -118,27 +112,25 @@
 		<SvelteFlowProvider>
 			<div
 				bind:this={gridContainer}
-				style={`grid-template-columns: ${gridStyles}`}
+				style={`grid-template-columns: ${chatPanelWidth}px ${GUTTER_SIZE}px 1fr ${GUTTER_SIZE}px ${propsPanelWidth}px; grid-template-rows: 1fr ${GUTTER_SIZE}px ${componentPanelHeight}px`}
 				class={`bg-main-850 grid h-full px-2 pt-1 pb-2 ease-(--easing-circ)`}
 			>
-				{#if currentIsProject}
-					<Chat />
+				<Chat />
 
-					<GridResizerHandle
-						name="chatPanel"
-						axis="x"
-						side="left"
-						bind:size={chatPanelWidth}
-						gutterSize={GUTTER_SIZE}
-						{gridContainer}
-						onResizeEnd={debounce(() => {
-							flowComponent?.fitView({
-								maxZoom: 1,
-								duration: 500
-							})
-						}, 300)}
-					/>
-				{/if}
+				<GridResizerHandle
+					name="chatPanel"
+					axis="x"
+					side="left"
+					bind:size={chatPanelWidth}
+					gutterSize={GUTTER_SIZE}
+					{gridContainer}
+					onResizeEnd={debounce(() => {
+						flowComponent?.fitView({
+							maxZoom: 1,
+							duration: 500
+						})
+					}, 300)}
+				/>
 
 				<div
 					class="bg-main-900 border-main-800 flow-container grid place-items-center overflow-hidden border"
