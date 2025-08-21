@@ -25,7 +25,14 @@
 	// actually add the port after the user has finished typing
 	const finalisePort = async () => {
 		if (!nodeId) return
-		await addPort(nodeId, newPortName, { type: 'string' }, type === 'target' ? 'input' : 'output')
+		const currNodeId =
+			nodeId.endsWith(':input') || nodeId.endsWith(':output') ? 'container' : nodeId
+		await addPort(
+			currNodeId,
+			newPortName,
+			{ type: 'string' },
+			type === 'source' ? 'input' : 'output'
+		)
 		isAddingPort = false
 		newPortName = ''
 	}
