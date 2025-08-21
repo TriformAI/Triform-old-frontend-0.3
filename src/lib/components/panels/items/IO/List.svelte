@@ -5,7 +5,8 @@
 		getCurrentContainer,
 		getEdges,
 		deleteEdge,
-		saveContainer
+		saveContainer,
+		addPort as addPortToCanvas
 	} from '$lib/stores/canvas.svelte'
 	import { jsonSchemaTypeModel, pythonTypeToJsonSchema } from '$lib/schemas'
 	import * as z from 'zod'
@@ -39,12 +40,11 @@
 				: []
 	)
 
-	const saveComponent = async () => {
+	const debouncedSaveComponent = debounce(async () => {
 		const res = await updateComponent(component)
 		if (!res.success) toast.error(`Failed saving ${component.meta.name}`)
 		return res
-	}
-	const debouncedSaveComponent = debounce(saveComponent, 500)
+	}, 500)
 
 	const deletePort = async (key: string) => {
 		const confirmed = await confirmStore.show({
@@ -62,9 +62,10 @@
 		delete component.spec[`${type}s`][key]
 
 		// first, try and save just the component
-		const componentRes = await saveComponent()
+		const componentRes = await updateComponent(component)
 		if (!componentRes.success) {
 			component.spec[`${type}s`][key] = oldPort
+			toast.error(`Failed saving ${component.meta.name}`)
 			return
 		}
 
@@ -96,22 +97,8 @@
 	}
 
 	const addPort = async () => {
-		component.spec[`${type}s`][newPortName] = {
-			type: newPortType,
-			description: ''
-		}
-		// TODO: this is fucked up, this creates an "invisible" edge...
-		if (type === 'output') {
-			component.spec[`${type}s`][newPortName].source = ''
-			component.spec[`${type}s`][newPortName].target = ''
-		}
+		await addPortToCanvas(nodeId as any, newPortName, newPortType, type)
 		isAddingPort = false
-		const res = await saveComponent()
-		if (!res.success) {
-			isAddingPort = true
-			delete component.spec[`${type}s`][newPortName]
-			toast.error('Failed to add port')
-		}
 	}
 
 	let newPortNameEl = $state<HTMLInputElement>()

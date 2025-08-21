@@ -18,7 +18,8 @@ import {
 	componentModel,
 	isProject,
 	resolvedComponentModel,
-	nodePortModel
+	nodePortModel,
+	jsonSchemaTypeModel
 } from '$lib/schemas'
 import { type NodeContainer } from '$lib/types/flow'
 import { toast } from 'svelte-sonner'
@@ -449,6 +450,34 @@ export const deleteEdge = async (edgeId: Edge['id'], save: boolean = true) => {
 	if (save) {
 		await saveContainer(snapshot)
 		await refreshFlow()
+	}
+}
+
+export const addPort = async (nodeId: string, portName: string, type: z.infer<typeof jsonSchemaTypeModel>, variation: 'input' | 'output') => {
+	const component = getVisibleComponent(nodeId) as z.infer<typeof resolvedComponentModel>
+	if (!component) throw new Error(`Component ${nodeId} not found`)
+
+	// Take snapshot for rollback
+	const snapshot = clone(component.spec[`${variation}s`] || {})
+
+	// Add the new port
+	component.spec[`${variation}s`][portName] = {
+		type,
+		description: ''
+	}
+
+	// TODO: this is fucked up, this creates an "invisible" edge...
+	if (variation === 'output') {
+		const port = component.spec[`${variation}s`][portName] as any
+		port.source = ''
+		port.target = ''
+	}
+
+	// Save the component with rollback on failure
+	const res = await updateComponent(component)
+	if (!res.success) {
+		component.spec[`${variation}s`] = snapshot
+		throw new Error('Failed to add port')
 	}
 }
 
