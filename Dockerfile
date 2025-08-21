@@ -3,7 +3,7 @@ WORKDIR /app
 
 RUN apt-get update && apt-get install -y git python3 make g++
 
-COPY package.json bun.lockb .
+COPY package.json bun.lock .
 RUN bun install
 
 COPY . .
@@ -14,7 +14,7 @@ RUN bun run build
 FROM oven/bun:1-slim
 WORKDIR /app
 
-COPY package.json bun.lockb .
+COPY package.json bun.lock .
 
 # Keep only production deps in the final image
 RUN bun install --production

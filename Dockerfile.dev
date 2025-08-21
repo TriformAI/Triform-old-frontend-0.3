@@ -6,7 +6,7 @@ RUN apk add --no-cache git python3 make g++
 
 RUN bun install -g onchange
 
-COPY package.json bun.lockb .
+COPY package.json bun.lock .
 
 RUN bun install --verbose
 
