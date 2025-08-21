@@ -12,7 +12,8 @@
 		getProject,
 		refreshFlow,
 		setProject,
-		updateLocalComponent
+		updateLocalComponent,
+		getCurrentContainer
 	} from '$lib/stores/canvas.svelte'
 	import ComponentLibrary from '$lib/components/panels/Library/ComponentLibrary.svelte'
 	import { debounce } from '$lib/utils/debounce'
@@ -25,6 +26,7 @@
 	import { WebSocket } from 'partysocket'
 	import { socketEventModel } from '$lib/schemas/socket.js'
 	import { setSocketId } from '$lib/stores/socket.svelte.js'
+	import { isProject } from '$lib/schemas'
 
 	const { data, children } = $props()
 
@@ -71,6 +73,8 @@
 		Number(localStorage.getItem('componentsLibPanelHeight') || DEFAULT_COMPONENT_PANEL_HEIGHT)
 	)
 
+	const currentIsProject = $derived(isProject(getCurrentContainer()))
+
 	onMount(() => {
 		const ws = new WebSocket('/api/organizations/@me/socket')
 		ws.onmessage = async e => {
@@ -95,6 +99,12 @@
 			}
 		}
 	})
+
+	const gridStyles = $derived(
+		currentIsProject
+			? `${chatPanelWidth}px ${GUTTER_SIZE}px 1fr ${GUTTER_SIZE}px ${propsPanelWidth}px; grid-template-rows: 1fr ${GUTTER_SIZE}px ${componentPanelHeight}px`
+			: `1fr ${GUTTER_SIZE}px ${propsPanelWidth}px; grid-template-rows: 1fr ${GUTTER_SIZE}px ${componentPanelHeight}px`
+	)
 </script>
 
 {@render children()}
@@ -108,25 +118,27 @@
 		<SvelteFlowProvider>
 			<div
 				bind:this={gridContainer}
-				style={`grid-template-columns: ${chatPanelWidth}px ${GUTTER_SIZE}px 1fr ${GUTTER_SIZE}px ${propsPanelWidth}px; grid-template-rows: 1fr ${GUTTER_SIZE}px ${componentPanelHeight}px`}
+				style={`grid-template-columns: ${gridStyles}`}
 				class={`bg-main-850 grid h-full px-2 pt-1 pb-2 ease-(--easing-circ)`}
 			>
-				<Chat />
+				{#if currentIsProject}
+					<Chat />
 
-				<GridResizerHandle
-					name="chatPanel"
-					axis="x"
-					side="left"
-					bind:size={chatPanelWidth}
-					gutterSize={GUTTER_SIZE}
-					{gridContainer}
-					onResizeEnd={debounce(() => {
-						flowComponent?.fitView({
-							maxZoom: 1,
-							duration: 500
-						})
-					}, 300)}
-				/>
+					<GridResizerHandle
+						name="chatPanel"
+						axis="x"
+						side="left"
+						bind:size={chatPanelWidth}
+						gutterSize={GUTTER_SIZE}
+						{gridContainer}
+						onResizeEnd={debounce(() => {
+							flowComponent?.fitView({
+								maxZoom: 1,
+								duration: 500
+							})
+						}, 300)}
+					/>
+				{/if}
 
 				<div
 					class="bg-main-900 border-main-800 flow-container grid place-items-center overflow-hidden border"
