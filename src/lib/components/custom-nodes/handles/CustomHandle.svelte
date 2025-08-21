@@ -7,6 +7,7 @@
 	import type { Handle as HandleType } from '@xyflow/system'
 	import AddBox from '~icons/material-symbols/add-box-rounded'
 	import { useSvelteFlow } from '@xyflow/svelte'
+	import { selected } from '$lib/stores/panel.svelte'
 
 	interface Props {
 		id: string
@@ -83,7 +84,9 @@
 			class={[
 				top ? '-translate-y-[130%] flex-col' : 'translate-y-[130%] flex-col-reverse',
 				'absolute flex items-center',
-				hasAnyConnections && 'opacity-0 transition delay-200 group-hover/container:opacity-100'
+				hasAnyConnections &&
+					selected.node?.id !== nodeId &&
+					'opacity-0 transition delay-200 group-hover/container:opacity-100'
 			]}
 		>
 			<button
