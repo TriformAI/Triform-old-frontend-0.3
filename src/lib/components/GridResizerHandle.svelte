@@ -179,7 +179,7 @@
 			axis === 'x' &&
 				`scale-x-600 ${isResizing ? 'hover:cursor-grabbing' : 'hover:cursor-ew-resize'}`,
 			axis === 'y' &&
-				`-translate-y-3.5 scale-y-600 ${isResizing ? 'hover:cursor-grabbing' : 'hover:cursor-ns-resize'}`
+				`scale-y-600 ${isResizing ? 'hover:cursor-grabbing' : 'hover:cursor-ns-resize'}`
 		]}
 	></button>
 </span>
