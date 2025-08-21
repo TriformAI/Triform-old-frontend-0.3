@@ -63,28 +63,14 @@
 		default: Edge
 	}
 
-	let isGoingDeeper = $state(false)
+	const {
+		isGoingDeeper
+	}: {
+		isGoingDeeper: boolean
+	} = $props()
 
-	onNavigate(async (navigation: OnNavigate) => {
-		if (!navigation.to || !navigation.from) return
-		const {
-			to: {
-				url: { pathname: toPath }
-			},
-			from: {
-				url: { pathname: fromPath }
-			}
-		} = navigation
-		// if there are more parts in the path we're going deeper 🌊
-		isGoingDeeper = toPath.split('/').length > fromPath.split('/').length
-		// wait a tick to make sure the transition is applied
-		await tick()
-		// FIXME: super braindead hack to make sure everything lines up as it should
-		const interval = setInterval(() => updateNodeInternals(getNodes().map(n => n.id)), 50)
-		setTimeout(() => clearInterval(interval), 450)
-
-		return
-	})
+	const transitionSize = 0.25
+	const transitionDuration = 350
 
 	function handleDragOver(event: DragEvent) {
 		event.preventDefault()
@@ -123,6 +109,11 @@
 			maxZoom: 1,
 			minZoom: 1
 		})
+
+		await new Promise(resolve => setTimeout(resolve, 50))
+		// FIXME: super braindead hack to make sure everything lines up as it should
+		const interval = setInterval(() => updateNodeInternals(getNodes().map(n => n.id)), 35)
+		setTimeout(() => clearInterval(interval), transitionDuration + 50)
 	})
 </script>
 
@@ -136,10 +127,20 @@
 />
 
 <div
-	class="relative grid h-full w-full overflow-hidden"
+	class="absolute inset-0 grid h-full w-full overflow-hidden"
 	role="application"
 	ondragover={handleDragOver}
 	ondrop={handleDrop}
+	in:scale={{
+		start: isGoingDeeper ? 1 - transitionSize : 1 + transitionSize,
+		opacity: 0,
+		duration: transitionDuration
+	}}
+	out:scale={{
+		start: isGoingDeeper ? 1 + transitionSize : 1 - transitionSize,
+		opacity: 0,
+		duration: transitionDuration
+	}}
 >
 	<SvelteFlow
 		bind:nodes={getNodes, setNodes}

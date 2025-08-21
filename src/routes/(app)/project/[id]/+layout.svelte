@@ -13,7 +13,8 @@
 		refreshFlow,
 		setProject,
 		updateLocalComponent,
-		getCurrentContainer
+		getCurrentContainer,
+		getNodes
 	} from '$lib/stores/canvas.svelte'
 	import ComponentLibrary from '$lib/components/panels/Library/ComponentLibrary.svelte'
 	import { debounce } from '$lib/utils/debounce'
@@ -27,6 +28,10 @@
 	import { socketEventModel } from '$lib/schemas/socket.js'
 	import { setSocketId } from '$lib/stores/socket.svelte.js'
 	import { isProject } from '$lib/schemas'
+	import { onNavigate } from '$app/navigation'
+	import type { OnNavigate } from '@sveltejs/kit'
+	import { tick } from 'svelte'
+	import { useUpdateNodeInternals } from '@xyflow/svelte'
 
 	const { data, children } = $props()
 
@@ -54,6 +59,24 @@
 			ingressTokens.length = 0
 			ingressTokens.push(...(ref ?? []))
 		})
+	})
+
+	let isGoingDeeper = $state(false)
+	const updateNodeInternals = useUpdateNodeInternals()
+	onNavigate(async (navigation: OnNavigate) => {
+		if (!navigation.to || !navigation.from) return
+		const {
+			to: {
+				url: { pathname: toPath }
+			},
+			from: {
+				url: { pathname: fromPath }
+			}
+		} = navigation
+		// if there are more parts in the path we're going deeper 🌊
+		isGoingDeeper = toPath.split('/').length > fromPath.split('/').length
+
+		return
 	})
 
 	const DEFAULT_PROPS_PANEL_WIDTH = 600
@@ -133,10 +156,10 @@
 				/>
 
 				<div
-					class="bg-main-900 border-main-800 flow-container grid place-items-center overflow-hidden border"
+					class="bg-main-900 border-main-800 flow-container relative grid place-items-center overflow-hidden border"
 				>
 					{#key page.url.pathname}
-						<Flow bind:this={flowComponent} />
+						<Flow bind:this={flowComponent} {isGoingDeeper} />
 					{/key}
 				</div>
 
