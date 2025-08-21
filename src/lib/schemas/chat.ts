@@ -10,9 +10,12 @@ import * as z from 'zod'
 const baseMessageModel = z.object({
 	id: z.string(),
 	event: z.string(),
+	// when you're on the same level (eg step_started and step_complete)
 	sourceId: z.string().optional(),
-	runId: z.string().optional(),
-	parentId: z.string().optional()
+	// the current run you're in
+	runId: z.string(),
+	// when you're nesting into a step
+	stepId: z.string().optional()
 })
 
 // Context schemas
@@ -26,21 +29,28 @@ export const contextModel = z
 	})
 	.optional()
 
-// Role enum
-const roleModel = z.enum(['user', 'assistant'])
-
-// Text message schemas
-export const textMessageStartedModel = baseMessageModel.extend({
-	event: z.literal('text_message_started'),
+export const userMessageModel = baseMessageModel.omit({ runId: true }).extend({
+	event: z.literal('user_message'),
 	data: z.object({
-		role: roleModel,
+		content: z.array(
+			z.object({
+				type: z.literal('text'),
+				text: z.string()
+			})
+		),
 		context: contextModel.default({})
 	})
 })
 
+// Text message schemas
+export const textMessageStartedModel = baseMessageModel.extend({
+	event: z.literal('text_message_start'),
+	data: z.object({})
+})
+
 export const textMessageContentModel = baseMessageModel.extend({
 	event: z.literal('text_message_content'),
-	sourceId: z.string(),
+	sourceId: z.string().nonoptional(),
 	data: z.object({
 		delta: z.string()
 	})
@@ -48,35 +58,35 @@ export const textMessageContentModel = baseMessageModel.extend({
 
 export const textMessageEndModel = baseMessageModel.extend({
 	event: z.literal('text_message_end'),
-	sourceId: z.string(),
+	sourceId: z.string().nonoptional(),
 	data: z.object({})
 })
 
 // Run schemas
-export const runStartedModel = baseMessageModel.extend({
-	event: z.literal('run_started'),
+export const runStartedModel = baseMessageModel.omit({ runId: true }).extend({
+	event: z.literal('run_start'),
 	data: z.object({})
 })
 
-export const runCompletedModel = baseMessageModel.extend({
-	event: z.literal('run_completed'),
-	sourceId: z.string(),
+export const runCompletedModel = baseMessageModel.omit({ runId: true }).extend({
+	event: z.literal('run_complete'),
+	sourceId: z.string().nonoptional(),
 	data: z.object({})
 })
 
 // Step schemas
 export const stepStartedModel = baseMessageModel.extend({
-	event: z.literal('step_started'),
-	runId: z.string(),
+	event: z.literal('step_start'),
+	runId: z.string().nonoptional(),
 	data: z.object({
 		title: z.string()
 	})
 })
 
 export const stepCompletedModel = baseMessageModel.extend({
-	event: z.literal('step_completed'),
-	sourceId: z.string(),
-	runId: z.string(),
+	event: z.literal('step_complete'),
+	sourceId: z.string().nonoptional(),
+	runId: z.string().nonoptional(),
 	data: z.object({
 		title: z.string()
 	})
@@ -98,6 +108,7 @@ export const errorMessageModel = baseMessageModel.omit({ id: true }).extend({
 })
 
 const uiMessages = [
+	userMessageModel,
 	textMessageStartedModel,
 	textMessageContentModel,
 	textMessageEndModel,
@@ -117,6 +128,7 @@ export const messageModel = z.discriminatedUnion('event', [
 
 // same but without id
 export const newMessageModel = z.discriminatedUnion('event', [
+	userMessageModel.omit({ id: true }),
 	textMessageStartedModel.omit({ id: true }),
 	textMessageContentModel.omit({ id: true }),
 	textMessageEndModel.omit({ id: true }),

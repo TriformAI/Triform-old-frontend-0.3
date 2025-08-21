@@ -80,19 +80,19 @@ function ensureStep(stepId: string): StepData {
 function attachToParentOrRun(
 	item: StepData | MessageData,
 	runId?: string,
-	parentId?: string
-): (StepData | MessageData)[] {
+	stepId?: string
+): (StepData | MessageData)[] | ParsedItem[] {
 	// returns the parent array we attached to
-	if (parentId) {
-		const parentStep = steps.get(parentId)
+	if (stepId) {
+		const parentStep = steps.get(stepId)
 		if (parentStep) {
 			parentStep.children = [...parentStep.children, item]
 			if ((item as StepData).type === 'step') stepAttached.add((item as StepData).id)
 			return parentStep.children
 		} else {
-			const q = pendingChildrenForStep.get(parentId) ?? []
+			const q = pendingChildrenForStep.get(stepId) ?? []
 			q.push(item)
-			pendingChildrenForStep.set(parentId, q)
+			pendingChildrenForStep.set(stepId, q)
 			return q
 		}
 	}
@@ -131,7 +131,20 @@ function tryAdoptPendingChildren(stepId: string) {
 function replaceFinalizedMessage(id: string, newObj: MessageData) {
 	const parentArr = messageParentArrays.get(id)
 	const oldObj = finalizedMessages.get(id)
-	if (!parentArr || !oldObj) return
+	if (!oldObj) return
+
+	// If we don't have a tracked parent array, it might be in chat.data
+	if (!parentArr) {
+		const idx = chat.data.findIndex(
+			it => (it as MessageData).type === 'message' && it === oldObj
+		)
+		if (idx !== -1) {
+			chat.data.splice(idx, 1, newObj)
+			chat.data = [...chat.data]
+			finalizedMessages.set(id, newObj)
+		}
+		return
+	}
 
 	const idx = parentArr.indexOf(oldObj)
 	if (idx === -1) {
@@ -145,37 +158,47 @@ function replaceFinalizedMessage(id: string, newObj: MessageData) {
 		parentArr.splice(idx, 1, newObj)
 	}
 
-	// Reassign the parent array to ensure update
-	if (parentArr === chat.data) {
-		chat.data = [...parentArr]
-	} else {
-		// Could be a run or step children; find and reassign that container too
-		for (const run of runs.values()) {
-			if (run.children === parentArr) {
-				run.children = [...parentArr]
-				return
-			}
-		}
-		for (const step of steps.values()) {
-			if (step.children === parentArr) {
-				step.children = [...parentArr]
-				return
-			}
+	// Find and reassign the container to ensure update
+	for (const run of runs.values()) {
+		if (run.children === parentArr) {
+			run.children = [...parentArr]
+			finalizedMessages.set(id, newObj)
+			return
 		}
 	}
-	// Update our reference
-	finalizedMessages.set(id, newObj)
+	for (const step of steps.values()) {
+		if (step.children === parentArr) {
+			step.children = [...parentArr]
+			finalizedMessages.set(id, newObj)
+			return
+		}
+	}
 }
 
 // ---- main handler -----------------------------------------------------------
 export function handleMessage(msg: Message) {
-	const { id, event, data, sourceId, runId, parentId } = msg
+	const { id, event, data, sourceId } = msg
+	const runId = 'runId' in msg ? msg.runId : undefined
+	const stepId = 'stepId' in msg ? msg.stepId : undefined
 
 	switch (event) {
+		// -------- USER MESSAGES --------
+		case 'user_message': {
+			const messageObj: MessageData = {
+				type: 'message',
+				role: 'user',
+				content: (data as { content: { type: 'text'; text: string }[] }).content
+					.map(item => item.text)
+					.join('')
+			}
+			attachToParentOrRun(messageObj, runId, stepId)
+			break
+		}
+
 		// -------- TEXT MESSAGES --------
-		case 'text_message_started': {
+		case 'text_message_start': {
 			const buf = messageBuffers.get(id) ?? { content: '' }
-			buf.role = data?.role as 'user' | 'assistant'
+			// Note: role will be determined when message ends, defaulting to 'assistant'
 			messageBuffers.set(id, buf)
 			break
 		}
@@ -216,22 +239,25 @@ export function handleMessage(msg: Message) {
 			const role = (buf.role ?? 'assistant') as 'user' | 'assistant'
 			const messageObj: MessageData = { type: 'message', role, content: buf.content }
 
-			const parentArr = attachToParentOrRun(messageObj, runId, undefined)
+			const parentArr = attachToParentOrRun(messageObj, runId, stepId)
 
 			// keep references for late deltas
 			messageBuffers.delete(sourceId)
 			finalizedMessages.set(sourceId, messageObj)
-			messageParentArrays.set(sourceId, parentArr)
+			// Only set parent arrays for non-chat.data arrays (to avoid RunData type issues)
+			if (parentArr !== chat.data) {
+				messageParentArrays.set(sourceId, parentArr as (StepData | MessageData)[])
+			}
 			break
 		}
 
 		// -------- RUNS --------
-		case 'run_started': {
+		case 'run_start': {
 			ensureRun(id)
 			break
 		}
 
-		case 'run_completed': {
+		case 'run_complete': {
 			if (!sourceId) break
 			const run = ensureRun(sourceId)
 			run.completed = true
@@ -239,24 +265,24 @@ export function handleMessage(msg: Message) {
 		}
 
 		// -------- STEPS (nested) --------
-		case 'step_started': {
+		case 'step_start': {
 			const step = ensureStep(id)
 			step.event = 'started'
-			step.title = data?.title ?? step.title
+			step.title = (data as { title?: string })?.title ?? step.title
 			if (!stepAttached.has(id)) {
-				attachToParentOrRun(step, runId, parentId)
+				attachToParentOrRun(step, runId, stepId)
 			}
 			tryAdoptPendingChildren(id)
 			break
 		}
 
-		case 'step_completed': {
+		case 'step_complete': {
 			if (!sourceId) break
 			const step = ensureStep(sourceId)
 			step.completed = true
 			step.event = 'completed'
 			if (!stepAttached.has(sourceId)) {
-				attachToParentOrRun(step, runId, parentId)
+				attachToParentOrRun(step, runId, stepId)
 				tryAdoptPendingChildren(sourceId)
 			}
 			break
