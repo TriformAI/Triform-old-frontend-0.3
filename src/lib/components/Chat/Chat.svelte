@@ -107,7 +107,7 @@
 	</div>
 
 	<div class="px-4 leading-none">
-		<form onsubmit={sendMessage} class="grid *:col-start-1 *:row-start-1">
+		<form onsubmit={initMessage} class="grid *:col-start-1 *:row-start-1">
 			<textarea
 				onkeydown={e => {
 					if (e.key === 'Enter' && e.metaKey) {
