@@ -44,13 +44,8 @@
 			console.log('WebSocket connected')
 		}
 		socket.onmessage = async e => {
-			const { event, data } = JSON.parse(e.data)
-			if (event === 'ack' && data.event === 'text_message_started') {
-				sendMessage(data.id)
-			}
-			if (data) {
-				handleMessage(data)
-			}
+			const { event: _event, data } = JSON.parse(e.data)
+			if (data) handleMessage(data)
 		}
 		socket.onclose = () => {
 			console.log('Socket closed')
@@ -69,29 +64,7 @@
 
 	let message = $state('')
 
-	async function sendMessage(sourceId: string) {
-		socket?.send(
-			JSON.stringify({
-				event: 'text_message_content',
-				sourceId,
-				data: {
-					delta: message
-				}
-			})
-		)
-
-		message = ''
-
-		socket?.send(
-			JSON.stringify({
-				event: 'text_message_end',
-				sourceId,
-				data: {}
-			})
-		)
-	}
-
-	function initMessage(event: Event) {
+	function sendMessage(event: Event) {
 		if (message.trim().length === 0) {
 			return
 		}
@@ -99,14 +72,23 @@
 		event.preventDefault()
 
 		if (!socket) return
+
 		socket.send(
 			JSON.stringify({
-				event: 'text_message_started',
+				event: 'user_message',
 				data: {
-					role: 'user'
+					content: [
+						{
+							type: 'text',
+							text: message
+						}
+					],
+					context: {}
 				}
 			})
 		)
+
+		message = ''
 	}
 </script>
 
@@ -126,12 +108,12 @@
 	</div>
 
 	<div class="px-4 pb-4 leading-none">
-		<form onsubmit={initMessage} class="input-text grid grid-rows-[1fr_auto] gap-2">
+		<form onsubmit={sendMessage} class="input-text grid grid-rows-[1fr_auto] gap-2">
 			<textarea
 				onkeydown={e => {
 					if (e.key === 'Enter' && (e.metaKey || e.ctrlKey)) {
 						e.preventDefault()
-						initMessage(e)
+						sendMessage(e)
 					}
 				}}
 				bind:value={message}
