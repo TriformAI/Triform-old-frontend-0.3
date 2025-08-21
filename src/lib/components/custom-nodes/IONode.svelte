@@ -7,9 +7,11 @@
 	import { nodeTypes, nodeTypesDict } from '$lib/constants/nodeTypes'
 
 	const {
-		type
+		type,
+		id
 	}: {
 		type: MetaNodeType
+		id: string
 	} = $props()
 
 	const container = $derived(getCurrentContainer())
@@ -31,12 +33,7 @@
 </script>
 
 {#if visualData}
-	<NodeContainer
-		{targetHandles}
-		{sourceHandles}
-		showGhostSourceHandle={ioType === 'input'}
-		showGhostTargetHandle={ioType === 'output'}
-	>
+	<NodeContainer {targetHandles} {sourceHandles} {id}>
 		{#snippet body()}
 			<div
 				id={`${container.id}:${ioType}`}

@@ -45,7 +45,7 @@
 	const sourceHandles = $derived(Object.keys(data.trinode.spec.spec.outputs))
 </script>
 
-<NodeContainer {...props} {targetHandles} {sourceHandles}>
+<NodeContainer {...props} {targetHandles} {sourceHandles} {id}>
 	{#snippet body()}
 		<ContextMenu bind:open={contextIsOpen}>
 			{#snippet trigger()}

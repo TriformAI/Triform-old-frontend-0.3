@@ -16,7 +16,7 @@ export const getFlowModel = (inputs: z.infer<typeof ioModel>) =>
 			inputs,
 			io_nodes: {
 				input: { x: 0, y: 0 },
-				output: { x: 0, y: 100 }
+				output: { x: 0, y: 400 }
 			}
 		}
 	}) satisfies Omit<z.infer<typeof resolvedFlowModel>, 'id'>

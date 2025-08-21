@@ -10,15 +10,12 @@
 		body,
 		targetHandles,
 		sourceHandles,
-		showGhostSourceHandle = false,
-		showGhostTargetHandle = false
+		id: nodeId
 	}: {
 		id?: string
 		body: Snippet
 		targetHandles: string[]
 		sourceHandles: string[]
-		showGhostSourceHandle?: boolean
-		showGhostTargetHandle?: boolean
 		data?: NodeData | MetaNodeData
 	} = $props()
 
@@ -29,12 +26,10 @@
 	{#if !currentIsProject}
 		<div class={['mb-2 flex h-0 items-center justify-around gap-5']}>
 			{#each targetHandles as name}
-				<CustomHandle id={name} {name} type="target" position={Position.Top} />
+				<CustomHandle id={name} {name} type="target" position={Position.Top} {nodeId} />
+			{:else}
+				<!-- <GhostHandle type="target" /> -->
 			{/each}
-
-			{#if showGhostTargetHandle}
-				<GhostHandle type="target" class="mt-4" />
-			{/if}
 		</div>
 	{/if}
 
@@ -43,12 +38,10 @@
 	{#if !currentIsProject}
 		<div class={['flex items-center justify-around gap-5']}>
 			{#each sourceHandles as name}
-				<CustomHandle id={name} {name} type="source" position={Position.Bottom} />
+				<CustomHandle id={name} {name} type="source" position={Position.Bottom} {nodeId} />
+			{:else}
+				<!-- <GhostHandle type="source" /> -->
 			{/each}
-
-			{#if showGhostSourceHandle}
-				<GhostHandle type="source" class="-mt-5" />
-			{/if}
 		</div>
 	{/if}
 </div>

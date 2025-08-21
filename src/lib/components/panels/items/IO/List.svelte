@@ -100,6 +100,7 @@
 			type: newPortType,
 			description: ''
 		}
+		// TODO: this is fucked up, this creates an "invisible" edge...
 		if (type === 'output') {
 			component.spec[`${type}s`][newPortName].source = ''
 			component.spec[`${type}s`][newPortName].target = ''
