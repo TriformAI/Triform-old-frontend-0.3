@@ -1,5 +1,4 @@
 <script lang="ts">
-	import data from '$lib/chat-mock.json'
 	import { onMount, tick } from 'svelte'
 	import ChatItem from './ChatItem.svelte'
 	import { handleMessage, parseHistory, chat } from './chatStore.svelte'
@@ -7,12 +6,9 @@
 	import { page } from '$app/state'
 	import { getMessages } from '$lib/remote/chat.remote'
 	import { WebSocket } from 'partysocket'
-	import { sleep } from '$lib/utils/sleep'
 
 	let socket = $state<WebSocket>()
 	let chatMessagesContainer = $state<HTMLElement>()
-
-	//$inspect(chat.data)
 
 	function scrollToBottom() {
 		if (chatMessagesContainer) {
@@ -25,11 +21,11 @@
 
 	$effect(() => {
 		;(async () => {
-			chat.data = []
 			const messages = await getMessages(page.params.id!)
 
 			parseHistory(messages)
 			await tick()
+
 			// Scroll to bottom after loading messages
 			setTimeout(scrollToBottom, 100)
 		})()
@@ -42,31 +38,32 @@
 		}
 	})
 
-	onMount(async () => {
+	onMount(() => {
 		socket = new WebSocket(`/api/projects/${page.params.id}/chat`)
-
 		socket.onopen = () => {
 			console.log('WebSocket connected')
 		}
-
 		socket.onmessage = async e => {
 			const { event, data } = JSON.parse(e.data)
-
 			if (event === 'ack' && data.event === 'text_message_started') {
 				sendMessage(data.id)
 			}
-
 			if (data) {
 				handleMessage(data)
 			}
 		}
-
 		socket.onclose = () => {
 			console.log('Socket closed')
 		}
-
 		socket.onerror = err => {
 			console.error('Socket error', err)
+		}
+		return () => {
+			try {
+				socket?.close()
+			} catch (err) {
+				console.error('error closing socket', err)
+			}
 		}
 	})
 
@@ -126,7 +123,7 @@
 		</ul>
 	</div>
 
-	<div class="px-4 leading-none">
+	<div class="px-4 pb-4 leading-none">
 		<form onsubmit={initMessage} class="grid *:col-start-1 *:row-start-1">
 			<textarea
 				onkeydown={e => {

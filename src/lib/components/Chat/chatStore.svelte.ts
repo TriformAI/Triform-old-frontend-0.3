@@ -267,7 +267,24 @@ export function handleMessage(msg: Message) {
 	}
 }
 
+export function resetChatState() {
+	chat.data = []
+
+	runs.clear()
+	steps.clear()
+	stepAttached.clear()
+
+	messageBuffers.clear()
+	finalizedMessages.clear()
+	messageParentArrays.clear()
+
+	pendingChildrenForRun.clear()
+	pendingChildrenForStep.clear()
+}
+
 // Replay a backlog/history
 export function parseHistory(history: Message[]) {
+	resetChatState()
+
 	for (const m of history) handleMessage(m)
 }
