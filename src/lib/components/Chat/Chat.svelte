@@ -17,7 +17,6 @@
 		;(async () => {
 			chat.data = []
 			const messages = await getMessages(page.params.id!)
-			console.log(messages)
 
 			parseHistory(messages)
 		})()
@@ -81,6 +80,7 @@
 		}
 
 		event.preventDefault()
+
 		if (!socket) return
 		socket.send(
 			JSON.stringify({
@@ -110,7 +110,7 @@
 		<form onsubmit={initMessage} class="grid *:col-start-1 *:row-start-1">
 			<textarea
 				onkeydown={e => {
-					if (e.key === 'Enter' && e.metaKey) {
+					if (e.key === 'Enter' && (e.metaKey || e.ctrlKey)) {
 						e.preventDefault()
 						initMessage(e)
 					}
