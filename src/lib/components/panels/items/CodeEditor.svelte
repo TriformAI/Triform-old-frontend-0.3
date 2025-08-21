@@ -79,6 +79,7 @@
 	const buildAction = async () => {
 		isBuildingDeps = true
 		const res = await buildComponent(componentId)
+		updateComponent(res.data)
 		if (!res.success) toast.error(`Failed building ${componentData.meta.name}`)
 		else toast.success('Successfully built dependencies')
 		isBuildingDeps = false
