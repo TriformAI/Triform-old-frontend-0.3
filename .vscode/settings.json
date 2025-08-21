@@ -1,4 +1,9 @@
 {
-  "tailwindCSS.experimental.configFile": "src/app.css",
-  "biome.enabled": false
+  "tailwindCSS.experimental.configFile": {
+      "src/app.css": "**",
+      "./frontend/src/app.css": "**"
+  },
+  "biome.enabled": false,
+  "editor.formatOnSave": true,
+  "editor.defaultFormatter": "esbenp.prettier-vscode"
 }
