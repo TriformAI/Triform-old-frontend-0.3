@@ -116,7 +116,9 @@
 	<div class="overflow-y-auto p-4" bind:this={chatMessagesContainer}>
 		<ul class="chat grid gap-4 pb-6 text-sm">
 			{#each chat.data as item}
-				<li>
+				<li
+					class="origin-top-right scale-100 opacity-100 transition-all duration-200 ease-(--easing-circ) starting:scale-90 starting:opacity-0"
+				>
 					<ChatItem {item} />
 				</li>
 			{/each}
@@ -124,7 +126,7 @@
 	</div>
 
 	<div class="px-4 pb-4 leading-none">
-		<form onsubmit={initMessage} class="grid *:col-start-1 *:row-start-1">
+		<form onsubmit={initMessage} class="input-text grid grid-rows-[1fr_auto] gap-2">
 			<textarea
 				onkeydown={e => {
 					if (e.key === 'Enter' && (e.metaKey || e.ctrlKey)) {
@@ -133,12 +135,11 @@
 					}
 				}}
 				bind:value={message}
-				class="input-text"
-				rows="3"
+				class="field-sizing-content max-h-30 resize-none pb-2 outline-0"
 				placeholder="Talk to your project"
 			></textarea>
 
-			<Button variation="vibrant" type="submit" class="m-2 ms-auto mt-auto px-2 py-1 text-sm">
+			<Button variation="vibrant" type="submit" class="ms-auto -me-2 -mb-1 px-2 py-1 text-sm">
 				<div class="flex items-center gap-0.5">
 					Send
 					<kbd class="ms-2">⌘</kbd>
