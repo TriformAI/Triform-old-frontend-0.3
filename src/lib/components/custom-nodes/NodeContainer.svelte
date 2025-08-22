@@ -66,7 +66,8 @@
 						'transition delay-200',
 						'group-hover/container:pointer-events-auto group-hover/container:opacity-100',
 						sourceHandles.length && 'pointer-events-none opacity-0',
-						node?.type === 'input-node' && sourceHandles.length ? '-mt-5 mr-1' : '-mt-0.5'
+						node?.type === 'input-node' && sourceHandles.length ? '-mt-5 mr-1' : '-mt-0.5',
+						node?.type !== 'input-node' && sourceHandles.length && '-mt-5'
 					]}
 				>
 					<GhostHandle type="source" {nodeId} />
