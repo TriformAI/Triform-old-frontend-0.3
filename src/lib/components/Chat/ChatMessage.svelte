@@ -1,5 +1,6 @@
 <script lang="ts">
 	import { type MessageData } from './chatStore.svelte'
+	import { marked } from 'marked'
 
 	interface Props {
 		item: MessageData
@@ -8,13 +9,13 @@
 	const { item }: Props = $props()
 </script>
 
-<p
+<div
 	class={[
-		'relative',
+		'relative grid max-w-4/5 gap-4',
 		item.role === 'user' &&
-			'text-main-200 bg-main-800 border-main-700 ms-auto w-fit max-w-3/4 rounded border p-3',
+			'text-main-200 bg-main-800 border-main-700 ms-auto w-fit rounded border p-3',
 		item.role === 'assistant' && 'text-main-400 mb-2'
 	]}
 >
-	{item.content}
-</p>
+	{@html marked.parse(item.content)}
+</div>

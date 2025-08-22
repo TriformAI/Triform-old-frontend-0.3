@@ -6,6 +6,7 @@
 	import { page } from '$app/state'
 	import { getMessages } from '$lib/remote/chat.remote'
 	import { WebSocket } from 'partysocket'
+	import { throttle } from '$lib/utils/throttle'
 
 	let socket = $state<WebSocket>()
 	let chatMessagesContainer = $state<HTMLElement>()
@@ -19,18 +20,6 @@
 		}
 	}
 
-	$effect(() => {
-		;(async () => {
-			const messages = await getMessages(page.params.id!)
-
-			parseHistory(messages)
-			await tick()
-
-			// Scroll to bottom after loading messages
-			setTimeout(scrollToBottom, 100)
-		})()
-	})
-
 	// Scroll to bottom when new messages are added
 	$effect(() => {
 		if (chat.data.length > 0) {
@@ -39,27 +28,47 @@
 	})
 
 	onMount(() => {
-		socket = new WebSocket(`/api/projects/${page.params.id}/chat`)
-		socket.onopen = () => {
-			console.log('WebSocket connected')
-		}
-		socket.onmessage = async e => {
-			const { event: _event, data } = JSON.parse(e.data)
-			if (data) handleMessage(data)
-		}
-		socket.onclose = () => {
-			console.log('Socket closed')
-		}
-		socket.onerror = err => {
-			console.error('Socket error', err)
-		}
-		return () => {
-			try {
-				socket?.close()
-			} catch (err) {
-				console.error('error closing socket', err)
+		chat.data = []
+		;(async () => {
+			const messages = await getMessages(page.params.id!)
+
+			const startId = messages.length > 0 ? messages[messages.length - 1].id : undefined
+
+			parseHistory(messages)
+			await tick()
+
+			// Scroll to bottom after loading messages
+			setTimeout(scrollToBottom, 100)
+
+			socket = new WebSocket(`/api/projects/${page.params.id}/chat?startId=${startId}`)
+
+			socket.onopen = () => {
+				console.log('WebSocket connected')
 			}
-		}
+
+			socket.onmessage = async e => {
+				try {
+					handleMessage(JSON.parse(e.data))
+					throttle(scrollToBottom, 300)
+				} catch (error) {}
+			}
+
+			socket.onclose = () => {
+				console.log('Socket closed')
+			}
+
+			socket.onerror = err => {
+				console.error('Socket error', err)
+			}
+
+			return () => {
+				try {
+					socket?.close()
+				} catch (err) {
+					console.error('error closing socket', err)
+				}
+			}
+		})()
 	})
 
 	let message = $state('')

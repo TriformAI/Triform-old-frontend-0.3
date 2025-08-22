@@ -192,6 +192,14 @@
 		}
 	}
 
+	ol {
+		@apply ml-4 list-decimal;
+
+		li {
+			@apply mb-2;
+		}
+	}
+
 	@keyframes spin {
 		0% {
 			transform: rotate(0deg);

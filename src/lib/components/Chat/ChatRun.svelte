@@ -2,13 +2,13 @@
 	import { type RunData } from './chatStore.svelte'
 	import ChatMessage from './ChatMessage.svelte'
 	import ChatStep from './ChatStep.svelte'
+	import Spinner from '../Spinner.svelte'
 
 	interface Props {
 		item: RunData
 	}
 
 	const { item }: Props = $props()
-	$inspect(item)
 </script>
 
 <ul class="grid gap-2">
