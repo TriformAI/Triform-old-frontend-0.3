@@ -9,10 +9,10 @@
 	import IO from './items/IO/Root.svelte'
 	import AgentSettings from './items/AgentSettings.svelte'
 
-	import IconExecute from '~icons/mdi/lightning-bolt'
+	import IconExecute from '~icons/material-symbols/play-arrow-rounded'
 	import IconCode from '~icons/material-symbols/code-rounded'
 	import IconMetadata from '~icons/mdi/clipboard-edit'
-	import IconTriggers from '~icons/material-symbols/input-rounded'
+	import IconTriggers from '~icons/mdi/lightning-bolt'
 	import IconVariables from '~icons/material-symbols/vpn-key-rounded'
 	import IconProject from '~icons/mdi/shape'
 	import IconIO from '~icons/material-symbols/input-circle-rounded'

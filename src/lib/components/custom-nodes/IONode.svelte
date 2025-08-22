@@ -3,6 +3,7 @@
 	import type { MetaNodeType } from '$lib/types/canvas'
 	import NodeContainer from './NodeContainer.svelte'
 	import { isAgent, isFlow } from '$lib/schemas'
+	import IconInput from '~icons/material-symbols/input-circle-rounded'
 	import IconOutput from '~icons/material-symbols/output-circle-rounded'
 	import { nodeTypes, nodeTypesDict } from '$lib/constants/nodeTypes'
 
@@ -30,6 +31,8 @@
 	const targetHandles = $derived(
 		'outputs' in container.spec && ioType === 'output' ? Object.keys(container.spec.outputs) : []
 	)
+
+	const Icon = $derived(ioType === 'input' ? IconInput : IconOutput)
 </script>
 
 {#if visualData}
@@ -45,8 +48,11 @@
 				]}
 			>
 				<span class="flex flex-row items-center justify-center gap-3">
-					<IconOutput
-						class="size-5 drop-shadow-[0px_0px_10px_var(--node-color)]"
+					<Icon
+						class={[
+							'size-5 drop-shadow-[0px_0px_10px_var(--node-color)]',
+							ioType === 'input' && 'rotate-180'
+						]}
 						style={`color: ${visualData.color}`}
 					/>
 					<span class="text-main-300 truncate capitalize">{ioType}</span>
