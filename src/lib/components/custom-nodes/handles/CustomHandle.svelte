@@ -1,5 +1,11 @@
 <script lang="ts">
-	import { getEdges, getNodes, setNodes, setEdges } from '$lib/stores/canvas.svelte'
+	import {
+		getCurrentContainer,
+		getEdges,
+		getNodes,
+		setNodes,
+		setEdges
+	} from '$lib/stores/canvas.svelte'
 	import { Handle } from '@xyflow/svelte'
 	import { Position } from '@xyflow/svelte'
 	import { getNodeSelector } from '$lib/utils/getNodeSelector'
@@ -8,6 +14,7 @@
 	import AddBox from '~icons/material-symbols/add-box-rounded'
 	import { useSvelteFlow } from '@xyflow/svelte'
 	import { selected } from '$lib/stores/panel.svelte'
+	import { isAgent } from '$lib/schemas'
 
 	interface Props {
 		id: string
@@ -79,7 +86,7 @@
 		top ? 'translate-y-full flex-col' : ' -translate-y-full flex-col-reverse'
 	]}
 >
-	{#if !hasConnections}
+	{#if !hasConnections && !isAgent(getCurrentContainer())}
 		<div
 			class={[
 				top ? '-translate-y-[130%] flex-col' : 'translate-y-[130%] flex-col-reverse',
