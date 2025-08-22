@@ -18,17 +18,6 @@ const baseMessageModel = z.object({
 	stepId: z.string().optional()
 })
 
-// Context schemas
-export const nodeContextModel = z.object({
-	event: z.literal('node')
-})
-
-export const contextModel = z
-	.object({
-		'@selectedNode': nodeContextModel.optional()
-	})
-	.optional()
-
 export const userMessageModel = baseMessageModel.omit({ runId: true }).extend({
 	event: z.literal('user_message'),
 	data: z.object({
@@ -38,7 +27,14 @@ export const userMessageModel = baseMessageModel.omit({ runId: true }).extend({
 				text: z.string()
 			})
 		),
-		context: contextModel.default({})
+		context: z
+			.record(
+				z.string(),
+				z.object({
+					content: z.unknown()
+				})
+			)
+			.default({})
 	})
 })
 
