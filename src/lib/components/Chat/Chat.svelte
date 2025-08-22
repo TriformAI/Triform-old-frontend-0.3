@@ -10,8 +10,11 @@
 	import ChatMention from './ChatMention.svelte'
 	import { type Item } from './ChatMention.svelte'
 	import { getCurrentContainer } from '$lib/stores/canvas.svelte'
+	import { userMessageModel } from '$lib/schemas/chat'
+	import { z } from 'zod'
 
-	let socket = $state<WebSocket>()
+	type UserMessage = Omit<z.infer<typeof userMessageModel>, 'id' | 'runId' | 'sourceId' | 'stepId'>
+
 	let chatMessagesContainer = $state<HTMLElement>()
 
 	function scrollToBottom() {
@@ -30,39 +33,51 @@
 		}
 	})
 
+	let startId = $state<string>()
+
+	async function loadHistory() {
+		const messages = await getMessages(page.params.id!)
+
+		startId = messages.length > 0 ? messages[messages.length - 1].id : undefined
+
+		parseHistory(messages)
+	}
+
+	let socket = $state<WebSocket>()
+
+	function initWebsocket() {
+		socket = new WebSocket(`/api/projects/${page.params.id}/chat?startId=${startId}`)
+
+		socket.onopen = () => {
+			console.log('WebSocket connected')
+		}
+
+		socket.onmessage = async e => {
+			try {
+				handleMessage(JSON.parse(e.data))
+				throttle(scrollToBottom, 300)
+			} catch (error) {}
+		}
+
+		socket.onclose = () => {
+			console.log('Socket closed')
+		}
+
+		socket.onerror = err => {
+			console.error('Socket error', err)
+		}
+	}
+
 	onMount(() => {
 		chat.data = []
 		;(async () => {
-			const messages = await getMessages(page.params.id!)
-
-			const startId = messages.length > 0 ? messages[messages.length - 1].id : undefined
-
-			parseHistory(messages)
-			await tick()
+			await loadHistory()
 
 			// Scroll to bottom after loading messages
+			await tick()
 			setTimeout(scrollToBottom, 100)
 
-			socket = new WebSocket(`/api/projects/${page.params.id}/chat?startId=${startId}`)
-
-			socket.onopen = () => {
-				console.log('WebSocket connected')
-			}
-
-			socket.onmessage = async e => {
-				try {
-					handleMessage(JSON.parse(e.data))
-					throttle(scrollToBottom, 300)
-				} catch (error) {}
-			}
-
-			socket.onclose = () => {
-				console.log('Socket closed')
-			}
-
-			socket.onerror = err => {
-				console.error('Socket error', err)
-			}
+			initWebsocket()
 
 			return () => {
 				try {
@@ -74,27 +89,8 @@
 		})()
 	})
 
-	function sendMessage(event: Event) {
-		if (userMessage.data.content[0].text.trim().length === 0) {
-			return
-		}
-
-		event.preventDefault()
-
-		if (!socket) return
-
-		socket.send(JSON.stringify(userMessage))
-
-		resetUserMessage()
-	}
-
-	let textarea = $state<HTMLTextAreaElement>()
-	let showContextOptions = $state(false)
-	let caretPos = $state(0)
-
-	let userMessage = $state(getUserMessage())
-
-	function getUserMessage() {
+	// Factory func for default state of userMessage
+	function getUserMessage(): UserMessage {
 		return {
 			event: 'user_message',
 			data: {
@@ -109,17 +105,52 @@
 		}
 	}
 
+	let userMessage = $state<UserMessage>(getUserMessage())
+
 	function resetUserMessage() {
 		userMessage = getUserMessage()
 	}
 
+	// Check that added context actually exists in the message
+	// If not - remove it
+	function sanitizeMessage() {
+		const contextKeys = Object.keys(userMessage.data.context)
+
+		for (const key of contextKeys) {
+			if (!userMessage.data.content[0].text.includes(`${key}`)) {
+				delete userMessage.data.context[key]
+			}
+		}
+	}
+
+	function sendMessage(event: Event) {
+		if (userMessage.data.content[0].text.trim().length === 0) {
+			return
+		}
+
+		sanitizeMessage()
+
+		event.preventDefault()
+
+		if (!socket) return
+
+		//socket.send(JSON.stringify(userMessage))
+
+		resetUserMessage()
+	}
+
+	let textarea = $state<HTMLTextAreaElement>()
+	let showContextOptions = $state(false)
+	let caretPos = $state(0)
+
+	// Callback function for ChatMention
 	async function insertMention(item: Item) {
 		const fullNode = getCurrentContainer().spec.nodes[item.id]
 
 		// Add selected node to context
 		userMessage.data.context = {
 			...userMessage.data.context,
-			[item.id]: {
+			[`@${item.name}`]: {
 				content: fullNode
 			}
 		}
@@ -138,6 +169,7 @@
 		}
 	}
 
+	// Options for ChatMention
 	const nodeList = $derived.by(() => {
 		return Object.entries(getCurrentContainer().spec.nodes).map(([id, node]) => ({
 			id,
@@ -145,8 +177,6 @@
 			resource: node.spec.resource
 		}))
 	})
-
-	$inspect(nodeList)
 </script>
 
 <div
