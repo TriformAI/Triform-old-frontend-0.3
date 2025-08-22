@@ -43,6 +43,8 @@
 		parseHistory(messages)
 	}
 
+	const throttledScrollToBottom = throttle(scrollToBottom, 100)
+
 	let socket = $state<WebSocket>()
 
 	function initWebsocket() {
@@ -55,7 +57,8 @@
 		socket.onmessage = async e => {
 			try {
 				handleMessage(JSON.parse(e.data))
-				throttle(scrollToBottom, 300)
+				await tick()
+				throttledScrollToBottom()
 			} catch (error) {}
 		}
 
