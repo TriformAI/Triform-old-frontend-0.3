@@ -8,10 +8,10 @@
 
 	const { nodeId }: { nodeId: string } = $props()
 
+	const currentNodeId = $derived(nodeId === 'container' ? getCurrentNodePath().pop()! : nodeId)
+
 	// triggers can only exist on top-level nodes
-	const node = $derived(
-		getProject()?.spec.nodes[nodeId === 'container' ? getCurrentNodePath().pop()! : nodeId]
-	)
+	const node = $derived(getProject()?.spec.nodes[currentNodeId])
 
 	// const triggers = $derived(
 	// 	page.data.triggers?.filter((t: Trigger) => t.spec.component_id === componentData.id)
@@ -19,9 +19,14 @@
 	const triggers = $derived(node?.triggers ?? {})
 </script>
 
-<Dialog bind:dialog {nodeId} />
+<Dialog bind:dialog nodeId={currentNodeId} />
 
-<PanelItem {nodeId} title="Triggers" isListContainer onAddClick={() => dialog?.showModal()}>
+<PanelItem
+	nodeId={currentNodeId}
+	title="Triggers"
+	isListContainer
+	onAddClick={() => dialog?.showModal()}
+>
 	<div class="flex flex-col gap-4">
 		{#each Object.entries(triggers) as [triggerId, trigger]}
 			<Item {nodeId} {triggerId} {trigger} />
