@@ -50,7 +50,7 @@
 	let socket = $state<WebSocket>()
 
 	function initWebsocket() {
-		socket = new WebSocket(`/api/projects/${page.params.id}/chat?startId=${startId}`)
+		socket = new WebSocket(`/api/projects/${page.params.id}/chat?startId=${startId ?? '$'}`)
 
 		socket.onopen = () => {
 			console.log('WebSocket connected')
