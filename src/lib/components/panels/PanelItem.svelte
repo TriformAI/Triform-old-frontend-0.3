@@ -37,8 +37,8 @@
 </script>
 
 <div class={[' grid  p-5 pt-4']}>
-	{#if /*selected.node ||*/ getCurrentContainer()}
-		<div class="mb-4 flex flex-row items-center">
+	{#if getCurrentContainer()}
+		<div class="mb-4 flex flex-row items-center gap-2">
 			<h2 class={['eyebrow text-main-300 whitespace-nowrap transition-colors']}>
 				{title}
 			</h2>
