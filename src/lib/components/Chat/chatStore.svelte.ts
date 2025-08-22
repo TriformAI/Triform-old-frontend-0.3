@@ -1,5 +1,5 @@
 import { uiMessageModel } from '$lib/schemas/chat'
-import type z from 'zod'
+import * as z from 'zod'
 
 export type Message = z.infer<typeof uiMessageModel>
 
@@ -41,6 +41,24 @@ function findMessage(msgId: string, run?: RunData): MessageData | undefined {
 	}
 
 	return chat.data.find(it => it.type === 'message' && it.id === msgId) as MessageData
+}
+
+function findStepRecursive(stepId: string, items: ParsedItem[]): StepData | undefined {
+	for (const item of items) {
+		if (item.type === 'step' && item.id === stepId) {
+			return item
+		}
+		
+		if (item.type === 'run' || item.type === 'step') {
+			const found = findStepRecursive(stepId, item.children)
+			if (found) return found
+		}
+	}
+	return undefined
+}
+
+function findStep(stepId: string): StepData | undefined {
+	return findStepRecursive(stepId, chat.data)
 }
 
 export function handleMessage(msg: Message) {
@@ -124,21 +142,50 @@ export function handleMessage(msg: Message) {
 		}
 
 		case 'run_complete': {
-			if (runId) {
-				const run = findRun(runId)
-				if (run) {
-					run.completed = true
-				}
+			const run = findRun(sourceId)
+			if (run) {
+				run.completed = true
 			}
 			break
 		}
 
 		// -------- STEPS (nested) --------
 		case 'step_start': {
+			const newStep: StepData = {
+				type: 'step',
+				id,
+				event: 'started',
+				title: data.title,
+				children: [],
+				completed: false
+			}
+
+			// TODO: if we found any events for this step already, use completed & title from there instead
+			// If stepId is provided, nest inside that step
+			if (stepId) {
+				const parentStep = findStep(stepId)
+				if (parentStep) {
+					parentStep.children.push(newStep)
+				}
+			}
+			// Otherwise, nest inside the run
+			else if (runId) {
+				const run = findRun(runId)
+				if (run) {
+					run.children.push(newStep)
+				}
+			}
 			break
 		}
 
 		case 'step_complete': {
+			// Find the step by sourceId
+			const step = findStep(sourceId)
+			if (step) {
+				step.title = data.title
+				step.event = 'completed'
+				step.completed = true
+			}
 			break
 		}
 
