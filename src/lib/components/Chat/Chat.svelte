@@ -134,7 +134,7 @@
 
 		if (!socket) return
 
-		//socket.send(JSON.stringify(userMessage))
+		socket.send(JSON.stringify(userMessage))
 
 		resetUserMessage()
 	}
@@ -192,7 +192,6 @@
 <div
 	class="bg-main-950/60 custom-scrollbar scroll-gutter-stable border-main-800 row-span-3 grid grid-rows-[1fr_auto] rounded-lg border"
 >
-	{caretPos}
 	<!-- <pre class="text-xs">
 {JSON.stringify(userMessage, null, 2)}
 </pre> -->
