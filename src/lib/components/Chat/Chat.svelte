@@ -7,6 +7,9 @@
 	import { getMessages } from '$lib/remote/chat.remote'
 	import { WebSocket } from 'partysocket'
 	import { throttle } from '$lib/utils/throttle'
+	import ChatMention from './ChatMention.svelte'
+	import { type Item } from './ChatMention.svelte'
+	import { getCurrentContainer } from '$lib/stores/canvas.svelte'
 
 	let socket = $state<WebSocket>()
 	let chatMessagesContainer = $state<HTMLElement>()
@@ -71,10 +74,8 @@
 		})()
 	})
 
-	let message = $state('')
-
 	function sendMessage(event: Event) {
-		if (message.trim().length === 0) {
+		if (userMessage.data.content[0].text.trim().length === 0) {
 			return
 		}
 
@@ -82,28 +83,78 @@
 
 		if (!socket) return
 
-		socket.send(
-			JSON.stringify({
-				event: 'user_message',
-				data: {
-					content: [
-						{
-							type: 'text',
-							text: message
-						}
-					],
-					context: {}
-				}
-			})
-		)
+		socket.send(JSON.stringify(userMessage))
 
-		message = ''
+		resetUserMessage()
 	}
+
+	let textarea = $state<HTMLTextAreaElement>()
+	let showContextOptions = $state(false)
+	let caretPos = $state(0)
+
+	let userMessage = $state(getUserMessage())
+
+	function getUserMessage() {
+		return {
+			event: 'user_message',
+			data: {
+				content: [
+					{
+						type: 'text',
+						text: ''
+					}
+				],
+				context: {}
+			}
+		}
+	}
+
+	function resetUserMessage() {
+		userMessage = getUserMessage()
+	}
+
+	async function insertMention(item: Item) {
+		const fullNode = getCurrentContainer().spec.nodes[item.id]
+
+		// Add selected node to context
+		userMessage.data.context = {
+			...userMessage.data.context,
+			[item.id]: {
+				content: fullNode
+			}
+		}
+
+		// Add mention to text
+		userMessage.data.content[0].text = userMessage.data.content[0].text + item.name
+
+		await tick()
+
+		// Move cursor to end of mention
+		if (textarea) {
+			textarea.focus()
+			const newCaretPos = item.name.length + caretPos + 1
+			textarea.selectionStart = newCaretPos
+			textarea.selectionEnd = newCaretPos
+		}
+	}
+
+	const nodeList = $derived.by(() => {
+		return Object.entries(getCurrentContainer().spec.nodes).map(([id, node]) => ({
+			id,
+			name: node.spec.meta.name,
+			resource: node.spec.resource
+		}))
+	})
+
+	$inspect(nodeList)
 </script>
 
 <div
 	class="bg-main-950/60 custom-scrollbar scroll-gutter-stable border-main-800 row-span-3 grid grid-rows-[1fr_auto] rounded-lg border"
 >
+	<!-- <pre class="text-xs">
+{JSON.stringify(userMessage, null, 2)}
+</pre> -->
 	<div class="overflow-y-auto p-4" bind:this={chatMessagesContainer}>
 		<ul class="chat grid gap-4 pb-6 text-sm">
 			{#each chat.data as item}
@@ -117,16 +168,35 @@
 	</div>
 
 	<div class="px-4 pb-4 leading-none">
-		<form onsubmit={sendMessage} class="input-text grid grid-rows-[1fr_auto] gap-2">
+		<form onsubmit={sendMessage} class="input-text relative grid grid-rows-[1fr_auto] gap-2">
+			<div class="absolute inset-x-0 bottom-[calc(100%+0.25rem)]">
+				<ChatMention
+					items={nodeList}
+					onSelected={item => {
+						insertMention(item)
+					}}
+					bind:isOpen={showContextOptions}
+				/>
+			</div>
+
 			<textarea
+				bind:this={textarea}
+				onkeyup={(e: Event) => {
+					caretPos = (e.target as HTMLTextAreaElement).selectionStart
+				}}
 				onkeydown={e => {
 					if (e.key === 'Enter' && (e.metaKey || e.ctrlKey)) {
 						e.preventDefault()
 						sendMessage(e)
+						return
+					}
+
+					if (e.key === '@') {
+						showContextOptions = true
 					}
 				}}
-				bind:value={message}
-				class="field-sizing-content max-h-30 resize-none pb-2 outline-0"
+				bind:value={userMessage.data.content[0].text}
+				class="field-sizing-content max-h-30 w-full resize-none pb-2 outline-0"
 				placeholder="Talk to your project"
 			></textarea>
 

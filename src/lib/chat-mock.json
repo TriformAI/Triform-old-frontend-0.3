@@ -1,93 +1,129 @@
 [
-  {
-    "id": "123-1",
-    "event": "text_message_started",
-    "data": {
-      "role": "user",
-      "context": {
-        "@selectedNode": {
-          "type": "node"
-        }
-      }
-    }
-  },
-  {
-    "id": "123-2",
-    "event": "text_message_content",
-    "sourceId": "123-1",
-    "data": {
-      "delta": "Hello Mr Sir, can you please build a hackernews scraper for me?"
-    }
-  },
-  {
-    "id": "123-3",
-    "event": "text_message_end",
-    "sourceId": "123-1",
-    "data": {}
-  },
-  {
-    "id": "123-4",
-    "event": "run_started",
-    "data": {}
-  },
-  {
-    "id": "123-5",
-    "event": "text_message_started",
-    "runId": "123-4",
-    "data": {
-      "role": "assistant"
-    }
-  },
-  {
-    "id": "123-6",
-    "event": "text_message_content",
-    "sourceId": "123-5",
-    "runId": "123-4",
-    "data": {
-      "delta": "I'll need to use the scraper component to build the scraper. I'll also need to use the database component to store the data."
-    }
-  },
-  {
-    "id": "123-7",
-    "event": "text_message_end",
-    "sourceId": "123-5",
-    "runId": "123-4",
-    "data": {}
-  },
-  {
-    "id": "123-8",
-    "event": "step_started",
-    "runId": "123-4",
-    "data": {
-      "title": "Building hackernews scraper"
-    }
-  },
-  {
-    "id": "123-9",
-    "event": "step_started",
-    "parentId": "123-8",
-    "runId": "123-4",
-    "data": {
-      "title": "Scoring hackernews"
-    }
-  },
-  {
-    "id": "123-10",
-    "event": "step_completed",
-    "parentId": "123-8",
-    "sourceId": "123-9",
-    "runId": "123-4",
-    "data": {
-      "title": "Finished scoring"
-    }
-  },
-  {
-    "id": "123-11",
-    "event": "step_completed",
-    "sourceId": "123-8",
-    "runId": "123-4",
-    "data": {
-      "title": "Finished building"
-    }
-  }
+	{
+		"id": "1755856453642-0",
+		"event": "user_message",
+		"data": {
+			"content": [
+				{
+					"type": "text",
+					"text": "Hello my man"
+				}
+			],
+			"context": {}
+		}
+	},
+	{
+		"id": "1755856453649-0",
+		"event": "run_start"
+	},
+	{
+		"id": "1755856453650-0",
+		"event": "text_message_start",
+		"data": {
+			"role": "assistant",
+			"context": {}
+		},
+		"runId": "1755856453649-0"
+	},
+	{
+		"id": "1755856455608-0",
+		"event": "text_message_content",
+		"data": {
+			"delta": "Hey"
+		},
+		"sourceId": "1755856453650-0",
+		"runId": "1755856453649-0"
+	},
+	{
+		"id": "1755856455609-0",
+		"event": "text_message_content",
+		"data": {
+			"delta": " there"
+		},
+		"sourceId": "1755856453650-0",
+		"runId": "1755856453649-0"
+	},
+	{
+		"id": "1755856455609-1",
+		"event": "text_message_content",
+		"data": {
+			"delta": "!"
+		},
+		"sourceId": "1755856453650-0",
+		"runId": "1755856453649-0"
+	},
+	{
+		"id": "1755856455610-0",
+		"event": "text_message_content",
+		"data": {
+			"delta": " How"
+		},
+		"sourceId": "1755856453650-0",
+		"runId": "1755856453649-0"
+	},
+	{
+		"id": "1755856455611-0",
+		"event": "text_message_content",
+		"data": {
+			"delta": " can"
+		},
+		"sourceId": "1755856453650-0",
+		"runId": "1755856453649-0"
+	},
+	{
+		"id": "1755856455612-0",
+		"event": "text_message_content",
+		"data": {
+			"delta": " I"
+		},
+		"sourceId": "1755856453650-0",
+		"runId": "1755856453649-0"
+	},
+	{
+		"id": "1755856455615-0",
+		"event": "text_message_content",
+		"data": {
+			"delta": " help"
+		},
+		"sourceId": "1755856453650-0",
+		"runId": "1755856453649-0"
+	},
+	{
+		"id": "1755856455615-1",
+		"event": "text_message_content",
+		"data": {
+			"delta": " you"
+		},
+		"sourceId": "1755856453650-0",
+		"runId": "1755856453649-0"
+	},
+	{
+		"id": "1755856455641-0",
+		"event": "text_message_content",
+		"data": {
+			"delta": " today"
+		},
+		"sourceId": "1755856453650-0",
+		"runId": "1755856453649-0"
+	},
+	{
+		"id": "1755856455642-0",
+		"event": "text_message_content",
+		"data": {
+			"delta": "?"
+		},
+		"sourceId": "1755856453650-0",
+		"runId": "1755856453649-0"
+	},
+	{
+		"id": "1755856455661-0",
+		"event": "text_message_end",
+		"sourceId": "1755856453650-0",
+		"runId": "1755856453649-0"
+	},
+	{
+		"id": "1755856455661-1",
+		"event": "run_complete",
+		"runId": "1755856453649-0"
+	}
 ]

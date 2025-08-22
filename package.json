@@ -86,6 +86,7 @@
 		"svelte-infinite": "^0.5.0",
 		"svelte-transition": "^0.0.17",
 		"tailwind-merge": "^3.3.1",
+		"textarea-caret": "^3.1.0",
 		"ws": "^8.18.3",
 		"zod": "^4.0.17"
 	}
