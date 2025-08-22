@@ -36,6 +36,8 @@
 	let startId = $state<string>()
 
 	async function loadHistory() {
+		chat.data = []
+
 		const messages = await getMessages(page.params.id!)
 
 		startId = messages.length > 0 ? messages[messages.length - 1].id : undefined
@@ -72,24 +74,17 @@
 	}
 
 	onMount(() => {
-		chat.data = []
-		;(async () => {
-			await loadHistory()
+		loadHistory()
 
-			// Scroll to bottom after loading messages
-			await tick()
-			setTimeout(scrollToBottom, 100)
+		initWebsocket()
 
-			initWebsocket()
-
-			return () => {
-				try {
-					socket?.close()
-				} catch (err) {
-					console.error('error closing socket', err)
-				}
+		return () => {
+			try {
+				socket?.close()
+			} catch (err) {
+				console.error('error closing socket', err)
 			}
-		})()
+		}
 	})
 
 	// Factory func for default state of userMessage
