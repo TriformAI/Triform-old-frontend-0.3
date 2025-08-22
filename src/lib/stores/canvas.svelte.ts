@@ -538,9 +538,28 @@ export const getVisibleComponent = (nodeId: string | 'container') => {
 	return container.spec.nodes[nodeId]?.spec as z.infer<typeof resolvedComponentModel>
 }
 
+const mergeExcluding = <T extends Record<string, unknown>>(
+	target: T,
+	source: T,
+	excludeKeys: (keyof T)[] = []
+): T => {
+	if (!excludeKeys.length) return source
+	
+	const result = { ...source }
+	excludeKeys.forEach(key => {
+		if (key in target) {
+			result[key] = target[key]
+		}
+	})
+	return result
+}
+
 // replaces all instances of a given component with an updated one in the current project (locally)
 // important to note that it isn't fully recursive, but rather just updates the unresolved component spec
-export const updateLocalComponent = async (component: z.infer<typeof componentModel>) => {
+export const updateLocalComponent = async <T extends z.infer<typeof componentModel>>(
+	component: T,
+	excludeKeys: { spec?: (keyof T['spec'])[], meta?: (keyof T['meta'])[] } = {}
+) => {
 	const processNode = async (node: TriNode) => {
 		if (node.component_id === component.id) {
 			console.log('updating node', node.component_id, component.id)
@@ -557,8 +576,8 @@ export const updateLocalComponent = async (component: z.infer<typeof componentMo
 				component.spec = resolved.spec
 				console.log('new spec', component.spec)
 			}
-			node.spec.spec = component.spec
-			node.spec.meta = component.meta
+			node.spec.spec = mergeExcluding(node.spec.spec, component.spec, excludeKeys.spec)
+			node.spec.meta = mergeExcluding(node.spec.meta, component.meta, excludeKeys.meta)
 		}
 		// recursively process all nodes in the component
 		if ('nodes' in node.spec.spec)

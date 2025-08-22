@@ -13,7 +13,7 @@
 	import { blur, fade } from 'svelte/transition'
 	import { debounce } from '$lib/utils/debounce'
 	import { buildComponent, updateComponent } from '$lib/actions/components'
-	import { getVisibleComponent } from '$lib/stores/canvas.svelte'
+	import { getVisibleComponent, updateLocalComponent } from '$lib/stores/canvas.svelte'
 
 	const { nodeId }: { nodeId: string } = $props()
 
@@ -71,15 +71,29 @@
 	const currentLanguage = $derived(currentFileName.split('.').pop() as 'py' | 'md' | 'txt')
 
 	const debouncedSave = debounce(async () => {
-		const res = await updateComponent(componentData)
-		if (!res.success) toast.error(`Failed saving ${componentData.meta.name}`)
+		const res = await updateComponent(componentData, false)
+		console.log('res', res)
+		if (!res.success)
+			toast.error(
+				// @ts-expect-error - errors arent typed in api client
+				`Failed saving ${componentData.meta.name}: ${'issues' in res ? res.issues?.[0]?.message : (res.error ?? 'unknown error')}`
+			)
+		// don't overwrite the source so:
+		// 1. the cursor stays still
+		// 2. any potential changes during the saving are not lost
+		else
+			updateLocalComponent(componentData as z.infer<typeof actionModel>, {
+				spec: ['source', 'readme', 'requirements']
+			})
 	}, 500)
 
 	let isBuildingDeps = $state(false)
 	const buildAction = async () => {
 		isBuildingDeps = true
 		const res = await buildComponent(componentId)
-		updateComponent(res.data)
+		updateComponent(res.data, false)
+		// don't overwrite the source in case the user has changed it while building
+		updateLocalComponent(res.data as z.infer<typeof actionModel>, { spec: ['source'] })
 		if (!res.success) toast.error(`Failed building ${componentData.meta.name}`)
 		else toast.success('Successfully built dependencies')
 		isBuildingDeps = false

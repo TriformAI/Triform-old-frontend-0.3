@@ -17,7 +17,7 @@
 	)
 
 	const debouncedSave = debounce(async () => {
-		const res = await updateComponent(componentData)
+		const res = await updateComponent(componentData, false)
 		if (!res.success) toast.error(`Failed saving ${componentData.meta.name}`)
 	}, 500)
 </script>

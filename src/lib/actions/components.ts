@@ -9,14 +9,15 @@ import { updateLocalComponent } from '$lib/stores/canvas.svelte'
 const api = new API()
 
 export const updateComponent = async (
-	component: Partial<z.infer<typeof componentModel> | ResolvedComponent>
+	component: Partial<z.infer<typeof componentModel> | ResolvedComponent>,
+	updateLocal: boolean = true
 ) => {
 	const unresolved = unresolveComponent(component as ResolvedComponent)
 	const res = await api.patch<{ data: Component }>(
 		`components/${component.id}`,
 		pick(unresolved, ['spec', 'meta'])
 	)
-	if (res.success) updateLocalComponent(res.data)
+	if (res.success && updateLocal) updateLocalComponent(res.data)
 	return res
 }
 

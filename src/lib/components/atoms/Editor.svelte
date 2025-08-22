@@ -70,7 +70,11 @@
 	$effect(() => {
 		const ref = code
 		if (!editorInitialized || !editor) return
-		if (ref !== editor.getValue()) editor.setValue(ref)
+		if (ref !== editor.getValue()) {
+			const cursorPos = editor.getPosition()
+			editor.setValue(ref)
+			if (cursorPos) editor.setPosition(cursorPos)
+		}
 	})
 </script>
 
