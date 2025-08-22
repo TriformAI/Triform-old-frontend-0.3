@@ -1,7 +1,8 @@
-import { uiMessageModel } from '$lib/schemas/chat'
+import { ackMessageModel, uiMessageModel } from '$lib/schemas/chat'
 import * as z from 'zod'
 
-export type Message = z.infer<typeof uiMessageModel>
+const ackModel = ackMessageModel.extend({ id: z.string() })
+export type Message = z.infer<typeof uiMessageModel> | z.infer<typeof ackModel>
 
 export interface MessageData {
 	id: string
@@ -67,6 +68,10 @@ export function handleMessage(msg: Message) {
 	const stepId = 'stepId' in msg ? msg.stepId : undefined
 
 	switch (event) {
+		case 'ack': {
+			handleMessage(data)			
+			break
+		}
 		// -------- USER MESSAGES --------
 		case 'user_message': {
 			if (findMessage(id)) {
