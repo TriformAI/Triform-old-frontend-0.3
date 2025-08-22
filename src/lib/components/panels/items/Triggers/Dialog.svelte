@@ -14,7 +14,7 @@
 	import type { Cron, Trigger, Modifier } from '$lib/types/resources'
 	import type { Component } from '$lib/types/resources'
 	import { sleep } from '$lib/utils/sleep'
-	import { getProject, getVisibleComponent } from '$lib/stores/canvas.svelte'
+	import { getCurrentContainer, getProject, getVisibleComponent } from '$lib/stores/canvas.svelte'
 	import type * as z from 'zod'
 	import type { triggerModel } from '$lib/schemas'
 	import { validateJSONPath } from '$lib/utils/validateJSONPath'
@@ -37,7 +37,7 @@
 
 	// triggers can only exist on top-level nodes
 	const node = $derived(getProject()?.spec.nodes[nodeId])
-	const componentData = $derived(getVisibleComponent(nodeId))
+	const componentData = $derived(node?.spec)
 
 	const tabs = [
 		{

@@ -29,7 +29,7 @@
 >
 	<div class="flex flex-col gap-4">
 		{#each Object.entries(triggers) as [triggerId, trigger]}
-			<Item {nodeId} {triggerId} {trigger} />
+			<Item nodeId={currentNodeId} {triggerId} {trigger} />
 		{:else}
 			<p class="text-main-500 text-sm text-center">No triggers yet</p>
 		{/each}
