@@ -143,8 +143,19 @@
 	let showContextOptions = $state(false)
 	let caretPos = $state(0)
 
+	function insertAtCaret(el: HTMLTextAreaElement, snippet: string) {
+		// Native (preserves undo history)
+		el.setRangeText(snippet, el.selectionStart, el.selectionEnd, 'end')
+		// "end" places the caret after the inserted text
+		el.dispatchEvent(new Event('input', { bubbles: true }))
+	}
+
 	// Callback function for ChatMention
 	async function insertMention(item: Item) {
+		if (!textarea) {
+			return
+		}
+
 		const fullNode = getCurrentContainer().spec.nodes[item.id]
 
 		// Add selected node to context
@@ -155,18 +166,17 @@
 			}
 		}
 
-		// Add mention to text
-		userMessage.data.content[0].text = userMessage.data.content[0].text + item.name
+		// First update textarea, then set userMessage based on the updated content in textarea
+		insertAtCaret(textarea, `${item.name} `)
+		userMessage.data.content[0].text = textarea.value
 
 		await tick()
 
-		// Move cursor to end of mention
-		if (textarea) {
-			textarea.focus()
-			const newCaretPos = item.name.length + caretPos + 1
-			textarea.selectionStart = newCaretPos
-			textarea.selectionEnd = newCaretPos
-		}
+		// Make sure caret ends up at the right position
+		textarea.focus()
+		const newCaretPos = item.name.length + caretPos + 2
+		textarea.selectionStart = newCaretPos
+		textarea.selectionEnd = newCaretPos
 	}
 
 	// Options for ChatMention
@@ -182,6 +192,7 @@
 <div
 	class="bg-main-950/60 custom-scrollbar scroll-gutter-stable border-main-800 row-span-3 grid grid-rows-[1fr_auto] rounded-lg border"
 >
+	{caretPos}
 	<!-- <pre class="text-xs">
 {JSON.stringify(userMessage, null, 2)}
 </pre> -->
