@@ -33,7 +33,7 @@
 		}
 	})
 
-	let startId = $state<string>()
+	let startId: string | undefined
 
 	async function loadHistory() {
 		chat.data = []
@@ -50,7 +50,9 @@
 	let socket = $state<WebSocket>()
 
 	function initWebsocket() {
-		socket = new WebSocket(`/api/projects/${page.params.id}/chat?startId=${startId ?? '$'}`)
+		socket = new WebSocket(
+			`/api/projects/${page.params.id}/chat${startId ? `?startId=${startId}` : ''}`
+		)
 
 		socket.onopen = () => {
 			console.log('WebSocket connected')

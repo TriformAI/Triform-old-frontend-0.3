@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { DropdownMenu } from 'bits-ui'
 	import { nodeTypes } from '$lib/constants/nodeTypes'
-	$inspect(nodeTypes)
+
 	export interface Item {
 		id: string
 		name: string
