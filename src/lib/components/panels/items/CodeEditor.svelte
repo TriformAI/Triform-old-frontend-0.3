@@ -8,6 +8,8 @@
 	import type { actionModel } from '$lib/schemas'
 	import { toast } from 'svelte-sonner'
 	import compare from 'just-compare'
+	import IconWarning from '~icons/material-symbols/warning-rounded'
+
 	import PanelItem from '../PanelItem.svelte'
 	import { inProgressComponents } from '$lib/stores/builder.svelte'
 	import { blur, fade } from 'svelte/transition'
@@ -98,17 +100,17 @@
 		else toast.success('Successfully built dependencies')
 		isBuildingDeps = false
 	}
+
+	const buildButtonIsActive = $derived.by(() => {
+		return !componentData.spec.checksum && componentData.spec.requirements
+	})
 </script>
 
 <PanelItem title="Code" {nodeId}>
-	<div class="relative h-fit">
+	<div class={['relative grid grid-rows-[auto_1fr]']}>
 		<Tabs {tabs} bind:activeTab />
-		<div
-			class={[
-				'relative mt-2.5 grid h-[65vh] transition-all',
-				isBuilding && 'opacity-50 grayscale-75'
-			]}
-		>
+
+		<div class={['relative mt-2.5 grid transition-all', isBuilding && 'opacity-50 grayscale-75']}>
 			{#if componentData}
 				{#key activeTab}
 					{#if currentLanguage === 'py'}
@@ -132,42 +134,28 @@
 			{/if}
 		</div>
 
-		{#if !componentData.spec.checksum && componentData.spec.requirements}
-			<div class="mt-4 flex flex-row justify-end gap-2" transition:fade={{ duration: 150 }}>
-				<p class="text-main-400 shrink">
+		<div class="mt-4 flex items-start gap-2" transition:fade={{ duration: 150 }}>
+			{#if buildButtonIsActive}
+				<p
+					class="text-main-400 grid shrink grid-cols-[auto_1fr] items-start gap-2 text-sm text-pretty opacity-100 transition-opacity duration-300 starting:opacity-0"
+				>
+					<IconWarning class="mt-1 size-4" />
 					Your requirements.txt file has changed, please re-build your dependencies before executing
 					this action
 				</p>
-				<Button variation="vibrant" class="w-max" onClick={buildAction} isLoading={isBuildingDeps}>
-					{#snippet body()}
-						Build
-					{/snippet}
-				</Button>
-			</div>
-		{/if}
+			{/if}
 
-		{#if isBuilding && componentId}
-			{@const message = inProgressComponents[componentId]?.message}
-			<div
-				class="pointer-events-none absolute inset-0 flex items-center justify-center px-6 py-4 opacity-100 transition starting:opacity-0"
+			<Button
+				disabled={!buildButtonIsActive}
+				variation="vibrant"
+				class="ms-auto"
+				onClick={buildAction}
+				isLoading={isBuildingDeps}
 			>
-				<div
-					class="bg-main-950/40 animate-border grid h-fit w-fit items-center rounded px-8 py-4 backdrop-blur-2xl"
-				>
-					{#key message}
-						<span
-							class="text-main-200 truncate-lines-5 col-start-1 row-start-1 text-center"
-							transition:blur={{
-								duration: 800,
-								opacity: 0,
-								amount: 5
-							}}
-						>
-							{message}
-						</span>
-					{/key}
-				</div>
-			</div>
-		{/if}
+				{#snippet body()}
+					Build
+				{/snippet}
+			</Button>
+		</div>
 	</div>
 </PanelItem>

@@ -236,7 +236,7 @@
 					}
 				}}
 				bind:value={userMessage.data.content[0].text}
-				class="field-sizing-content max-h-30 w-full resize-none pb-2 outline-0"
+				class="field-sizing-content max-h-30 min-h-16 w-full resize-none pb-2 outline-0"
 				placeholder="Talk to your project"
 			></textarea>
 

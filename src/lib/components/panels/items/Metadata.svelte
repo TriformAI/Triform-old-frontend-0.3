@@ -24,9 +24,8 @@
 
 {#if componentData}
 	<PanelItem {nodeId} title="Metadata">
-		<div class="grid grid-cols-2 gap-3">
+		<div class="grid auto-rows-min items-start gap-3">
 			<InputField
-				containerClass="col-span-2"
 				required
 				label="Name"
 				name="name"
@@ -36,14 +35,13 @@
 
 			<TextField
 				rows={3}
-				class="col-span-2"
 				label="Intention"
 				name="intention"
 				oninput={debouncedSave}
 				bind:value={componentData.meta.intention}
 			/>
 
-			<div class="col-span-2">
+			<div>
 				<span class="input-title">Readme</span>
 				<LightEditor
 					language="md"

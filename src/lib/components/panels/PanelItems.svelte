@@ -87,10 +87,7 @@
 </script>
 
 <div
-	class={[
-		'relative grid h-[calc(100%-4rem)] items-start',
-		showNav ? 'grid-cols-[auto_1fr]' : 'grid-cols-1'
-	]}
+	class={['relative grid h-[calc(100%-4rem)]', showNav ? 'grid-cols-[auto_1fr]' : 'grid-cols-1']}
 >
 	{#if showNav}
 		<nav class="border-main-800 h-full border-e">
@@ -135,13 +132,11 @@
 				data-panel-item={key}
 				class={[
 					' relative z-10 overflow-hidden starting:h-0',
-					activeComponents.includes(key) ? 'max-h-max' : 'h-0',
+					activeComponents.includes(key) ? 'h-full' : 'h-0',
 					isMounted && 'transition-height duration-500 ease-(--easing-circ)'
 				]}
 			>
-				<div class="border-b-main-800 border-b">
-					<Component {nodeId} />
-				</div>
+				<Component {nodeId} />
 			</div>
 		{/each}
 	</div>

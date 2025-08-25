@@ -11,7 +11,7 @@
 
 <div
 	class={twMerge(
-		'custom-scrollbar scroll-gutter-stable  bg-main-950/60 border-main-800 @container row-span-3 mb-2 overflow-y-auto rounded-lg border pb-4',
+		'custom-scrollbar scroll-gutter-stable  bg-main-950/60 border-main-800 @container row-span-3 overflow-y-auto rounded-lg border',
 		'h-full',
 		classes
 	)}
