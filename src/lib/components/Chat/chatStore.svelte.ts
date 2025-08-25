@@ -3,6 +3,8 @@ import * as z from 'zod'
 
 const ackModel = ackMessageModel.extend({ id: z.string() })
 export type Message = z.infer<typeof uiMessageModel> | z.infer<typeof ackModel>
+let startId: string | undefined
+export const getStartId = () => startId
 
 export interface MessageData {
 	id: string
@@ -66,6 +68,8 @@ export function handleMessage(msg: Message) {
 	const { id, event, data, sourceId } = msg
 	const runId = 'runId' in msg ? msg.runId : undefined
 	const stepId = 'stepId' in msg ? msg.stepId : undefined
+
+	if (!startId || parseInt(id.split('-')[0]) > parseInt(startId?.split('-')[0])) startId = id
 
 	switch (event) {
 		case 'ack': {

@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { onMount, tick } from 'svelte'
 	import ChatItem from './ChatItem.svelte'
-	import { handleMessage, parseHistory, chat } from './chatStore.svelte'
+	import { handleMessage, parseHistory, chat, getStartId } from './chatStore.svelte'
 	import Button from '../atoms/Button.svelte'
 	import { page } from '$app/state'
 	import { getMessages } from '$lib/remote/chat.remote'
@@ -33,14 +33,10 @@
 		}
 	})
 
-	let startId: string | undefined
-
 	async function loadHistory() {
 		chat.data = []
 
 		const messages = await getMessages(page.params.id!)
-
-		startId = messages.length > 0 ? messages[messages.length - 1].id : undefined
 
 		parseHistory(messages)
 	}
@@ -50,9 +46,7 @@
 	let socket = $state<WebSocket>()
 
 	function initWebsocket() {
-		socket = new WebSocket(
-			`/api/projects/${page.params.id}/chat${startId ? `?startId=${startId}` : ''}`
-		)
+		socket = new WebSocket(`/api/projects/${page.params.id}/chat?startId=${getStartId() ?? '0'}`)
 
 		socket.onopen = () => {
 			console.log('WebSocket connected')
