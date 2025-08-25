@@ -219,10 +219,12 @@
 					caretPos = (e.target as HTMLTextAreaElement).selectionStart
 				}}
 				onkeydown={e => {
-					if (e.key === 'Enter' && (e.metaKey || e.ctrlKey)) {
-						e.preventDefault()
-						sendMessage(e)
-						return
+					if (e.key === 'Enter') {
+						if (!e.shiftKey) {
+							e.preventDefault()
+							sendMessage(e)
+							return
+						}
 					}
 
 					if (e.key === '@') {
