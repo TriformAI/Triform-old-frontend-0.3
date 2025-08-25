@@ -1,8 +1,11 @@
-import { ackMessageModel, uiMessageModel } from '$lib/schemas/chat'
+import { ackMessageModel, errorMessageModel, uiMessageModel } from '$lib/schemas/chat'
+import { toast } from 'svelte-sonner'
 import * as z from 'zod'
 
+// these don't have ids, just an ugly hack for TS for now :)
 const ackModel = ackMessageModel.extend({ id: z.string() })
-export type Message = z.infer<typeof uiMessageModel> | z.infer<typeof ackModel>
+const errorModel = errorMessageModel.extend({ id: z.string() })
+export type Message = z.infer<typeof uiMessageModel> | z.infer<typeof ackModel> | z.infer<typeof errorModel>
 let startId: string | undefined
 export const getStartId = () => startId
 
@@ -69,11 +72,15 @@ export function handleMessage(msg: Message) {
 	const runId = 'runId' in msg ? msg.runId : undefined
 	const stepId = 'stepId' in msg ? msg.stepId : undefined
 
-	if (!startId || parseInt(id.split('-')[0]) > parseInt(startId?.split('-')[0])) startId = id
+	if (!startId || parseInt(id?.split('-')[0] ?? '0') > parseInt(startId?.split('-')[0])) startId = id
 
 	switch (event) {
 		case 'ack': {
 			handleMessage(data)			
+			break
+		}
+		case 'error': {
+			toast.error(data.error?.message ?? 'Unknown error, please try again later')
 			break
 		}
 		// -------- USER MESSAGES --------

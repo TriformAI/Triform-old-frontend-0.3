@@ -57,7 +57,10 @@
 				handleMessage(JSON.parse(e.data))
 				await tick()
 				throttledScrollToBottom()
-			} catch (error) {}
+			} catch (error) {
+				console.error('error handling message', error)
+				toast.error('Unknown error, please try again later')
+			}
 		}
 
 		socket.onclose = () => {
