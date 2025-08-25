@@ -12,6 +12,7 @@
 	import { getCurrentContainer } from '$lib/stores/canvas.svelte'
 	import { userMessageModel } from '$lib/schemas/chat'
 	import { z } from 'zod'
+	import { toast } from 'svelte-sonner'
 
 	type UserMessage = Omit<z.infer<typeof userMessageModel>, 'id' | 'runId' | 'sourceId' | 'stepId'>
 
