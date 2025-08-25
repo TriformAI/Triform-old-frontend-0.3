@@ -6,10 +6,21 @@
 	import { authClient } from '$lib/auth-client'
 	import { apiStatus } from '$lib/stores/apiStatus.svelte'
 	import Spinner from './Spinner.svelte'
+	import { goto } from '$app/navigation'
 
 	const activeOrganization = authClient.useActiveOrganization()
 
 	const { children } = $props()
+
+	async function logout() {
+		await authClient.signOut({
+			fetchOptions: {
+				onSuccess: () => {
+					goto('/login')
+				}
+			}
+		})
+	}
 </script>
 
 <header class="bg-main-850 sticky top-0 z-30 flex w-full items-center justify-between px-5 py-2">
@@ -65,9 +76,7 @@
 						<a href="/account" class="list-btn w-full">Account</a>
 					</li>
 					<li>
-						<form action="/logout" method="post">
-							<button type="submit" class="list-btn w-full">Log out</button>
-						</form>
+						<button onclick={logout} class="list-btn w-full">Log out</button>
 					</li>
 				</ul>
 			{/snippet}
