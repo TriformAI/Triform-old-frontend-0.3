@@ -1,5 +1,4 @@
 <script lang="ts">
-	import loader from '@monaco-editor/loader'
 	import { onDestroy } from 'svelte'
 	import type * as Monaco from 'monaco-editor/esm/vs/editor/editor.api'
 	import githubDarkTheme from '$lib/editor-themes/github-dark.json'
@@ -20,8 +19,13 @@
 	const initEditor = (el: HTMLDivElement) => {
 		// Wrap in inner async so the top level function can be sync so svelte ts type cheking is happy
 		;(async () => {
-			const monacoEditor = await import('monaco-editor')
-			loader.config({ monaco: monacoEditor.default })
+			const loader = (await import('@monaco-editor/loader')).default
+
+			loader.config({
+				paths: {
+					vs: 'https://cdn.jsdelivr.net/npm/monaco-editor@0.49.0/min/vs'
+				}
+			})
 
 			monaco = await loader.init()
 
@@ -85,6 +89,7 @@
 <div
 	class={['bg-main-800 h-full w-full animate-pulse rounded-md', editorInitialized && 'hidden']}
 ></div>
+
 <div
 	class={['bg-main-800 rounded-md py-4 ps-0', !editorInitialized && 'invisible', classes]}
 	use:initEditor
