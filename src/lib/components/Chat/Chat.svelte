@@ -47,7 +47,9 @@
 	let socket = $state<WebSocket>()
 
 	function initWebsocket() {
-		socket = new WebSocket(`/api/projects/${page.params.id}/chat?startId=${getStartId() ?? '0'}`)
+		socket = new WebSocket(
+			() => `/api/projects/${page.params.id}/chat?startId=${getStartId() ?? '0'}`
+		)
 
 		socket.onopen = () => {
 			console.log('WebSocket connected')
@@ -56,6 +58,7 @@
 		socket.onmessage = async e => {
 			try {
 				handleMessage(JSON.parse(e.data))
+
 				await tick()
 				throttledScrollToBottom()
 			} catch (error) {
@@ -74,9 +77,10 @@
 	}
 
 	onMount(() => {
-		loadHistory()
-
-		initWebsocket()
+		;(async () => {
+			await loadHistory()
+			initWebsocket()
+		})()
 
 		return () => {
 			try {

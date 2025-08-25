@@ -5,7 +5,10 @@ import * as z from 'zod'
 // these don't have ids, just an ugly hack for TS for now :)
 const ackModel = ackMessageModel.extend({ id: z.string() })
 const errorModel = errorMessageModel.extend({ id: z.string() })
-export type Message = z.infer<typeof uiMessageModel> | z.infer<typeof ackModel> | z.infer<typeof errorModel>
+export type Message =
+	| z.infer<typeof uiMessageModel>
+	| z.infer<typeof ackModel>
+	| z.infer<typeof errorModel>
 let startId: string | undefined
 export const getStartId = () => startId
 
@@ -54,7 +57,7 @@ function findStepRecursive(stepId: string, items: ParsedItem[]): StepData | unde
 		if (item.type === 'step' && item.id === stepId) {
 			return item
 		}
-		
+
 		if (item.type === 'run' || item.type === 'step') {
 			const found = findStepRecursive(stepId, item.children)
 			if (found) return found
@@ -68,15 +71,19 @@ function findStep(stepId: string): StepData | undefined {
 }
 
 export function handleMessage(msg: Message) {
+	//console.log('handleMessage', msg)
+
 	const { id, event, data, sourceId } = msg
 	const runId = 'runId' in msg ? msg.runId : undefined
 	const stepId = 'stepId' in msg ? msg.stepId : undefined
 
-	if (!startId || parseInt(id?.split('-')[0] ?? '0') > parseInt(startId?.split('-')[0])) startId = id
+	if (!startId || parseInt(id?.split('-')[0] ?? '0') > parseInt(startId?.split('-')[0])) {
+		startId = id
+	}
 
 	switch (event) {
 		case 'ack': {
-			handleMessage(data)			
+			handleMessage(data)
 			break
 		}
 		case 'error': {
@@ -97,7 +104,6 @@ export function handleMessage(msg: Message) {
 					.map(item => item.text)
 					.join('')
 			}
-
 			chat.data.push(messageObj)
 			break
 		}
@@ -126,6 +132,9 @@ export function handleMessage(msg: Message) {
 				const run = findRun(runId)
 				if (run) {
 					const message = findMessage(sourceId, run)
+					// console.log('message', $state.snapshot(message))
+					// console.log('data.delta', data.delta)
+
 					if (message && !message.completed) {
 						message.content += data.delta
 					}
@@ -152,6 +161,7 @@ export function handleMessage(msg: Message) {
 			if (findRun(id)) {
 				break
 			}
+			console.log('run_start', id)
 
 			chat.data.push({ type: 'run', id, children: [], completed: false })
 			break
@@ -216,7 +226,7 @@ export function resetChatState() {
 
 // Replay a backlog/history
 export function parseHistory(history: Message[]) {
-	resetChatState()
+	//resetChatState()
 
 	for (const m of history) handleMessage(m)
 }
