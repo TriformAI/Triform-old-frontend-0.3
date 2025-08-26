@@ -1,7 +1,14 @@
 <script lang="ts">
 	import { onMount, tick } from 'svelte'
 	import ChatItem from './ChatItem.svelte'
-	import { handleMessage, parseHistory, chat, getStartId } from './chatStore.svelte'
+	import {
+		handleMessage,
+		parseHistory,
+		chat,
+		getStartId,
+		type MessageData,
+		type ParsedItem
+	} from './chatStore.svelte'
 	import Button from '../atoms/Button.svelte'
 	import { page } from '$app/state'
 	import { getMessages } from '$lib/remote/chat.remote'
@@ -13,6 +20,7 @@
 	import { userMessageModel } from '$lib/schemas/chat'
 	import { z } from 'zod'
 	import { toast } from 'svelte-sonner'
+	import LogoSpinner from '$lib/components/SpinnerLogo.svelte'
 
 	type UserMessage = Omit<z.infer<typeof userMessageModel>, 'id' | 'runId' | 'sourceId' | 'stepId'>
 
@@ -189,14 +197,40 @@
 			resource: node.spec.resource
 		}))
 	})
+
+	// Derived state to track if we're waiting for assistant response
+	const allMessages = $derived.by(() => {
+		// Get all messages in chronological order
+		const allMessages: MessageData[] = []
+		function collectMessages(items: ParsedItem[]) {
+			for (const item of items) {
+				if (item.type === 'message') {
+					allMessages.push(item)
+				} else if (item.type === 'run' || item.type === 'step') {
+					collectMessages(item.children)
+				}
+			}
+		}
+
+		collectMessages(chat.data)
+
+		return allMessages
+	})
+
+	const isWaitingForAssistant = $derived.by(() => {
+		if (allMessages.length === 0) {
+			return false
+		}
+
+		const lastMessage = allMessages[allMessages.length - 1]
+
+		return lastMessage.role === 'assistant' && lastMessage.content.length === 0
+	})
 </script>
 
 <div
 	class="bg-main-950/60 custom-scrollbar scroll-gutter-stable border-main-800 row-span-3 grid grid-rows-[1fr_auto] rounded-lg border"
 >
-	<!-- <pre class="text-xs">
-{JSON.stringify(userMessage, null, 2)}
-</pre> -->
 	<div class="overflow-y-auto p-4" bind:this={chatMessagesContainer}>
 		<ul class="chat grid gap-4 pb-6 text-sm">
 			{#each chat.data as item}
@@ -206,6 +240,17 @@
 					<ChatItem {item} />
 				</li>
 			{/each}
+
+			<li>
+				<span
+					class={[
+						'flex items-center gap-1.5 font-medium transition-opacity duration-200',
+						isWaitingForAssistant ? 'opacity-100 delay-300' : 'opacity-0'
+					]}
+				>
+					<LogoSpinner class="size-5" />
+				</span>
+			</li>
 		</ul>
 	</div>
 
@@ -247,7 +292,7 @@
 			<Button variation="vibrant" type="submit" class="ms-auto -me-2 -mb-1 px-2 py-1 text-sm">
 				<div class="flex items-center gap-0.5">
 					Send
-					<kbd class="ms-2">⌘</kbd>
+
 					<kbd>↵</kbd>
 				</div>
 			</Button>

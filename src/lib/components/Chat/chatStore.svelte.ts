@@ -105,6 +105,7 @@ export function handleMessage(msg: Message) {
 					.join('')
 			}
 			chat.data.push(messageObj)
+
 			break
 		}
 
@@ -153,6 +154,7 @@ export function handleMessage(msg: Message) {
 					}
 				}
 			}
+
 			break
 		}
 
