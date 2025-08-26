@@ -5,28 +5,93 @@
 </script>
 
 <svg
-	class={twMerge('animate-spin text-white', classes)}
+	class={twMerge('spinner-logo text-white opacity-90 saturate-0', classes)}
 	viewBox="0 0 166 166"
 	fill="none"
 	xmlns="http://www.w3.org/2000/svg"
 >
-	<g clip-path="url(#clip0_1_2)">
-		<path
-			d="M3 120.962L126 120.992L87.6127 54.2779L96.5078 38.8594L152.414 135.72L11.4894 135.667L3 120.962Z"
-			fill="white"
-		/>
-		<path
-			d="M89.0781 -6L28.1537 99.4922H106.145L114.804 114.492H3L71.0781 -6L89.0781 -6Z"
-			fill="white"
-		/>
-		<path
-			d="M159.786 135.484L96.5583 25.9818L57.6394 93.4922L39.08 93.4962L96.5219 -5.99522L169.004 119.543L159.786 135.484Z"
-			fill="white"
-		/>
-	</g>
+	<path
+		d="M0 127.47L123 127.5L84.6127 60.7857L93.5078 45.3672L149.414 142.228L8.48943 142.175L0 127.47Z"
+		fill="url(#paint0_linear_826_23229)"
+	/>
+	<path
+		d="M0 127.47L123 127.5L84.6127 60.7857L93.5078 45.3672L149.414 142.228L8.48943 142.175L0 127.47Z"
+		fill="url(#paint1_linear_826_23229)"
+	/>
+	<path
+		d="M86.0781 0.507812L25.1537 106H103.145L111.804 121H0L68.0781 0.507812H86.0781Z"
+		fill="url(#paint2_linear_826_23229)"
+	/>
+	<path
+		d="M156.786 141.992L93.5583 32.4896L54.6394 100L36.08 100.004L93.5219 0.512589L166.004 126.051L156.786 141.992Z"
+		fill="url(#paint3_linear_826_23229)"
+	/>
 	<defs>
-		<clipPath id="clip0_1_2">
-			<rect width="166" height="166" fill="white" />
-		</clipPath>
+		<linearGradient
+			id="paint0_linear_826_23229"
+			x1="5.84"
+			y1="94.8901"
+			x2="143.43"
+			y2="96.9501"
+			gradientUnits="userSpaceOnUse"
+		>
+			<stop stop-color="#71C9EC" />
+			<stop offset="1" stop-color="#833FB4" />
+		</linearGradient>
+		<linearGradient
+			id="paint1_linear_826_23229"
+			x1="5.84"
+			y1="94.8901"
+			x2="143.43"
+			y2="96.9501"
+			gradientUnits="userSpaceOnUse"
+		>
+			<stop stop-color="#71C9EC" />
+			<stop offset="1" stop-color="#833FB4" />
+		</linearGradient>
+		<linearGradient
+			id="paint2_linear_826_23229"
+			x1="109.87"
+			y1="22.11"
+			x2="47.1098"
+			y2="137.28"
+			gradientUnits="userSpaceOnUse"
+		>
+			<stop stop-color="#71C9EC" />
+			<stop offset="1" stop-color="#833FB4" />
+		</linearGradient>
+		<linearGradient
+			id="paint3_linear_826_23229"
+			x1="123.686"
+			y1="154.03"
+			x2="59.5323"
+			y2="33.711"
+			gradientUnits="userSpaceOnUse"
+		>
+			<stop stop-color="#71C9EC" />
+			<stop offset="1" stop-color="#833FB4" />
+		</linearGradient>
 	</defs>
 </svg>
+
+<style>
+	@keyframes step-rotate {
+		0% {
+			transform: rotate(0deg);
+		}
+		33.33% {
+			transform: rotate(120deg);
+		}
+		66.66% {
+			transform: rotate(240deg);
+		}
+		100% {
+			transform: rotate(360deg);
+		}
+	}
+
+	.spinner-logo {
+		transform-origin: center;
+		animation: step-rotate 4s cubic-bezier(0.8, 0, 0.2, 1) infinite;
+	}
+</style>
