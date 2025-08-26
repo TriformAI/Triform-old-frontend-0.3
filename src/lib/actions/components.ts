@@ -5,8 +5,24 @@ import type * as z from 'zod'
 import { pick } from '$lib/utils/pick'
 import { unresolveComponent } from '$lib/utils/unresolveComponent'
 import { updateLocalComponent } from '$lib/stores/canvas.svelte'
+import { requirementsModel } from '$lib/schemas/requirements'
+
+type Requirements = z.infer<typeof requirementsModel> & {
+	id?: string
+}
 
 const api = new API()
+
+export const getRequirements = async (componentId: string) => {
+	return await api.get<{ data: Requirements }>(`components/${componentId}/requirements`)
+}
+
+export const upsertRequirements = async (componentId: string, requirements: Requirements) => {
+	return await api.patch<{ data: Requirements }>(
+		`components/${componentId}/requirements`,
+		requirements
+	)
+}
 
 export const updateComponent = async (
 	component: Partial<z.infer<typeof componentModel> | ResolvedComponent>,

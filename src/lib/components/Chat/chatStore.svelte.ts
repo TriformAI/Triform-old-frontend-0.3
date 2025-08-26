@@ -163,7 +163,6 @@ export function handleMessage(msg: Message) {
 			if (findRun(id)) {
 				break
 			}
-			console.log('run_start', id)
 
 			chat.data.push({ type: 'run', id, children: [], completed: false })
 			break

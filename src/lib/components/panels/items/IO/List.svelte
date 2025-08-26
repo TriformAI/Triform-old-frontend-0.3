@@ -117,11 +117,20 @@
 </script>
 
 <div>
-	<h4 class="text-main-400 flex flex-row items-center gap-2 text-xs font-bold uppercase">
+	<h4 class="text-main-400 flex flex-row items-center gap-1 text-xs font-bold uppercase">
 		{type}s
-		<button class="icon-btn hover:text-main-200" disabled={readonly} onclick={startAddingPort}>
-			<IconAdd class="size-4" />
+
+		<button
+			type="button"
+			disabled={readonly}
+			onclick={startAddingPort}
+			class="group grid size-6 place-content-center"
+		>
+			<IconAdd
+				class="group-hover:text-main-200 size-4.5 transition-all duration-200 group-hover:size-5"
+			/>
 		</button>
+
 		<div class="bg-main-700/80 ml-1 h-px w-full"></div>
 	</h4>
 
