@@ -112,6 +112,28 @@ const agentPromptModel = z.array(
 	})
 )
 
+// Create a schema that requires 'messages' field + allows additional fields
+const agentIOModel = z
+	.object({
+		messages: z.strictObject({
+			description: z.string().default('Optional messages for the conversation'),
+			type: z.strictObject({
+				type: z.literal('array'),
+				items: z.strictObject({
+					type: z.literal('object'),
+					properties: z
+						.record(z.string(), jsonSchemaTypeModel)
+						.optional()
+						.default({
+							role: { type: 'string' },
+							content: { type: 'string' }
+						})
+				})
+			})
+		})
+	})
+	.and(ioModel)
+
 const agentSpecModel = z.strictObject({
 	model: z.literal('mistral/mistral-medium-latest'),
 	readme: z.string().optional().default(''),
@@ -137,8 +159,9 @@ const agentSpecModel = z.strictObject({
 			order: z.number().min(0)
 		})
 	),
-	inputs: ioModel,
-	outputs: ioModel
+	// agents should always have a messages input and output
+	inputs: agentIOModel,
+	outputs: agentIOModel
 })
 
 const resolvedAgentSpecModel = agentSpecModel.extend({

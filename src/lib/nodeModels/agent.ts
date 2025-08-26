@@ -22,7 +22,7 @@ export const getAgentModel = (inputs: z.infer<typeof ioModel>) =>
 				user: [
 					{
 						type: 'template',
-						value: 'What is the weather in Stockholm?'
+						value: ''
 					}
 				]
 			},
@@ -33,6 +33,19 @@ export const getAgentModel = (inputs: z.infer<typeof ioModel>) =>
 			},
 			nodes: {},
 			outputs: {
+				messages: {
+					description: 'The messages from the agent',
+					type: {
+						type: 'array',
+						items: {
+							type: 'object',
+							properties: {
+								role: { type: 'string' },
+								content: { type: 'string' }
+							}
+						}
+					}
+				},
 				response: {
 					description: 'The final response from the agent',
 					type: {
@@ -40,6 +53,21 @@ export const getAgentModel = (inputs: z.infer<typeof ioModel>) =>
 					}
 				}
 			},
-			inputs
+			inputs: {
+				...inputs,
+				messages: {
+					description: 'Optional message history to seed the agent',
+					type: {
+						type: 'array',
+						items: {
+							type: 'object',
+							properties: {
+								role: { type: 'string' },
+								content: { type: 'string' }
+							}
+						}
+					}
+				}
+			}
 		}
 	}) satisfies Omit<z.infer<typeof resolvedAgentModel>, 'id'>

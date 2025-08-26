@@ -323,8 +323,8 @@
 		position: relative;
 	}
 
-	[aria-label][data-balloon-pos]:hover:not(:active):after,
-	[aria-label][data-balloon-pos]:hover:not(:active):before {
+	[aria-label][data-balloon-pos]:not([data-balloon-instant]):hover:not(:active):after,
+	[aria-label][data-balloon-pos]:not([data-balloon-instant]):hover:not(:active):before {
 		transition-delay: 1s !important;
 	}
 }
@@ -396,6 +396,6 @@
 	}
 
 	.icon-btn {
-		@apply text-main-500 size-5 cursor-pointer transition hover:scale-105 active:scale-95;
+		@apply text-main-500 size-5 cursor-pointer transition hover:scale-105 active:scale-95 disabled:cursor-not-allowed;
 	}
 }

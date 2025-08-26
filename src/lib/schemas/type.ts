@@ -97,6 +97,7 @@ export const pythonTypeToJsonSchema = (pythonType: string): JsonSchemaType => {
 	if (type === 'int' || type === 'float') return { type: 'number' } as const
 	if (type === 'bool') return { type: 'boolean' } as const
 	if (type === 'Any') return {} as Record<string, never>
+	if (type === 'any') return {} as Record<string, never>
 
 	// Handle basic container types without parameters
 	if (type === 'List' || type === 'list') return { type: 'array' } as const
@@ -105,7 +106,7 @@ export const pythonTypeToJsonSchema = (pythonType: string): JsonSchemaType => {
 	// Handle parameterized types
 	if (type.includes('[') && type.includes(']')) {
 		const match = type.match(
-			/^(List|list|Dict|dict|Set|set|Tuple|tuple|Union|Optional|Callable|Any)\[(.*)\]$/
+			/^(List|list|Dict|dict|Set|set|Tuple|tuple|Union|Optional|Callable|Any|any)\[(.*)\]$/
 		)
 		if (match) {
 			const [, containerType, params] = match
@@ -260,7 +261,7 @@ export const validatePythonTypeString = (
 	}
 
 	// Valid primitive types
-	const primitiveTypes = ['str', 'int', 'float', 'bool', 'None', 'Any']
+	const primitiveTypes = ['str', 'int', 'float', 'bool', 'None', 'Any', 'any']
 	if (primitiveTypes.includes(type)) {
 		return { error: undefined }
 	}
@@ -288,7 +289,7 @@ export const validatePythonTypeString = (
 
 		// Check for valid parameterized type structure
 		const match = type.match(
-			/^(List|list|Dict|dict|Set|set|Tuple|tuple|Union|Optional|Callable|Any)\[(.*)\]$/
+			/^(List|list|Dict|dict|Set|set|Tuple|tuple|Union|Optional|Callable|Any|any)\[(.*)\]$/
 		)
 
 		if (!match) {

@@ -8,7 +8,7 @@
 		saveContainer,
 		addPort as addPortToCanvas
 	} from '$lib/stores/canvas.svelte'
-	import { jsonSchemaTypeModel, pythonTypeToJsonSchema } from '$lib/schemas'
+	import { isAgent, jsonSchemaTypeModel, pythonTypeToJsonSchema } from '$lib/schemas'
 	import * as z from 'zod'
 	import { debounce } from '$lib/utils/debounce'
 	import { updateComponent } from '$lib/actions/components'
@@ -30,13 +30,21 @@
 	}: { nodeId: string; type: 'input' | 'output'; readonly?: boolean } = $props()
 
 	const component = $derived(getVisibleComponent(nodeId) as z.infer<typeof resolvedComponentModel>)
+	const sortPorts = ([a]: [string, any], [b]: [string, any]) => {
+		if (isAgent(component)) {
+			if (a === 'messages') return -1
+			if (b === 'messages') return 1
+		}
+		return 0
+	}
+	// "messages" should be the first port for agents
 	const ports = $derived(
 		type === 'input'
 			? 'inputs' in component?.spec
-				? Object.entries(component.spec.inputs)
+				? Object.entries(component.spec.inputs).sort(sortPorts)
 				: []
 			: 'outputs' in component?.spec
-				? Object.entries(component.spec.outputs)
+				? Object.entries(component.spec.outputs).sort(sortPorts)
 				: []
 	)
 
@@ -102,6 +110,10 @@
 	}
 
 	let newPortNameEl = $state<HTMLInputElement>()
+
+	const protectedPorts = $derived(
+		isAgent(component) ? { messages: { reason: `A message ${type} is required for agents` } } : {}
+	)
 </script>
 
 <div>
@@ -126,17 +138,27 @@
 				<span>{key}</span>
 			</div>
 
-			<div class="flex flex-row items-center gap-3">
+			<div
+				class="flex flex-row items-center gap-3"
+				aria-label={key in protectedPorts
+					? protectedPorts[key as keyof typeof protectedPorts]?.reason
+					: undefined}
+				data-balloon-pos="up"
+				data-balloon-instant
+			>
 				<TypeEditor
 					bind:typeValue={port.type as z.infer<typeof jsonSchemaTypeModel>}
 					onblur={debouncedSaveComponent}
-					{readonly}
+					readonly={readonly || key in protectedPorts}
 				/>
 				{#if !readonly}
-					<IconDelete
-						class="icon-btn hover:text-danger-400 shrink-0"
+					<button
+						class="icon-btn not-disabled:hover:text-danger-400 disabled:text-main-700 shrink-0"
+						disabled={key in protectedPorts}
 						onclick={() => deletePort(key)}
-					/>
+					>
+						<IconDelete />
+					</button>
 				{/if}
 			</div>
 		{/each}

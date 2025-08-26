@@ -41,8 +41,16 @@
 
 	let contextIsOpen = $state(false)
 
-	const targetHandles = $derived(Object.keys(data.trinode.spec.spec.inputs))
-	const sourceHandles = $derived(Object.keys(data.trinode.spec.spec.outputs))
+	// "messages" should be the first handle for agents
+	const sortHandles = (a: string, b: string) => {
+		if (type === 'agent') {
+			if (a === 'messages') return -1
+			if (b === 'messages') return 1
+		}
+		return 0
+	}
+	const targetHandles = $derived(Object.keys(data.trinode.spec.spec.inputs).sort(sortHandles))
+	const sourceHandles = $derived(Object.keys(data.trinode.spec.spec.outputs).sort(sortHandles))
 </script>
 
 <NodeContainer {...props} {targetHandles} {sourceHandles} {id}>
