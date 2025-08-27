@@ -234,11 +234,7 @@
 	<div class="overflow-y-auto p-4" bind:this={chatMessagesContainer}>
 		<ul class="chat grid gap-4 pb-6 text-sm">
 			{#each chat.data as item}
-				<li
-					class="origin-top-right scale-100 opacity-100 transition-all duration-200 ease-(--easing-circ) starting:scale-90 starting:opacity-0"
-				>
-					<ChatItem {item} />
-				</li>
+				<ChatItem {item} />
 			{/each}
 
 			<li>
