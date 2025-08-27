@@ -560,6 +560,7 @@ export const updateLocalComponent = async <T extends z.infer<typeof componentMod
 	component: T,
 	excludeKeys: { spec?: (keyof T['spec'])[], meta?: (keyof T['meta'])[] } = {}
 ) => {
+	console.log('updating local component', component.id, excludeKeys, component.spec)
 	const processNode = async (node: TriNode) => {
 		if (node.component_id === component.id) {
 			console.log('updating node', node.component_id, component.id)
@@ -576,8 +577,8 @@ export const updateLocalComponent = async <T extends z.infer<typeof componentMod
 				component.spec = resolved.spec
 				console.log('new spec', component.spec)
 			}
-			node.spec.spec = mergeExcluding(node.spec.spec, component.spec, excludeKeys.spec)
-			node.spec.meta = mergeExcluding(node.spec.meta, component.meta, excludeKeys.meta)
+			node.spec.spec = mergeExcluding(node.spec.spec, component.spec, excludeKeys.spec as (keyof T['spec'])[])
+			node.spec.meta = mergeExcluding(node.spec.meta, component.meta, excludeKeys.meta as (keyof T['meta'])[])
 		}
 		// recursively process all nodes in the component
 		if ('nodes' in node.spec.spec)

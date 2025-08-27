@@ -84,7 +84,7 @@
 		// 1. the cursor stays still
 		// 2. any potential changes during the saving are not lost
 		else
-			updateLocalComponent(componentData as z.infer<typeof actionModel>, {
+			updateLocalComponent(res.data as z.infer<typeof actionModel>, {
 				spec: ['source', 'readme']
 			})
 	}, 500)
