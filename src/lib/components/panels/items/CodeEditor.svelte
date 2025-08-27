@@ -85,7 +85,7 @@
 		// 2. any potential changes during the saving are not lost
 		else
 			updateLocalComponent(componentData as z.infer<typeof actionModel>, {
-				spec: ['source', 'readme', 'requirements']
+				spec: ['source', 'readme']
 			})
 	}, 500)
 
