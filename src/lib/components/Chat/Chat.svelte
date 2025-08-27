@@ -172,7 +172,7 @@
 		userMessage.data.context = {
 			...userMessage.data.context,
 			[`@${item.name}`]: {
-				content: fullNode
+				component_id: fullNode.component_id
 			}
 		}
 

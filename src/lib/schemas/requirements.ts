@@ -15,6 +15,7 @@ export const contextModel = z
 export const userStoriesModel = z
 	.array(
 		z.strictObject({
+			id: z.uuidv4(),
 			text: z.string()
 		})
 	)
@@ -23,6 +24,7 @@ export const userStoriesModel = z
 export const outcomesModel = z
 	.array(
 		z.strictObject({
+			id: z.uuidv4(),
 			text: z.string()
 		})
 	)
@@ -31,6 +33,7 @@ export const outcomesModel = z
 export const guidelinesModel = z
 	.array(
 		z.strictObject({
+			id: z.uuidv4(),
 			text: z.string()
 		})
 	)
@@ -39,6 +42,7 @@ export const guidelinesModel = z
 export const dependenciesModel = z
 	.array(
 		z.strictObject({
+			id: z.uuidv4(),
 			name: z.string(),
 			description: z.string(),
 			type: z.enum(['variable', 'secret'])
@@ -49,6 +53,7 @@ export const dependenciesModel = z
 export const boundariesModel = z
 	.array(
 		z.strictObject({
+			id: z.uuidv4(),
 			text: z.string()
 		})
 	)
@@ -57,7 +62,18 @@ export const boundariesModel = z
 export const safetyModel = z
 	.array(
 		z.strictObject({
+			id: z.uuidv4(),
 			text: z.string()
 		})
 	)
 	.default([])
+
+export const requirementsModel = z.strictObject({
+	context: contextModel,
+	userStories: userStoriesModel,
+	outcomes: outcomesModel,
+	guidelines: guidelinesModel,
+	dependencies: dependenciesModel,
+	boundaries: boundariesModel,
+	safety: safetyModel
+})
