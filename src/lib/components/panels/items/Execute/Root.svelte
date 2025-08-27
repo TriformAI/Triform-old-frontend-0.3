@@ -51,6 +51,8 @@
 		isRunning: false,
 		state: '',
 		result: '',
+		stdout: '',
+		stderr: '',
 		abortController: undefined as unknown as AbortController
 	})
 
@@ -134,6 +136,24 @@
 				/>
 			</div>
 		</div>
+
+		{#if executorState.stdout}
+			<div class="bg-main-800/50 grid grid-rows-[auto_min-h-16] rounded-lg p-3">
+				<span class="text-sm font-medium">Stdout</span>
+				<div class="overflow-x-auto px-2 py-1">
+					<pre class="text-main-300 mt-2 text-sm">{executorState.stdout}</pre>
+				</div>
+			</div>
+		{/if}
+
+		{#if executorState.stderr}
+			<div class="bg-main-800/50 grid grid-rows-[auto_min-h-16] rounded-lg p-3">
+				<span class="text-sm font-medium">Stderr</span>
+				<div class="overflow-x-auto px-2">
+					<pre class="text-danger-400 mt-2 text-sm">{executorState.stderr}</pre>
+				</div>
+			</div>
+		{/if}
 
 		<div
 			class="tooltip-red mt-4 grid grow gap-2"

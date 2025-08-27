@@ -26,5 +26,7 @@ export const executionEventModel = z.strictObject({
 	event: z.enum(['running', 'completed', 'failed']),
 	path: z.array(z.string()),
 	payload: z.record(z.string(), z.unknown()),
-	output: z.record(z.string(), z.unknown())
+	output: z.record(z.string(), z.unknown()),
+	stdout: z.string().optional(),
+	stderr: z.string().optional()
 })

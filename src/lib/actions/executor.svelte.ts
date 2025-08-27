@@ -1,4 +1,3 @@
-import type { ExecutionTraceData } from '$lib/types/execution'
 import { source } from 'sveltekit-sse'
 import { toast } from 'svelte-sonner'
 import { selected } from '$lib/stores/panel.svelte'
@@ -21,6 +20,8 @@ export const executeComponent = async (
 		isRunning: boolean
 		state: string
 		result: string
+		stdout?: string
+		stderr?: string
 		abortController: AbortController
 	}
 ) => {
@@ -53,12 +54,16 @@ export const executeComponent = async (
 			if (event.event === 'running') state.state = `Running node ${event.data.path.pop()}`
 			if (event.event === 'completed' && event.data.path.length === 1) {
 				state.result = JSON.stringify(event.data.output, null, 2)
+				state.stdout = event.data.stdout
+				state.stderr = event.data.stderr
 				break
 			}
 			if (event.event === 'failed') {
 				// TODO: make this identical to what an endpoint returns, and also visualise errors in some better way
 				state.result = JSON.stringify(event.data, null, 2)
 				state.abortController.abort()
+				state.stdout = event.data.stdout
+				state.stderr = event.data.stderr
 				break
 			}
 		}
