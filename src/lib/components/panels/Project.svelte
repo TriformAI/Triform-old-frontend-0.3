@@ -7,6 +7,6 @@
 
 <Panel {nodeId}>
 	{#snippet panelItems(PanelItems)}
-		<PanelItems showNav={false} items={['projectSettings']} {nodeId} />
+		<PanelItems items={['metadata', 'projectSettings']} {nodeId} />
 	{/snippet}
 </Panel>

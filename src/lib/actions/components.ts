@@ -13,15 +13,16 @@ type Requirements = z.infer<typeof requirementsModel> & {
 
 const api = new API()
 
-export const getRequirements = async (componentId: string) => {
-	return await api.get<{ data: Requirements }>(`components/${componentId}/requirements`)
+export const getRequirements = async (type: 'components' | 'projects', id: string) => {
+	return await api.get<{ data: Requirements }>(`${type}/${id}/requirements`)
 }
 
-export const upsertRequirements = async (componentId: string, requirements: Requirements) => {
-	return await api.patch<{ data: Requirements }>(
-		`components/${componentId}/requirements`,
-		requirements
-	)
+export const upsertRequirements = async (
+	type: 'components' | 'projects',
+	id: string,
+	payload: Requirements
+) => {
+	return await api.patch<{ data: Requirements }>(`${type}/${id}/requirements`, payload)
 }
 
 export const updateComponent = async (

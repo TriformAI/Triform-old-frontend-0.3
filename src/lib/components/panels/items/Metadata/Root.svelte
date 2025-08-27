@@ -6,9 +6,10 @@
 	import { debounce } from '$lib/utils/debounce'
 	import PanelItem from '$lib/components/panels/PanelItem.svelte'
 	import type { z } from 'zod'
-	import type { resolvedComponentModel } from '$lib/schemas'
+	import type { resolvedComponentModel, resolvedProjectModel } from '$lib/schemas'
 	import { getVisibleComponent } from '$lib/stores/canvas.svelte'
 	import { updateComponent, upsertRequirements, getRequirements } from '$lib/actions/components'
+	import { saveProject } from '$lib/actions/project'
 	import ListText from './ListText.svelte'
 	import ListNameDescType from './ListNameDescType.svelte'
 	import { requirementsModel } from '$lib/schemas/requirements'
@@ -22,6 +23,9 @@
 		getVisibleComponent(nodeId) as z.infer<typeof resolvedComponentModel>
 	)
 
+	const componentType = $derived(componentData?.resource.split('/')[0])
+	const isProject = $derived(componentType === 'project')
+
 	let requirements = $state<Requirements>({
 		context: { text: '' },
 		userStories: [],
@@ -34,9 +38,7 @@
 
 	onMount(async () => {
 		// Get current requirements or an empty object if none exist
-		console.log('componentData.id', componentData.id)
-
-		const result = await getRequirements(componentData.id)
+		const result = await getRequirements(isProject ? 'projects' : 'components', componentData.id)
 
 		if (result.data) {
 			requirements = result.data
@@ -45,22 +47,25 @@
 
 	$effect(() => {
 		// Save requirements when content updates
-		if ($state.snapshot(requirements)) {
-			debouncedSaveRequirements()
-		}
+		$state.snapshot(requirements) // establishes dependency on any nested change
+		debouncedSaveRequirements()
 	})
 
 	const debouncedSaveComponent = debounce(async () => {
-		const res = await updateComponent(componentData, false)
+		const res = isProject
+			? await saveProject(componentData)
+			: await updateComponent(componentData, false)
 		if (!res.success) toast.error(`Failed saving ${componentData.meta.name}`)
 	}, 500)
 
 	const debouncedSaveRequirements = debounce(async () => {
-		const res = await upsertRequirements(componentData.id, requirements)
+		const res = await upsertRequirements(
+			isProject ? 'projects' : 'components',
+			componentData.id,
+			requirements
+		)
 		if (!res.success) toast.error(`Failed saving ${componentData.meta.name}`)
 	}, 500)
-
-	const componentType = $derived(componentData?.resource.split('/')[0])
 </script>
 
 {#if componentData}
@@ -74,13 +79,15 @@
 				bind:value={componentData.meta.name}
 			/>
 
-			<TextField
-				rows={3}
-				label="Description"
-				name="intention"
-				oninput={debouncedSaveComponent}
-				bind:value={componentData.meta.intention}
-			/>
+			{#if componentType !== 'project'}
+				<TextField
+					rows={3}
+					label="Description"
+					name="intention"
+					oninput={debouncedSaveComponent}
+					bind:value={componentData.meta.intention}
+				/>
+			{/if}
 
 			{#if componentType !== 'action'}
 				<div>

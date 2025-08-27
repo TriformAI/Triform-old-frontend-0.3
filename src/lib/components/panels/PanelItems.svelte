@@ -52,11 +52,7 @@
 
 	// Get active components from openPanelItems or default to first available item
 	const activeComponents = $derived(
-		componentType === 'project'
-			? ['projectSettings']
-			: openPanelItems[componentType]?.length > 0
-				? openPanelItems[componentType]
-				: []
+		openPanelItems[componentType]?.length > 0 ? openPanelItems[componentType] : []
 	)
 
 	let isMounted = $state(false)

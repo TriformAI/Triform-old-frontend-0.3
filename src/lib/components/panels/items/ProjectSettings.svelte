@@ -22,13 +22,6 @@
 <PanelItem {nodeId} title="Project Settings" forceOpen={true}>
 	<div class="flex flex-col gap-y-4">
 		<InputField
-			label="Name"
-			name="name"
-			bind:value={componentData.meta.name}
-			oninput={debouncedSave}
-			required
-		/>
-		<InputField
 			label="MCP Server"
 			value={`https://${document.location.host}/api/projects/${componentData.id}/mcp`}
 			oninput={debouncedSave}
