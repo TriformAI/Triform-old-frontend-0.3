@@ -3,6 +3,7 @@
 	import { clickOutside } from '$lib/utils/clickOutside'
 	import { Handle } from '@xyflow/svelte'
 	import { Position } from '@xyflow/svelte'
+	import IconPlus from '~icons/mdi/plus'
 
 	interface Props {
 		class?: string
@@ -87,11 +88,11 @@
 		{:else}
 			<span
 				class={[
-					'mt-[-3px] align-middle font-sans font-bold',
+					'align-middle font-sans font-bold',
 					'transition-opacity duration-300 starting:opacity-0'
 				]}
 			>
-				+
+				<IconPlus class="size-3.5" />
 			</span>
 		{/if}
 	</Handle>

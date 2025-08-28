@@ -7,6 +7,7 @@ import { saveProject } from '$lib/actions/project'
 import { page } from '$app/state'
 import { selected } from '$lib/stores/panel.svelte'
 import { getNodeSelector } from '$lib/utils/getNodeSelector'
+import { type NodeType } from '$lib/constants/nodeTypes'
 import {
 	isAction,
 	isFlow,
@@ -453,7 +454,12 @@ export const deleteEdge = async (edgeId: Edge['id'], save: boolean = true) => {
 	}
 }
 
-export const addPort = async (nodeId: string, portName: string, type: z.infer<typeof jsonSchemaTypeModel>, variation: 'input' | 'output') => {
+export const addPort = async (
+	nodeId: string,
+	portName: string,
+	type: z.infer<typeof jsonSchemaTypeModel>,
+	variation: 'input' | 'output'
+) => {
 	const component = getVisibleComponent(nodeId) as z.infer<typeof resolvedComponentModel>
 	if (!component) throw new Error(`Component ${nodeId} not found`)
 
@@ -481,20 +487,26 @@ export const addPort = async (nodeId: string, portName: string, type: z.infer<ty
 	}
 }
 
-export const getBreadcrumbs = () => {
+export const getBreadcrumbs = (): { id: string; name: string; type: NodeType; path: string }[] => {
 	const parts = page.url.pathname.split('/').filter(Boolean)
 	const projectIndex = parts.findIndex(p => p === 'project')
 	const path = parts.slice(projectIndex + 2) // +2 because we want to skip both the project and its id
 
-	return path.map((p: string, i: number) => ({
-		id: p as Uuid,
-		name: getNodeByPath(path.slice(0, i + 1))?.spec.meta?.name ?? 'Unknown',
-		// +3 because we want to skip both the project and id, and get the first one after that
-		path: `/${parts.slice(0, i + projectIndex + 3).join('/')}`
-	}))
+	return path.map((p: string, i: number) => {
+		const spec = getNodeByPath(path.slice(0, i + 1))?.spec
+		return {
+			id: p,
+			name: spec!.meta.name ?? 'Unknown',
+			type: spec!.resource.split('/')[0] as NodeType,
+			// +3 because we want to skip both the project and id, and get the first one after that
+			path: `/${parts.slice(0, i + projectIndex + 3).join('/')}`
+		}
+	})
 }
 
-export const breadcrumbs = () => {
+export const breadcrumbs = ():
+	| { id: string; name: string; type?: NodeType | 'project'; path: string }[]
+	| undefined => {
 	if (!project) {
 		return undefined
 	}
@@ -502,8 +514,8 @@ export const breadcrumbs = () => {
 	const projectUrl = `/project/${page.data.project?.id}`
 
 	const breadcrumbs = [
-		{ name: 'Projects', id: '', path: '/project' },
-		{ name: project.meta.name, id: project.id, path: projectUrl }
+		{ name: 'Projects', path: '/project', id: '' },
+		{ name: project.meta.name, id: project.id || '', path: projectUrl, type: 'project' as const }
 	]
 
 	const flowCrumbs = getBreadcrumbs()
@@ -544,7 +556,7 @@ const mergeExcluding = <T extends Record<string, unknown>>(
 	excludeKeys: (keyof T)[] = []
 ): T => {
 	if (!excludeKeys.length) return source
-	
+
 	const result = { ...source }
 	excludeKeys.forEach(key => {
 		if (key in target) {
@@ -558,7 +570,7 @@ const mergeExcluding = <T extends Record<string, unknown>>(
 // important to note that it isn't fully recursive, but rather just updates the unresolved component spec
 export const updateLocalComponent = async <T extends z.infer<typeof componentModel>>(
 	component: T,
-	excludeKeys: { spec?: (keyof T['spec'])[], meta?: (keyof T['meta'])[] } = {}
+	excludeKeys: { spec?: (keyof T['spec'])[]; meta?: (keyof T['meta'])[] } = {}
 ) => {
 	console.log('updating local component', component.id, excludeKeys, component.spec)
 	const processNode = async (node: TriNode) => {
@@ -577,8 +589,16 @@ export const updateLocalComponent = async <T extends z.infer<typeof componentMod
 				component.spec = resolved.spec
 				console.log('new spec', component.spec)
 			}
-			node.spec.spec = mergeExcluding(node.spec.spec, component.spec, excludeKeys.spec as (keyof T['spec'])[])
-			node.spec.meta = mergeExcluding(node.spec.meta, component.meta, excludeKeys.meta as (keyof T['meta'])[])
+			node.spec.spec = mergeExcluding(
+				node.spec.spec,
+				component.spec,
+				excludeKeys.spec as (keyof T['spec'])[]
+			)
+			node.spec.meta = mergeExcluding(
+				node.spec.meta,
+				component.meta,
+				excludeKeys.meta as (keyof T['meta'])[]
+			)
 		}
 		// recursively process all nodes in the component
 		if ('nodes' in node.spec.spec)

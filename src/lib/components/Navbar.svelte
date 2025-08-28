@@ -7,10 +7,11 @@
 	import { apiStatus } from '$lib/stores/apiStatus.svelte'
 	import Spinner from './Spinner.svelte'
 	import { goto } from '$app/navigation'
+	import type { Snippet } from 'svelte'
 
 	const activeOrganization = authClient.useActiveOrganization()
 
-	const { children } = $props()
+	const { children }: { children?: Snippet } = $props()
 
 	async function logout() {
 		await authClient.signOut({
@@ -23,12 +24,14 @@
 	}
 </script>
 
-<header class="bg-main-850 sticky top-0 z-30 flex w-full items-center justify-between px-5 py-2">
-	<div class="divide-main-700 flex flex-row items-center divide-x">
-		<a href="/" class="pr-5">
-			<img alt="Triform logo" src={logo} class="w-10" />
-		</a>
+<header
+	class="bg-main-850 sticky top-0 z-30 grid w-full grid-cols-[auto_1fr_auto] items-center px-5 py-2"
+>
+	<a href="/">
+		<img alt="Triform logo" src={logo} class="w-10" />
+	</a>
 
+	<div class="divide-main-700 mx-auto flex translate-y-[2px] flex-row items-center divide-x">
 		<div class="flex items-center pl-5">
 			{#if page.data.project}
 				{#if children}
@@ -47,7 +50,6 @@
 				>
 					<Spinner class="size-4" />
 				</span>
-				<!-- <span class={[!apiStatus.loading ? 'opacity-100' : 'opacity-0']}>Saved</span> -->
 			</p>
 		</div>
 	</div>
