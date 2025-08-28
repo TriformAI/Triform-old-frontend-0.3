@@ -22,23 +22,28 @@
 						? nodeTypesDict[type]
 						: undefined}
 
-			<li class="inline-flex items-center gap-1.5" in:fly={{ duration: 300, opacity: 0, x: -5 }}>
-				{#if nodeType}
-					<nodeType.icon class={['size-4', nodeType.iconClasses]} />
-				{/if}
-
-				{#if idx === crumbs.length - 1}
-					<span>
-						{name}
-					</span>
-				{:else}
-					<a
-						href={path.startsWith('/') ? path : `${projectUrl}/${path}`}
-						class="text-main-400 hover:text-main-300 transition"
+			<li class="group" in:fly={{ duration: 300, opacity: 0, x: -5 }}>
+				<a
+					href={path.startsWith('/') ? path : `${projectUrl}/${path}`}
+					class="flex flex-row items-center gap-1.5"
+				>
+					{#if nodeType}
+						<nodeType.icon
+							class={[
+								'size-4',
+								nodeType.iconClasses,
+								idx !== crumbs.length - 1 &&
+									'opacity-80 saturate-0 transition group-hover:opacity-100 group-hover:saturate-100'
+							]}
+						/>
+					{/if}
+					<span
+						class={idx !== crumbs.length - 1 &&
+							'text-main-400 group-hover:text-main-300 transition'}
 					>
 						{name}
-					</a>
-				{/if}
+					</span>
+				</a>
 			</li>
 			<li class="flex items-center">
 				{#if idx < crumbs.length - 1}
