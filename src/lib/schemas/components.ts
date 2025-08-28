@@ -134,8 +134,40 @@ const agentIOModel = z
 	})
 	.and(ioModel)
 
+const availableAgentModels = [
+	'mistral/mistral-medium-latest',
+	'mistral/mistral-medium-2508',
+	'mistral/magistral-medium-2507',
+	'mistral/codestral-2508',
+	// TODO: gemini doesn't support tool calling & structured output simultaneously, we need some clever workaround
+	// 'gemini/gemini-2.5-pro',
+	// 'gemini/gemini-2.5-flash',
+	// 'gemini/gemini-2.5-flash-lite',
+	// TODO: groq does json output with a specific json tool, we need to add our own I think
+	// 'groq/qwen/qwen3-32b',
+	// 'groq/gemma2-9b-it',
+	// 'groq/llama-3.1-8b-instant',
+	// 'groq/llama-3.3-70b-versatile',
+	// 'groq/meta-llama/llama-4-maverick-17b-128e-instruct',
+	// 'groq/meta-llama/llama-4-scout-17b-16e-instruct',
+	// 'groq/moonshotai/kimi-k2-instruct',
+	// 'groq/openai/gpt-oss-120b',
+	// 'groq/openai/gpt-oss-20b',
+	'openai/gpt-5',
+	'openai/gpt-5-mini',
+	'openai/gpt-5-mini',
+	'openai/gpt-5-nano',
+	'openai/gpt-5-chat',
+	'openai/gpt-4.1',
+	'openai/gpt-4.1-mini',
+	'openai/gpt-4.1-nano',
+	'openai/o4-mini',
+	'openai/o3-mini',
+	'openai/gpt-4o'
+] as const
+
 const agentSpecModel = z.strictObject({
-	model: z.literal('mistral/mistral-medium-latest'),
+	model: z.enum(availableAgentModels),
 	readme: z.string().optional().default(''),
 	prompts: z.strictObject({
 		system: agentPromptModel,

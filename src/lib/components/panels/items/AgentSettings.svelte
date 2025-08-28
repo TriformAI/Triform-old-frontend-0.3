@@ -5,7 +5,7 @@
 	import { updateComponent } from '$lib/actions/components'
 	import { toast } from 'svelte-sonner'
 	import type { z } from 'zod'
-	import type { agentModel } from '$lib/schemas'
+	import { agentModel } from '$lib/schemas'
 
 	const { nodeId }: { nodeId: string } = $props()
 
@@ -23,13 +23,17 @@
 	function setPayload(value: string, key: 'system' | 'user') {
 		componentData.spec.prompts[key] = [{ type: 'template', value }]
 	}
+
+	const agentModels = Object.values(agentModel.shape.spec.shape.model.enum)
 </script>
 
 <div class="grid gap-6 p-5 pt-4">
 	<label class="grid gap-2">
 		<span class="eyebrow">Model</span>
 		<select class="input-text" bind:value={componentData.spec.model}>
-			<option value="mistral/mistral-medium-latest">mistral/mistral-medium-latest</option>
+			{#each agentModels as model}
+				<option value={model}>{model.split('/').slice(1).join('/')}</option>
+			{/each}
 		</select>
 	</label>
 

@@ -143,14 +143,14 @@ export const jsonSchemaTypeModel: z.ZodType<unknown> = z.lazy(() =>
 export function getRequiredImports(pythonTypes: string[]): string[] {
 	const allTypesStr = pythonTypes.join(' ')
 	const imports = ['TypedDict'] // Always need TypedDict for action generation
-	
+
 	if (allTypesStr.includes('Optional[')) imports.push('Optional')
 	if (allTypesStr.includes('List[')) imports.push('List')
 	if (allTypesStr.includes('Dict[')) imports.push('Dict')
 	if (allTypesStr.includes('Union[')) imports.push('Union')
 	if (allTypesStr.includes('Literal[')) imports.push('Literal')
 	if (allTypesStr.includes('Any')) imports.push('Any')
-	
+
 	return imports
 }
 
