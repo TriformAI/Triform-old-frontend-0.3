@@ -145,7 +145,7 @@ ${outputDescriptions}
 ${outputFields}
 
 @triform.entrypoint
-def simple(${inputArgs}) -> Output:
+def entrypoint(${inputArgs}) -> Output:
     """A simple placeholder action.
     Args:
 ${inputDescriptions}
