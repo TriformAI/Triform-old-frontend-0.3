@@ -26,7 +26,7 @@
 	{id}
 	style={`--node-color: ${typeData.color}`}
 	class={twMerge([
-		'border-main-500 relative flex h-20 w-60 items-center justify-center border p-2 transition-all',
+		'border-main-600 hover:bg-main-500/5 relative flex h-20 w-60 items-center justify-center border p-2 transition-all',
 		'bg-main-900/20 backdrop-blur-sm',
 		typeData.shape === 'circle' && 'rounded-full',
 		typeData.shape === 'square' && 'rounded-md',
@@ -34,6 +34,9 @@
 	])}
 	style:background-color={selected
 		? 'color-mix(in oklab, color-mix(in oklab, var(--node-color) 40%, black) 50%, transparent)'
+		: undefined}
+	style:border-color={selected
+		? 'color-mix(in oklab, color-mix(in oklab, var(--node-color) 70%, black) 50%, transparent)'
 		: undefined}
 	ondblclickcapture={openFn}
 >

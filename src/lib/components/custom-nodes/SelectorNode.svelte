@@ -1,9 +1,8 @@
 <script lang="ts">
 	import { clickOutside } from '$lib/utils/clickOutside'
 	import { addEdge, addNode } from '$lib/stores/canvas.svelte'
-
 	import { Handle, Position, useSvelteFlow as useSvelteFlowHook } from '@xyflow/svelte'
-
+	import NodeTypeButton from '../canvas/NodeTypeButton.svelte'
 	import { nodeTypesDict } from '$lib/constants/nodeTypes'
 	import IconClose from '~icons/mdi/close'
 	import Button from '$lib/components/atoms/Button.svelte'
@@ -19,6 +18,7 @@
 	import { ioModel } from '$lib/schemas'
 	import { getCurrentContainer } from '$lib/stores/canvas.svelte'
 	import { pick } from '$lib/utils/pick'
+	import {} from 'os'
 
 	const {
 		id,
@@ -190,6 +190,11 @@
 		// We can use deleteElements here because this is a temporary node
 		const _result = await deleteElements({ nodes: [node] })
 	}
+
+	const activeHandleType = $derived(data.sourceHandle?.type === 'source' ? 'target' : 'source')
+
+	const showSourceHandle = $derived(activeHandleType === 'target')
+	const showTargetHandle = $derived(activeHandleType === 'source')
 </script>
 
 <svelte:window
@@ -201,7 +206,7 @@
 />
 
 <div
-	class={['border-main-800 bg-main-850 shadow-window min-w-64 rounded border p-3']}
+	class={['border-main-800 bg-main-850 shadow-window min-w-64 rounded-md border']}
 	use:clickOutside={{
 		eventType: 'mousedown',
 		handler: () => {
@@ -209,42 +214,29 @@
 		}
 	}}
 >
-	<Handle
-		{id}
-		type="target"
-		position={Position.Top}
-		isConnectable={true}
-		class={['z-10 !size-2 !bg-[#000]/80']}
-	/>
+	{#if showSourceHandle}
+		<Handle
+			{id}
+			type="target"
+			onpointerdown={(e: PointerEvent) => e.preventDefault()}
+			position={Position.Top}
+			isConnectable={true}
+			class={['z-10 !size-2 !bg-[#000]/80']}
+		/>
+	{/if}
 
-	<div class=" mb-4 flex justify-between">
-		<h2 class="text-main-400 text-xs font-medium">
-			Create {pendingComponent?.resource?.split('/')[0] ?? 'component'}
-		</h2>
-		<button class="ms-6" type="button" onclick={removeSelectorNode}>
-			<IconClose class="size-4" />
-		</button>
-	</div>
-
-	<div class="grid auto-cols-fr grid-flow-col gap-3">
-		{#each componentTypes as type}
-			<Button
-				class="px-2 py-1 text-sm"
-				onClick={async () => {
-					type.handler()
+	<div class="flex gap-1 p-1 leading-none">
+		{#each componentTypes as nodeType}
+			<NodeTypeButton
+				{nodeType}
+				withBgColor={true}
+				onclick={async () => {
+					nodeType.handler()
 				}}
-				autoLoad="promise"
-				variation={pendingComponent?.resource.startsWith(type.type) ? 'vibrant' : 'primary'}
-			>
-				{#snippet icon()}
-					<type.icon class="size-4" />
-				{/snippet}
-				{#snippet body()}
-					<span>{type.label}</span>
-				{/snippet}
-			</Button>
+			/>
 		{/each}
 	</div>
+
 	{#if pendingComponent}
 		<form
 			transition:slide={{ duration: 300 }}
@@ -272,11 +264,14 @@
 		</form>
 	{/if}
 
-	<Handle
-		{id}
-		type="source"
-		position={Position.Bottom}
-		isConnectable={true}
-		class={['z-10 !size-2 !bg-[#000]/80']}
-	/>
+	{#if showTargetHandle}
+		<Handle
+			{id}
+			onpointerdown={(e: PointerEvent) => e.preventDefault()}
+			type="source"
+			position={Position.Bottom}
+			isConnectable={true}
+			class={['z-10 !size-2 !bg-[#000]/80']}
+		/>
+	{/if}
 </div>

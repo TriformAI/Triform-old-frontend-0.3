@@ -4,9 +4,9 @@
 	import { getFlowModel, getActionModel, getAgentModel } from '$lib/nodeModels'
 	import { createComponent } from '$lib/actions/components'
 	import { addNode } from '$lib/stores/canvas.svelte'
-
 	import { nodeTypes, type NodeType } from '$lib/constants/nodeTypes'
 	import { toast } from 'svelte-sonner'
+	import NodeTypeButton from '../canvas/NodeTypeButton.svelte'
 
 	interface Props {
 		positionAbsoluteX: number
@@ -76,7 +76,7 @@
 		onclick={() => (isSelectMode = true)}
 		type="button"
 		class={[
-			'group hover:bg-main-500/5 relative z-10 grid w-20 place-items-center transition',
+			'group hover:bg-main-500/5 relative z-10 grid size-20 place-items-center transition',
 			isSelectMode ? 'pointer-events-none opacity-0' : 'opacity-100'
 		]}
 	>
@@ -87,21 +87,7 @@
 
 	<div class={['flex p-1 leading-none', isSelectMode ? 'opacity-100' : 'opacity-0']}>
 		{#each filteredNodeTypes as nodeType}
-			<button
-				onclick={() => create(nodeType.type)}
-				type="button"
-				class="group hover:bg-main-500/10 grid w-20 place-items-center rounded-sm transition"
-			>
-				<nodeType.icon
-					style={`color: ${nodeType.iconColor}`}
-					class="text-main-300 group-hover:text-main-400 size-5 -translate-y-3 transition group-hover:scale-110"
-				/>
-
-				<span
-					class="text-main-400 group-hover:text-main-200 absolute translate-y-4 text-xs font-semibold transition"
-					>{nodeType.label}</span
-				>
-			</button>
+			<NodeTypeButton {nodeType} onclick={() => create(nodeType.type)} />
 		{/each}
 	</div>
 </div>
