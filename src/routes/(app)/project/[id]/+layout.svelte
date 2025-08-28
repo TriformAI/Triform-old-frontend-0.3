@@ -135,7 +135,7 @@
 		<SvelteFlowProvider>
 			<div
 				bind:this={gridContainer}
-				style={`grid-template-columns: ${chatPanelWidth}px ${GUTTER_SIZE}px 1fr ${GUTTER_SIZE}px ${propsPanelWidth}px; grid-template-rows: 1fr ${GUTTER_SIZE}px ${componentPanelHeight}px`}
+				style={`grid-template-columns: ${chatPanelWidth}px ${GUTTER_SIZE}px 1fr ${GUTTER_SIZE}px ${propsPanelWidth}px; grid-template-rows: 1fr`}
 				class={`bg-main-850 grid h-full px-2 pt-1 pb-2 ease-(--easing-circ)`}
 			>
 				<Chat />
@@ -180,7 +180,7 @@
 
 				<PropsPanel class={propsPanelWidth <= 30 ? 'border-main-850' : ''} />
 
-				<GridResizerHandle
+				<!-- <GridResizerHandle
 					name="componentsLibPanel"
 					axis="y"
 					side="bottom"
@@ -195,7 +195,7 @@
 					}, 300)}
 				/>
 
-				<ComponentLibrary class={propsPanelWidth <= 30 ? 'border-main-850' : ''} />
+				<ComponentLibrary class={propsPanelWidth <= 30 ? 'border-main-850' : ''} /> -->
 			</div>
 		</SvelteFlowProvider>
 	</main>
