@@ -55,6 +55,12 @@
 	<Handle
 		id={`ghost-${type}`}
 		{type}
+		onpointerdown={(e: MouseEvent) => {
+			// Prevent dragging out an edge from input nodes
+			if (type === 'source') {
+				e.preventDefault()
+			}
+		}}
 		position={type === 'source' ? Position.Bottom : Position.Top}
 		class={[
 			'!bg-main-900 !border-main-500 z-10 flex origin-bottom-left items-center justify-center border !border-dashed transition-[width,height,transform,scale,color] duration-200 ease-in-out',
@@ -71,7 +77,7 @@
 				bind:value={() => newPortName, value => (newPortName = value.replace(/\s+/g, '_'))}
 				onkeydown={handleKeydown}
 				onblur={cancelAddPort}
-				placeholder="new_io_name"
+				placeholder={type === 'source' ? 'New input name' : 'New output name'}
 				class={[
 					'text-main-100 placeholder-main-500 w-full rounded border-0 bg-transparent px-1 py-0 text-center text-xs outline-none',
 					'transition-opacity duration-200 starting:opacity-0'
