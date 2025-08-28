@@ -48,7 +48,7 @@
 				{
 					sample_input: {
 						description: 'Example input/output, replace me',
-						type: {
+						schema: {
 							type: 'string'
 						}
 					}

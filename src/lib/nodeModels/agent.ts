@@ -35,7 +35,7 @@ export const getAgentModel = (inputs: z.infer<typeof ioModel>, name = '') =>
 			outputs: {
 				messages: {
 					description: 'The messages from the agent',
-					type: {
+					schema: {
 						type: 'array',
 						items: {
 							type: 'object',
@@ -48,7 +48,7 @@ export const getAgentModel = (inputs: z.infer<typeof ioModel>, name = '') =>
 				},
 				response: {
 					description: 'The final response from the agent',
-					type: {
+					schema: {
 						type: 'string'
 					}
 				}
@@ -57,7 +57,7 @@ export const getAgentModel = (inputs: z.infer<typeof ioModel>, name = '') =>
 				...inputs,
 				messages: {
 					description: 'Optional message history to seed the agent',
-					type: {
+					schema: {
 						type: 'array',
 						items: {
 							type: 'object',

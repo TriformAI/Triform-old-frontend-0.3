@@ -8,13 +8,12 @@
 		saveContainer,
 		addPort as addPortToCanvas
 	} from '$lib/stores/canvas.svelte'
-	import { isAgent, jsonSchemaTypeModel, pythonTypeToJsonSchema } from '$lib/schemas'
+	import { isAgent, jsonSchemaTypeModel } from '$lib/schemas'
 	import * as z from 'zod'
 	import { debounce } from '$lib/utils/debounce'
 	import { updateComponent } from '$lib/actions/components'
 	import { toast } from 'svelte-sonner'
 	import type { resolvedComponentModel } from '$lib/schemas'
-	import TypeEditor from './TypeEditor.svelte'
 	import IconDelete from '~icons/material-symbols/delete-rounded'
 	import { clone } from '$lib/utils/clone'
 	import { confirmStore } from '$lib/stores/confirm.svelte'
@@ -90,7 +89,7 @@
 
 	let isAddingPort = $state(false)
 	let newPortName = $state('')
-	let newPortType = $state(pythonTypeToJsonSchema('str') as z.infer<typeof jsonSchemaTypeModel>)
+	let newPortType = $state({ type: 'string' } as z.infer<typeof jsonSchemaTypeModel>)
 
 	const startAddingPort = async () => {
 		if (isAddingPort) {
@@ -99,7 +98,7 @@
 		}
 		isAddingPort = true
 		newPortName = ''
-		newPortType = pythonTypeToJsonSchema('str') as z.infer<typeof jsonSchemaTypeModel>
+		newPortType = { type: 'string' } as z.infer<typeof jsonSchemaTypeModel>
 		await tick()
 		newPortNameEl?.focus()
 	}
@@ -112,7 +111,9 @@
 	let newPortNameEl = $state<HTMLInputElement>()
 
 	const protectedPorts = $derived(
-		isAgent(component) ? { messages: { reason: `A message ${type} is required for agents` } } : {}
+		isAgent(component)
+			? { messages: { reason: `A "messages" ${type} is required for agents` } }
+			: {}
 	)
 </script>
 
@@ -134,10 +135,11 @@
 		<div class="bg-main-700/80 ml-1 h-px w-full"></div>
 	</h4>
 
-	<div class="mt-1 grid w-full grid-cols-[1fr_1.5fr] items-center gap-2">
+	<div class="mt-1 grid w-full grid-cols-[1fr_auto] items-center gap-2">
 		{#if ports.length || isAddingPort}
 			<p class="text-main-400 text-sm">Port name</p>
-			<p class="text-main-400 text-sm">Type</p>
+			<span></span>
+			<!-- <p class="text-main-400 text-sm">Type</p> -->
 		{/if}
 
 		{#each ports as [key, port]}
@@ -147,29 +149,20 @@
 				<span>{key}</span>
 			</div>
 
-			<div
-				class="flex flex-row items-center gap-3"
-				aria-label={key in protectedPorts
-					? protectedPorts[key as keyof typeof protectedPorts]?.reason
-					: undefined}
-				data-balloon-pos="up"
-				data-balloon-instant
-			>
-				<TypeEditor
-					bind:typeValue={port.type as z.infer<typeof jsonSchemaTypeModel>}
-					onblur={debouncedSaveComponent}
-					readonly={readonly || key in protectedPorts}
-				/>
-				{#if !readonly}
-					<button
-						class="icon-btn not-disabled:hover:text-danger-400 disabled:text-main-700 shrink-0"
-						disabled={key in protectedPorts}
-						onclick={() => deletePort(key)}
-					>
-						<IconDelete />
-					</button>
-				{/if}
-			</div>
+			{#if !readonly}
+				<button
+					class="icon-btn not-disabled:hover:text-danger-400 disabled:text-main-700 shrink-0"
+					disabled={key in protectedPorts}
+					onclick={() => deletePort(key)}
+					aria-label={key in protectedPorts
+						? protectedPorts[key as keyof typeof protectedPorts]?.reason
+						: undefined}
+					data-balloon-pos="left"
+					data-balloon-instant
+				>
+					<IconDelete />
+				</button>
+			{/if}
 		{/each}
 
 		{#if !ports.length && !isAddingPort}
@@ -188,7 +181,6 @@
 					class="font-mono"
 				/>
 				<div class="flex flex-row items-center gap-3">
-					<TypeEditor bind:typeValue={newPortType} />
 					<button class="icon-btn hover:text-main-200" type="submit">
 						<IconCreate />
 					</button>

@@ -457,7 +457,7 @@ export const deleteEdge = async (edgeId: Edge['id'], save: boolean = true) => {
 export const addPort = async (
 	nodeId: string,
 	portName: string,
-	type: z.infer<typeof jsonSchemaTypeModel>,
+	schema: z.infer<typeof jsonSchemaTypeModel>,
 	variation: 'input' | 'output'
 ) => {
 	const component = getVisibleComponent(nodeId) as z.infer<typeof resolvedComponentModel>
@@ -468,7 +468,7 @@ export const addPort = async (
 
 	// Add the new port
 	component.spec[`${variation}s`][portName] = {
-		type,
+		schema,
 		description: ''
 	}
 

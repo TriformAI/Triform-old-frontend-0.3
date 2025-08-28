@@ -6,7 +6,7 @@
 
 import * as z from 'zod'
 import { componentMetaModel, nodePortModel } from './common.js'
-import { jsonSchemaTypeModel } from './type.js'
+import { jsonSchemaTypeModel } from './schema.js'
 
 const abstractComponentModel = z.strictObject({
 	id: z.uuidv4(),
@@ -19,7 +19,7 @@ export const ioModel = z.record(
 	z.string().nonempty('IO name is required'),
 	z.strictObject({
 		description: z.string().default(''),
-		type: z.union([jsonSchemaTypeModel, z.record(z.never(), z.never())])
+		schema: z.union([jsonSchemaTypeModel, z.record(z.never(), z.never())])
 	})
 )
 
@@ -117,7 +117,7 @@ const agentIOModel = z
 	.object({
 		messages: z.strictObject({
 			description: z.string().default('Optional messages for the conversation'),
-			type: z.strictObject({
+			schema: z.strictObject({
 				type: z.literal('array'),
 				items: z.strictObject({
 					type: z.literal('object'),
