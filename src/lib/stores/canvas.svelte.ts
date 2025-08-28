@@ -174,11 +174,13 @@ export function parseNodes(root: NodeContainer) {
 		let x,
 			y = 0
 		if (ordered) {
-			x = i * (nodeSize.x + gap)
-			if (x > maxWidth) {
-				x = 0
-				y += nodeSize.y + gap
-			}
+			const nodesPerRow = Math.floor(maxWidth / (nodeSize.x + gap)) + 1
+			const row = Math.floor(i / nodesPerRow)
+			const col = i % nodesPerRow
+			
+			x = col * (nodeSize.x + gap)
+			y = row * (nodeSize.y + gap)
+			
 			if (isAgent(root)) {
 				y += nodeSize.y + gap
 			}
