@@ -11,6 +11,7 @@ import IconTrash from '~icons/material-symbols/delete-outline'
 import IconExpand from '~icons/mdi/circle-expand'
 import { confirmStore } from './confirm.svelte'
 import { deleteNode as deleteNodeFn } from './canvas.svelte'
+import { isAgent } from '$lib/schemas'
 
 export type onClickFn = (node: CanvasNode) => Promise<Uuid | void> | void
 
@@ -64,12 +65,13 @@ export const deleteNode = {
 	}
 }
 
-const expandNode = {
+export const expandNode = {
 	label: 'Expand',
 	icon: IconExpand,
 	isDangerous: false,
 	onClick: async (node: CanvasNode) => {
 		if (!node) return
+		if (node.type !== 'agent-node' && node.type !== 'flow-node') return
 		await goto(page.url.pathname + '/' + node.id)
 	}
 }

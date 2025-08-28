@@ -3,14 +3,13 @@
 	import { clickOutside } from '$lib/utils/clickOutside'
 	import { getFlowModel, getActionModel, getAgentModel } from '$lib/nodeModels'
 	import { createComponent } from '$lib/actions/components'
-	import { addNode } from '$lib/stores/canvas.svelte'
+	import { addNode, getNodes } from '$lib/stores/canvas.svelte'
 	import { nodeTypes, type NodeType } from '$lib/constants/nodeTypes'
 	import { toast } from 'svelte-sonner'
 	import NodeTypeButton from './NodeTypeButton.svelte'
 	import ComponentNameForm from './ComponentNameForm.svelte'
-
-	import { goto } from '$app/navigation'
-	import { page } from '$app/state'
+	import { useSvelteFlow } from '@xyflow/svelte'
+	import { expandNode } from '$lib/stores/nodeActions.svelte'
 
 	interface Props {
 		positionAbsoluteX: number
@@ -19,6 +18,8 @@
 	}
 
 	const { positionAbsoluteX, positionAbsoluteY, data }: Props = $props()
+
+	const { fitView } = useSvelteFlow()
 
 	let isSelectMode = $state(false)
 	let isCreating = $state(false)
@@ -70,7 +71,18 @@
 				{}
 			)
 
-			//await goto(`${page.url}/${id}`)
+			if (!['flow', 'agent'].includes(pendingComponentType)) return
+
+			const newNode = getNodes().find(n => n.id === id)
+			if (!newNode) return
+			await fitView({
+				nodes: [newNode],
+				minZoom: 1,
+				maxZoom: 1,
+				duration: 500
+			})
+
+			if (newNode) await expandNode.onClick(newNode)
 		} catch (e) {
 			console.log(e)
 

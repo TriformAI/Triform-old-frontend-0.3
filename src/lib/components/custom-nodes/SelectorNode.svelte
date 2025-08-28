@@ -4,7 +4,6 @@
 	import { Handle, Position, useSvelteFlow as useSvelteFlowHook } from '@xyflow/svelte'
 	import NodeTypeButton from './NodeTypeButton.svelte'
 	import { nodeTypesDict, type NodeType } from '$lib/constants/nodeTypes'
-
 	import type { UUID as Uuid } from 'crypto'
 	import { getFlowModel, getActionModel, getAgentModel } from '$lib/nodeModels'
 	import { createComponent } from '$lib/actions/components'
@@ -12,10 +11,10 @@
 	import { toast } from 'svelte-sonner'
 	import type { MetaNodeData, NodeData } from '$lib/types/canvas'
 	import type * as z from 'zod'
-
 	import { ioModel } from '$lib/schemas'
-	import { getCurrentContainer } from '$lib/stores/canvas.svelte'
+	import { getCurrentContainer, getNodes } from '$lib/stores/canvas.svelte'
 	import ComponentNameForm from './ComponentNameForm.svelte'
+	import { expandNode } from '$lib/stores/nodeActions.svelte'
 
 	const {
 		id,
@@ -26,7 +25,7 @@
 	} = $props()
 
 	const useSvelteFlow = useSvelteFlowHook()
-	const { getNode, deleteElements } = useSvelteFlow
+	const { getNode, deleteElements, fitView } = useSvelteFlow
 
 	let pendingComponent = $state<Omit<ResolvedComponent, 'id'>>()
 
@@ -136,14 +135,14 @@
 				return
 			}
 			const newComponent = (await createComponent(pendingComponent)).data
-			const newNode = await addNode(newComponent, getNode(id)!.position, nodeInput)
+			const { id: nodeId } = await addNode(newComponent, getNode(id)!.position, nodeInput)
 			// if the source handle is a target handle, then the old node need to be updated
 			// with an input to the new node as the new one gets placed "above"
 			console.log(data.sourceHandle?.type, data.sourceNode, data.sourceHandle)
 			if (data.sourceHandle?.type === 'target' && data.sourceNode && data.sourceHandle.id) {
 				await addEdge(
 					{
-						id: newNode.id,
+						id: nodeId,
 						handle: data.sourceHandle.id
 					},
 					{
@@ -152,6 +151,16 @@
 					}
 				)
 			}
+
+			const newNode = getNodes().find(n => n.id === nodeId)
+			if (!newNode) return
+			await fitView({
+				nodes: [newNode],
+				minZoom: 1,
+				maxZoom: 1,
+				duration: 500
+			})
+			await expandNode.onClick(newNode)
 		} catch (error) {
 			console.error(error)
 			toast.error('Failed to create component')
