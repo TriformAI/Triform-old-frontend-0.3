@@ -1,12 +1,12 @@
 import type { resolvedFlowModel, ioModel } from '$lib/schemas'
 import type * as z from 'zod'
 
-export const getFlowModel = (inputs: z.infer<typeof ioModel>) =>
+export const getFlowModel = (inputs: z.infer<typeof ioModel>, name = '') =>
 	({
 		resource: 'flow/v1',
 		meta: {
 			starred: false,
-			name: 'New Flow',
+			name,
 			intention: ''
 		},
 		spec: {

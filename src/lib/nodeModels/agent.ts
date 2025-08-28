@@ -1,12 +1,12 @@
 import type { ioModel, resolvedAgentModel } from '$lib/schemas'
 import type * as z from 'zod'
 
-export const getAgentModel = (inputs: z.infer<typeof ioModel>) =>
+export const getAgentModel = (inputs: z.infer<typeof ioModel>, name = '') =>
 	({
 		resource: 'agent/v1',
 		meta: {
 			starred: false,
-			name: 'New Agent',
+			name,
 			intention: ''
 		},
 		spec: {

@@ -2,7 +2,7 @@ import type * as z from 'zod'
 import { actionModel, ioModel, jsonSchemaTypeToPython } from '$lib/schemas'
 import { objectMap } from '$lib/utils/objectMap'
 
-export const getActionModel = (inputs: z.infer<typeof ioModel>) => {
+export const getActionModel = (inputs: z.infer<typeof ioModel>, name = '') => {
 	const convertedTypes = objectMap(inputs, value => ({
 		...value,
 		type: jsonSchemaTypeToPython(value.type)
@@ -26,7 +26,7 @@ export const getActionModel = (inputs: z.infer<typeof ioModel>) => {
 	return {
 		resource: 'action/v1',
 		meta: {
-			name: 'Action',
+			name,
 			intention: '',
 			starred: false
 		},

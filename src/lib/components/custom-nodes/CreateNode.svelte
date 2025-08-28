@@ -6,7 +6,11 @@
 	import { addNode } from '$lib/stores/canvas.svelte'
 	import { nodeTypes, type NodeType } from '$lib/constants/nodeTypes'
 	import { toast } from 'svelte-sonner'
-	import NodeTypeButton from '../canvas/NodeTypeButton.svelte'
+	import NodeTypeButton from './NodeTypeButton.svelte'
+	import ComponentNameForm from './ComponentNameForm.svelte'
+
+	import { goto } from '$app/navigation'
+	import { page } from '$app/state'
 
 	interface Props {
 		positionAbsoluteX: number
@@ -21,28 +25,43 @@
 
 	function cancelSelectMode() {
 		isSelectMode = false
+		pendingComponentType = undefined
 	}
 
-	const create = async (type: NodeType) => {
+	let pendingComponentType = $state<NodeType>()
+	let newComponentName = $state('')
+
+	const initCreate = (type: NodeType) => {
+		pendingComponentType = type
+	}
+
+	const create = async () => {
+		if (!pendingComponentType) {
+			return
+		}
+
 		isCreating = true
 
 		const model = {
-			flow: getFlowModel({}),
-			action: getActionModel({
-				sample_input: {
-					description: 'Example input/output, replace me',
-					type: {
-						type: 'string'
+			flow: getFlowModel({}, newComponentName),
+			action: getActionModel(
+				{
+					sample_input: {
+						description: 'Example input/output, replace me',
+						type: {
+							type: 'string'
+						}
 					}
-				}
-			}),
-			agent: getAgentModel({})
-		}[type]
+				},
+				newComponentName
+			),
+			agent: getAgentModel({}, newComponentName)
+		}[pendingComponentType]
 
 		try {
 			const newFlow = (await createComponent(model)).data
 
-			await addNode(
+			const { id } = await addNode(
 				newFlow,
 				{
 					x: positionAbsoluteX,
@@ -50,6 +69,8 @@
 				},
 				{}
 			)
+
+			//await goto(`${page.url}/${id}`)
 		} catch (e) {
 			console.log(e)
 
@@ -65,7 +86,7 @@
 
 <div
 	class={[
-		'border-main-500 relative grid h-20 overflow-hidden rounded-md border border-dashed transition-all ease-(--easing-circ) *:col-start-1 *:row-start-1',
+		'border-main-500 relative grid overflow-hidden rounded-md border border-dashed transition-all ease-(--easing-circ) *:col-start-1 *:row-start-1',
 		isSelectMode ? 'w-max' : 'w-20'
 	]}
 	use:clickOutside={{
@@ -85,9 +106,24 @@
 		/>
 	</button>
 
-	<div class={['flex p-1 leading-none', isSelectMode ? 'opacity-100' : 'opacity-0']}>
+	{#if pendingComponentType}
+		<ComponentNameForm
+			componentTypeName={pendingComponentType}
+			onsubmit={create}
+			bind:value={newComponentName}
+			isLoading={isCreating}
+		/>
+	{/if}
+
+	<div
+		class={[
+			'flex p-1 leading-none',
+			isSelectMode && !pendingComponentType ? 'opacity-100' : 'opacity-0',
+			pendingComponentType && 'pointer-events-none opacity-0'
+		]}
+	>
 		{#each filteredNodeTypes as nodeType}
-			<NodeTypeButton {nodeType} onclick={() => create(nodeType.type)} />
+			<NodeTypeButton {nodeType} onclick={() => initCreate(nodeType.type)} />
 		{/each}
 	</div>
 </div>

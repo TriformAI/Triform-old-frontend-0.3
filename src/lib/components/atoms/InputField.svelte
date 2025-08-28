@@ -11,10 +11,12 @@
 		variation = 'default',
 		type = 'text',
 		autocomplete = 'off',
+		autofocus = false,
 		required,
 		readonly,
 		class: classProp,
 		containerClass,
+		hideLabel = false,
 		onblur,
 		onkeydown,
 		oninput,
@@ -31,10 +33,12 @@
 		variation?: 'default' | 'tight'
 		type?: string
 		autocomplete?: FullAutoFill
+		autofocus?: boolean
 		required?: boolean
 		readonly?: boolean
 		class?: string
 		containerClass?: string
+		hideLabel?: boolean
 		onblur?: (e: FocusEvent) => void
 		onkeydown?: (e: KeyboardEvent) => void
 		oninput?: (e: Event) => void
@@ -50,12 +54,19 @@
 		if (typeof res === 'boolean') return { success: res, error: undefined }
 		return { success: !res, error: res }
 	})
+
+	function focus(el: HTMLInputElement) {
+		if (autofocus) {
+			el.focus()
+		}
+	}
 </script>
 
 <div class={['grid gap-1', containerClass]}>
 	{#if label}
-		<label data-label for={id} class="input-title">{label}</label>
+		<label data-label for={id} class={['input-title', hideLabel && 'sr-only']}>{label}</label>
 	{/if}
+
 	<div class="group flex flex-row-reverse items-center">
 		<input
 			{name}
@@ -68,6 +79,7 @@
 			disabled={readonly}
 			bind:this={el}
 			bind:value
+			use:focus
 			class={[
 				'input-text peer',
 				'disabled:text-main-400',

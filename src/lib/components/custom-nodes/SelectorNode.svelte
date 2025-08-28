@@ -2,23 +2,20 @@
 	import { clickOutside } from '$lib/utils/clickOutside'
 	import { addEdge, addNode } from '$lib/stores/canvas.svelte'
 	import { Handle, Position, useSvelteFlow as useSvelteFlowHook } from '@xyflow/svelte'
-	import NodeTypeButton from '../canvas/NodeTypeButton.svelte'
-	import { nodeTypesDict } from '$lib/constants/nodeTypes'
-	import IconClose from '~icons/mdi/close'
-	import Button from '$lib/components/atoms/Button.svelte'
+	import NodeTypeButton from './NodeTypeButton.svelte'
+	import { nodeTypesDict, type NodeType } from '$lib/constants/nodeTypes'
+
 	import type { UUID as Uuid } from 'crypto'
 	import { getFlowModel, getActionModel, getAgentModel } from '$lib/nodeModels'
 	import { createComponent } from '$lib/actions/components'
-	import type { Component, ResolvedComponent, ResolvedFlow } from '$lib/types/resources'
-	import { blur, slide } from 'svelte/transition'
-	import InputField from '../atoms/InputField.svelte'
+	import type { ResolvedComponent, ResolvedFlow } from '$lib/types/resources'
 	import { toast } from 'svelte-sonner'
 	import type { MetaNodeData, NodeData } from '$lib/types/canvas'
 	import type * as z from 'zod'
+
 	import { ioModel } from '$lib/schemas'
 	import { getCurrentContainer } from '$lib/stores/canvas.svelte'
-	import { pick } from '$lib/utils/pick'
-	import {} from 'os'
+	import ComponentNameForm from './ComponentNameForm.svelte'
 
 	const {
 		id,
@@ -32,21 +29,6 @@
 	const { getNode, deleteElements } = useSvelteFlow
 
 	let pendingComponent = $state<Omit<ResolvedComponent, 'id'>>()
-
-	let inputEl: HTMLInputElement | null = $state(null)
-	const onInputCreate = (el: HTMLFormElement) => {
-		setTimeout(() => {
-			const input = el?.querySelector('input')
-			if (!input) return
-			inputEl = input
-			focusInput()
-		}, 100)
-	}
-	const focusInput = () => {
-		if (!inputEl) return
-		inputEl.focus()
-		inputEl.select()
-	}
 
 	// Get input schema and connection info from the edge/handle data
 	const [sourceInput, nodeInput]: [
@@ -125,30 +107,25 @@
 				...nodeTypesDict.flow,
 				handler: async () => {
 					pendingComponent = getFlowModel(getInput())
-					pendingComponent!.meta.name = 'Flow'
-					setTimeout(focusInput, 50)
 				}
 			},
 			{
 				...nodeTypesDict.action,
 				handler: async () => {
 					pendingComponent = getActionModel(getInput())
-					pendingComponent.meta.name = 'Action'
-					setTimeout(focusInput, 50)
 				}
 			},
 			{
 				...nodeTypesDict.agent,
 				handler: async () => {
 					pendingComponent = getAgentModel(getInput())
-					pendingComponent.meta.name = 'Agent'
-					setTimeout(focusInput, 50)
 				}
 			}
 		]
 	})
 
 	let addingComponent = $state(false)
+
 	const finaliseComponent = async () => {
 		if (!pendingComponent || addingComponent) return
 		try {
@@ -206,7 +183,7 @@
 />
 
 <div
-	class={['border-main-800 bg-main-850 shadow-window min-w-64 rounded-md border']}
+	class={['border-main-800 bg-main-850 shadow-window  rounded-md border']}
 	use:clickOutside={{
 		eventType: 'mousedown',
 		handler: () => {
@@ -225,44 +202,33 @@
 		/>
 	{/if}
 
-	<div class="flex gap-1 p-1 leading-none">
-		{#each componentTypes as nodeType}
-			<NodeTypeButton
-				{nodeType}
-				withBgColor={true}
-				onclick={async () => {
-					nodeType.handler()
-				}}
-			/>
-		{/each}
-	</div>
-
-	{#if pendingComponent}
-		<form
-			transition:slide={{ duration: 300 }}
-			use:onInputCreate
-			class="mt-4"
-			onsubmit={finaliseComponent}
-		>
-			<InputField
-				label="Name"
-				placeholder="Enter a name for the component"
-				required
+	<div class="grid p-1 *:col-start-1 *:row-start-1">
+		{#if pendingComponent}
+			<ComponentNameForm
+				componentTypeName={pendingComponent.resource.split('/')[0] as NodeType}
+				onsubmit={finaliseComponent}
 				bind:value={pendingComponent.meta.name}
-			/>
-			<Button
-				variation="primary"
-				class="mt-3 w-full px-2 py-1 text-sm"
-				type="submit"
 				isLoading={addingComponent}
-				disabled={addingComponent}
-			>
-				{#snippet body()}
-					Create
-				{/snippet}
-			</Button>
-		</form>
-	{/if}
+			/>
+		{/if}
+
+		<div
+			class={[
+				'mx-auto flex gap-1 leading-none',
+				pendingComponent && 'pointer-events-none opacity-0'
+			]}
+		>
+			{#each componentTypes as nodeType}
+				<NodeTypeButton
+					{nodeType}
+					withBgColor={true}
+					onclick={async () => {
+						nodeType.handler()
+					}}
+				/>
+			{/each}
+		</div>
+	</div>
 
 	{#if showTargetHandle}
 		<Handle
