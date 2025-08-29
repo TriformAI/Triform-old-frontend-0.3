@@ -402,6 +402,34 @@ export const addEdge = async (source: EdgeConnection, target: EdgeConnection) =>
 	const container = getCurrentContainer()
 	const snapshot = clone($state.snapshot(container))
 
+  // since we don't allow the user to type things explicitly (yet) we should just
+  // copy the schema from the one side of the edge that has a schema right now
+  // if both sides have schemas, check if one of them is an action and prefer that
+  // otherwise just prefer the source
+
+	// Get schemas from both sides - prefer action nodes, then source
+	const sourceNode = container.spec.nodes[source.id]
+	const targetNode = container.spec.nodes[target.id]
+	const sourceSchema = sourceNode?.spec?.spec?.outputs?.[source.handle]?.schema
+	const targetSchema = targetNode?.spec?.spec?.inputs?.[target.handle]?.schema
+	
+	// Check if schema is not empty (schemas are {} when empty, not undefined)
+	const hasSourceSchema = sourceSchema && Object.keys(sourceSchema).length > 0
+	const hasTargetSchema = targetSchema && Object.keys(targetSchema).length > 0
+	
+	console.log(hasSourceSchema, hasTargetSchema)
+
+	let preferredSchema = undefined
+	if (hasSourceSchema && hasTargetSchema) {
+		// If both have schemas, prefer action type, otherwise use source
+		if (targetNode?.spec && isAction(targetNode.spec)) preferredSchema = targetSchema
+		else preferredSchema = sourceSchema
+	} else if (hasSourceSchema) {
+		preferredSchema = sourceSchema
+	} else if (hasTargetSchema) {
+		preferredSchema = targetSchema
+	}
+
 	// if we're adding a new output edge, add it to the container
 	if (target.id === `${container.id}:output`) {
 		if (!('outputs' in container.spec))
@@ -410,6 +438,11 @@ export const addEdge = async (source: EdgeConnection, target: EdgeConnection) =>
 			source: source.id.split(':')[0],
 			target: source.handle
 		})
+		
+		// Copy schema to output if we have one
+		if (preferredSchema) {
+			container.spec.outputs[target.handle].schema = preferredSchema
+		}
 	} else {
 		// otherwise, just create the new input
 		const node = container.spec.nodes[target.id]
@@ -419,6 +452,36 @@ export const addEdge = async (source: EdgeConnection, target: EdgeConnection) =>
 		node.inputs[target.handle] = {
 			source: sourceId,
 			target: source.handle
+		}
+		
+		console.log('nss', node.spec.spec, node.spec.spec.inputs[target.handle])
+
+		// Copy schema to both sides if we have a preferred schema
+		if (preferredSchema) {
+			// Copy to target input
+			if (node.spec?.spec && 'inputs' in node.spec.spec) {
+				const targetNodeInputs = node.spec.spec.inputs
+				if (targetNodeInputs?.[target.handle]) {
+					console.log('adding schema to target', preferredSchema, node.spec.resource)
+					targetNodeInputs[target.handle].schema = preferredSchema
+				}
+			}
+			
+			// Copy to source output
+			if (source.id === `${container.id}:input`) {
+				// Source is container input node
+				if ('inputs' in container.spec && container.spec.inputs[source.handle]) {
+					console.log('adding schema to container input', preferredSchema)
+					container.spec.inputs[source.handle].schema = preferredSchema
+				}
+			} else if (sourceNode?.spec?.spec && 'outputs' in sourceNode.spec.spec) {
+				// Source is regular node
+				const sourceNodeOutputs = sourceNode.spec.spec.outputs
+				if (sourceNodeOutputs?.[source.handle]) {
+					console.log('adding schema to source', preferredSchema, sourceNode.spec.resource)
+					sourceNodeOutputs[source.handle].schema = preferredSchema
+				}
+			}
 		}
 	}
 
