@@ -34,7 +34,7 @@
 	const finalisePort = async () => {
 		if (!nodeId) return
 		const currNodeId = isIoNode ? 'container' : nodeId
-		await addPort(currNodeId, newPortName, { type: 'string' }, portType)
+		await addPort(currNodeId, newPortName, {}, portType)
 		isAddingPort = false
 		newPortName = ''
 	}

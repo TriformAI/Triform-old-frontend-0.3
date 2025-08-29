@@ -41,7 +41,7 @@
 
 		let inputSchema: z.infer<typeof ioModel>['input'] = {
 			description: 'Generated input',
-			schema: { type: 'string' }
+			schema: {}
 		}
 		let inputName = handleId
 		let newInput: ResolvedFlow['spec']['nodes'][string]['inputs'] | undefined
@@ -94,9 +94,7 @@
 			: {
 					sample_input: {
 						description: 'Example input/output, replace me',
-						schema: {
-							type: 'string'
-						}
+						schema: {}
 					}
 				}
 

@@ -49,9 +49,7 @@
 				{
 					sample_input: {
 						description: 'Example input/output, replace me',
-						schema: {
-							type: 'string'
-						}
+						schema: {}
 					}
 				},
 				newComponentName
