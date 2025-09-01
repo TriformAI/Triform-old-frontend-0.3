@@ -113,6 +113,14 @@ function handleVoidDrop(
 }
 
 export const handleConnectEnd: ConnectEnd = async (event, connectionState, useSvelteFlow) => {
+	// Prevent connections between IO nodes
+	if (
+		['input', 'output'].includes(connectionState.fromHandle?.nodeId?.split(':')[1] ?? '') &&
+		['input', 'output'].includes(connectionState.toHandle?.nodeId?.split(':')[1] ?? '')
+	) {
+		return
+	}
+
 	// if it's a valid connection, don't show the node selector but instead add the edge
 	if (connectionState.isValid) {
 		// Check if user is connectiong to a ghost port

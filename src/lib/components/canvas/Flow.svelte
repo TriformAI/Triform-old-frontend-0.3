@@ -19,7 +19,6 @@
 		SvelteFlow,
 		useSvelteFlow as svelteFlowHook,
 		useUpdateNodeInternals,
-		useOnSelectionChange,
 		type EdgeTypes
 	} from '@xyflow/svelte'
 	import '@xyflow/svelte/dist/style.css'
@@ -27,19 +26,12 @@
 	import { debounce } from '../../utils/debounce'
 	import { isValidConnection } from './FlowEvents/isValidConnection'
 	import { scale } from 'svelte/transition'
-	import { type OnNavigate } from '@sveltejs/kit'
-	import { onNavigate } from '$app/navigation'
 	import { getComponent } from '$lib/actions/components'
 	import { isFlow } from '$lib/types/resources'
 	import { type UUID as Uuid } from 'crypto'
-	import { getFlowModel } from '$lib/nodeModels'
 	import { flowHasComponent } from '$lib/utils/flowHasComponent'
 	import { toast } from 'svelte-sonner'
 	import { getProject, refreshFlow } from '$lib/stores/canvas.svelte'
-	import type { NodeContainer } from '$lib/types/flow'
-	import { page } from '$app/state'
-	import { isAction, type resolvedProjectModel } from '$lib/schemas'
-	import type * as z from 'zod'
 	import IoNode from '../custom-nodes/IONode.svelte'
 	import AgentNode from '../custom-nodes/AgentNode.svelte'
 	const useSvelteFlow = svelteFlowHook()
@@ -162,6 +154,12 @@
 		onbeforedelete={handleBeforeDelete}
 		ondelete={handleDelete}
 		onnodedragstop={handleDragStop}
+		onbeforeconnect={e => {
+			// Prevent edge from sticking when connecting to ghost ports
+			if (e.sourceHandle === 'ghost-source' || e.targetHandle === 'ghost-target') {
+				return false
+			}
+		}}
 	>
 		<Background
 			bgColor="#18181b"
