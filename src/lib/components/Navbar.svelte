@@ -8,6 +8,13 @@
 	import Spinner from './Spinner.svelte'
 	import { goto } from '$app/navigation'
 	import type { Snippet } from 'svelte'
+	import Button from './atoms/Button.svelte'
+	import IconDeploy from '~icons/mdi/rocket-launch'
+	import { API } from '$lib/api'
+	import { toast } from 'svelte-sonner'
+	import { getCurrentContainer } from '$lib/stores/canvas.svelte'
+
+	const api = new API()
 
 	const activeOrganization = authClient.useActiveOrganization()
 
@@ -22,10 +29,33 @@
 			}
 		})
 	}
+
+	let isDeploying = $state(false)
+
+	async function deployProject() {
+		isDeploying = true
+		const result = await api.post<{ data: { id: string } }>(
+			`projects/${page.data.project?.id}/deploy`,
+			{}
+		)
+
+		if (result.success) {
+			toast.success('Project deployed successfully!')
+		} else {
+			toast.error('Failed to deploy project')
+		}
+
+		isDeploying = false
+	}
+
+	const projectIsEmpty = $derived.by(() => {
+		const { spec, resource } = getCurrentContainer()
+		return resource.startsWith('project') && Object.keys(spec.nodes ?? {}).length === 0
+	})
 </script>
 
 <header
-	class="bg-main-850 sticky top-0 z-30 grid w-full grid-cols-[auto_1fr_auto] items-center px-5 py-2"
+	class="bg-main-850 sticky top-0 z-30 grid w-full grid-cols-[1fr_4fr_1fr] items-center px-5 py-2"
 >
 	<a href="/">
 		<img alt="Triform logo" src={logo} class="w-10" />
@@ -54,7 +84,18 @@
 		</div>
 	</div>
 
-	<div class="mt-2 flex flex-row items-center gap-2">
+	<div class="ms-auto mt-2 flex flex-row items-center gap-8">
+		{#if page.data.project && !projectIsEmpty}
+			<Button isLoading={isDeploying} variation="vibrant" onClick={deployProject}>
+				{#snippet body()}
+					<span class=" font-semibold">Deploy project</span>
+				{/snippet}
+				{#snippet icon()}
+					<IconDeploy />
+				{/snippet}
+			</Button>
+		{/if}
+
 		<Dropdown>
 			{#snippet trigger()}
 				{#if sessionStore.user}
