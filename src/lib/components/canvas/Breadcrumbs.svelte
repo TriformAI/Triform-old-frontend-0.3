@@ -9,7 +9,6 @@
 	const projectUrl = $derived(`/project/${page.data.project?.id}`)
 
 	const crumbs = $derived(breadcrumbs())
-	$inspect(crumbs)
 </script>
 
 {#if crumbs}
@@ -46,13 +45,13 @@
 					</span>
 				</a>
 			</li>
-			<li class="flex items-center">
-				{#if idx < crumbs.length - 1}
+			{#if idx < crumbs.length - 1}
+				<li class="flex items-center">
 					<span class="text-main-600 transition starting:opacity-0">
 						<ChevronRight />
 					</span>
-				{/if}
-			</li>
+				</li>
+			{/if}
 		{/each}
 	</ul>
 {/if}
