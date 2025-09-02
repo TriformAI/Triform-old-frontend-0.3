@@ -89,9 +89,14 @@
 		</div>
 	</div>
 
-	<div class="ms-auto mt-2 flex flex-row items-center gap-8">
+	<div class="ms-auto mt-2 flex flex-row items-center gap-4">
 		{#if page.data.project && !projectIsEmpty}
-			<Button isLoading={isDeploying} variation="vibrant" onClick={deployProject}>
+			<Button
+				class="py-1.5 text-sm"
+				isLoading={isDeploying}
+				variation="vibrant"
+				onClick={deployProject}
+			>
 				{#snippet body()}
 					<span class=" font-semibold">Deploy project</span>
 				{/snippet}

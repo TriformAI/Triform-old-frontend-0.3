@@ -13,9 +13,8 @@
 	import ListText from './ListText.svelte'
 	import ListNameDescType from './ListNameDescType.svelte'
 	import { onMount } from 'svelte'
-	import IconGenerate from '~icons/mdi/shimmer'
 	import { getUserMessage, chat } from '$lib/components/Chat/chatStore.svelte'
-	import Button from '$lib/components/atoms/Button.svelte'
+	import GenerateButton from '$lib/components/atoms/GenerateButton.svelte'
 	import { requirements, getDefaultRequirements } from '$lib/stores/requirements.svelte'
 	import { requirementsModel } from '$lib/schemas/requirements'
 	type Requirements = z.infer<typeof requirementsModel>
@@ -120,18 +119,11 @@
 				<div class="flex justify-between">
 					<p class="eyebrow mb-1">Requirements</p>
 					{#if componentData.meta.intention}
-						<Button
-							class="py-1 text-sm"
+						<GenerateButton
+							label="Generate"
 							onClick={generateRequirements}
 							disabled={!chat.socket || componentData.meta.intention.length < 10}
-						>
-							{#snippet icon()}
-								<IconGenerate />
-							{/snippet}
-							{#snippet body()}
-								Generate
-							{/snippet}
-						</Button>
+						/>
 					{/if}
 				</div>
 

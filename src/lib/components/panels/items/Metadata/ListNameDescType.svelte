@@ -56,12 +56,12 @@
 						isDeleting.has(index) ? 'h-0' : ''
 					]}
 				>
-					<div class="grid grid-cols-[1fr_2fr_1fr_auto] items-start gap-2 pb-2">
+					<div class="grid grid-cols-[1fr_2fr_0.8fr_auto] items-start gap-2 pb-2">
 						<label>
 							<span class={['block pb-1', index > 0 && 'sr-only']}>Name</span>
 							<input
 								bind:this={textareas[index]}
-								class="input-text field-sizing-content w-full px-2 py-1.5"
+								class="input-text w-full px-2 py-1.5"
 								bind:value={value[index].name}
 							/>
 						</label>
