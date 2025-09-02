@@ -32,6 +32,7 @@ const componentUpdated = baseModel.extend({
 const componentRequirementsUpdated = baseModel.extend({
 	event: z.literal('component:requirements:updated'),
 	data: z.strictObject({
+		component_id: z.string(),
 		requirements: requirementsModel
 	})
 })
