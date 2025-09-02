@@ -1,9 +1,6 @@
 name: Build
 
 on:
-  push:
-    tags:
-    - 'v*.*.*'
   workflow_dispatch:
 
 env:
@@ -28,16 +25,20 @@ jobs:
       with:
         username: nologin
         password: ${{ secrets.SCW_API_KEY }}
-        registry: rg.fr-par.scw.cloud/tf-dev # TODO: make this dynamic based on environment
+        registry: rg.fr-par.scw.cloud/tf-prod
 
     - name: Set up Docker Buildx
       uses: docker/setup-buildx-action@v3
+
+    - name: Set outputs
+      id: vars
+      run: echo "sha_short=$(git rev-parse --short HEAD)" >> $GITHUB_OUTPUT
 
     - name: Build and push Docker image
       uses: docker/build-push-action@v5
       with:
         context: .
         push: true
-        tags: rg.fr-par.scw.cloud/tf-dev/nexus-frontend:latest
+        tags: rg.fr-par.scw.cloud/tf-prod/nexus-frontend:latest,rg.fr-par.scw.cloud/tf-prod/nexus-frontend:${{ steps.vars.outputs.sha_short }}
         cache-from: type=gha
         cache-to: type=gha,mode=max
