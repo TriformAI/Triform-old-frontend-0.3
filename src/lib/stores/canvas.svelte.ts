@@ -28,6 +28,7 @@ import type * as z from 'zod'
 import { clone } from '$lib/utils/clone'
 import { exclude } from '$lib/utils/exclude'
 import { resolveComponentCached } from '$lib/utils/resolveComponent'
+import type { requirementsModel } from '$lib/schemas/requirements'
 
 let nodesStore = $state<CanvasNode[]>([])
 let edgesStore = $state<Edge[]>([])
@@ -177,10 +178,10 @@ export function parseNodes(root: NodeContainer) {
 			const nodesPerRow = Math.floor(maxWidth / (nodeSize.x + gap)) + 1
 			const row = Math.floor(i / nodesPerRow)
 			const col = i % nodesPerRow
-			
+
 			x = col * (nodeSize.x + gap)
 			y = row * (nodeSize.y + gap)
-			
+
 			if (isAgent(root)) {
 				y += nodeSize.y + gap
 			}
@@ -402,21 +403,21 @@ export const addEdge = async (source: EdgeConnection, target: EdgeConnection) =>
 	const container = getCurrentContainer()
 	const snapshot = clone($state.snapshot(container))
 
-  // since we don't allow the user to type things explicitly (yet) we should just
-  // copy the schema from the one side of the edge that has a schema right now
-  // if both sides have schemas, check if one of them is an action and prefer that
-  // otherwise just prefer the source
+	// since we don't allow the user to type things explicitly (yet) we should just
+	// copy the schema from the one side of the edge that has a schema right now
+	// if both sides have schemas, check if one of them is an action and prefer that
+	// otherwise just prefer the source
 
 	// Get schemas from both sides - prefer action nodes, then source
 	const sourceNode = container.spec.nodes[source.id]
 	const targetNode = container.spec.nodes[target.id]
 	const sourceSchema = sourceNode?.spec?.spec?.outputs?.[source.handle]?.schema
 	const targetSchema = targetNode?.spec?.spec?.inputs?.[target.handle]?.schema
-	
+
 	// Check if schema is not empty (schemas are {} when empty, not undefined)
 	const hasSourceSchema = sourceSchema && Object.keys(sourceSchema).length > 0
 	const hasTargetSchema = targetSchema && Object.keys(targetSchema).length > 0
-	
+
 	console.log(hasSourceSchema, hasTargetSchema)
 
 	let preferredSchema = undefined
@@ -438,7 +439,7 @@ export const addEdge = async (source: EdgeConnection, target: EdgeConnection) =>
 			source: source.id.split(':')[0],
 			target: source.handle
 		})
-		
+
 		// Copy schema to output if we have one
 		if (preferredSchema) {
 			container.spec.outputs[target.handle].schema = preferredSchema
@@ -453,7 +454,7 @@ export const addEdge = async (source: EdgeConnection, target: EdgeConnection) =>
 			source: sourceId,
 			target: source.handle
 		}
-		
+
 		console.log('nss', node.spec.spec, node.spec.spec.inputs[target.handle])
 
 		// Copy schema to both sides if we have a preferred schema
@@ -466,7 +467,7 @@ export const addEdge = async (source: EdgeConnection, target: EdgeConnection) =>
 					targetNodeInputs[target.handle].schema = preferredSchema
 				}
 			}
-			
+
 			// Copy to source output
 			if (source.id === `${container.id}:input`) {
 				// Source is container input node
@@ -629,6 +630,10 @@ const mergeExcluding = <T extends Record<string, unknown>>(
 		}
 	})
 	return result
+}
+
+export const updateRequirements = async (requirements: z.infer<typeof requirementsModel>) => {
+	const container = getCurrentContainer()
 }
 
 // replaces all instances of a given component with an updated one in the current project (locally)

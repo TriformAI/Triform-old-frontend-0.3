@@ -1,6 +1,10 @@
 import { ackMessageModel, errorMessageModel, uiMessageModel } from '$lib/schemas/chat'
+import { userMessageModel } from '$lib/schemas/chat'
 import { toast } from 'svelte-sonner'
+import { WebSocket } from 'partysocket'
+import { throttle } from '$lib/utils/throttle'
 import * as z from 'zod'
+import { tick } from 'svelte'
 
 // these don't have ids, just an ugly hack for TS for now :)
 const ackModel = ackMessageModel.extend({ id: z.string() })
@@ -38,7 +42,58 @@ export interface RunData {
 
 export type ParsedItem = MessageData | RunData | StepData
 
-export const chat = $state<{ data: ParsedItem[] }>({ data: [] })
+export type UserMessage = Omit<
+	z.infer<typeof userMessageModel>,
+	'id' | 'runId' | 'sourceId' | 'stepId'
+>
+
+export const chat = $state<{ socket: WebSocket | null; data: ParsedItem[] }>({
+	socket: null,
+	data: []
+})
+
+export function scrollToBottom(chatMessagesContainer: HTMLElement) {
+	if (chatMessagesContainer) {
+		chatMessagesContainer.scrollTo({
+			top: chatMessagesContainer.scrollHeight,
+			behavior: 'smooth'
+		})
+	}
+}
+
+const throttledScrollToBottom = throttle(scrollToBottom, 100)
+
+export function initWebsocket(projectId: string, chatMessagesContainer: HTMLElement) {
+	const socket = new WebSocket(
+		() => `/api/projects/${projectId}/chat?startId=${getStartId() ?? '0'}`
+	)
+
+	socket.onopen = () => {
+		console.log('WebSocket connected')
+	}
+
+	socket.onmessage = async e => {
+		try {
+			handleMessage(JSON.parse(e.data))
+
+			await tick()
+			scrollToBottom(chatMessagesContainer)
+		} catch (error) {
+			console.error('error handling message', error)
+			toast.error('Unknown error, please try again later')
+		}
+	}
+
+	socket.onclose = () => {
+		console.log('Socket closed')
+	}
+
+	socket.onerror = err => {
+		console.error('Socket error', err)
+	}
+
+	chat.socket = socket
+}
 
 function findRun(id: string): RunData | undefined {
 	return chat.data.find(it => it.type === 'run' && it.id === id) as RunData
@@ -230,4 +285,20 @@ export function parseHistory(history: Message[]) {
 	//resetChatState()
 
 	for (const m of history) handleMessage(m)
+}
+
+// Factory func for default state of userMessage
+export function getUserMessage(): UserMessage {
+	return {
+		event: 'user_message',
+		data: {
+			content: [
+				{
+					type: 'text',
+					text: ''
+				}
+			],
+			context: {}
+		}
+	}
 }

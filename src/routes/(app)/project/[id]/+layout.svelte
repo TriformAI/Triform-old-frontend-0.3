@@ -14,14 +14,13 @@
 		setProject,
 		updateLocalComponent,
 		getCurrentContainer,
-		getNodes
+		getVisibleComponent
 	} from '$lib/stores/canvas.svelte'
-	import ComponentLibrary from '$lib/components/panels/Library/ComponentLibrary.svelte'
 	import { debounce } from '$lib/utils/debounce'
 	import { onMount, untrack } from 'svelte'
 	import { page } from '$app/state'
 	import type * as z from 'zod'
-	import { projectModel, resolvedProjectModel } from '$lib/schemas'
+	import { resolvedProjectModel } from '$lib/schemas'
 	import { ingressTokens } from '$lib/stores/ingressTokens.svelte.js'
 	import Chat from '$lib/components/Chat/Chat.svelte'
 	import { WebSocket } from 'partysocket'
@@ -30,8 +29,10 @@
 	import { isProject } from '$lib/schemas'
 	import { onNavigate } from '$app/navigation'
 	import type { OnNavigate } from '@sveltejs/kit'
-	import { tick } from 'svelte'
 	import { useUpdateNodeInternals } from '@xyflow/svelte'
+	import { requirements } from '$lib/stores/requirements.svelte'
+	import { selected } from '$lib/stores/panel.svelte.js'
+	import { requirementsModel } from '$lib/schemas/requirements'
 
 	const { data, children } = $props()
 
@@ -98,22 +99,39 @@
 
 	const currentIsProject = $derived(isProject(getCurrentContainer()))
 
+	type Requirements = z.infer<typeof requirementsModel>
+
+	// Updates requirements from socket for the currently selected component if component_id matches
+	function updateRequirements(data: { component_id: string; requirements: Requirements }) {
+		const currentComponent = getVisibleComponent(selected.node?.id ?? 'container')
+		if (currentComponent?.id === data.component_id) {
+			requirements.value = data.requirements
+		}
+	}
+
+	async function handleMessage(data: z.infer<typeof socketEventModel>) {
+		try {
+			const payload = socketEventModel.parse(data)
+			if (payload.event === 'component:updated') {
+				await updateLocalComponent(payload.data.component)
+				refreshFlow()
+			} else if (payload.event === 'component:requirements:updated') {
+				updateRequirements(payload.data)
+			} else if (payload.event === 'connected') {
+				setSocketId(payload.data.id)
+			}
+		} catch (err) {
+			console.error('error parsing message', err)
+		}
+	}
+
 	onMount(() => {
 		const ws = new WebSocket('/api/organizations/@me/socket')
+
 		ws.onmessage = async e => {
-			try {
-				const payload = socketEventModel.parse(JSON.parse(e.data))
-				console.log('payload', payload)
-				if (payload.event === 'component:updated') {
-					await updateLocalComponent(payload.data.component)
-					refreshFlow()
-				} else if (payload.event === 'connected') {
-					setSocketId(payload.data.id)
-				}
-			} catch (err) {
-				console.error('error parsing message', err)
-			}
+			handleMessage(JSON.parse(e.data))
 		}
+
 		return () => {
 			try {
 				ws.close()

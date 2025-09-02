@@ -6,15 +6,18 @@
 	import { debounce } from '$lib/utils/debounce'
 	import PanelItem from '$lib/components/panels/PanelItem.svelte'
 	import type { z } from 'zod'
-	import type { resolvedComponentModel, resolvedProjectModel } from '$lib/schemas'
+	import type { resolvedComponentModel } from '$lib/schemas'
 	import { getVisibleComponent } from '$lib/stores/canvas.svelte'
 	import { updateComponent, upsertRequirements, getRequirements } from '$lib/actions/components'
 	import { saveProject } from '$lib/actions/project'
 	import ListText from './ListText.svelte'
 	import ListNameDescType from './ListNameDescType.svelte'
-	import { requirementsModel } from '$lib/schemas/requirements'
 	import { onMount } from 'svelte'
-
+	import IconGenerate from '~icons/mdi/shimmer'
+	import { getUserMessage, chat } from '$lib/components/Chat/chatStore.svelte'
+	import Button from '$lib/components/atoms/Button.svelte'
+	import { requirements, getDefaultRequirements } from '$lib/stores/requirements.svelte'
+	import { requirementsModel } from '$lib/schemas/requirements'
 	type Requirements = z.infer<typeof requirementsModel>
 
 	const { nodeId }: { nodeId: string } = $props()
@@ -26,28 +29,20 @@
 	const componentType = $derived(componentData?.resource.split('/')[0])
 	const isProject = $derived(componentType === 'project')
 
-	let requirements = $state<Requirements>({
-		context: { text: '' },
-		userStories: [],
-		outcomes: [],
-		guidelines: [],
-		dependencies: [],
-		boundaries: [],
-		safety: []
-	})
+	const componentRequirements = $state<Requirements>(getDefaultRequirements())
 
 	onMount(async () => {
 		// Get current requirements or an empty object if none exist
 		const result = await getRequirements(isProject ? 'projects' : 'components', componentData.id)
 
 		if (result.data) {
-			requirements = result.data
+			requirements.value = result.data
 		}
 	})
 
 	$effect(() => {
 		// Save requirements when content updates
-		$state.snapshot(requirements) // establishes dependency on any nested change
+		$state.snapshot(requirements.value) // establishes dependency on any nested change
 		debouncedSaveRequirements()
 	})
 
@@ -62,10 +57,29 @@
 		const res = await upsertRequirements(
 			isProject ? 'projects' : 'components',
 			componentData.id,
-			requirements
+			requirements.value
 		)
 		if (!res.success) toast.error(`Failed saving ${componentData.meta.name}`)
 	}, 500)
+
+	function generateRequirements() {
+		const msg = getUserMessage()
+		msg.data.content[0].text = `generate requirements`
+		msg.data.context = {
+			[`@${componentData.meta.name}`]: {
+				component_id: componentData.id
+			}
+		}
+
+		console.log(msg)
+
+		if (!chat.socket) {
+			toast.error('Could not connect to generator')
+			return
+		}
+
+		chat.socket.send(JSON.stringify(msg))
+	}
 </script>
 
 {#if componentData}
@@ -103,21 +117,42 @@
 			{/if}
 
 			<div class="mt-4 grid gap-4">
-				<p class="eyebrow mb-1">Requirements</p>
+				<div class="flex justify-between">
+					<p class="eyebrow mb-1">Requirements</p>
+					{#if componentData.meta.intention}
+						<Button
+							class="py-1 text-sm"
+							onClick={generateRequirements}
+							disabled={!chat.socket || componentData.meta.intention.length < 10}
+						>
+							{#snippet icon()}
+								<IconGenerate />
+							{/snippet}
+							{#snippet body()}
+								Generate
+							{/snippet}
+						</Button>
+					{/if}
+				</div>
 
-				<TextField rows={3} label="Context" name="context" bind:value={requirements.context.text} />
+				<TextField
+					rows={3}
+					label="Context"
+					name="context"
+					bind:value={requirements.value.context.text}
+				/>
 
-				<ListText title="User stories" bind:value={requirements.userStories} />
+				<ListText title="User stories" bind:value={requirements.value.userStories} />
 
-				<ListText title="Outcomes" bind:value={requirements.outcomes} />
+				<ListText title="Outcomes" bind:value={requirements.value.outcomes} />
 
-				<ListText title="Guidelines" bind:value={requirements.guidelines} />
+				<ListText title="Guidelines" bind:value={requirements.value.guidelines} />
 
-				<ListNameDescType title="Dependencies" bind:value={requirements.dependencies} />
+				<ListNameDescType title="Dependencies" bind:value={requirements.value.dependencies} />
 
-				<ListText title="Boundaries" bind:value={requirements.boundaries} />
+				<ListText title="Boundaries" bind:value={requirements.value.boundaries} />
 
-				<ListText title="Safety" bind:value={requirements.safety} />
+				<ListText title="Safety" bind:value={requirements.value.safety} />
 			</div>
 		</div>
 	</PanelItem>

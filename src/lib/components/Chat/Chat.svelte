@@ -2,43 +2,33 @@
 	import { onMount, tick } from 'svelte'
 	import ChatItem from './ChatItem.svelte'
 	import {
-		handleMessage,
 		parseHistory,
 		chat,
-		getStartId,
+		getUserMessage,
 		type MessageData,
-		type ParsedItem
+		type ParsedItem,
+		type UserMessage,
+		initWebsocket,
+		scrollToBottom
 	} from './chatStore.svelte'
 	import Button from '../atoms/Button.svelte'
 	import { page } from '$app/state'
 	import { getMessages } from '$lib/remote/chat.remote'
-	import { WebSocket } from 'partysocket'
-	import { throttle } from '$lib/utils/throttle'
 	import ChatMention from './ChatMention.svelte'
 	import { type Item } from './ChatMention.svelte'
 	import { getCurrentContainer } from '$lib/stores/canvas.svelte'
-	import { userMessageModel } from '$lib/schemas/chat'
-	import { z } from 'zod'
-	import { toast } from 'svelte-sonner'
 	import LogoSpinner from '$lib/components/SpinnerLogo.svelte'
 
-	type UserMessage = Omit<z.infer<typeof userMessageModel>, 'id' | 'runId' | 'sourceId' | 'stepId'>
-
 	let chatMessagesContainer = $state<HTMLElement>()
-
-	function scrollToBottom() {
-		if (chatMessagesContainer) {
-			chatMessagesContainer.scrollTo({
-				top: chatMessagesContainer.scrollHeight,
-				behavior: 'smooth'
-			})
-		}
-	}
 
 	// Scroll to bottom when new messages are added
 	$effect(() => {
 		if (chat.data.length > 0) {
-			setTimeout(scrollToBottom, 100)
+			setTimeout(() => {
+				if (chatMessagesContainer) {
+					scrollToBottom(chatMessagesContainer)
+				}
+			}, 100)
 		}
 	})
 
@@ -50,70 +40,24 @@
 		parseHistory(messages)
 	}
 
-	const throttledScrollToBottom = throttle(scrollToBottom, 100)
-
-	let socket = $state<WebSocket>()
-
-	function initWebsocket() {
-		socket = new WebSocket(
-			() => `/api/projects/${page.params.id}/chat?startId=${getStartId() ?? '0'}`
-		)
-
-		socket.onopen = () => {
-			console.log('WebSocket connected')
-		}
-
-		socket.onmessage = async e => {
-			try {
-				handleMessage(JSON.parse(e.data))
-
-				await tick()
-				throttledScrollToBottom()
-			} catch (error) {
-				console.error('error handling message', error)
-				toast.error('Unknown error, please try again later')
-			}
-		}
-
-		socket.onclose = () => {
-			console.log('Socket closed')
-		}
-
-		socket.onerror = err => {
-			console.error('Socket error', err)
-		}
+	async function initChat(el: HTMLElement) {
+		chatMessagesContainer = el
+		initWebsocket(page.params.id!, el)
 	}
 
 	onMount(() => {
 		;(async () => {
 			await loadHistory()
-			initWebsocket()
 		})()
 
 		return () => {
 			try {
-				socket?.close()
+				chat.socket?.close()
 			} catch (err) {
 				console.error('error closing socket', err)
 			}
 		}
 	})
-
-	// Factory func for default state of userMessage
-	function getUserMessage(): UserMessage {
-		return {
-			event: 'user_message',
-			data: {
-				content: [
-					{
-						type: 'text',
-						text: ''
-					}
-				],
-				context: {}
-			}
-		}
-	}
 
 	let userMessage = $state<UserMessage>(getUserMessage())
 
@@ -142,9 +86,9 @@
 
 		event.preventDefault()
 
-		if (!socket) return
+		if (!chat.socket) return
 
-		socket.send(JSON.stringify(userMessage))
+		chat.socket.send(JSON.stringify(userMessage))
 
 		resetUserMessage()
 	}
@@ -231,7 +175,7 @@
 <div
 	class="bg-main-950/60 custom-scrollbar scroll-gutter-stable border-main-800 row-span-3 grid grid-rows-[1fr_auto] rounded-lg border"
 >
-	<div class="overflow-y-auto p-4" bind:this={chatMessagesContainer}>
+	<div class="overflow-y-auto p-4" bind:this={chatMessagesContainer} use:initChat>
 		<ul class="chat grid gap-4 pb-6 text-sm">
 			{#each chat.data as item}
 				<ChatItem {item} />
@@ -250,7 +194,7 @@
 		</ul>
 	</div>
 
-	<div class="px-4 pb-4 leading-none">
+	<!-- <div class="px-4 pb-4 leading-none">
 		<form onsubmit={sendMessage} class="input-text relative grid grid-rows-[1fr_auto] gap-2">
 			<div class="absolute inset-x-0 bottom-[calc(100%+0.25rem)]">
 				<ChatMention
@@ -293,5 +237,5 @@
 				</div>
 			</Button>
 		</form>
-	</div>
+	</div> -->
 </div>
