@@ -49,7 +49,12 @@
 	}
 
 	const projectIsEmpty = $derived.by(() => {
-		const { spec, resource } = getCurrentContainer()
+		const container = getCurrentContainer()
+		if (!container) {
+			return undefined
+		}
+
+		const { spec, resource } = container
 		return resource.startsWith('project') && Object.keys(spec.nodes ?? {}).length === 0
 	})
 </script>
