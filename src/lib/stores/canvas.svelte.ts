@@ -29,7 +29,6 @@ import { clone } from '$lib/utils/clone'
 import { exclude } from '$lib/utils/exclude'
 import { resolveComponentCached } from '$lib/utils/resolveComponent'
 import type { requirementsModel } from '$lib/schemas/requirements'
-import { browser } from '$app/environment'
 
 let nodesStore = $state<CanvasNode[]>([])
 let edgesStore = $state<Edge[]>([])
@@ -43,7 +42,7 @@ export const setEdges = (newEdges: Edge[]) => (edgesStore = newEdges)
 
 // TODO: create a proxy or something so all instances of the same component share the same reference to the same component object
 // so all changes to one node sync immediately to all other instances of the same component
-let project = $state<z.infer<typeof resolvedProjectModel>>(browser ? page.data.project : undefined)
+let project = $state(page.data.project as z.infer<typeof resolvedProjectModel>)
 export const getProject = () => project
 export const setProject = (newProject: z.infer<typeof resolvedProjectModel>) =>
 	(project = newProject)
