@@ -1,7 +1,8 @@
-import type { Project } from '$lib/types/resources'
+import type { resolvedProjectModel } from '$lib/schemas'
+import type * as z from 'zod'
 
 export async function load({ locals }) {
-	const { data: projects } = await locals.api.get<Project[]>('projects')
+	const { data: projects } = await locals.api.get<z.infer<typeof resolvedProjectModel>[]>('projects')
 
 	return {
 		projects
