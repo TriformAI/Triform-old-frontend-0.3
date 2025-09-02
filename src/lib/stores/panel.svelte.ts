@@ -1,5 +1,6 @@
 import { getNodes, setNodes } from './canvas.svelte'
 import type { Node, MetaNode } from '$lib/types/canvas'
+import { browser } from '$app/environment'
 
 const isRegularNode = (node: Node | MetaNode): node is Node => node.data && 'trinode' in node.data
 
@@ -53,6 +54,8 @@ const defaultOpenPanelItems: OpenPanelItems = {
 }
 
 function getPersistedOpenPanelItems(): OpenPanelItems {
+	if (!browser) return { ...defaultOpenPanelItems }
+
 	const persistedOpenPanelItems = localStorage.getItem('openPanelItems')
 	if (!persistedOpenPanelItems) return { ...defaultOpenPanelItems }
 	const openPanelItems = JSON.parse(persistedOpenPanelItems)
