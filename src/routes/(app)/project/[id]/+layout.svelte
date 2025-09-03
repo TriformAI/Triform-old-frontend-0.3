@@ -34,6 +34,7 @@
 	import { requirements } from '$lib/stores/requirements.svelte'
 	import { selected } from '$lib/stores/panel.svelte.js'
 	import { requirementsModel } from '$lib/schemas/requirements'
+	import DeployButton from '$lib/components/DeployButton.svelte'
 
 	const { data, children } = $props()
 
@@ -145,6 +146,14 @@
 			}
 		}
 	})
+
+	const projectIsEmpty = $derived.by(() => {
+		const container = getCurrentContainer()
+		if (!container) return
+
+		const { spec, resource } = container
+		return resource.startsWith('project') && Object.keys(spec.nodes ?? {}).length === 0
+	})
 </script>
 
 {@render children()}
@@ -152,6 +161,12 @@
 <div class="grid h-dvh grid-rows-[auto_1fr]">
 	<Navbar>
 		<BreadCrumbs />
+
+		{#snippet extras()}
+			{#if !projectIsEmpty}
+				<DeployButton />
+			{/if}
+		{/snippet}
 	</Navbar>
 
 	<main class="overflow-hidden">

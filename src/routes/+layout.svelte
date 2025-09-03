@@ -21,7 +21,7 @@
 	})
 </script>
 
-<div class="relative transform">{@render children?.()}</div>
+<div class="relative transform">{@render children()}</div>
 
 {#if showToaster}
 	<Toaster

@@ -8,12 +8,15 @@
 	import Spinner from './Spinner.svelte'
 	import { goto } from '$app/navigation'
 	import type { Snippet } from 'svelte'
-	import { getCurrentContainer } from '$lib/stores/canvas.svelte'
-	import DeployButton from './DeployButton.svelte'
 
 	const activeOrganization = authClient.useActiveOrganization()
 
-	const { children }: { children?: Snippet } = $props()
+	interface Props {
+		children?: Snippet
+		extras?: Snippet
+	}
+
+	const { children, extras }: Props = $props()
 
 	async function logout() {
 		await authClient.signOut({
@@ -24,14 +27,6 @@
 			}
 		})
 	}
-
-	const projectIsEmpty = $derived.by(() => {
-		const container = getCurrentContainer()
-		if (!container) return
-
-		const { spec, resource } = container
-		return resource.startsWith('project') && Object.keys(spec.nodes ?? {}).length === 0
-	})
 </script>
 
 <header
@@ -51,7 +46,7 @@
 				{/if}
 			{/if}
 
-			<p class="text-complement-500 ms-4 grid text-sm font-semibold *:col-start-1 *:row-start-1">
+			<p class="text-complement-500 ms-2 grid text-sm font-semibold *:col-start-1 *:row-start-1">
 				<span
 					class={[
 						'transition-opacity duration-300',
@@ -65,9 +60,7 @@
 	</div>
 
 	<div class="ms-auto mt-2 flex flex-row items-center gap-4">
-		{#if page.data.project && !projectIsEmpty}
-			<DeployButton />
-		{/if}
+		{@render extras?.()}
 
 		<Dropdown>
 			{#snippet trigger()}
