@@ -539,7 +539,7 @@ export const addPort = async (
 	}
 
 	// TODO: this is fucked up, this creates an "invisible" edge...
-	if (variation === 'output') {
+	if (variation === 'output' && !isAgent(component)) {
 		const port = component.spec[`${variation}s`][portName] as any
 		port.source = ''
 		port.target = ''
