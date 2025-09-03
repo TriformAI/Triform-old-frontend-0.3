@@ -51,7 +51,7 @@
 				{/if}
 			{/if}
 
-			<p class="text-complement-500 ms-2 grid text-sm font-semibold *:col-start-1 *:row-start-1">
+			<p class="text-complement-500 ms-4 grid text-sm font-semibold *:col-start-1 *:row-start-1">
 				<span
 					class={[
 						'transition-opacity duration-300',

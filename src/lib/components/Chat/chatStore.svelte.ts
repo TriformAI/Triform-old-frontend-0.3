@@ -13,8 +13,6 @@ export type Message =
 	| z.infer<typeof uiMessageModel>
 	| z.infer<typeof ackModel>
 	| z.infer<typeof errorModel>
-let startId: string | undefined
-export const getStartId = () => startId
 
 export interface MessageData {
 	id: string
@@ -47,8 +45,9 @@ export type UserMessage = Omit<
 	'id' | 'runId' | 'sourceId' | 'stepId'
 >
 
-export const chat = $state<{ socket: WebSocket | null; data: ParsedItem[] }>({
+export const chat = $state<{ socket: WebSocket | null; startId: string; data: ParsedItem[] }>({
 	socket: null,
+	startId: '0',
 	data: []
 })
 
@@ -65,7 +64,7 @@ const throttledScrollToBottom = throttle(scrollToBottom, 100)
 
 export function initWebsocket(projectId: string, chatMessagesContainer: HTMLElement) {
 	const socket = new WebSocket(
-		() => `/api/projects/${projectId}/chat?startId=${getStartId() ?? '0'}`
+		() => `/api/projects/${projectId}/chat?startId=${chat.startId ?? '0'}`
 	)
 
 	socket.onopen = () => {
@@ -73,6 +72,8 @@ export function initWebsocket(projectId: string, chatMessagesContainer: HTMLElem
 	}
 
 	socket.onmessage = async e => {
+		//console.log('WebSocket message', JSON.parse(e.data))
+
 		try {
 			handleMessage(JSON.parse(e.data))
 
@@ -132,8 +133,8 @@ export function handleMessage(msg: Message) {
 	const runId = 'runId' in msg ? msg.runId : undefined
 	const stepId = 'stepId' in msg ? msg.stepId : undefined
 
-	if (!startId || parseInt(id?.split('-')[0] ?? '0') > parseInt(startId?.split('-')[0])) {
-		startId = id
+	if (!chat.startId || parseInt(id?.split('-')[0] ?? '0') > parseInt(chat.startId?.split('-')[0])) {
+		chat.startId = id
 	}
 
 	switch (event) {

@@ -40,19 +40,18 @@
 		parseHistory(messages)
 	}
 
-	async function initChat(el: HTMLElement) {
+	function initChat(el: HTMLElement) {
+		chat.data = []
+		chat.startId = '0'
 		chatMessagesContainer = el
 		initWebsocket(page.params.id!, el)
 	}
 
 	onMount(() => {
-		;(async () => {
-			await loadHistory()
-		})()
-
 		return () => {
 			try {
 				chat.socket?.close()
+				chat.socket = null
 			} catch (err) {
 				console.error('error closing socket', err)
 			}
@@ -175,7 +174,13 @@
 <div
 	class="bg-main-950/60 custom-scrollbar scroll-gutter-stable border-main-800 row-span-3 grid grid-rows-[1fr_auto] rounded-lg border"
 >
-	<div class="overflow-y-auto p-4" bind:this={chatMessagesContainer} use:initChat>
+	<div class="grid items-start overflow-y-auto p-4" bind:this={chatMessagesContainer} use:initChat>
+		{#if chat.socket && chat.data.length === 0}
+			<p class="text-main-500 my-auto text-center text-sm whitespace-nowrap">
+				Project log is empty
+			</p>
+		{/if}
+
 		<ul class="chat grid gap-4 pb-6 text-sm">
 			{#each chat.data as item}
 				<ChatItem {item} />
