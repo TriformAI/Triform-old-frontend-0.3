@@ -40,37 +40,35 @@
 	}
 </script>
 
-<div class="h-full">
-	<div class="border-b-main-800 bg-main-950 sticky top-0 z-20 grid border-b p-3 py-5 pe-5">
-		<div class="grid grid-cols-[auto_1fr_auto] items-end gap-x-4">
-			{#if Icon}
-				<Icon
-					class={[
-						'row-span-2 mt-1 mb-auto size-6 drop-shadow-[0px_0px_5px]',
-						componentData.resource === 'flow/v1'
-							? 'text-complement-400 drop-shadow-complement-500'
-							: 'text-main-300 drop-shadow-main-300/50'
-					]}
-				/>
-			{/if}
+<div class="border-b-main-800 bg-main-950 sticky top-0 z-20 grid border-b p-3 py-5 pe-5">
+	<div class="grid grid-cols-[auto_1fr_auto] items-end gap-x-4">
+		{#if Icon}
+			<Icon
+				class={[
+					'row-span-2 mt-1 mb-auto size-6 drop-shadow-[0px_0px_5px]',
+					componentData.resource === 'flow/v1'
+						? 'text-complement-400 drop-shadow-complement-500'
+						: 'text-main-300 drop-shadow-main-300/50'
+				]}
+			/>
+		{/if}
 
-			<h2 class="col-start-2 truncate text-lg font-semibold">
-				{title}
-			</h2>
+		<h2 class="col-start-2 truncate text-lg font-semibold">
+			{title}
+		</h2>
 
-			{#if desc}
-				<p class="text-main-500 col-start-2 line-clamp-2 text-sm font-medium">{desc}</p>
-			{/if}
+		{#if desc}
+			<p class="text-main-500 col-start-2 line-clamp-2 text-sm font-medium">{desc}</p>
+		{/if}
 
-			{#if isAction(componentData)}
-				<div class="col-start-3 row-span-2 row-start-1">
-					<GenerateButton label="Build action" onClick={buildAction} />
-				</div>
-			{/if}
-		</div>
+		{#if isAction(componentData)}
+			<div class="col-start-3 row-span-2 row-start-1">
+				<GenerateButton label="Build action" onClick={buildAction} />
+			</div>
+		{/if}
 	</div>
-
-	{#if componentData}
-		{@render panelItems?.(PanelItems)}
-	{/if}
 </div>
+
+{#if componentData}
+	{@render panelItems?.(PanelItems)}
+{/if}

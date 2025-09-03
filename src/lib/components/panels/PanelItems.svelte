@@ -82,10 +82,13 @@
 </script>
 
 <div
-	class={['relative grid h-[calc(100%-4rem)]', showNav ? 'grid-cols-[auto_1fr]' : 'grid-cols-1']}
+	class={[
+		'custom-scrollbar scroll-gutter-stable relative grid  overflow-y-auto',
+		showNav ? 'grid-cols-[auto_1fr]' : 'grid-cols-1'
+	]}
 >
 	{#if showNav}
-		<nav class="border-main-800 h-full border-e">
+		<nav class="border-main-800 sticky top-0 mb-auto border-e">
 			<ul>
 				{#each items as key (key)}
 					{@const Icon = allComponents[key].icon}
