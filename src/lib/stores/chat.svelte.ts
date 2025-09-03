@@ -150,23 +150,23 @@ export function handleMessage(msg: Message) {
 			break
 		}
 		// -------- USER MESSAGES --------
-		case 'user_message': {
-			if (findMessage(id)) {
-				return
-			}
+		// case 'user_message': {
+		// 	if (findMessage(id)) {
+		// 		return
+		// 	}
 
-			const messageObj: MessageData = {
-				id,
-				type: 'message',
-				role: 'user',
-				content: (data as { content: { type: 'text'; text: string }[] }).content
-					.map(item => item.text)
-					.join('')
-			}
-			chat.data.push(messageObj)
+		// 	const messageObj: MessageData = {
+		// 		id,
+		// 		type: 'message',
+		// 		role: 'user',
+		// 		content: (data as { content: { type: 'text'; text: string }[] }).content
+		// 			.map(item => item.text)
+		// 			.join('')
+		// 	}
+		// 	chat.data.push(messageObj)
 
-			break
-		}
+		// 	break
+		// }
 
 		// -------- TEXT MESSAGES --------
 		case 'text_message_start': {
