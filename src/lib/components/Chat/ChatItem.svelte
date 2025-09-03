@@ -1,6 +1,6 @@
 <script lang="ts">
 	import IconRevert from '~icons/mdi/replay'
-	import { type ParsedItem } from './chatStore.svelte'
+	import { type ParsedItem } from '$lib/stores/chat.svelte'
 	import ChatMessage from './ChatMessage.svelte'
 	import ChatRun from './ChatRun.svelte'
 

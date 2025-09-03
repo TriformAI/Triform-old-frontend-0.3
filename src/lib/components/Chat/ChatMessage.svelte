@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { type MessageData } from './chatStore.svelte'
+	import { type MessageData } from '$lib/stores/chat.svelte'
 	import { marked } from 'marked'
 
 	interface Props {

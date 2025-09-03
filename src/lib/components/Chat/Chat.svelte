@@ -4,13 +4,14 @@
 	import {
 		parseHistory,
 		chat,
+		messages,
 		getUserMessage,
 		type MessageData,
 		type ParsedItem,
 		type UserMessage,
 		initWebsocket,
 		scrollToBottom
-	} from './chatStore.svelte'
+	} from '$lib/stores/chat.svelte'
 	import Button from '../atoms/Button.svelte'
 	import { page } from '$app/state'
 	import { getMessages } from '$lib/remote/chat.remote'
@@ -174,6 +175,7 @@
 <div
 	class="bg-main-950/60 custom-scrollbar scroll-gutter-stable border-main-800 row-span-3 grid grid-rows-[1fr_auto] rounded-lg border"
 >
+	<!-- {JSON.stringify(messages, null, 2)} -->
 	<div class="grid items-start overflow-y-auto p-4" bind:this={chatMessagesContainer} use:initChat>
 		{#if chat.socket && chat.data.length === 0}
 			<p class="text-main-500 my-auto text-center text-sm whitespace-nowrap">

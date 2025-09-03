@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { type StepData } from './chatStore.svelte'
+	import { type StepData } from '$lib/stores/chat.svelte'
 	import ChatMessage from './ChatMessage.svelte'
 	import ChatStep from './ChatStep.svelte'
 	import IconCompleted from '~icons/mdi/checkbox-marked-circle'

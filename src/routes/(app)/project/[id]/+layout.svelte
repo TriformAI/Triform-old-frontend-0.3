@@ -16,6 +16,7 @@
 		getCurrentContainer,
 		getVisibleComponent
 	} from '$lib/stores/canvas.svelte'
+	import { chat } from '$lib/stores/chat.svelte'
 	import { debounce } from '$lib/utils/debounce'
 	import { onMount, untrack } from 'svelte'
 	import { page } from '$app/state'
@@ -90,7 +91,11 @@
 	)
 
 	let chatPanelWidth = $state(
-		Number(localStorage.getItem('chatPanelWidth') || DEFAULT_CHAT_PANEL_WIDTH)
+		Number(
+			chat.data.length === 0
+				? 6
+				: localStorage.getItem('chatPanelWidth') || DEFAULT_CHAT_PANEL_WIDTH
+		)
 	)
 
 	let componentPanelHeight = $state(

@@ -13,7 +13,7 @@
 	import ListText from './ListText.svelte'
 	import ListNameDescType from './ListNameDescType.svelte'
 	import { onMount } from 'svelte'
-	import { getUserMessage, chat } from '$lib/components/Chat/chatStore.svelte'
+	import { getUserMessage, chat } from '$lib/stores/chat.svelte'
 	import GenerateButton from '$lib/components/atoms/GenerateButton.svelte'
 	import { requirements, getDefaultRequirements } from '$lib/stores/requirements.svelte'
 	import { requirementsModel } from '$lib/schemas/requirements'
@@ -116,14 +116,20 @@
 			{/if}
 
 			<div class="mt-4 grid gap-4">
-				<div class="flex justify-between">
+				<div class="flex items-end justify-between">
 					<p class="eyebrow mb-1">Requirements</p>
 					{#if componentData.meta.intention}
-						<GenerateButton
-							label="Generate"
-							onClick={generateRequirements}
-							disabled={!chat.socket || componentData.meta.intention.length < 10}
-						/>
+						<div
+							data-balloon-instant
+							data-balloon-pos="left"
+							aria-label="Please enter a description above"
+						>
+							<GenerateButton
+								label="Generate"
+								onClick={generateRequirements}
+								disabled={!chat.socket || componentData.meta.intention.length < 10}
+							/>
+						</div>
 					{/if}
 				</div>
 

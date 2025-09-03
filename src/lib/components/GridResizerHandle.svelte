@@ -142,6 +142,9 @@
 		// Can't have transitions enabled by default, it will mess with drag-resizing
 		gridContainer.classList.add('transition-all', 'duration-500')
 		size = targetSize
+
+		onResizeEnd?.()
+
 		// Let the transition finish
 		await sleep(500)
 
@@ -160,6 +163,7 @@
 	]}
 >
 	<button
+		data-grid-handle-name={name}
 		onmouseenter={() => {
 			if (isMinified) {
 				transitionToSize(TEASE_SIZE, false)

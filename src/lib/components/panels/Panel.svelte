@@ -5,7 +5,7 @@
 
 	import { isAction } from '$lib/schemas'
 	import GenerateButton from '../atoms/GenerateButton.svelte'
-	import { getUserMessage, chat } from '$lib/components/Chat/chatStore.svelte'
+	import { getUserMessage, chat } from '$lib/stores/chat.svelte'
 	import { toast } from 'svelte-sonner'
 
 	interface Props {

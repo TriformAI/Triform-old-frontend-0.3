@@ -62,6 +62,8 @@ export function scrollToBottom(chatMessagesContainer: HTMLElement) {
 
 const throttledScrollToBottom = throttle(scrollToBottom, 100)
 
+export const messages = $state<Message[]>([])
+
 export function initWebsocket(projectId: string, chatMessagesContainer: HTMLElement) {
 	const socket = new WebSocket(
 		() => `/api/projects/${projectId}/chat?startId=${chat.startId ?? '0'}`
@@ -75,6 +77,7 @@ export function initWebsocket(projectId: string, chatMessagesContainer: HTMLElem
 		//console.log('WebSocket message', JSON.parse(e.data))
 
 		try {
+			messages.push(JSON.parse(e.data))
 			handleMessage(JSON.parse(e.data))
 
 			await tick()
