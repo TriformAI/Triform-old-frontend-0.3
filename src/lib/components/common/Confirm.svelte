@@ -32,15 +32,13 @@
 
 			{#snippet body()}
 				<p>
-					{confirmStore.message}
+					{@html confirmStore.message}
 				</p>
 
 				<form
 					class="mt-6 flex justify-end gap-2"
 					method="dialog"
 					onsubmit={() => {
-						console.log('confirm')
-
 						confirmStore.confirm()
 					}}
 				>
@@ -55,9 +53,9 @@
 						{/snippet}
 					</Button>
 
-					<Button variation="danger" type="submit" bind:element={submitBtn}>
+					<Button variation="confirm" type="submit" bind:element={submitBtn}>
 						{#snippet body()}
-							Confirm
+							{confirmStore.btnLabel}
 						{/snippet}
 					</Button>
 				</form>

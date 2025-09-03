@@ -7,7 +7,7 @@
 	import AutorenewIcon from '~icons/material-symbols/autorenew-rounded'
 
 	interface Props {
-		variation?: 'primary' | 'vibrant' | 'link' | 'danger'
+		variation?: 'primary' | 'vibrant' | 'link' | 'danger' | 'confirm'
 		// disabled
 		// href
 		// etc...
@@ -103,6 +103,8 @@
 	class={[
 		variation === 'primary' &&
 			'border-main-700 bg-main-800 hover:enabled:border-main-600 hover:enabled:bg-main-700 border',
+		variation === 'confirm' &&
+			'border-complement-600 bg-complement-700 hover:enabled:border-complement-500 hover:enabled:bg-complement-600 border',
 		variation === 'vibrant' &&
 			'bg-accent-700 inset-shadow-accent-500/40 hover:enabled:bg-accent-600 border-accent-600 border inset-shadow-xs',
 		variation === 'link' && 'text-main-200 hover:enabled:bg-main-800',

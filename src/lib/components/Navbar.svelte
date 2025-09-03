@@ -8,13 +8,8 @@
 	import Spinner from './Spinner.svelte'
 	import { goto } from '$app/navigation'
 	import type { Snippet } from 'svelte'
-	import Button from './atoms/Button.svelte'
-	import IconDeploy from '~icons/mdi/rocket-launch'
-	import { API } from '$lib/api'
-	import { toast } from 'svelte-sonner'
 	import { getCurrentContainer } from '$lib/stores/canvas.svelte'
-
-	const api = new API()
+	import DeployButton from './DeployButton.svelte'
 
 	const activeOrganization = authClient.useActiveOrganization()
 
@@ -28,24 +23,6 @@
 				}
 			}
 		})
-	}
-
-	let isDeploying = $state(false)
-
-	async function deployProject() {
-		isDeploying = true
-		const result = await api.post<{ data: { id: string } }>(
-			`projects/${page.data.project?.id}/deploy`,
-			{}
-		)
-
-		if (result.success) {
-			toast.success('Project deployed successfully!')
-		} else {
-			toast.error('Failed to deploy project')
-		}
-
-		isDeploying = false
 	}
 
 	const projectIsEmpty = $derived.by(() => {
@@ -89,19 +66,7 @@
 
 	<div class="ms-auto mt-2 flex flex-row items-center gap-4">
 		{#if page.data.project && !projectIsEmpty}
-			<Button
-				class="py-1.5 text-sm"
-				isLoading={isDeploying}
-				variation="vibrant"
-				onClick={deployProject}
-			>
-				{#snippet body()}
-					<span class=" font-semibold">Deploy project</span>
-				{/snippet}
-				{#snippet icon()}
-					<IconDeploy />
-				{/snippet}
-			</Button>
+			<DeployButton />
 		{/if}
 
 		<Dropdown>
