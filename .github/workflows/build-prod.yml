@@ -13,6 +13,9 @@ jobs:
       contents: read
       id-token: write
 
+    # Only run on push with PROD: prefix or workflow_dispatch
+    if: ${{(startsWith(github.event.head_commit.message, 'PROD:')) || (github.event_name == 'workflow_dispatch')}}
+
     steps:
     - name: Checkout repository
       uses: actions/checkout@v4
