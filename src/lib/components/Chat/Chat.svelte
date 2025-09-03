@@ -20,6 +20,12 @@
 	import { getCurrentContainer } from '$lib/stores/canvas.svelte'
 	import LogoSpinner from '$lib/components/SpinnerLogo.svelte'
 
+	interface Props {
+		onMessage?: () => void
+	}
+
+	let { onMessage }: Props = $props()
+
 	let chatMessagesContainer = $state<HTMLElement>()
 
 	// Scroll to bottom when new messages are added
@@ -45,7 +51,7 @@
 		chat.data = []
 		chat.startId = '0'
 		chatMessagesContainer = el
-		initWebsocket(page.params.id!, el)
+		initWebsocket(page.params.id!, el, onMessage)
 	}
 
 	onMount(() => {

@@ -118,7 +118,7 @@
 			<div class="mt-4 grid gap-4">
 				<div class="flex items-end justify-between">
 					<p class="eyebrow mb-1">Requirements</p>
-					{#if componentData.meta.intention}
+					{#if componentType !== 'project'}
 						<div
 							data-balloon-instant
 							data-balloon-pos="left"

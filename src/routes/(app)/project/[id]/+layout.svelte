@@ -65,7 +65,7 @@
 	})
 
 	let isGoingDeeper = $state(false)
-	const updateNodeInternals = useUpdateNodeInternals()
+
 	onNavigate(async (navigation: OnNavigate) => {
 		if (!navigation.to || !navigation.from) return
 		const {
@@ -91,19 +91,15 @@
 		Number(localStorage.getItem('propsPanelWidth') || DEFAULT_PROPS_PANEL_WIDTH)
 	)
 
-	let chatPanelWidth = $state(
-		Number(
-			chat.data.length === 0
-				? 6
-				: localStorage.getItem('chatPanelWidth') || DEFAULT_CHAT_PANEL_WIDTH
-		)
+	const defaultChatPanelWidth = Number(
+		localStorage.getItem('chatPanelWidth') || DEFAULT_CHAT_PANEL_WIDTH
 	)
+
+	let chatPanelWidth = $state(6)
 
 	let componentPanelHeight = $state(
 		Number(localStorage.getItem('componentsLibPanelHeight') || DEFAULT_COMPONENT_PANEL_HEIGHT)
 	)
-
-	const currentIsProject = $derived(isProject(getCurrentContainer()))
 
 	type Requirements = z.infer<typeof requirementsModel>
 
@@ -176,7 +172,16 @@
 				style={`grid-template-columns: ${chatPanelWidth}px ${GUTTER_SIZE}px 1fr ${GUTTER_SIZE}px ${propsPanelWidth}px; grid-template-rows: 1fr`}
 				class={`bg-main-850 grid h-full px-2 pt-1 pb-2 ease-(--easing-circ)`}
 			>
-				<Chat />
+				<Chat
+					onMessage={() => {
+						if (chat.data.length === 0) {
+							setTimeout(() => {
+								console.log('chatPanelWidth', chatPanelWidth)
+								chatPanelWidth = defaultChatPanelWidth
+							}, 50)
+						}
+					}}
+				/>
 
 				<GridResizerHandle
 					name="chatPanel"
