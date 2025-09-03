@@ -10,8 +10,6 @@
 
 		const { user } = sessionStore
 
-		console.log('user', user)
-
 		// User identification
 		;(window as any).usetifulTags = {
 			userId: user?.id || 'ANONYMOUS_USER',
