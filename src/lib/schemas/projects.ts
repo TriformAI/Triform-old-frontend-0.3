@@ -51,7 +51,7 @@ export const resolvedProjectSpecModel = projectSpecModel.extend({
 export const projectModel = z.strictObject({
 	id: z.uuidv4().optional(),
 	resource: z.literal('project/v1'),
-	meta: metaModel.omit({ intention: true }),
+	meta: metaModel,
 	spec: projectSpecModel
 })
 

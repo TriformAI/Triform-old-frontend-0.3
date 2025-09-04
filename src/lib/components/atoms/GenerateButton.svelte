@@ -7,9 +7,10 @@
 		onClick: () => void
 		disabled?: boolean
 		label?: string
+		tooltip?: string
 	}
 
-	let { onClick, disabled, label = 'Generate' }: Props = $props()
+	let { onClick, disabled, label = 'Generate', tooltip }: Props = $props()
 
 	function openChatPanel() {
 		const el = document.querySelector<HTMLButtonElement>('[data-grid-handle-name="chatPanel"]')
@@ -27,6 +28,7 @@
 		onClick()
 	}}
 	{disabled}
+	{tooltip}
 >
 	{#snippet icon()}
 		<IconGenerate />

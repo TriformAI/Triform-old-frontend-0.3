@@ -359,6 +359,10 @@
 		@apply border-main-700 bg-main-800 text-main-200 not-disabled:group-hover:border-main-600 not-disabled:focus:border-main-600 w-full rounded-md border px-3 py-2 text-sm transition outline-none;
 	}
 
+	.input-text-light {
+		@apply border-main-700 border-b px-3 py-2 outline-none;
+	}
+
 	.radio {
 		@apply border-accent-100 bg-accent-100 size-3.5 cursor-pointer appearance-none rounded-full border-3 transition;
 	}

@@ -6,7 +6,8 @@
 	import { goto } from '$app/navigation'
 	import { createFormHandler } from '$lib/stores/formHandler.svelte'
 	import { createProject } from '$lib/actions/project'
-	import type { Project } from '$lib/types/resources'
+	import type * as z from 'zod'
+	import { projectModel } from '$lib/schemas'
 
 	interface Props {
 		dialog?: HTMLDialogElement
@@ -17,10 +18,11 @@
 	let formData = $state({
 		resource: 'project/v1',
 		meta: {
-			name: ''
+			name: '',
+			intention: ''
 		},
-		spec: { nodes: {} }
-	})
+		spec: { nodes: {}, modifiers: {}, readme: '' }
+	} satisfies z.infer<typeof projectModel>)
 
 	let nameInput = $state<HTMLInputElement>()
 

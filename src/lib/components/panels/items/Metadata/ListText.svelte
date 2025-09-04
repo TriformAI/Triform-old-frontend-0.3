@@ -7,9 +7,10 @@
 	interface Props {
 		value: { id: string; text: string }[]
 		title: string
+		maxItems?: number
 	}
 
-	let { value = $bindable(), title }: Props = $props()
+	let { value = $bindable(), title, maxItems = Infinity }: Props = $props()
 
 	let isDeleting = new SvelteSet<number>()
 
@@ -19,8 +20,9 @@
 
 	async function addNew() {
 		value.push({ id: crypto.randomUUID(), text: '' })
+		console.log('adding new item', value)
 		await tick()
-		textareas[value.length - 1].focus()
+		textareas[value.length - 1]?.focus()
 	}
 
 	let textareas = $state<HTMLTextAreaElement[]>([])
@@ -29,7 +31,14 @@
 <div class="text-sm">
 	<p class="input-title flex items-center gap-1">
 		{title}
-		<button type="button" onclick={addNew} class="group grid size-6 place-content-center">
+		<button
+			type="button"
+			onclick={addNew}
+			class="group grid size-6 place-content-center"
+			disabled={value.length >= maxItems}
+			data-balloon-pos="right"
+			aria-label={value.length >= maxItems ? 'Max items reached' : 'Add item'}
+		>
 			<IconAdd
 				class="group-hover:text-main-200 size-4.5 transition-all duration-200 group-hover:size-5"
 			/>

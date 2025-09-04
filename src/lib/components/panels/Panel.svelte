@@ -1,12 +1,15 @@
 <script lang="ts">
 	import { type Component as SvelteComponent, type Snippet } from 'svelte'
 	import PanelItems from './PanelItems.svelte'
-	import { getVisibleComponent } from '$lib/stores/canvas.svelte'
-
-	import { isAction } from '$lib/schemas'
+	import { getVisibleComponent, updateLocalComponent } from '$lib/stores/canvas.svelte'
+	import { isAction, isProject } from '$lib/schemas'
 	import GenerateButton from '../atoms/GenerateButton.svelte'
 	import { getUserMessage, chat } from '$lib/stores/chat.svelte'
 	import { toast } from 'svelte-sonner'
+	import EditIcon from '~icons/material-symbols/edit-square-outline-rounded'
+	import IconCheck from '~icons/material-symbols/check-rounded'
+	import { saveProject } from '$lib/actions/project'
+	import { updateComponent } from '$lib/actions/components'
 
 	interface Props {
 		nodeId: string
@@ -38,6 +41,29 @@
 
 		chat.socket.send(JSON.stringify(msg))
 	}
+
+	let isEditingName = $state(false)
+	let newName = $state(componentData?.meta.name ?? '')
+
+	const onEditStart = (el: HTMLInputElement) => {
+		el.focus()
+		el.select()
+	}
+	const saveName = async () => {
+		const name = newName.trim()
+
+		if (!name) return toast.error('Name cannot be empty')
+
+		componentData.meta.name = name
+
+		if (isProject(componentData)) await saveProject(componentData)
+		else {
+			await updateComponent(componentData)
+			updateLocalComponent(componentData)
+		}
+
+		isEditingName = false
+	}
 </script>
 
 <div class="border-b-main-800 bg-main-950 sticky top-0 z-20 grid border-b p-3 py-5 pe-5">
@@ -53,9 +79,33 @@
 			/>
 		{/if}
 
-		<h2 class="col-start-2 truncate text-lg font-semibold">
-			{title}
-		</h2>
+		{#if !isEditingName}
+			<h2
+				class="group col-start-2 flex items-center gap-x-4 truncate text-lg font-semibold"
+				ondblclick={() => (isEditingName = true)}
+			>
+				{title}
+				<button
+					class="icon-btn hover:text-main-50 mt-0.5 opacity-0 group-hover:opacity-100"
+					onclick={() => (isEditingName = true)}
+				>
+					<EditIcon class="size-5" />
+				</button>
+			</h2>
+		{:else}
+			<form onsubmit={saveName} class="flex flex-row items-center gap-x-4">
+				<input
+					type="text"
+					bind:value={newName}
+					class="input-text-light -mt-2 ml-1 text-lg font-semibold"
+					onblur={saveName}
+					use:onEditStart
+				/>
+				<button class="icon-btn hover:text-main-50 mt-0.5" type="submit">
+					<IconCheck class="size-5" />
+				</button>
+			</form>
+		{/if}
 
 		{#if desc}
 			<p class="text-main-500 col-start-2 line-clamp-2 text-sm font-medium">{desc}</p>

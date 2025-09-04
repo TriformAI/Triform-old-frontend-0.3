@@ -7,9 +7,11 @@
 		nodeId: string
 		title: string
 		children: Snippet
+		titleSuffix?: Snippet
 		forceOpen?: boolean
 		isListContainer?: boolean
 		onAddClick?: () => void
+		fillHeight?: boolean
 	}
 
 	let {
@@ -18,7 +20,9 @@
 		children,
 		forceOpen = false,
 		isListContainer = false,
-		onAddClick
+		onAddClick,
+		titleSuffix,
+		fillHeight = true
 	}: Props = $props()
 
 	const componentData = $derived(getVisibleComponent(nodeId))
@@ -36,7 +40,7 @@
 	})
 </script>
 
-<div class={['grid h-full grid-rows-[auto_1fr] p-5 pt-4']}>
+<div class={['grid grid-rows-[auto_1fr] p-5 pt-4', fillHeight && 'h-full']}>
 	{#if getCurrentContainer()}
 		<div class="mb-4 flex flex-row items-center gap-2">
 			<h2 class={['eyebrow text-main-300 whitespace-nowrap transition-colors']}>
@@ -51,6 +55,10 @@
 				>
 					<IconAdd class="size-5" />
 				</button>
+			{/if}
+
+			{#if titleSuffix}
+				{@render titleSuffix()}
 			{/if}
 		</div>
 	{/if}

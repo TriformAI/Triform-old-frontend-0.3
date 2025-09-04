@@ -7,10 +7,13 @@
 import * as z from 'zod'
 
 export const contextModel = z
-	.strictObject({
-		text: z.string()
-	})
-	.default({ text: '' })
+	.array(
+		z.strictObject({
+			id: z.uuidv4(),
+			text: z.string()
+		})
+	)
+	.default([])
 
 export const userStoriesModel = z
 	.array(

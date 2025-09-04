@@ -79,66 +79,36 @@
 
 		chat.socket.send(JSON.stringify(msg))
 	}
+
+	const allowGeneration = $derived(!chat.socket || componentData?.meta?.intention?.length >= 10)
 </script>
 
 {#if componentData}
-	<PanelItem {nodeId} title="Metadata">
+	<PanelItem {nodeId} title="Information" fillHeight={false}>
 		<div class="grid auto-rows-min items-start gap-3">
-			<InputField
-				required
-				label="Name"
-				name="name"
+			<TextField
+				rows={3}
+				label="Description"
+				name="intention"
 				oninput={debouncedSaveComponent}
-				bind:value={componentData.meta.name}
+				bind:value={componentData.meta.intention}
 			/>
-
-			{#if componentType !== 'project'}
-				<TextField
-					rows={3}
-					label="Description"
-					name="intention"
-					oninput={debouncedSaveComponent}
-					bind:value={componentData.meta.intention}
+		</div>
+	</PanelItem>
+	<PanelItem {nodeId} title="Requirements">
+		{#snippet titleSuffix()}
+			<div class="ml-auto">
+				<GenerateButton
+					label="Generate"
+					onClick={generateRequirements}
+					disabled={!allowGeneration}
+					tooltip={!allowGeneration ? 'Description must be at least 10 characters' : undefined}
 				/>
-			{/if}
-
-			{#if componentType !== 'action'}
-				<div>
-					<span class="input-title">Readme</span>
-					<LightEditor
-						language="md"
-						bind:value={componentData.spec.readme}
-						wordWrap={true}
-						class="bg-main-800  h-24 w-full rounded-md ps-6 pt-2.5 text-sm"
-						onUpdate={debouncedSaveComponent}
-					/>
-				</div>
-			{/if}
-
+			</div>
+		{/snippet}
+		<div class="grid auto-rows-min items-start gap-3">
 			<div class="mt-4 grid gap-4">
-				<div class="flex items-end justify-between">
-					<p class="eyebrow mb-1">Requirements</p>
-					{#if componentType !== 'project'}
-						<div
-							data-balloon-instant
-							data-balloon-pos="left"
-							aria-label="Please enter a description above"
-						>
-							<GenerateButton
-								label="Generate"
-								onClick={generateRequirements}
-								disabled={!chat.socket || componentData.meta.intention.length < 10}
-							/>
-						</div>
-					{/if}
-				</div>
-
-				<TextField
-					rows={3}
-					label="Context"
-					name="context"
-					bind:value={requirements.value.context.text}
-				/>
+				<ListText title="Context" bind:value={requirements.value.context} maxItems={1} />
 
 				<ListText title="User stories" bind:value={requirements.value.userStories} />
 
