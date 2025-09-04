@@ -69,18 +69,16 @@
 				{}
 			)
 
-			if (!['flow', 'agent'].includes(pendingComponentType)) return
-
-			const newNode = getNodes().find(n => n.id === id)
-			if (!newNode) return
-			await fitView({
-				nodes: [newNode],
-				minZoom: 1,
-				maxZoom: 1,
-				duration: 500
-			})
-
-			if (newNode) await expandNode.onClick(newNode)
+			// if (!['flow', 'agent'].includes(pendingComponentType)) return
+			// const newNode = getNodes().find(n => n.id === id)
+			// if (!newNode) return
+			// await fitView({
+			// 	nodes: [newNode],
+			// 	minZoom: 1,
+			// 	maxZoom: 1,
+			// 	duration: 500
+			// })
+			// if (newNode) await expandNode.onClick(newNode)
 		} catch (e) {
 			console.log(e)
 

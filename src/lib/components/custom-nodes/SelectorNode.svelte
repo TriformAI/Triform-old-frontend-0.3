@@ -150,15 +150,15 @@
 				)
 			}
 
-			const newNode = getNodes().find(n => n.id === nodeId)
-			if (!newNode) return
-			await fitView({
-				nodes: [newNode],
-				minZoom: 1,
-				maxZoom: 1,
-				duration: 500
-			})
-			await expandNode.onClick(newNode)
+			// const newNode = getNodes().find(n => n.id === nodeId)
+			// if (!newNode) return
+			// await fitView({
+			// 	nodes: [newNode],
+			// 	minZoom: 1,
+			// 	maxZoom: 1,
+			// 	duration: 500
+			// })
+			// await expandNode.onClick(newNode)
 		} catch (error) {
 			console.error(error)
 			toast.error('Failed to create component')
