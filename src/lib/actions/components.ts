@@ -52,3 +52,7 @@ export const getComponent = async (id: string) => {
 export const buildComponent = async (id: string) => {
 	return await api.post<{ data: z.infer<typeof actionModel> }>(`components/${id}/build`, {})
 }
+
+export const generateRequirements = async (id: string) => {
+	return await api.post<{ data: Requirements }>(`components/${id}/requirements/generate`, {})
+}

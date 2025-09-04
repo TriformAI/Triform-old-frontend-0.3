@@ -17,6 +17,8 @@
 	import GenerateButton from '$lib/components/atoms/GenerateButton.svelte'
 	import { requirements, getDefaultRequirements } from '$lib/stores/requirements.svelte'
 	import { requirementsModel } from '$lib/schemas/requirements'
+	import { generateRequirements as generateComponentRequirements } from '$lib/actions/components'
+	import { generateRequirements as generateProjectRequirements } from '$lib/actions/project'
 	type Requirements = z.infer<typeof requirementsModel>
 
 	const { nodeId }: { nodeId: string } = $props()
@@ -27,8 +29,6 @@
 
 	const componentType = $derived(componentData?.resource.split('/')[0])
 	const isProject = $derived(componentType === 'project')
-
-	const componentRequirements = $state<Requirements>(getDefaultRequirements())
 
 	onMount(async () => {
 		// Get current requirements or an empty object if none exist
@@ -61,23 +61,16 @@
 		if (!res.success) toast.error(`Failed saving ${componentData.meta.name}`)
 	}, 500)
 
-	function generateRequirements() {
-		const msg = getUserMessage()
-		msg.data.content[0].text = `generate requirements`
-		msg.data.context = {
-			[`@${componentData.meta.name}`]: {
-				component_id: componentData.id
-			}
-		}
-
-		console.log(msg)
-
-		if (!chat.socket) {
-			toast.error('Could not connect to generator')
-			return
-		}
-
-		chat.socket.send(JSON.stringify(msg))
+	let generatingReqs = $state(false)
+	const generateRequirements = async () => {
+		// component
+		generatingReqs = true
+		const res = isProject
+			? await generateProjectRequirements(componentData.id)
+			: await generateComponentRequirements(componentData.id)
+		generatingReqs = false
+		if (!res.success) return toast.error(`Failed generating requirements`)
+		requirements.value = res.data
 	}
 
 	const allowGeneration = $derived(!chat.socket || componentData?.meta?.intention?.length >= 10)
@@ -103,6 +96,7 @@
 					onClick={generateRequirements}
 					disabled={!allowGeneration}
 					tooltip={!allowGeneration ? 'Description must be at least 10 characters' : undefined}
+					loading={generatingReqs}
 				/>
 			</div>
 		{/snippet}

@@ -1,35 +1,19 @@
 <script lang="ts">
 	import IconGenerate from '~icons/mdi/shimmer'
 	import Button from '$lib/components/atoms/Button.svelte'
-	import { chat } from '$lib/stores/chat.svelte'
 
 	interface Props {
 		onClick: () => void
 		disabled?: boolean
 		label?: string
 		tooltip?: string
+		loading?: boolean
 	}
 
-	let { onClick, disabled, label = 'Generate', tooltip }: Props = $props()
-
-	function openChatPanel() {
-		const el = document.querySelector<HTMLButtonElement>('[data-grid-handle-name="chatPanel"]')
-
-		if (!el) return
-
-		el.dispatchEvent(new MouseEvent('dblclick', { bubbles: true, cancelable: true }))
-	}
+	let { onClick, disabled, label = 'Generate', tooltip, loading = false }: Props = $props()
 </script>
 
-<Button
-	class="py-1 text-sm"
-	onClick={() => {
-		openChatPanel()
-		onClick()
-	}}
-	{disabled}
-	{tooltip}
->
+<Button class="py-1 text-sm" {onClick} {disabled} {tooltip} isLoading={loading}>
 	{#snippet icon()}
 		<IconGenerate />
 	{/snippet}
