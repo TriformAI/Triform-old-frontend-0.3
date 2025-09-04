@@ -24,11 +24,13 @@
 	const currentIsProject = $derived(isProject(getCurrentContainer()))
 
 	const node = $derived(getNodes().find(node => node.id === nodeId))
+
+	const hideHandles = $derived(currentIsProject)
 </script>
 
 <div class="group/container relative w-full">
-	{#if !currentIsProject && node?.type !== 'input-node'}
-		<div>
+	{#if node?.type !== 'input-node'}
+		<div class={[hideHandles && 'invisible']}>
 			<div class={['mb-2 flex h-0 items-center justify-around gap-5']}>
 				{#each targetHandles as name}
 					<CustomHandle id={name} {name} type="target" position={Position.Top} {nodeId} />
@@ -52,8 +54,8 @@
 
 	{@render body()}
 
-	{#if !currentIsProject && node?.type !== 'output-node'}
-		<div>
+	{#if node?.type !== 'output-node'}
+		<div class={[hideHandles && 'invisible']}>
 			<div class="flex items-center justify-around gap-5">
 				{#each sourceHandles as name}
 					<CustomHandle id={name} {name} type="source" position={Position.Bottom} {nodeId} />
