@@ -27,6 +27,7 @@
 	function cancelSelectMode() {
 		isSelectMode = false
 		pendingComponentType = undefined
+		newComponentName = ''
 	}
 
 	let pendingComponentType = $state<NodeType>()
@@ -68,6 +69,8 @@
 				},
 				{}
 			)
+
+			cancelSelectMode()
 
 			// if (!['flow', 'agent'].includes(pendingComponentType)) return
 			// const newNode = getNodes().find(n => n.id === id)
