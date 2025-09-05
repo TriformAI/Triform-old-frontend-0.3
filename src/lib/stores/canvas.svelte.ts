@@ -87,7 +87,7 @@ export async function refreshFlow() {
 	const { nodes, edges } = parseNodes(container)
 
 	// add meta nodes
-	if (isFlow(container) || isAgent(container)) {
+	if (isFlow(container)) {
 		nodes.push({
 			id: `${container.id as Uuid}:input`,
 			type: 'input-node',
