@@ -66,7 +66,7 @@
 		class={[
 			'!bg-main-900 !border-main-500 z-10 flex origin-bottom-left items-center justify-center border !border-dashed transition-[width,height,transform,scale,color] duration-200 ease-in-out',
 			isAddingPort
-				? '!h-8 !w-28 !rounded-md !p-1'
+				? '!h-8 !w-40 !rounded-md !p-1'
 				: '!h-6 !w-6 !cursor-pointer !rounded-full p-1.5 hover:scale-105 hover:shadow-lg active:scale-95 active:shadow-sm',
 			isAddingPort ? '' : 'text-main-400 hover:text-main-100'
 		]}
