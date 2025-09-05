@@ -3,12 +3,14 @@
 	import { clickOutside } from '$lib/utils/clickOutside'
 	import { getFlowModel, getActionModel, getAgentModel } from '$lib/nodeModels'
 	import { createComponent } from '$lib/actions/components'
-	import { addNode, getNodes } from '$lib/stores/canvas.svelte'
+	import { addNode, getCurrentContainer } from '$lib/stores/canvas.svelte'
 	import { nodeTypes, type NodeType } from '$lib/constants/nodeTypes'
 	import { toast } from 'svelte-sonner'
 	import NodeTypeButton from './NodeTypeButton.svelte'
 	import ComponentNameForm from './ComponentNameForm.svelte'
 	import { useSvelteFlow } from '@xyflow/svelte'
+	import { isAgent } from '$lib/schemas'
+
 	import { expandNode } from '$lib/stores/nodeActions.svelte'
 
 	interface Props {
@@ -93,12 +95,15 @@
 	}
 
 	const filteredNodeTypes = $derived(nodeTypes.filter(n => data.activeNodeTypes.includes(n.type)))
+
+	const currentContainer = $derived(getCurrentContainer())
+	const currentIsAgent = $derived(isAgent(currentContainer))
 </script>
 
 <div
 	class={[
 		'border-main-500 relative grid overflow-hidden rounded-md border border-dashed transition-all ease-(--easing-circ) *:col-start-1 *:row-start-1',
-		isSelectMode ? 'w-max' : 'w-20'
+		isSelectMode ? 'w-max' : currentIsAgent ? 'w-auto' : 'w-20'
 	]}
 	use:clickOutside={{
 		handler: cancelSelectMode
@@ -108,13 +113,20 @@
 		onclick={() => (isSelectMode = true)}
 		type="button"
 		class={[
-			'group hover:bg-main-500/5 relative z-10 grid size-20 place-items-center transition',
+			'group hover:bg-main-500/5 relative z-10 grid place-items-center transition',
+			currentIsAgent ? 'h-20' : 'size-20',
 			isSelectMode ? 'pointer-events-none opacity-0' : 'opacity-100'
 		]}
 	>
-		<AddIcon
-			class="text-main-500 group-hover:text-main-400 mt-1 size-6 transition group-hover:scale-110"
-		/>
+		<div class="flex items-center gap-2">
+			<AddIcon
+				class="text-main-500 group-hover:text-main-400 size-6 transition group-hover:scale-110"
+			/>
+
+			{#if currentIsAgent}
+				<span class="group-hover:text-main-200 text-main-300 font-medium">Add tool</span>
+			{/if}
+		</div>
 	</button>
 
 	{#if pendingComponentType}
