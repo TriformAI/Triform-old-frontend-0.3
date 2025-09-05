@@ -54,7 +54,7 @@
 		</div>
 
 		<div class="bg-main-800/50 rounded-lg p-3 text-sm">
-			<span class="input-title -mt-1">User</span>
+			<span class="input-title">User</span>
 			<LightEditor
 				wordWrap={true}
 				language="handlebars"
@@ -71,7 +71,7 @@
 		<p class="eyebrow mb-3">Finetuning</p>
 		<div class="grid grid-cols-3 gap-2">
 			<label>
-				<span class="input-title -mt-1">Temperature</span>
+				<span class="input-title">Temperature</span>
 				<input
 					required
 					min="0"
