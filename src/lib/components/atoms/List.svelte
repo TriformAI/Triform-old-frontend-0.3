@@ -2,9 +2,9 @@
 	import type { Snippet } from 'svelte'
 
 	const {
-		body
+		children
 	}: {
-		body: Snippet
+		children: Snippet
 	} = $props()
 </script>
 
@@ -19,5 +19,5 @@
 	"
 >
 	<!-- Render the body snippet -->
-	{@render body()}
+	{@render children()}
 </div>

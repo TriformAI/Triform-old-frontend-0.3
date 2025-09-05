@@ -102,7 +102,7 @@
 		{/snippet}
 		<div class="grid auto-rows-min items-start gap-3">
 			<div class="mt-4 grid gap-4">
-				<ListText title="Context" bind:value={requirements.value.context} maxItems={1} />
+				<ListText title="Context" bind:value={requirements.value.context} />
 
 				<ListText title="User stories" bind:value={requirements.value.userStories} />
 

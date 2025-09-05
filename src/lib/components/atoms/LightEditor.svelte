@@ -20,7 +20,7 @@
 	interface Props {
 		value?: string
 		language: 'json' | 'md' | 'txt' | 'handlebars'
-		class?: string | string[]
+		class?: string | (string | boolean)[]
 		wordWrap?: boolean
 		readOnly?: boolean
 		onUpdate?: (value: string) => void
@@ -36,7 +36,7 @@
 	}: Props = $props()
 
 	const classes = $derived.by(() => {
-		if (Array.isArray(rawClasses)) return rawClasses.join(' ')
+		if (Array.isArray(rawClasses)) return rawClasses.filter(Boolean).join(' ')
 		return rawClasses
 	})
 	let editor: ReturnType<typeof createEditor>

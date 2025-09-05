@@ -7,7 +7,7 @@
 	import Variables from './items/Variables/Root.svelte'
 	import Triggers from './items/Triggers/Root.svelte'
 	import IO from './items/IO/Root.svelte'
-	import AgentSettings from './items/AgentSettings.svelte'
+	import AgentSettings from './items/AgentSettings/Root.svelte'
 	import IconExecute from '~icons/material-symbols/play-arrow-rounded'
 	import IconCode from '~icons/material-symbols/code-rounded'
 	import IconMetadata from '~icons/material-symbols/info-outline'

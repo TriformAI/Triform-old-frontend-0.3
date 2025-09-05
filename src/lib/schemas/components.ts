@@ -108,33 +108,47 @@ export const resolvedFlowModel = flowModel.extend({
 const agentPromptModel = z.array(
 	z.strictObject({
 		type: z.literal('template'),
+		enabled: z.boolean().default(true),
 		value: z.string()
 	})
 )
 
-// Create a schema that requires 'messages' field + allows additional fields
-const agentIOModel = z
-	.object({
-		messages: z.strictObject({
-			description: z.string().default('Optional messages for the conversation'),
-			schema: z.strictObject({
-				type: z.literal('array'),
-				items: z.strictObject({
-					type: z.literal('object'),
-					properties: z
-						.record(z.string(), jsonSchemaTypeModel)
-						.optional()
-						.default({
-							role: { type: 'string' },
-							content: { type: 'string' }
-						})
-				})
+export const agentMessagesModel = z.object({
+	description: z.string().default('Optional messages for the conversation'),
+	schema: z
+		.object({
+			type: z.literal('array'),
+			items: z.object({
+				type: z.literal('object'),
+				properties: z
+					.record(z.string(), jsonSchemaTypeModel)
+					.optional()
+					.default({
+						role: { type: 'string' },
+						content: { type: 'string' }
+					})
 			})
 		})
+		.default({
+			type: 'array',
+			items: {
+				type: 'object',
+				properties: {
+					role: { type: 'string' },
+					content: { type: 'string' }
+				}
+			}
+		})
+})
+
+// Create a schema that optionally allows 'messages' field + allows additional fields
+const agentIOModel = z
+	.object({
+		messages: agentMessagesModel.optional()
 	})
 	.and(ioModel)
 
-const availableAgentModels = [
+export const availableAgentModels = [
 	'mistral/mistral-medium-latest',
 	'mistral/mistral-medium-2508',
 	'mistral/magistral-medium-2507',

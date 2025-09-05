@@ -100,7 +100,7 @@
 
 <button
 	bind:this={element}
-	class={[
+	class={twMerge([
 		variation === 'primary' &&
 			'border-main-700 bg-main-800 hover:enabled:border-main-600 hover:enabled:bg-main-700 border',
 		variation === 'confirm' &&
@@ -118,13 +118,14 @@
     font-medium transition active:enabled:scale-95
 		disabled:cursor-not-allowed disabled:opacity-75`,
 		classProp
-	]}
+	])}
 	disabled={disabled || isLoading}
 	{type}
 	onclick={onClick}
 	aria-label={tooltip}
 	data-balloon-pos={tooltip ? tooltipPos : undefined}
 	data-balloon-nofocus
+	data-balloon-instant={disabled}
 >
 	<!-- If we have an icon, animate it for loading state -->
 	{#if !!icon}

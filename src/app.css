@@ -323,9 +323,9 @@
 		position: relative;
 	}
 
-	[aria-label][data-balloon-pos]:not([data-balloon-instant]):hover:not(:active):after,
-	[aria-label][data-balloon-pos]:not([data-balloon-instant]):hover:not(:active):before {
-		transition-delay: 1s !important;
+	[aria-label][data-balloon-pos]:not([data-balloon-instant='true']):hover:not(:active):after,
+	[aria-label][data-balloon-pos]:not([data-balloon-instant='true']):hover:not(:active):before {
+		transition-delay: 750ms !important;
 	}
 }
 
@@ -401,5 +401,27 @@
 
 	.icon-btn {
 		@apply text-main-500 size-5 cursor-pointer transition hover:scale-105 active:scale-95 disabled:cursor-not-allowed;
+	}
+
+	input[type='checkbox'].checkbox {
+		@apply border-main-600 bg-main-900 aspect-square size-4 cursor-pointer appearance-none rounded border transition-colors;
+
+		&:checked {
+			background-color: var(--color-main-800);
+			border-color: var(--color-main-600);
+			background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath fill='%23b5b5b5' d='m9.55 15.15l8.475-8.475q.3-.3.7-.3t.7.3t.3.713t-.3.712l-9.175 9.2q-.3.3-.7.3t-.7-.3L4.55 13q-.3-.3-.288-.712t.313-.713t.713-.3t.712.3z'/%3E%3C/svg%3E");
+			background-position: center;
+			background-repeat: no-repeat;
+			background-size: 75%;
+		}
+
+		&:hover {
+			background-color: var(--color-main-800);
+			border-color: var(--color-main-500);
+		}
+
+		&:focus-visible {
+			@apply ring-accent-500/50 ring-2 outline-none;
+		}
 	}
 }
