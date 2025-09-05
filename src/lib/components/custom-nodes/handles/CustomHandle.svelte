@@ -78,6 +78,8 @@
 		setNodes([...getNodes(), node])
 		setEdges([...getEdges(), edge])
 	}
+
+	const currentIsAgent = $derived(isAgent(getCurrentContainer()))
 </script>
 
 <div
@@ -86,7 +88,7 @@
 		top ? 'translate-y-full flex-col' : ' -translate-y-full flex-col-reverse'
 	]}
 >
-	{#if !hasConnections && !isAgent(getCurrentContainer())}
+	{#if !hasConnections && !currentIsAgent}
 		<div
 			class={[
 				top ? '-translate-y-[130%] flex-col' : 'translate-y-[130%] flex-col-reverse',
@@ -105,18 +107,29 @@
 			<div class="bg-main-600 peer-hover:bg-main-500 h-4 w-0.5 rounded-full transition"></div>
 		</div>
 	{/if}
+
 	<span
 		class={[
-			'text-main-400 bg-main-900/80 -mt-0.5 block h-fit truncate rounded px-1 font-sans text-xs backdrop-blur-sm',
+			'text-main-300 bg-main-900/80 -mt-0.5 block h-fit truncate rounded px-1 font-sans text-xs backdrop-blur-sm',
 			top ? '-translate-y-full pb-1' : 'translate-y-full pt-1 pb-0.5'
 		]}
 	>
 		{name}
 	</span>
-	<Handle {id} {type} {position} class={['z-10 !border-none !bg-transparent p-3', classes]}>
+
+	<Handle
+		{id}
+		{type}
+		{position}
+		class={['z-10 !border-none !bg-transparent p-3', classes]}
+		isConnectable={!currentIsAgent}
+	>
 		<div
 			style="border-color: color-mix(in oklab, var(--node-color) 80%, transparent)"
-			class="bg-main-950/80 pointer-events-none absolute size-2 -translate-x-1/2 -translate-y-1/2 rounded-full border"
+			class={[
+				'bg-main-950/80 pointer-events-none absolute size-2 -translate-x-1/2 -translate-y-1/2 rounded-full border',
+				currentIsAgent && 'opacity-50'
+			]}
 		></div>
 	</Handle>
 </div>
