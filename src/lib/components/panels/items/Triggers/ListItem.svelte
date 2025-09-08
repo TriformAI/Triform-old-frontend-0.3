@@ -42,7 +42,7 @@
 						tooltip: 'Copy URL',
 						dangerous: false,
 						onClick: async () => {
-							const url = `https://triform.dev/api/in/${getProject().id}/${triggerId}`
+							const url = `https://app.triform.ai/api/in/${getProject().id}/${triggerId}`
 							await navigator.clipboard.writeText(url)
 							toast.success('URL copied to clipboard')
 						}
@@ -107,7 +107,10 @@
 			</h4>
 			<span class={['text-main-400', trigger.resource === 'cron/v1' && 'font-mono', 'truncate']}>
 				{trigger.resource === 'endpoint/v1'
-					? `${trigger.spec.method} https://triform.dev/api/in/${getProject().id}/${triggerId}`
+					? `${trigger.spec.method} https://app.triform.ai/api/in/${getProject().id}/${triggerId}`.slice(
+							0,
+							30
+						) + '...'
 					: (trigger as Cron).spec.schedule}
 			</span>
 		</div>

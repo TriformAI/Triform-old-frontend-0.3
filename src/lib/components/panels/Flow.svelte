@@ -3,7 +3,6 @@
 	import { getCurrentContainer, getProject } from '$lib/stores/canvas.svelte'
 	import Panel from './Panel.svelte'
 	import Icon from '~icons/material-symbols/network-node'
-	import { page } from '$app/state'
 
 	const { nodeId }: { nodeId: string } = $props()
 
