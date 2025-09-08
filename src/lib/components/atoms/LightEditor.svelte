@@ -17,29 +17,28 @@
 	import { matchBrackets } from 'prism-code-editor/match-brackets'
 	import { onDestroy } from 'svelte'
 
-	interface Props {
-		value?: string
-		language: 'json' | 'md' | 'txt' | 'handlebars'
-		class?: string | (string | boolean)[]
-		wordWrap?: boolean
-		readOnly?: boolean
-		onUpdate?: (value: string) => void
-	}
-
 	let {
 		value = $bindable(),
 		language,
 		class: rawClasses,
 		wordWrap = false,
 		onUpdate,
-		readOnly = false
-	}: Props = $props()
+		readOnly = false,
+		editor = $bindable()
+	}: {
+		value?: string
+		language: 'json' | 'md' | 'txt' | 'handlebars'
+		class?: string | (string | boolean)[]
+		wordWrap?: boolean
+		readOnly?: boolean
+		onUpdate?: (value: string) => void
+		editor: ReturnType<typeof createEditor>
+	} = $props()
 
 	const classes = $derived.by(() => {
 		if (Array.isArray(rawClasses)) return rawClasses.filter(Boolean).join(' ')
 		return rawClasses
 	})
-	let editor: ReturnType<typeof createEditor>
 	let isInitializing = false
 	export const initEditor = (el: HTMLDivElement) => {
 		isInitializing = true
@@ -65,6 +64,7 @@
 			cursorPosition()
 		)
 		isInitializing = false
+		editor.ins
 		return editor
 	}
 

@@ -5,6 +5,8 @@
 	import ToolbarButton from './ToolbarButton.svelte'
 	import InputsIcon from '~icons/material-symbols/input-circle-rounded'
 	import IconVariables from '~icons/material-symbols/vpn-key-rounded'
+	import type { createEditor } from 'prism-code-editor'
+	import { insertText } from 'prism-code-editor/utils'
 
 	let {
 		value = $bindable(),
@@ -21,13 +23,19 @@
 	} = $props()
 
 	const availableInputs = $derived(
-		Object.keys(inputs).map(i => ({
-			label: i,
-			onClick: () => {
-				console.log('insert input', i)
-			}
-		}))
+		Object.keys(inputs)
+			.filter(i => i !== 'messages')
+			.map(i => ({
+				label: i,
+				onClick: () => {
+					if (!editor) return
+					insertText(editor as ReturnType<typeof createEditor>, `{{inputs.${i}}}`)
+				}
+			}))
 	)
+
+	// @ts-expect-error not defined before the editor is initialized
+	let editor: ReturnType<typeof createEditor> = $state()
 </script>
 
 <div
@@ -66,6 +74,7 @@
 			class={['-ms-2 text-sm', !enabled && '!pointer-events-none']}
 			wordWrap={true}
 			readOnly={!enabled}
+			bind:editor
 		/>
 	</div>
 

@@ -29,7 +29,7 @@
 
 	<DropdownMenu.Portal>
 		<DropdownMenu.Content
-			class="bg-main-900 border-main-700 z-10 w-42 rounded border transition-all"
+			class="bg-main-900 border-main-700 z-10 w-42 rounded border py-1 transition-all"
 			forceMount
 		>
 			{#snippet child({ wrapperProps, props, open })}
