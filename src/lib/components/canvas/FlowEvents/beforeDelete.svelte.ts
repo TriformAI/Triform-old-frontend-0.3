@@ -8,8 +8,10 @@ export const handleBeforeDelete = async ({ nodes }: { nodes: (Node | TemporaryNo
 	const numNodes = allNodes.length
 	const isMultipleNodes = numNodes > 1
 
+	if (!allNodes.length) return true
+
 	// Always allow deleting of selector nodes
-	if (allNodes.some(node => ['selector-node', 'loading-node'].includes(node.type))) {
+	if (allNodes.some(node => ['selector-node', 'loading-node', 'create-node'].includes(node.type))) {
 		return true
 	}
 

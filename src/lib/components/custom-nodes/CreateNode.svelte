@@ -16,12 +16,13 @@
 	interface Props {
 		positionAbsoluteX: number
 		positionAbsoluteY: number
-		data: { activeNodeTypes: NodeType[] }
+		data: { activeNodeTypes: NodeType[]; ephemeral?: boolean }
+		id: string
 	}
 
-	const { positionAbsoluteX, positionAbsoluteY, data }: Props = $props()
+	const { positionAbsoluteX, positionAbsoluteY, data, id }: Props = $props()
 
-	const { fitView } = useSvelteFlow()
+	const { fitView, deleteElements } = useSvelteFlow()
 
 	let isSelectMode = $state(false)
 	let isCreating = $state(false)
@@ -30,6 +31,8 @@
 		isSelectMode = false
 		pendingComponentType = undefined
 		newComponentName = ''
+
+		if (data.ephemeral) setTimeout(() => deleteElements({ nodes: [{ id }] }), 100)
 	}
 
 	let pendingComponentType = $state<NodeType>()

@@ -146,22 +146,39 @@ export async function refreshFlow() {
 			y += nodeSize.y + gap
 		}
 
-		nodes.push({
-			id: `${container.id as Uuid}:create`,
-			type: 'create-node',
-			draggable: false,
-			position: { x, y },
-			data: {
-				activeNodeTypes,
-				props: {
-					...defaultProps
-				}
-			}
-		})
+		const createNode = addCreateNode({ x, y }, false, false)
+		nodes.push(createNode)
 	}
 
 	setNodes(nodes)
 	setEdges(edges)
+}
+
+export const addCreateNode = (position: { x: number; y: number }, ephemeral?: boolean, update?: boolean) => {
+	const nodes = getNodes()
+	const container = getCurrentContainer()
+	const node = {
+		id: `${container.id as Uuid}:create${ephemeral ? `-ephemeral` : ''}`,
+		type: 'create-node',
+		draggable: false,
+		position,
+		data: {
+			activeNodeTypes: ['flow', 'agent', !isProject(container) && 'action'].filter(Boolean),
+			ephemeral,
+			props: { ...defaultProps }
+		}
+	} as CanvasNode
+	if (update) {
+		// in reality we should measure the node itself, but we need to render it to get its size,
+		// so for now we can just measure any other create node on the canvas (there's hopefully one by now)
+		const otherCreateNode = nodes.find(n => n.type === 'create-node')
+		if (otherCreateNode) {
+			node.position.x -= (otherCreateNode.measured?.width ?? 0) / 2
+			node.position.y -= (otherCreateNode.measured?.height ?? 0) / 2
+		}
+		setNodes([...nodes, node])
+	}
+	return node
 }
 
 // Get nodes from project

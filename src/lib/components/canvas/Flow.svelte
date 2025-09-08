@@ -11,7 +11,14 @@
 		handleConnectEnd,
 		handleDragStop
 	} from '$lib/components/canvas/FlowEvents'
-	import { addNode, getEdges, getNodes, setEdges, setNodes } from '$lib/stores/canvas.svelte'
+	import {
+		addCreateNode,
+		addNode,
+		getEdges,
+		getNodes,
+		setEdges,
+		setNodes
+	} from '$lib/stores/canvas.svelte'
 	import { defaultEdgeProps, type MetaNodeType, type NodeType } from '$lib/types/canvas'
 	import {
 		Background,
@@ -34,6 +41,7 @@
 	import { getProject, refreshFlow } from '$lib/stores/canvas.svelte'
 	import IoNode from '../custom-nodes/IONode.svelte'
 	import AgentNode from '../custom-nodes/AgentNode.svelte'
+	import { createNodeImportMeta } from 'vite/module-runner'
 	const useSvelteFlow = svelteFlowHook()
 	const { fitView, screenToFlowPosition } = useSvelteFlow
 	export { fitView }
@@ -92,6 +100,16 @@
 		const position = screenToFlowPosition({ x: event.clientX, y: event.clientY })
 
 		await addNode(component.data, position, {})
+	}
+
+	const handleCanvasContextMenu = async ({ event }: { event: MouseEvent }) => {
+		event.preventDefault()
+		// open create-node at click
+		const position = screenToFlowPosition(
+			{ x: event.clientX, y: event.clientY },
+			{ snapToGrid: true }
+		)
+		addCreateNode(position, true, true)
 	}
 
 	onMount(async () => {
@@ -154,6 +172,7 @@
 		onbeforedelete={handleBeforeDelete}
 		ondelete={handleDelete}
 		onnodedragstop={handleDragStop}
+		onpanecontextmenu={handleCanvasContextMenu}
 		onbeforeconnect={e => {
 			// Prevent edge from sticking when connecting to ghost ports
 			if (e.sourceHandle === 'ghost-source' || e.targetHandle === 'ghost-target') {
