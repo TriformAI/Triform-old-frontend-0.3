@@ -14,6 +14,7 @@
 	import {
 		addCreateNode,
 		addNode,
+		getCurrentContainer,
 		getEdges,
 		getNodes,
 		setEdges,
@@ -151,6 +152,7 @@
 		opacity: 0,
 		duration: transitionDuration
 	}}
+	data-tf-container-type={getCurrentContainer()?.resource?.split('/')?.[0]}
 >
 	<SvelteFlow
 		bind:nodes={getNodes, setNodes}

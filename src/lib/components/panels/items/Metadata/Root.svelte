@@ -16,10 +16,8 @@
 	import { getUserMessage, chat } from '$lib/stores/chat.svelte'
 	import GenerateButton from '$lib/components/atoms/GenerateButton.svelte'
 	import { requirements, getDefaultRequirements } from '$lib/stores/requirements.svelte'
-	import { requirementsModel } from '$lib/schemas/requirements'
 	import { generateRequirements as generateComponentRequirements } from '$lib/actions/components'
 	import { generateRequirements as generateProjectRequirements } from '$lib/actions/project'
-	type Requirements = z.infer<typeof requirementsModel>
 
 	const { nodeId }: { nodeId: string } = $props()
 
