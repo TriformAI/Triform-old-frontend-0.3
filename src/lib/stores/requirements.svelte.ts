@@ -3,7 +3,7 @@ import { requirementsModel } from '$lib/schemas/requirements'
 type Requirements = z.infer<typeof requirementsModel>
 
 export const getDefaultRequirements = () => ({
-	context: { text: '' },
+	context: [],
 	userStories: [],
 	outcomes: [],
 	guidelines: [],
