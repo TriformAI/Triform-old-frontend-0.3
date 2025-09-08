@@ -48,7 +48,7 @@
 
 		{#snippet body()}
 			<form action="/api/payloads" method="post" class="grid gap-4" onsubmit={onSubmit}>
-				<InputField required label="Name" name="name" bind:value={name} />
+				<InputField required label="Name" name="name" bind:value={name} autocomplete="off" />
 
 				<div>
 					<p class="input-title mb-2">Payload</p>

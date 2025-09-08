@@ -137,7 +137,7 @@ export async function refreshFlow() {
 		let x = lastNode ? (lastNode.position.x ?? 0) + nodeSize.x + gap : 0
 		let y = (lastNode?.position.y ?? 0) + 8 // 8=temp offset till we fix the node layout
 
-		const activeNodeTypes = ['flow', 'agent', isAgent(container) && 'action'].filter(Boolean)
+		const activeNodeTypes = ['flow', 'agent', !isProject(container) && 'action'].filter(Boolean)
 
 		if (isAgent(container) && y === 8) y += nodeSize.y + gap
 

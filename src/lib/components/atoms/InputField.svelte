@@ -22,7 +22,8 @@
 		oninput,
 		onpaste,
 		use = () => {},
-		validationFn = () => true
+		validationFn = () => true,
+		id: customId
 	}: {
 		value?: string
 		el?: HTMLInputElement
@@ -45,9 +46,10 @@
 		onpaste?: (e: ClipboardEvent) => void
 		use?: (el: HTMLInputElement) => void
 		validationFn?: (value: string) => boolean | string | undefined
+		id?: string
 	} = $props()
 
-	const id = Math.random().toString(36).substring(2, 15)
+	const id = customId ?? Math.random().toString(36).substring(2, 15)
 
 	const validation = $derived.by(() => {
 		const res = validationFn(value ?? '')

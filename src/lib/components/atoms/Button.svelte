@@ -6,7 +6,24 @@
 
 	import AutorenewIcon from '~icons/material-symbols/autorenew-rounded'
 
-	interface Props {
+	let {
+		variation = 'primary',
+		body,
+		children,
+		onClick: onClickProp,
+		autoLoad,
+		icon,
+		class: classProp,
+		href,
+		target,
+		disabled,
+		tooltip,
+		tooltipPos = 'up',
+		type = 'button',
+		element = $bindable(),
+		isLoading = $bindable(false),
+		id
+	}: {
 		variation?: 'primary' | 'vibrant' | 'link' | 'danger' | 'confirm'
 		// disabled
 		// href
@@ -27,25 +44,8 @@
 		type?: 'button' | 'submit' | 'reset'
 		element?: HTMLButtonElement
 		isLoading?: boolean
-	}
-
-	let {
-		variation = 'primary',
-		body,
-		children,
-		onClick: onClickProp,
-		autoLoad,
-		icon,
-		class: classProp,
-		href,
-		target,
-		disabled,
-		tooltip,
-		tooltipPos = 'up',
-		type = 'button',
-		element = $bindable(),
-		isLoading = $bindable(false)
-	}: Props = $props()
+		id?: string
+	} = $props()
 
 	const content = $derived(body ?? children)
 
@@ -119,8 +119,9 @@
 		disabled:cursor-not-allowed disabled:opacity-75`,
 		classProp
 	])}
-	disabled={disabled || isLoading}
+	{id}
 	{type}
+	disabled={disabled || isLoading}
 	onclick={onClick}
 	aria-label={tooltip}
 	data-balloon-pos={tooltip ? tooltipPos : undefined}

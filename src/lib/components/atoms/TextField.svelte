@@ -11,6 +11,7 @@
 		readonly?: boolean
 		useMonoFont?: boolean
 		oninput?: (e: Event) => void
+		id?: string
 	}
 
 	let {
@@ -23,10 +24,11 @@
 		useMonoFont = false,
 		required,
 		readonly,
-		oninput
+		oninput,
+		id: customId
 	}: Props = $props()
 
-	const id = Math.random().toString(36).substring(2, 15)
+	const id = customId ?? Math.random().toString(36).substring(2, 15)
 </script>
 
 <label class={['grid gap-1', classes]}>
