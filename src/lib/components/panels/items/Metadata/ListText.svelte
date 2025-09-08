@@ -4,18 +4,23 @@
 	import IconTrash from '~icons/material-symbols/delete-outline'
 	import { tick } from 'svelte'
 
-	interface Props {
+	let {
+		value = $bindable(),
+		title,
+		maxItems = Infinity,
+		onUpdate
+	}: {
 		value: { id: string; text: string }[]
 		title: string
 		maxItems?: number
-	}
-
-	let { value = $bindable(), title, maxItems = Infinity }: Props = $props()
+		onUpdate: () => void
+	} = $props()
 
 	let isDeleting = new SvelteSet<number>()
 
 	function removeItem(index: number) {
 		isDeleting.add(index)
+		onUpdate()
 	}
 
 	async function addNew() {
@@ -23,6 +28,7 @@
 		console.log('adding new item', value)
 		await tick()
 		textareas[value.length - 1]?.focus()
+		onUpdate()
 	}
 
 	let textareas = $state<HTMLTextAreaElement[]>([])
@@ -69,7 +75,8 @@
 						<textarea
 							bind:this={textareas[index]}
 							class="input-text field-sizing-content max-h-23 w-full px-2 py-1.5"
-							bind:value={value[index].text}>{item.text}</textarea
+							bind:value={value[index].text}
+							oninput={onUpdate}>{item.text}</textarea
 						>
 
 						<button type="button" onclick={() => removeItem(index)} class="mt-2">

@@ -37,12 +37,6 @@
 		}
 	})
 
-	$effect(() => {
-		// Save requirements when content updates
-		$state.snapshot(requirements.value) // establishes dependency on any nested change
-		debouncedSaveRequirements()
-	})
-
 	const debouncedSaveComponent = debounce(async () => {
 		const res = isProject
 			? await saveProject(componentData)
@@ -102,19 +96,47 @@
 		{/snippet}
 		<div class="grid auto-rows-min items-start gap-3">
 			<div class="mt-4 grid gap-4">
-				<ListText title="Context" bind:value={requirements.value.context} />
+				<ListText
+					title="Context"
+					bind:value={requirements.value.context}
+					onUpdate={debouncedSaveRequirements}
+				/>
 
-				<ListText title="User stories" bind:value={requirements.value.userStories} />
+				<ListText
+					title="User stories"
+					bind:value={requirements.value.userStories}
+					onUpdate={debouncedSaveRequirements}
+				/>
 
-				<ListText title="Outcomes" bind:value={requirements.value.outcomes} />
+				<ListText
+					title="Outcomes"
+					bind:value={requirements.value.outcomes}
+					onUpdate={debouncedSaveRequirements}
+				/>
 
-				<ListText title="Guidelines" bind:value={requirements.value.guidelines} />
+				<ListText
+					title="Guidelines"
+					bind:value={requirements.value.guidelines}
+					onUpdate={debouncedSaveRequirements}
+				/>
 
-				<ListNameDescType title="Dependencies" bind:value={requirements.value.dependencies} />
+				<ListNameDescType
+					title="Dependencies"
+					bind:value={requirements.value.dependencies}
+					onUpdate={debouncedSaveRequirements}
+				/>
 
-				<ListText title="Boundaries" bind:value={requirements.value.boundaries} />
+				<ListText
+					title="Boundaries"
+					bind:value={requirements.value.boundaries}
+					onUpdate={debouncedSaveRequirements}
+				/>
 
-				<ListText title="Safety" bind:value={requirements.value.safety} />
+				<ListText
+					title="Safety"
+					bind:value={requirements.value.safety}
+					onUpdate={debouncedSaveRequirements}
+				/>
 			</div>
 		</div>
 	</PanelItem>

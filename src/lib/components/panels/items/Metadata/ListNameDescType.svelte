@@ -4,23 +4,28 @@
 	import IconTrash from '~icons/material-symbols/delete-outline'
 	import { tick } from 'svelte'
 
-	interface Props {
+	let {
+		value = $bindable(),
+		title,
+		onUpdate
+	}: {
 		value: { id: string; name: string; description: string; type: string }[]
 		title: string
-	}
-
-	let { value = $bindable(), title }: Props = $props()
+		onUpdate: () => void
+	} = $props()
 
 	let isDeleting = new SvelteSet<number>()
 
 	function removeItem(index: number) {
 		isDeleting.add(index)
+		onUpdate()
 	}
 
 	async function addNew() {
 		value.push({ id: crypto.randomUUID(), name: '', description: '', type: 'variable' })
 		await tick()
 		textareas[value.length - 1].focus()
+		onUpdate()
 	}
 
 	let textareas = $state<HTMLInputElement[]>([])
@@ -63,6 +68,7 @@
 								bind:this={textareas[index]}
 								class="input-text w-full px-2 py-1.5"
 								bind:value={value[index].name}
+								oninput={onUpdate}
 							/>
 						</label>
 
@@ -71,12 +77,17 @@
 							<textarea
 								class="input-text field-sizing-content max-h-23 w-full px-2 py-1.5"
 								bind:value={value[index].description}
+								oninput={onUpdate}
 							></textarea>
 						</label>
 
 						<label>
 							<span class={['block pb-1', index > 0 && 'sr-only']}>Type</span>
-							<select class="input-text px-2 py-1.5" bind:value={value[index].type}>
+							<select
+								class="input-text px-2 py-1.5"
+								bind:value={value[index].type}
+								oninput={onUpdate}
+							>
 								<option value="variable">Variable</option>
 								<option value="secret">Secret</option>
 							</select>
