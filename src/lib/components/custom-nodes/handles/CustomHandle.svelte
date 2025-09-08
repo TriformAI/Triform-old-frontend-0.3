@@ -97,6 +97,7 @@
 					selected.node?.id !== nodeId &&
 					'opacity-0 transition delay-200 group-hover/container:opacity-100'
 			]}
+			data-tf-id={`handle-create-button-${type}`}
 		>
 			<button
 				class="text-main-600 hover:text-main-300 peer px-3 py-1 transition active:scale-95"

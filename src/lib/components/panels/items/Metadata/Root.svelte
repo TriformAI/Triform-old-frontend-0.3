@@ -85,6 +85,7 @@
 				name="intention"
 				oninput={debouncedSaveComponent}
 				bind:value={componentData.meta.intention}
+				id="metadata-description-input"
 			/>
 		</div>
 	</PanelItem>
@@ -97,6 +98,7 @@
 					disabled={!allowGeneration}
 					tooltip={!allowGeneration ? 'Description must be at least 10 characters' : undefined}
 					loading={generatingReqs}
+					type="generate"
 				/>
 			</div>
 		{/snippet}

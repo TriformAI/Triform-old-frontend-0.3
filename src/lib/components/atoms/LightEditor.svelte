@@ -24,7 +24,8 @@
 		wordWrap = false,
 		onUpdate,
 		readOnly = false,
-		editor = $bindable()
+		editor = $bindable(),
+		id
 	}: {
 		value?: string
 		language: 'json' | 'md' | 'txt' | 'handlebars'
@@ -32,7 +33,8 @@
 		wordWrap?: boolean
 		readOnly?: boolean
 		onUpdate?: (value: string) => void
-		editor: ReturnType<typeof createEditor>
+		editor?: ReturnType<typeof createEditor>
+		id?: string
 	} = $props()
 
 	const classes = $derived.by(() => {
@@ -64,7 +66,6 @@
 			cursorPosition()
 		)
 		isInitializing = false
-		editor.ins
 		return editor
 	}
 
@@ -95,4 +96,4 @@
 	})
 </script>
 
-<div use:initEditor class={['overflow-auto', readOnly && 'cursor-not-allowed', classes]}></div>
+<div use:initEditor {id} class={['overflow-auto', readOnly && 'cursor-not-allowed', classes]}></div>

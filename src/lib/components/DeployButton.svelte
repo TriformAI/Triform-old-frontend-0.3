@@ -36,9 +36,15 @@
 	}
 </script>
 
-<Button class="py-1.5 text-sm" isLoading={isDeploying} variation="vibrant" onClick={deployProject}>
+<Button
+	class="py-1.5 text-sm"
+	isLoading={isDeploying}
+	variation="vibrant"
+	onClick={deployProject}
+	id="nav-deploy-button"
+>
 	{#snippet body()}
-		<span class=" font-semibold">Deploy project</span>
+		<span class="font-semibold">Deploy project</span>
 	{/snippet}
 	{#snippet icon()}
 		<IconDeploy />

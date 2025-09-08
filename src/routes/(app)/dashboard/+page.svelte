@@ -24,7 +24,7 @@
 
 	<div class="flex flex-row items-center justify-start gap-2">
 		<h1 class=" text-2xl font-semibold">Projects</h1>
-		<Button variation="link" onClick={() => projectDialog?.showModal()}>
+		<Button variation="link" onClick={() => projectDialog?.showModal()} id="new-project-button">
 			{#snippet icon()}
 				<IconAdd />
 			{/snippet}

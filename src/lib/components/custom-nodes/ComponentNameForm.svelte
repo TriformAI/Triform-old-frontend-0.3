@@ -29,6 +29,7 @@
 			placeholder={`${capitalize(componentTypeName)} name`}
 			required
 			bind:value
+			id="component-name-form-input"
 		/>
 
 		<Button
@@ -37,6 +38,7 @@
 			type="submit"
 			{isLoading}
 			disabled={isLoading || value.trim() === ''}
+			id="component-name-form-submit"
 		>
 			{#snippet body()}
 				<IconCheck class="size-4" />

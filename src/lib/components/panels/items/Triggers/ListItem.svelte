@@ -91,6 +91,7 @@
 		'flex flex-row items-start justify-between',
 		'border-main-700 bg-main-850 rounded-md border px-4 py-3'
 	]}
+	data-tf-id={`panel-trigger-item`}
 >
 	<div class="flex min-w-0 flex-1 flex-row gap-3">
 		<div class="text-main-400 mt-1 flex-shrink-0">

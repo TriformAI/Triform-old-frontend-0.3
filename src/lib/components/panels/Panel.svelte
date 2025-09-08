@@ -10,6 +10,7 @@
 	import IconCheck from '~icons/material-symbols/check-rounded'
 	import { saveProject } from '$lib/actions/project'
 	import { updateComponent } from '$lib/actions/components'
+	import { requirements } from '$lib/stores/requirements.svelte'
 
 	interface Props {
 		nodeId: string
@@ -113,7 +114,12 @@
 
 		{#if isAction(componentData)}
 			<div class="col-start-3 row-span-2 row-start-1">
-				<GenerateButton label="Build action" onClick={buildAction} />
+				<GenerateButton
+					label="Build action"
+					onClick={buildAction}
+					type="build"
+					disabled={!requirements.value.context?.[0].text.trim().length}
+				/>
 			</div>
 		{/if}
 	</div>

@@ -133,6 +133,7 @@
 						'text-sm transition-all duration-300',
 						executorState.isRunning ? 'blur-xs grayscale-75' : 'blur-[0px] grayscale-0'
 					]}
+					id="execute-result-editor"
 				/>
 			</div>
 		</div>
@@ -167,6 +168,7 @@
 					onClick={run}
 					autoLoad="promise"
 					disabled={!isValidJson || executorState.isRunning}
+					id="execute-button"
 				>
 					{#snippet icon()}
 						<IconPlay class="size-6" />

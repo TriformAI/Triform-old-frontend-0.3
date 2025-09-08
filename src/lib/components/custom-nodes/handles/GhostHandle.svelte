@@ -83,6 +83,7 @@
 					'text-main-100 placeholder-main-500 w-full rounded border-0 bg-transparent px-1 py-0 text-center text-xs outline-none',
 					'transition-opacity duration-200 starting:opacity-0'
 				]}
+				id="ghost-handle-input"
 				bind:this={inputRef}
 			/>
 		{:else}

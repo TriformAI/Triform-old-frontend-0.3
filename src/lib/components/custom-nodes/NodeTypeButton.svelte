@@ -16,6 +16,7 @@
 	{onclick}
 	type="button"
 	class={['group hover:bg-main-500/10 grid size-18 place-items-center rounded-sm transition']}
+	id={`node-type-button-${nodeType.type}`}
 >
 	<nodeType.icon
 		style={`color: ${nodeType.iconColor}`}

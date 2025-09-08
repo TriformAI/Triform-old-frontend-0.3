@@ -68,9 +68,17 @@
 					label="Project Name"
 					required
 					bind:value={formData.meta.name}
+					id="new-project-name-input"
+					autocomplete="off"
 				/>
 
-				<Button variation="vibrant" type="submit" class="mt-5 w-full" {isLoading}>
+				<Button
+					variation="vibrant"
+					type="submit"
+					class="mt-5 w-full"
+					id="new-project-create-button"
+					{isLoading}
+				>
 					{#snippet body()}
 						Create
 					{/snippet}

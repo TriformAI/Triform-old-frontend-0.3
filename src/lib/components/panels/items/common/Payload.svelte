@@ -86,6 +86,7 @@
 					bind:value
 					onUpdate={v => setPayload(v)}
 					class="text-sm"
+					id="payload-editor"
 				/>
 			{/key}
 		</div>
