@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { isProject } from '$lib/schemas'
-	import { getCurrentContainer } from '$lib/stores/canvas.svelte'
+	import { getCurrentContainer, getProject } from '$lib/stores/canvas.svelte'
 	import Panel from './Panel.svelte'
 	import Icon from '~icons/material-symbols/network-node'
 	import { page } from '$app/state'
@@ -9,7 +9,7 @@
 
 	const currentIsProject = $derived(isProject(getCurrentContainer()))
 
-	const isTopLevelNode = $derived(page.url.pathname.split('/').filter(Boolean).length === 3)
+	const isTopLevelNode = $derived(nodeId in (getProject()?.spec.nodes ?? {}))
 
 	const items = $derived.by(() => {
 		const items = ['execute', 'io', 'metadata']
