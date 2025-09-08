@@ -12,6 +12,10 @@
 	import type * as z from 'zod'
 	import type { resolvedComponentModel } from '$lib/schemas'
 	import { getCurrentNodePath, getProject, getVisibleComponent } from '$lib/stores/canvas.svelte'
+	import IconMagic from '~icons/mdi/shimmer'
+	import IconReload from '~icons/material-symbols/refresh-rounded'
+	import { getSamplePayload } from '$lib/schemas'
+	import { objectMap } from '$lib/utils/objectMap'
 
 	const { nodeId }: { nodeId: string } = $props()
 
@@ -19,10 +23,15 @@
 		getVisibleComponent(nodeId) as z.infer<typeof resolvedComponentModel>
 	)
 
-	let payload = $state('{\n\t"msg": "hello world"\n}')
-	if (selected.payload) {
-		payload = selected.payload
-	}
+	const objectToSchema = (obj: Record<string, unknown>) => ({
+		type: 'object',
+		properties: objectMap(obj, (value, _key) => value.schema)
+	})
+
+	let payload = $state(
+		JSON.stringify(getSamplePayload(objectToSchema(componentData.spec.inputs)) ?? {}, null, 2)
+	)
+	if (selected.payload) payload = selected.payload
 
 	const formattedExecutionState = $derived.by(() => {
 		const state = executorState.state.split('_').join(' ')
@@ -71,11 +80,24 @@
 
 		executeComponent(JSON.parse(payload), componentData, modifiers, executorState)
 	}
+
+	const additionalActions = [
+		{
+			icon: IconReload,
+			label: 'Reload sample payload',
+			onClick: () =>
+				(payload = JSON.stringify(
+					getSamplePayload(objectToSchema(componentData.spec.inputs)) ?? {},
+					null,
+					2
+				))
+		}
+	]
 </script>
 
 <PanelItem {nodeId} title="Execute">
-	<div class={[' col-start-1 row-start-1 grid min-w-80 grid-rows-[auto_1fr_min-content] gap-y-4']}>
-		<Payload bind:value={payload} />
+	<div class={['col-start-1 row-start-1 grid min-w-80 grid-rows-[auto_1fr_min-content] gap-y-4']}>
+		<Payload bind:value={payload} {additionalActions} />
 
 		<div class="bg-main-800/50 grid grid-rows-[auto_minmax(100px,1fr)] rounded-lg p-3">
 			<div class=" -mt-1 mb-4 flex items-end justify-between">

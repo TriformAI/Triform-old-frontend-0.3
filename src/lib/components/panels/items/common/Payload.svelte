@@ -5,19 +5,25 @@
 	import PayloadDialog from '../Execute/PayloadDialog.svelte'
 	import { page } from '$app/state'
 	import { twMerge } from 'tailwind-merge'
+	import type { Component } from 'svelte'
 
 	let {
 		value = $bindable(),
 		placeholder = 'Use saved payload',
 		class: className = '',
 		hasJsonErrors = $bindable(false),
-		usePortal = false
+		usePortal = false,
+		additionalActions = []
 	}: {
 		value: string
 		placeholder?: string
 		class?: string
 		hasJsonErrors?: boolean
 		usePortal?: boolean
+		additionalActions?: {
+			icon: Component
+			onClick: () => void
+		}[]
 	} = $props()
 
 	let newPayload = $state('')
@@ -68,15 +74,28 @@
 					<span class="text-main-300">JSON Payload</span>
 				</p>
 
-				<button
-					aria-label="Save payload"
-					data-balloon-pos="left"
-					class="text-main-400 hover:text-main-300 -mt-1 transition-colors"
-					type="button"
-					onclick={() => payloadDialog?.showModal()}
-				>
-					<IconAdd class="size-5" />
-				</button>
+				<div class="flex flex-row gap-2">
+					{#each additionalActions as action}
+						<button
+							aria-label={action.label}
+							data-balloon-pos="left"
+							class="text-main-400 hover:text-main-300 -mt-1 transition-colors"
+							type="button"
+							onclick={action.onClick}
+						>
+							<action.icon class="size-5" />
+						</button>
+					{/each}
+					<button
+						aria-label="Save payload"
+						data-balloon-pos="left"
+						class="text-main-400 hover:text-main-300 -mt-1 transition-colors"
+						type="button"
+						onclick={() => payloadDialog?.showModal()}
+					>
+						<IconAdd class="size-5" />
+					</button>
+				</div>
 			</div>
 
 			{#key newPayload}

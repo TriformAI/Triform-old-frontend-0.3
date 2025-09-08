@@ -140,7 +140,7 @@ export const jsonSchemaTypeModel: z.ZodType<unknown> = z.lazy(() =>
 /**
  * Analyzes Python type strings to determine required typing imports
  */
-export function getRequiredImports(pythonTypes: string[]): string[] {
+export const getRequiredImports = (pythonTypes: string[]): string[] => {
 	const allTypesStr = pythonTypes.join(' ')
 	const imports = ['TypedDict'] // Always need TypedDict for action generation
 
@@ -154,11 +154,11 @@ export function getRequiredImports(pythonTypes: string[]): string[] {
 	return imports
 }
 
-/**
+/**the
  * Converts a JSON schema to Python type annotation syntax
  * This function reverses the logic in pythonParser.ts
  */
-export function schemaToPython(schema: unknown): string {
+export const schemaToPython = (schema: unknown): string => {
 	if (!schema || typeof schema !== 'object') {
 		return 'Any'
 	}
@@ -291,4 +291,153 @@ export function schemaToPython(schema: unknown): string {
 
 	// Fallback for empty schema or unknown patterns
 	return 'Any'
+}
+
+export const getSamplePayload = (
+	schema: z.infer<typeof jsonSchemaTypeModel>,
+	visited = new WeakSet<object>()
+): unknown => {
+	// Handle null/undefined or non-object schemas
+	if (!schema || typeof schema !== 'object') return 'any'
+
+	// Check for circular references
+	if (visited.has(schema)) return 'circular-reference'
+	visited.add(schema)
+
+	const s = schema as Record<string, unknown>
+
+	// Handle basic types
+	if (s.type === 'string') {
+		// Use enum value if available
+		if (s.enum && Array.isArray(s.enum) && s.enum.length > 0) return s.enum[0]
+		// Use default if available
+		if (s.default !== undefined) return s.default
+		// Return sample based on format
+		if (s.format) {
+			switch (s.format) {
+				case 'email':
+					return 'user@example.com'
+				case 'date':
+					return '2024-01-01'
+				case 'date-time':
+					return '2024-01-01T00:00:00Z'
+				case 'time':
+					return '00:00:00'
+				case 'uuid':
+					return '550e8400-e29b-41d4-a716-446655440000'
+				case 'uri':
+					return 'https://example.com'
+				case 'hostname':
+					return 'example.com'
+				case 'ipv4':
+					return '192.168.1.1'
+				case 'ipv6':
+					return '2001:0db8:85a3:0000:0000:8a2e:0370:7334'
+				default:
+					return 'string'
+			}
+		}
+		return 'string'
+	}
+
+	if (s.type === 'number') {
+		// Use enum value if available
+		if (s.enum && Array.isArray(s.enum) && s.enum.length > 0) return s.enum[0]
+		// Use default if available
+		if (s.default !== undefined) return s.default
+		// Generate sample within constraints
+		if (typeof s.minimum === 'number') return s.minimum + 1
+		if (typeof s.maximum === 'number') return s.maximum - 1
+		return 123.45
+	}
+
+	if (s.type === 'integer') {
+		// Use enum value if available
+		if (s.enum && Array.isArray(s.enum) && s.enum.length > 0) return s.enum[0]
+		// Use default if available
+		if (s.default !== undefined) return s.default
+		// Generate sample within constraints
+		if (typeof s.minimum === 'number') return s.minimum + 1
+		if (typeof s.maximum === 'number') return s.maximum - 1
+		return 123
+	}
+
+	if (s.type === 'boolean') {
+		// Use enum value if available
+		if (s.enum && Array.isArray(s.enum) && s.enum.length > 0) return s.enum[0]
+		// Use default if available
+		if (s.default !== undefined) return s.default
+		return true
+	}
+
+	if (s.type === 'null') return null
+
+	if (s.type === 'array') {
+		// Use default if available
+		if (s.default !== undefined) return s.default
+		// Generate array with one sample item
+		if (s.items) return [getSamplePayload(s.items, visited)]
+		return ['any']
+	}
+
+	if (s.type === 'object') {
+		// Use default if available
+		if (s.default !== undefined) return s.default
+
+		const result: Record<string, unknown> = {}
+
+		if (s.properties && typeof s.properties === 'object') {
+			const properties = s.properties as Record<string, unknown>
+			const required = Array.isArray(s.required) ? (s.required as string[]) : []
+
+			// Add all required properties
+			for (const key of required) {
+				if (properties[key])
+					result[key] = getSamplePayload(properties[key], visited)
+			}
+
+			// Optionally add some non-required properties for demonstration
+			for (const [key, value] of Object.entries(properties)) {
+				if (!required.includes(key) && Object.keys(result).length < 3) {
+					// Add first few optional properties for sample
+					result[key] = getSamplePayload(value, visited)
+				}
+			}
+		}
+
+		// If no properties defined but additionalProperties is allowed
+		if (Object.keys(result).length === 0) {
+			if (s.additionalProperties === true) return { sampleKey: 'any' }
+			if (
+				s.additionalProperties &&
+				typeof s.additionalProperties === 'object'
+			) {
+				return { sampleKey: getSamplePayload(s.additionalProperties, visited) }
+			}
+		}
+
+		return Object.keys(result).length > 0 ? result : {}
+	}
+
+	// Handle enum without type
+	if (s.enum && Array.isArray(s.enum) && s.enum.length > 0) return s.enum[0]
+
+	// Handle composition schemas
+	if (s.anyOf && Array.isArray(s.anyOf) && s.anyOf.length > 0) {
+		// Use first schema option for sample
+		return getSamplePayload(s.anyOf[0], visited)
+	}
+
+	if (s.oneOf && Array.isArray(s.oneOf) && s.oneOf.length > 0) {
+		// Use first schema option for sample
+		return getSamplePayload(s.oneOf[0], visited)
+	}
+
+	if (s.allOf && Array.isArray(s.allOf) && s.allOf.length > 0) {
+		// Merge all schemas (simplified - just use first for sample)
+		return getSamplePayload(s.allOf[0], visited)
+	}
+
+	// Empty schema or unknown pattern
+	return 'any'
 }
