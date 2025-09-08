@@ -118,7 +118,7 @@
 					label="Build action"
 					onClick={buildAction}
 					type="build"
-					disabled={!requirements.value.context?.[0].text.trim().length}
+					disabled={!requirements?.value?.context?.[0]?.text?.trim().length}
 				/>
 			</div>
 		{/if}
