@@ -215,7 +215,7 @@ const resolvedAgentSpecModel = agentSpecModel.extend({
 		agentSpecModel.shape.nodes.keyType,
 		agentSpecModel.shape.nodes.valueType.extend({
 			get spec() {
-				return componentModel
+				return resolvedComponentModel
 			}
 		})
 	)
