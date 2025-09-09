@@ -50,7 +50,7 @@ export const setProject = (newProject: z.infer<typeof resolvedProjectModel>) =>
 const currentNodePath = $derived.by(() => {
 	const path = page.url.pathname.split('/')
 	// remove /project/projectId
-	return path.slice(path.indexOf('project') + 2)
+	return [...path.slice(path.indexOf('project') + 2)]
 })
 export const getCurrentNodePath = () => currentNodePath
 export const getCurrentContainer = (): NodeContainer => {

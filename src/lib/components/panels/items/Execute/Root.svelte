@@ -18,6 +18,8 @@
 	import { objectMap } from '$lib/utils/objectMap'
 	import { generateMockInputs } from '$lib/actions/components'
 	import { confirmStore } from '$lib/stores/confirm.svelte'
+	import { objFilter } from '$lib/utils/objectFilter'
+	import { objKeyMap } from '$lib/utils/objKeyMap'
 
 	const { nodeId }: { nodeId: string } = $props()
 
@@ -76,10 +78,26 @@
 
 		// TODO: include modifiers on parents as well, once we support modifiers on flows
 		// add the modifiers that are relevant to this node
-		const nodePath = [...getCurrentNodePath(), nodeId].join('/')
-		const modifiers = {
-			[nodePath]: getProject().spec.modifiers[[...getCurrentNodePath(), nodeId].join('/')]
-		}
+		const currentNodeId = nodeId === 'container' ? getCurrentNodePath().pop() : nodeId
+		const nodePath = [...getCurrentNodePath(), nodeId !== 'container' && nodeId]
+			.filter(Boolean)
+			.join('/')
+		const isTopLevel = !getCurrentNodePath().length
+		const modifiers = objKeyMap(
+			// keep only relevant modifiers
+			objFilter(getProject().spec.modifiers ?? {}, (key, _value) => key.startsWith(nodePath)),
+			// correct the path so it starts from the currently selected node, so remove everything before the current node
+			(key, value) => {
+				// if we're on the top level, just drop the first node id
+				if (isTopLevel) return key.split('/').slice(1).join('/')
+				if (!currentNodeId) return key
+				const parts = key.split('/')
+				return parts
+					.slice(parts.indexOf(currentNodeId) + (nodeId === 'container' ? 1 : 0))
+					.join('/')
+			}
+		)
+		console.log(nodePath, modifiers)
 
 		executeComponent(JSON.parse(payload), componentData, modifiers, executorState)
 	}
