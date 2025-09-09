@@ -160,7 +160,7 @@ export const availableAgentModels = [
 	'gemini-2.5-flash',
 	'gemini-2.5-flash-lite',
 	'gemma-3-27b-it',
-	'qwen/qwen3-235b-a22b-instruct-2507',
+	'qwen3-235b-a22b-instruct-2507',
 	// groq does json output with a specific json tool, we need to add our own if we want both tool calling and structured output
 	'qwen/qwen3-32b',
 	'gemma2-9b-it',
@@ -185,7 +185,8 @@ export const availableAgentModels = [
 ] as const
 
 const agentSpecModel = z.strictObject({
-	model: z.enum(availableAgentModels),
+	// backwards compatibility: coerce old models to gemma-3-27b-it
+	model: z.enum(availableAgentModels).catch('gemma-3-27b-it'),
 	readme: z.string().optional().default(''),
 	prompts: z.strictObject({
 		system: agentPromptModel,

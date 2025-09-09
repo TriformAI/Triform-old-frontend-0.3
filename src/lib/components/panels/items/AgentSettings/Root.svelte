@@ -5,7 +5,7 @@
 	import { updateComponent } from '$lib/actions/components'
 	import { toast } from 'svelte-sonner'
 	import type { z } from 'zod'
-	import { agentMessagesModel, agentModel } from '$lib/schemas'
+	import { agentMessagesModel, agentModel, availableAgentModels } from '$lib/schemas'
 	import PromptElement from './PromptElement.svelte'
 	import type { FormEventHandler } from 'svelte/elements'
 	import { tick } from 'svelte'
@@ -22,8 +22,7 @@
 
 	let hasJsonErrors = $state(false)
 
-	const agentModels = Object.values(agentModel.shape.spec.shape.model.enum)
-
+	const agentModels = availableAgentModels
 	let messagesEnabled = $derived('messages' in componentData.spec.inputs)
 
 	const toggleMessages = async () => {
