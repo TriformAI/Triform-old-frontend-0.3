@@ -52,9 +52,9 @@
 <div class="grid max-w-full gap-6 p-5 pt-4">
 	<label class="grid gap-2">
 		<span class="eyebrow">Model</span>
-		<select class="input-text" bind:value={componentData.spec.model}>
+		<select class="input-text" bind:value={componentData.spec.model} oninput={debouncedSave}>
 			{#each agentModels as model}
-				<option value={model}>{model.split('/').slice(1).join('/')}</option>
+				<option value={model}>{model}</option>
 			{/each}
 		</select>
 	</label>
