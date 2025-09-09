@@ -81,7 +81,11 @@
 			/>
 		</div>
 	</PanelItem>
-	<PanelItem {nodeId} title="Requirements">
+	<PanelItem
+		{nodeId}
+		title="Requirements"
+		tip="Specifications for the component, used eg by the Builder to build the resource"
+	>
 		{#snippet titleSuffix()}
 			<div class="ml-auto">
 				<GenerateButton

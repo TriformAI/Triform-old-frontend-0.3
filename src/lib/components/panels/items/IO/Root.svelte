@@ -11,7 +11,7 @@
 	const component = $derived(getVisibleComponent(nodeId) as z.infer<typeof resolvedComponentModel>)
 </script>
 
-<PanelItem {nodeId} title="Input & output">
+<PanelItem {nodeId} title="Input & output" tip="Specifies the interface of the component">
 	<div>
 		{#if isAction(component)}
 			<div class="flex flex-row gap-2">

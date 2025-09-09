@@ -1,18 +1,9 @@
 <script lang="ts">
 	import type { Snippet } from 'svelte'
 	import { getCurrentContainer, getVisibleComponent } from '$lib/stores/canvas.svelte'
+	import { Tooltip } from 'bits-ui'
 	import IconAdd from '~icons/mdi/plus-circle-outline'
-
-	export interface Props {
-		nodeId: string
-		title: string
-		children: Snippet
-		titleSuffix?: Snippet
-		forceOpen?: boolean
-		isListContainer?: boolean
-		onAddClick?: () => void
-		fillHeight?: boolean
-	}
+	import IconInfo from '~icons/material-symbols/info-outline-rounded'
 
 	let {
 		nodeId,
@@ -22,8 +13,19 @@
 		isListContainer = false,
 		onAddClick,
 		titleSuffix,
-		fillHeight = true
-	}: Props = $props()
+		fillHeight = true,
+		tip
+	}: {
+		nodeId: string
+		title: string
+		children: Snippet
+		titleSuffix?: Snippet
+		forceOpen?: boolean
+		isListContainer?: boolean
+		onAddClick?: () => void
+		fillHeight?: boolean
+		tip?: string
+	} = $props()
 
 	const componentData = $derived(getVisibleComponent(nodeId))
 
@@ -55,6 +57,17 @@
 				>
 					<IconAdd class="size-5" />
 				</button>
+			{/if}
+
+			{#if tip}
+				<div
+					data-balloon-instant="true"
+					aria-label={tip}
+					data-balloon-pos="down-left"
+					data-balloon-length="medium"
+				>
+					<IconInfo class="text-main-500 hover:text-main-400 size-4 !cursor-help transition" />
+				</div>
 			{/if}
 
 			{#if titleSuffix}

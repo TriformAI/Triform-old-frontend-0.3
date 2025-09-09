@@ -26,6 +26,7 @@
 	title="Triggers"
 	isListContainer
 	onAddClick={() => dialog?.showModal()}
+	tip="Entrypoints for your project. Can only be added to top-level nodes."
 >
 	<div class="flex flex-col gap-4">
 		{#each Object.entries(triggers) as [triggerId, trigger]}

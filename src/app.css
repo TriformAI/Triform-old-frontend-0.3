@@ -327,6 +327,10 @@
 	[aria-label][data-balloon-pos]:not([data-balloon-instant='true']):hover:not(:active):before {
 		transition-delay: 750ms !important;
 	}
+
+	[aria-label][data-balloon-pos]:after {
+		z-index: 1000;
+	}
 }
 
 @layer components {
