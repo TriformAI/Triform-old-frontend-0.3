@@ -5,6 +5,7 @@ import type { User, Session } from 'better-auth/types'
 import type { Organization } from 'better-auth/plugins/organization'
 import type { ingressTokenModel } from '$lib/schemas/triggers'
 import type * as z from 'zod'
+import type { modifierModel } from '$lib/schemas'
 
 // See https://kit.svelte.dev/docs/types#app
 // for information about these interfaces
@@ -23,7 +24,7 @@ declare global {
 		interface PageData {
 			user?: User
 			project?: Project
-			variables?: Variable[]
+			modifiers?: z.infer<typeof modifierModel>[]
 			payloads?: Payload[]
 			ingressTokens?: z.infer<typeof ingressTokenModel>[]
 		}

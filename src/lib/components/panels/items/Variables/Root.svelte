@@ -8,8 +8,6 @@
 	import { clone } from '$lib/utils/clone'
 	import { toast } from 'svelte-sonner'
 	import { confirmStore } from '$lib/stores/confirm.svelte'
-	import type * as z from 'zod'
-	import type { modifierModel } from '$lib/schemas/modifiers'
 	import IconDetach from '~icons/mdi/link-variant-off'
 
 	let dialog = $state<HTMLDialogElement>()
@@ -30,7 +28,7 @@
 
 	// Get all available variables from page data that aren't already attached
 	const availableVariables = $derived.by(() => {
-		const allVariables = page.data.variables || []
+		const allVariables = (page.data.modifiers || []).filter(m => m.resource === 'variable/v1')
 		const attachedIds = modifiers.map(m => m.modifier_id)
 		return allVariables.filter(v => v.id && !attachedIds.includes(v.id))
 	})
@@ -63,7 +61,7 @@
 
 		try {
 			// Find the variable to attach
-			const variableToAttach = page.data.variables?.find(v => v.id === targetVariable)
+			const variableToAttach = page.data.modifiers?.find(v => v.id === targetVariable)
 			if (!variableToAttach) {
 				toast.error('Variable not found')
 				return
