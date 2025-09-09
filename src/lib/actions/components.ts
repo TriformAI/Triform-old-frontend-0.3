@@ -56,3 +56,5 @@ export const buildComponent = async (id: string) => {
 export const generateRequirements = async (id: string) => {
 	return await api.post<{ data: Requirements }>(`components/${id}/requirements/generate`, {})
 }
+
+export const generateMockInputs = async (id: string) => await api.get<{ data: Record<string, unknown> }>(`components/${id}/mock/inputs`)

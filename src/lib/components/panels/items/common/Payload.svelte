@@ -6,6 +6,7 @@
 	import { page } from '$app/state'
 	import { twMerge } from 'tailwind-merge'
 	import type { Component } from 'svelte'
+	import Button from '$lib/components/atoms/Button.svelte'
 
 	let {
 		value = $bindable(),
@@ -23,6 +24,7 @@
 		additionalActions?: {
 			icon: Component
 			onClick: () => void
+			label: string
 		}[]
 	} = $props()
 
@@ -74,27 +76,32 @@
 					<span class="text-main-300">JSON Payload</span>
 				</p>
 
-				<div class="flex flex-row gap-2">
+				<div class="flex flex-row gap-1">
 					{#each additionalActions as action}
-						<button
-							aria-label={action.label}
-							data-balloon-pos="left"
-							class="text-main-400 hover:text-main-300 -mt-1 transition-colors"
-							type="button"
-							onclick={action.onClick}
+						<Button
+							variation="link"
+							tooltip={action.label}
+							tooltipPos="left"
+							onClick={action.onClick}
+							class="-mt-1 px-1.5 py-1.5"
+							autoLoad="promise"
 						>
-							<action.icon class="size-5" />
-						</button>
+							{#snippet icon()}
+								<action.icon class="size-5" />
+							{/snippet}
+						</Button>
 					{/each}
-					<button
-						aria-label="Save payload"
-						data-balloon-pos="left"
-						class="text-main-400 hover:text-main-300 -mt-1 transition-colors"
-						type="button"
-						onclick={() => payloadDialog?.showModal()}
+					<Button
+						variation="link"
+						tooltip="Save payload"
+						tooltipPos="left"
+						onClick={() => payloadDialog?.showModal()}
+						class="-mt-1 px-1.5 py-1.5"
 					>
-						<IconAdd class="size-5" />
-					</button>
+						{#snippet icon()}
+							<IconAdd class="size-5" />
+						{/snippet}
+					</Button>
 				</div>
 			</div>
 

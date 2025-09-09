@@ -16,6 +16,8 @@
 	import IconReload from '~icons/material-symbols/refresh-rounded'
 	import { getSamplePayload } from '$lib/schemas'
 	import { objectMap } from '$lib/utils/objectMap'
+	import { generateMockInputs } from '$lib/actions/components'
+	import { confirmStore } from '$lib/stores/confirm.svelte'
 
 	const { nodeId }: { nodeId: string } = $props()
 
@@ -28,9 +30,10 @@
 		properties: objectMap(obj, (value, _key) => value.schema)
 	})
 
-	let payload = $state(
+	const getDefaultPayload = () =>
 		JSON.stringify(getSamplePayload(objectToSchema(componentData.spec.inputs)) ?? {}, null, 2)
-	)
+
+	let payload = $state(getDefaultPayload())
 	if (selected.payload) payload = selected.payload
 
 	const formattedExecutionState = $derived.by(() => {
@@ -83,14 +86,33 @@
 
 	const additionalActions = [
 		{
+			icon: IconMagic,
+			label: 'Generate sample payload',
+			onClick: async () => {
+				if (!componentData?.id) return
+				if (payload !== getDefaultPayload()) {
+					const confirmed = await confirmStore.show({
+						title: 'Generate sample payload',
+						message: 'This will overwrite your current payload'
+					})
+					if (!confirmed) return
+				}
+				const { data, success } = await generateMockInputs(componentData.id)
+				if (!success) return toast.error('Failed to generate sample payload')
+				payload = JSON.stringify(data, null, 2)
+			}
+		},
+		{
 			icon: IconReload,
 			label: 'Reload sample payload',
-			onClick: () =>
-				(payload = JSON.stringify(
-					getSamplePayload(objectToSchema(componentData.spec.inputs)) ?? {},
-					null,
-					2
-				))
+			onClick: async () => {
+				const confirmed = await confirmStore.show({
+					title: 'Generate default sample payload',
+					message: 'This will overwrite your current payload'
+				})
+				if (!confirmed) return
+				payload = getDefaultPayload()
+			}
 		}
 	]
 </script>

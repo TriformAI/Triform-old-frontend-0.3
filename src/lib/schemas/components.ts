@@ -124,9 +124,10 @@ export const agentMessagesModel = z.object({
 					.record(z.string(), jsonSchemaTypeModel)
 					.optional()
 					.default({
-						role: { type: 'string' },
-						content: { type: 'string' }
-					})
+						role: { type: 'string', default: 'user' },
+						content: { type: 'string', default: 'Message content' }
+					}),
+				required: z.array(z.string()).optional().default(['role', 'content'])
 			})
 		})
 		.default({
@@ -134,9 +135,10 @@ export const agentMessagesModel = z.object({
 			items: {
 				type: 'object',
 				properties: {
-					role: { type: 'string' },
-					content: { type: 'string' }
-				}
+					role: { type: 'string', default: 'user' },
+					content: { type: 'string', default: 'Message content' }
+				},
+				required: ['role', 'content']
 			}
 		})
 })
