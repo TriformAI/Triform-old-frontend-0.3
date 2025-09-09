@@ -16,7 +16,7 @@
 	function openChatPanel() {
 		if (type !== 'build') return
 		const el = document.querySelector<HTMLButtonElement>(
-			'[data-grid-handle-name="chatPanel"][data-is-minified="false"]'
+			'[data-grid-handle-name="chatPanel"][data-is-minified="true"]'
 		)
 		if (!el) return
 		el.dispatchEvent(new MouseEvent('dblclick', { bubbles: true, cancelable: true }))
