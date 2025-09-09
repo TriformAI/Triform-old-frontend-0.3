@@ -164,6 +164,7 @@
 >
 	<button
 		data-grid-handle-name={name}
+		data-is-minified={isMinified}
 		onmouseenter={() => {
 			if (isMinified) {
 				transitionToSize(TEASE_SIZE, false)
