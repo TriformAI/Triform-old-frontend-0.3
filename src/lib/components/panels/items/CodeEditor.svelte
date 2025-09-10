@@ -6,6 +6,7 @@
 	import Button from '$lib/components/atoms/Button.svelte'
 	import type { z } from 'zod'
 	import type { actionModel } from '$lib/schemas'
+	import type { Edge } from '$lib/types/canvas'
 	import { toast } from 'svelte-sonner'
 	import compare from 'just-compare'
 	import IconWarning from '~icons/material-symbols/warning-rounded'
@@ -15,7 +16,16 @@
 	import { blur, fade } from 'svelte/transition'
 	import { debounce } from '$lib/utils/debounce'
 	import { buildComponent, updateComponent } from '$lib/actions/components'
-	import { getVisibleComponent, updateLocalComponent } from '$lib/stores/canvas.svelte'
+	import {
+		getVisibleComponent,
+		updateLocalComponent,
+		getEdges,
+		deleteEdge,
+		getCurrentContainer,
+		saveContainer,
+		refreshFlow
+	} from '$lib/stores/canvas.svelte'
+	import { clone } from '$lib/utils/clone'
 
 	const { nodeId }: { nodeId: string } = $props()
 
@@ -73,6 +83,10 @@
 	const currentLanguage = $derived(currentFileName.split('.').pop() as 'py' | 'md' | 'txt')
 
 	const debouncedSave = debounce(async () => {
+		// Store the current inputs/outputs before saving for comparison
+		const oldInputs = componentData?.spec?.inputs ? Object.keys(componentData.spec.inputs) : []
+		const oldOutputs = componentData?.spec?.outputs ? Object.keys(componentData.spec.outputs) : []
+
 		const res = await updateComponent(componentData, false)
 		console.log('res', res)
 		if (!res.success)
@@ -83,10 +97,49 @@
 		// don't overwrite the source so:
 		// 1. the cursor stays still
 		// 2. any potential changes during the saving are not lost
-		else
-			updateLocalComponent(res.data as z.infer<typeof actionModel>, {
+		else {
+			const newComponentData = res.data as z.infer<typeof actionModel>
+			const newInputs = newComponentData?.spec?.inputs
+				? Object.keys(newComponentData.spec.inputs)
+				: []
+			const newOutputs = newComponentData?.spec?.outputs
+				? Object.keys(newComponentData.spec.outputs)
+				: []
+
+			// Find removed input/output handles
+			const removedInputs = oldInputs.filter(handle => !newInputs.includes(handle))
+			const removedOutputs = oldOutputs.filter(handle => !newOutputs.includes(handle))
+
+			const edgesToRemove = new Set<Edge>()
+
+			// Collect edges that target removed input handles
+			if (removedInputs.length)
+				getEdges()
+					.filter(
+						e => e.target === nodeId && e.targetHandle && removedInputs.includes(e.targetHandle)
+					)
+					.forEach(edge => edgesToRemove.add(edge))
+
+			// Collect edges that originate from removed output handles
+			if (removedOutputs.length)
+				getEdges()
+					.filter(
+						e => e.source === nodeId && e.sourceHandle && removedOutputs.includes(e.sourceHandle)
+					)
+					.forEach(edge => edgesToRemove.add(edge))
+
+			updateLocalComponent(newComponentData, {
 				spec: ['source', 'readme']
 			})
+
+			if (edgesToRemove.size) {
+				// Remove all invalid edges
+				for (const edge of edgesToRemove) await deleteEdge(edge.id, false)
+				const snapshot = clone($state.snapshot(getCurrentContainer()))
+				await saveContainer(snapshot)
+				refreshFlow()
+			}
+		}
 	}, 500)
 
 	let isBuildingDeps = $state(false)
