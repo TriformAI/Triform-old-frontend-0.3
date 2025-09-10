@@ -5,6 +5,7 @@ import { WebSocket } from 'partysocket'
 import { throttle } from '$lib/utils/throttle'
 import * as z from 'zod'
 import { tick } from 'svelte'
+import { inProgressComponents } from './builder.svelte'
 
 // these don't have ids, just an ugly hack for TS for now :)
 const ackModel = ackMessageModel.extend({ id: z.string() })
@@ -234,6 +235,8 @@ export function handleMessage(msg: Message) {
 		}
 
 		case 'run_complete': {
+			// really we should only clear the active component, but this is good enough of a hack for now
+			inProgressComponents.clear()
 			const run = findRun(sourceId)
 			if (run) {
 				run.completed = true

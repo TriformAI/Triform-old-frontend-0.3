@@ -11,6 +11,8 @@
 	import { saveProject } from '$lib/actions/project'
 	import { updateComponent } from '$lib/actions/components'
 	import { requirements } from '$lib/stores/requirements.svelte'
+	import { inProgressComponents } from '$lib/stores/builder.svelte'
+	import { toggleOpenPanelItem } from '$lib/stores/panel.svelte'
 
 	interface Props {
 		nodeId: string
@@ -27,6 +29,7 @@
 	)
 
 	function buildAction() {
+		if (!componentData) return
 		const msg = getUserMessage()
 		msg.data.content[0].text = `build action`
 		msg.data.context = {
@@ -41,6 +44,10 @@
 		}
 
 		chat.socket.send(JSON.stringify(msg))
+
+		inProgressComponents.add(componentData.id as string)
+		// switch to the code editor tab
+		toggleOpenPanelItem('action', 'codeEditor')
 	}
 
 	let isEditingName = $state(false)
@@ -118,7 +125,8 @@
 					label="Build action"
 					onClick={buildAction}
 					type="build"
-					disabled={!requirements?.value?.context?.[0]?.text?.trim().length}
+					disabled={!requirements?.value?.context?.[0]?.text?.trim().length ||
+						inProgressComponents.has(componentData?.id)}
 				/>
 			</div>
 		{/if}
