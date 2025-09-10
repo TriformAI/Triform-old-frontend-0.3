@@ -145,17 +145,19 @@
 				</p>
 			{/if}
 
-			<Button
-				disabled={!buildButtonIsActive}
-				variation="vibrant"
-				class="ms-auto"
-				onClick={buildAction}
-				isLoading={isBuildingDeps}
-			>
-				{#snippet body()}
-					Build
-				{/snippet}
-			</Button>
+			{#if activeTab === 2}
+				<Button
+					disabled={!buildButtonIsActive}
+					variation="vibrant"
+					class="ms-auto"
+					onClick={buildAction}
+					isLoading={isBuildingDeps}
+				>
+					{#snippet body()}
+						Build dependencies
+					{/snippet}
+				</Button>
+			{/if}
 		</div>
 	</div>
 </PanelItem>
