@@ -74,6 +74,7 @@
 			class={['-ms-2 text-sm', !enabled && '!pointer-events-none']}
 			wordWrap={true}
 			readOnly={!enabled}
+			id={`prompt-editor-${label.toLowerCase().replace(' ', '-')}`}
 			bind:editor
 		/>
 	</div>
