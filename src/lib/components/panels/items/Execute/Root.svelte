@@ -78,14 +78,16 @@
 
 		// TODO: include modifiers on parents as well, once we support modifiers on flows
 		// add the modifiers that are relevant to this node
-		const currentNodeId = nodeId === 'container' ? getCurrentNodePath().pop() : nodeId
+		const currentNodeId = nodeId === 'container' ? getCurrentNodePath().at(-1) : nodeId
 		const nodePath = [...getCurrentNodePath(), nodeId !== 'container' && nodeId]
 			.filter(Boolean)
 			.join('/')
 		const isTopLevel = !getCurrentNodePath().length
 		const modifiers = objKeyMap(
 			// keep only relevant modifiers
-			objFilter(getProject().spec.modifiers ?? {}, (key, _value) => key.startsWith(nodePath)),
+			objFilter(getProject().spec.modifiers ?? {}, (key, _value) =>
+				key.startsWith(nodePath + (nodeId === 'container' ? '/' : ''))
+			),
 			// correct the path so it starts from the currently selected node, so remove everything before the current node
 			(key, value) => {
 				// if we're on the top level, just drop the first node id

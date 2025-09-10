@@ -8,7 +8,7 @@
 
 	const { nodeId }: { nodeId: string } = $props()
 
-	const currentNodeId = $derived(nodeId === 'container' ? getCurrentNodePath().pop()! : nodeId)
+	const currentNodeId = $derived(nodeId === 'container' ? getCurrentNodePath().at(-1)! : nodeId)
 
 	// triggers can only exist on top-level nodes
 	const node = $derived(getProject()?.spec.nodes[currentNodeId])
