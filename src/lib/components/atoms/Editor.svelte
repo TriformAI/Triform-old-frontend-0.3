@@ -2,6 +2,7 @@
 	import { onDestroy } from 'svelte'
 	import type * as Monaco from 'monaco-editor/esm/vs/editor/editor.api'
 	import githubDarkTheme from '$lib/editor-themes/github-dark.json'
+	import { registerCompletion, type CompletionRegistration } from 'monacopilot'
 
 	let editor = $state<Monaco.editor.IStandaloneCodeEditor>()
 	let monaco = $state<typeof Monaco>()
@@ -16,6 +17,7 @@
 	let { code = $bindable(), class: classes, onUpdate, readOnly }: Props = $props()
 
 	let editorInitialized = $state(false)
+	let completionRegistration: CompletionRegistration | null = null
 	const initEditor = (el: HTMLDivElement) => {
 		// Wrap in inner async so the top level function can be sync so svelte ts type cheking is happy
 		;(async () => {
@@ -52,12 +54,17 @@
 			monaco.editor.defineTheme('GithubDark', githubDarkTheme)
 			monaco.editor.setTheme('GithubDark')
 
+			completionRegistration = registerCompletion(monaco, editor, {
+				endpoint: '/api/copilot/complete',
+				language: 'python'
+			})
 			editorInitialized = true
 			//console.log('Created monaco', editor.getId())
 		})()
 	}
 
 	onDestroy(() => {
+		if (completionRegistration) completionRegistration.deregister()
 		editor?.dispose()
 		for (const model of monaco?.editor.getModels() ?? []) {
 			if (model.id === editor?.getId()) model.dispose()

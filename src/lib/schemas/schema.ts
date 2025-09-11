@@ -154,7 +154,7 @@ export const getRequiredImports = (pythonTypes: string[]): string[] => {
 	return imports
 }
 
-/**the
+/**
  * Converts a JSON schema to Python type annotation syntax
  * This function reverses the logic in pythonParser.ts
  */
