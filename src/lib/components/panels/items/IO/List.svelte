@@ -126,6 +126,7 @@
 			disabled={readonly}
 			onclick={startAddingPort}
 			class="group grid size-6 place-content-center"
+			id={`add-${type}-port`}
 		>
 			<IconAdd
 				class="group-hover:text-main-200 size-4.5 transition-all duration-200 group-hover:size-5"
@@ -179,9 +180,10 @@
 					bind:value={() => newPortName, value => (newPortName = value.replace(/\s+/g, '_'))}
 					placeholder={`new_${type}`}
 					class="font-mono"
+					id={`add-${type}-port-input`}
 				/>
 				<div class="flex flex-row items-center gap-3">
-					<button class="icon-btn hover:text-main-200" type="submit">
+					<button class="icon-btn hover:text-main-200" type="submit" id={`add-${type}-port-submit`}>
 						<IconCreate />
 					</button>
 				</div>
