@@ -56,7 +56,9 @@
 
 			completionRegistration = registerCompletion(monaco, editor, {
 				endpoint: '/api/copilot/complete',
-				language: 'python'
+				language: 'python',
+				allowFollowUpCompletions: true,
+				trigger: 'onIdle' // change to onTyping if we're really balling
 			})
 			editorInitialized = true
 			//console.log('Created monaco', editor.getId())
