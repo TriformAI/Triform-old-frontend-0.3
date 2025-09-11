@@ -2,15 +2,19 @@ import { source } from 'sveltekit-sse'
 import { toast } from 'svelte-sonner'
 import { selected } from '$lib/stores/panel.svelte'
 import type { Execution } from '$lib/types/execution'
-import type { Component, ResolvedComponent, ResolvedProject } from '$lib/types/resources'
 import type { UUID as Uuid } from 'crypto'
 import { getCurrentContainer } from '$lib/stores/canvas.svelte'
-import type { executionModel, resolvedProjectModel } from '$lib/schemas'
+import type { executionModel, resolvedComponentModel, resolvedProjectModel } from '$lib/schemas'
 import type * as z from 'zod'
 import { API } from '$lib/api'
 import { executionEventModel } from '$lib/schemas'
+import { resetExecutionState, setNodeExecutionState } from '$lib/stores/execution.svelte'
+import { getNodeByPath } from '$lib/stores/canvas.svelte'
+import type { TriNode } from '$lib/types/flow'
 
 const api = new API()
+
+type ResolvedComponent = z.infer<typeof resolvedComponentModel>
 
 export const executeComponent = async (
 	payload: Record<string, unknown>,
@@ -23,7 +27,8 @@ export const executeComponent = async (
 		stdout?: string
 		stderr?: string
 		abortController: AbortController
-	}
+	},
+	rootNodeId?: string
 ) => {
 	const execution = {
 		resource: 'execution/v1',
@@ -49,10 +54,22 @@ export const executeComponent = async (
 	)
 
 	try {
+		resetExecutionState()
+		let executionId = ''
 		for await (const event of stream) {
 			console.log(event)
-			if (event.event === 'running') state.state = `Running node ${event.data.path.pop()}`
+			executionId = event.data.path[0]
+			if (rootNodeId) setNodeExecutionState(executionId, rootNodeId, { state: 'running' })
+			// : is other metadata such as the call id (in case the same tool is called multiple times)
+			const nodeId = event.data.path.at(-1)?.split(':')?.[0]
+			const nodePath = [...event.data.path].map(p => p.split(':')[0]).slice(1) // remove execution id (first)
+			const node: TriNode | undefined =
+				'nodes' in component.spec ? getNodeByPath(nodePath, component.spec.nodes) : undefined
+			const comp = node?.spec ?? component
+			if (nodeId && event.event) setNodeExecutionState(executionId, nodeId, { state: event.event })
+			if (event.event === 'running') state.state = `Executing ${comp.meta.name}`
 			if (event.event === 'completed' && event.data.path.length === 1) {
+				state.state = `Completed ${comp.meta.name}`
 				state.result = JSON.stringify(event.data.output, null, 2)
 				state.stdout = event.data.stdout
 				state.stderr = event.data.stderr
@@ -67,6 +84,7 @@ export const executeComponent = async (
 				break
 			}
 		}
+		if (rootNodeId) setNodeExecutionState(executionId, rootNodeId, { state: 'completed' })
 	} catch (err) {
 		console.error('Execution failed', err)
 		state.state = 'Error'

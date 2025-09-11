@@ -1,6 +1,7 @@
 <script lang="ts">
 	import { twMerge } from 'tailwind-merge'
 	import { nodeTypesDict, type NodeType } from '$lib/constants/nodeTypes'
+	import { getNodeExecutionState } from '$lib/stores/execution.svelte'
 
 	const {
 		type,
@@ -19,6 +20,8 @@
 	} = $props()
 
 	const typeData = $derived(nodeTypesDict[type])
+
+	const executionState = $derived(getNodeExecutionState(id ?? ''))
 </script>
 
 <svelte:element
@@ -26,8 +29,12 @@
 	{id}
 	style={`--node-color: ${typeData.color}`}
 	class={twMerge([
-		'border-main-600 hover:bg-main-500/5 relative flex h-20 w-60 items-center justify-center border p-2 transition-all',
-		'bg-main-900/20 backdrop-blur-sm',
+		'relative flex h-20 w-60 items-center justify-center border p-2 transition-all',
+		'hover:bg-main-500/5 backdrop-blur-sm',
+		executionState?.state === 'failed'
+			? 'border-danger-400/80 bg-danger-900/5'
+			: 'border-main-600 bg-main-900/20',
+		executionState?.state === 'running' && 'animate-border',
 		typeData.shape === 'circle' && 'rounded-full',
 		typeData.shape === 'square' && 'rounded-md',
 		classes

@@ -64,7 +64,7 @@
 						node?.data.props.creating ? 'animate-pulse cursor-progress' : ''
 					]}
 				>
-					<InnerNode {openFn} {selected} {type} name={data?.trinode?.spec.meta.name} />
+					<InnerNode {openFn} {selected} {type} name={data?.trinode?.spec.meta.name} {id} />
 				</div>
 			{/snippet}
 

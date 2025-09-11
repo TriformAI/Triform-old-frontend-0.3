@@ -101,7 +101,7 @@
 		)
 		console.log(nodePath, modifiers)
 
-		executeComponent(JSON.parse(payload), componentData, modifiers, executorState)
+		executeComponent(JSON.parse(payload), componentData, modifiers, executorState, nodeId)
 	}
 
 	const additionalActions = [
@@ -172,9 +172,10 @@
 						{#key executorState.state}
 							<span
 								class={[
-									'text-main-200 h-fit w-fit truncate text-center',
+									'text-main-200 h-fit w-fit text-center',
 									'bg-main-950/20 animate-border rounded px-4 py-2',
-									'absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2'
+									'absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2',
+									'block'
 								]}
 								transition:blur={{
 									duration: 800,

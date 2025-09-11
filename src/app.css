@@ -221,10 +221,15 @@
 }
 
 @utility animate-border {
-	animation: border 6s linear infinite;
+	position: relative;
 	--border-gradient-angle: 0deg;
-	border: 1px solid transparent;
-	border-image: conic-gradient(
+
+	&::before {
+		content: '';
+		position: absolute;
+		inset: -2px;
+		border-radius: inherit;
+		background: conic-gradient(
 			from var(--border-gradient-angle),
 			color-mix(in oklab, var(--color-main-800) 0%, transparent) 0%,
 			color-mix(in oklab, var(--color-main-800) 20%, transparent) 22%,
@@ -234,8 +239,19 @@
 			color-mix(in oklab, var(--color-main-100) 80%, transparent) 75%,
 			color-mix(in oklab, var(--color-main-800) 20%, transparent) 78%,
 			color-mix(in oklab, var(--color-main-800) 0%, transparent) 100%
-		)
-		1 round;
+		);
+		animation: border 6s linear infinite;
+		z-index: -1;
+	}
+
+	&::after {
+		content: '';
+		position: absolute;
+		inset: 0;
+		border-radius: inherit;
+		background: var(--color-main-900);
+		z-index: -1;
+	}
 }
 
 @utility truncate-lines-* {

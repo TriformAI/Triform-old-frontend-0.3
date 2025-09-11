@@ -6,6 +6,7 @@
 	import type { MetaNodeData, NodeData } from '$lib/types/canvas'
 	import { getCurrentContainer, getNodes } from '$lib/stores/canvas.svelte'
 	import { isAction, isProject } from '$lib/schemas'
+	import { getNodeExecutionState } from '$lib/stores/execution.svelte'
 
 	const {
 		body,
@@ -26,9 +27,11 @@
 	const node = $derived(getNodes().find(node => node.id === nodeId))
 
 	const hideHandles = $derived(currentIsProject)
+
+	const executionState = $derived(getNodeExecutionState(nodeId ?? ''))
 </script>
 
-<div class="group/container relative w-full">
+<div class={['group/container relative w-full']}>
 	{#if node?.type !== 'input-node'}
 		<div class={[hideHandles && 'invisible']}>
 			<div class={['mb-2 flex h-0 items-center justify-around gap-5']}>

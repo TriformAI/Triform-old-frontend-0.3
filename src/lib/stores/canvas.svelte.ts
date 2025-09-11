@@ -297,16 +297,15 @@ export function parseNodes(root: NodeContainer) {
 		)
 }
 
-export const getNodeByPath = (sourcePath: string[]): TriNode | undefined => {
+export const getNodeByPath = (sourcePath: string[], nodes: Record<string, TriNode> = project?.spec.nodes): TriNode | undefined => {
 	if (!sourcePath.length) return
 	const path = [...sourcePath]
-	let node = project?.spec.nodes[path.shift() as string]
+	let node = nodes[path.shift() as string]
 	if (!node) return
 	while (path.length) {
 		if (!node || !('nodes' in node.spec.spec)) return undefined
 		const child: TriNode = node.spec.spec.nodes[path.shift() as Uuid]
 		if (!child) return
-		// @ts-expect-error type issue
 		node = child
 	}
 	return node
