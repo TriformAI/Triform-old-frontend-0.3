@@ -1,7 +1,7 @@
 <script lang="ts">
 	import LightEditor from '$lib/components/atoms/LightEditor.svelte'
 	import { debounce } from '$lib/utils/debounce'
-	import { addPort, getVisibleComponent } from '$lib/stores/canvas.svelte'
+	import { addPort, getVisibleComponent, refreshFlow } from '$lib/stores/canvas.svelte'
 	import { updateComponent } from '$lib/actions/components'
 	import { toast } from 'svelte-sonner'
 	import type { z } from 'zod'
@@ -41,6 +41,7 @@
 				delete componentData.spec.outputs.messages
 			}
 			debouncedSave()
+			refreshFlow()
 		} catch (err) {
 			console.error('Failed to toggle messages', err)
 			toast.error('Failed to toggle messages')

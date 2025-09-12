@@ -10,6 +10,15 @@ export const isValidConnection: AddParameters<
 	IsValidConnectionType,
 	[ReturnType<typeof useSvelteFlow>]
 > = (connection, _useSvelteFlow) => {
+	// don't allow connections between ghost ports
+	if (connection.sourceHandle?.startsWith('ghost-') && connection.targetHandle?.startsWith('ghost-')) return false
+
+	// don't allow connections that pass through flows
+	if (
+		(connection.source?.endsWith(':input') && connection.target?.endsWith(':output')) ||
+		(connection.source?.endsWith(':output') && connection.target?.endsWith(':input'))
+	) return false
+
 	const container = getCurrentContainer()
 	// no self-loops
 	if (connection.target === connection.source) return false

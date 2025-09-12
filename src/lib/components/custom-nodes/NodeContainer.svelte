@@ -4,7 +4,7 @@
 	import GhostHandle from './handles/GhostHandle.svelte'
 	import { Position } from '@xyflow/svelte'
 	import type { MetaNodeData, NodeData } from '$lib/types/canvas'
-	import { getCurrentContainer, getNodes } from '$lib/stores/canvas.svelte'
+	import { canvasState, getCurrentContainer, getNodes } from '$lib/stores/canvas.svelte'
 	import { isAction, isProject } from '$lib/schemas'
 	import { getNodeExecutionState } from '$lib/stores/execution.svelte'
 
@@ -27,8 +27,6 @@
 	const node = $derived(getNodes().find(node => node.id === nodeId))
 
 	const hideHandles = $derived(currentIsProject)
-
-	const executionState = $derived(getNodeExecutionState(nodeId ?? ''))
 </script>
 
 <div class={['group/container relative w-full']}>
@@ -43,9 +41,11 @@
 				<div
 					class={[
 						targetHandles.length ? 'float-right' : 'mx-auto',
-						'transition delay-200',
+						!canvasState.connecting && 'transition delay-200',
 						'group-hover/container:pointer-events-auto group-hover/container:opacity-100',
-						targetHandles.length && 'pointer-events-none opacity-0',
+						targetHandles.length &&
+							(canvasState.connectingFrom?.handleType === 'target' || !canvasState.connecting) &&
+							'pointer-events-none opacity-0',
 						node?.type === 'output-node' && targetHandles.length ? '-mt-0.5 mr-1' : '-mt-0.5'
 					]}
 				>
@@ -68,9 +68,11 @@
 				<div
 					class={[
 						sourceHandles.length ? 'float-right' : 'mx-auto',
-						'transition delay-200',
+						!canvasState.connecting && 'transition delay-200',
 						'group-hover/container:pointer-events-auto group-hover/container:opacity-100',
-						sourceHandles.length && 'pointer-events-none opacity-0',
+						sourceHandles.length &&
+							(canvasState.connectingFrom?.handleType === 'source' || !canvasState.connecting) &&
+							'pointer-events-none opacity-0',
 						node?.type === 'input-node' && sourceHandles.length ? '-mt-5 mr-1' : '-mt-0.5',
 						node?.type !== 'input-node' && sourceHandles.length && '-mt-5'
 					]}

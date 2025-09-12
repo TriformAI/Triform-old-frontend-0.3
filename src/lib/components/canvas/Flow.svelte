@@ -43,6 +43,8 @@
 	import IoNode from '../custom-nodes/IONode.svelte'
 	import AgentNode from '../custom-nodes/AgentNode.svelte'
 	import { createNodeImportMeta } from 'vite/module-runner'
+	import { onconnectstart } from './FlowEvents/connectStart.svelte'
+
 	const useSvelteFlow = svelteFlowHook()
 	const { fitView, screenToFlowPosition } = useSvelteFlow
 	export { fitView }
@@ -167,6 +169,7 @@
 			minZoom: 1
 		}}
 		disableKeyboardA11y={true}
+		{onconnectstart}
 		onconnectend={(...args) => handleConnectEnd(...args, useSvelteFlow)}
 		snapGrid={[20, 20]}
 		proOptions={{ hideAttribution: true }}

@@ -106,6 +106,8 @@
 	const addPort = async () => {
 		await addPortToCanvas(nodeId as any, newPortName, newPortType, type)
 		isAddingPort = false
+		// force refresh so the handles update properly
+		refreshFlow()
 	}
 
 	let newPortNameEl = $state<HTMLInputElement>()

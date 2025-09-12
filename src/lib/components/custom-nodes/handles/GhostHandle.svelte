@@ -58,9 +58,7 @@
 		{type}
 		onpointerdown={(e: MouseEvent) => {
 			// Prevent dragging out an edge from input nodes
-			if (type === 'source') {
-				e.preventDefault()
-			}
+			// if (type === 'source') e.preventDefault()
 		}}
 		position={type === 'source' ? Position.Bottom : Position.Top}
 		class={[
