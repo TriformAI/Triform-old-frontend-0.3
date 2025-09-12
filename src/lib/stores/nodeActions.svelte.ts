@@ -12,6 +12,9 @@ import IconExpand from '~icons/mdi/circle-expand'
 import { confirmStore } from './confirm.svelte'
 import { deleteNode as deleteNodeFn } from './canvas.svelte'
 import { isAgent } from '$lib/schemas'
+import IconBuild from '~icons/material-symbols/tools-wrench-outline-rounded'
+import { chat, getUserMessage } from './chat.svelte'
+import { type Node } from '$lib/types/canvas'
 
 export type onClickFn = (node: CanvasNode) => Promise<Uuid | void> | void
 
@@ -76,7 +79,30 @@ export const expandNode = {
 	}
 }
 
+const buildNode = {
+	label: 'Build',
+	icon: IconBuild,
+	isDangerous: false,
+	hide: () => !dev,
+	onClick: async (node: CanvasNode) => {
+		node = node as Node
+		const msg = getUserMessage()
+		const resource = node.data.trinode.spec.resource.split('/')[1]
+		msg.data.content[0].text = `build ${resource}`
+		msg.data.context = {
+			[`@${node.data.trinode.spec.meta.name}`]: {
+				component_id: node.data.trinode.component_id
+			}
+		}
+		if (!chat.socket) {
+			toast.error(`Could not start building ${resource}`)
+			return
+		}
+		chat.socket.send(JSON.stringify(msg))
+	}
+}
+
 // Populate map
-actionsMapStore.set('action-node', [getDebugData, deleteNode])
-actionsMapStore.set('flow-node', [expandNode, getDebugData, deleteNode])
-actionsMapStore.set('agent-node', [expandNode, getDebugData, deleteNode])
+actionsMapStore.set('action-node', [getDebugData, buildNode, deleteNode])
+actionsMapStore.set('flow-node', [expandNode, getDebugData, buildNode, deleteNode])
+actionsMapStore.set('agent-node', [expandNode, getDebugData, buildNode, deleteNode])
