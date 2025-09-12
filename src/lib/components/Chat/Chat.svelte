@@ -168,13 +168,16 @@
 	})
 
 	const isWaitingForAssistant = $derived.by(() => {
-		if (allMessages.length === 0) {
+		if (chat.data.length === 0) return false
+
+		// Find the latest run (runs are added to chat.data in chronological order)
+		const runs = chat.data.filter(item => item.type === 'run')
+		if (runs.length === 0) {
 			return false
 		}
 
-		const lastMessage = allMessages[allMessages.length - 1]
-
-		return lastMessage.role === 'assistant' && lastMessage.content.length === 0
+		const latestRun = runs[runs.length - 1]
+		return !latestRun.completed
 	})
 </script>
 
