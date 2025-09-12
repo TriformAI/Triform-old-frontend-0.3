@@ -34,7 +34,7 @@
 <div class={['group/container relative w-full']}>
 	{#if node?.type !== 'input-node'}
 		<div class={[hideHandles && 'invisible']}>
-			<div class={['mb-2 flex h-0 items-center justify-around gap-5']}>
+			<div class={['mx-auto mb-2 flex h-0 max-w-[80%] items-center justify-around gap-5']}>
 				{#each targetHandles as name}
 					<CustomHandle id={name} {name} type="target" position={Position.Top} {nodeId} />
 				{/each}
@@ -59,7 +59,7 @@
 
 	{#if node?.type !== 'output-node'}
 		<div class={[hideHandles && 'invisible']}>
-			<div class="flex items-center justify-around gap-5">
+			<div class="mx-auto flex max-w-[80%] items-center justify-around gap-5">
 				{#each sourceHandles as name}
 					<CustomHandle id={name} {name} type="source" position={Position.Bottom} {nodeId} />
 				{/each}
