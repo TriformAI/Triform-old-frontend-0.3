@@ -2,7 +2,6 @@
 	import { type RunData } from '$lib/stores/chat.svelte'
 	import ChatMessage from './ChatMessage.svelte'
 	import ChatStep from './ChatStep.svelte'
-	import Spinner from '../Spinner.svelte'
 
 	interface Props {
 		item: RunData
