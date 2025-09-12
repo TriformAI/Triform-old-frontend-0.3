@@ -163,6 +163,8 @@
 				>
 					<IconDelete />
 				</button>
+			{:else}
+				<span></span>
 			{/if}
 		{/each}
 
