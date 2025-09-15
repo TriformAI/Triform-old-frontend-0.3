@@ -92,6 +92,7 @@ export const executeComponent = async (
 			err && typeof err === 'object' && 'json' in err
 				? JSON.stringify(await (err as any).json?.(), null, 2)
 				: 'Unknown error'
+		resetExecutionState()
 	}
 
 	state.isRunning = false
