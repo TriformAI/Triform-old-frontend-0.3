@@ -125,7 +125,7 @@
 					label="Build action"
 					onClick={buildAction}
 					type="build"
-					disabled={!requirements?.value?.context?.[0]?.text?.trim().length ||
+					disabled={!componentData?.meta?.intention?.trim().length ||
 						inProgressComponents.has(componentData?.id)}
 				/>
 			</div>
