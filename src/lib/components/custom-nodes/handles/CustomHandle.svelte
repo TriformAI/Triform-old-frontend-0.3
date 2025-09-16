@@ -4,7 +4,8 @@
 		getEdges,
 		getNodes,
 		setNodes,
-		setEdges
+		setEdges,
+		canvasState
 	} from '$lib/stores/canvas.svelte'
 	import { Handle } from '@xyflow/svelte'
 	import { Position } from '@xyflow/svelte'
@@ -85,7 +86,12 @@
 <div
 	class={[
 		'relative z-10 flex items-center justify-center',
-		top ? 'translate-y-full flex-col' : ' -translate-y-full flex-col-reverse'
+		top ? 'translate-y-full flex-col' : ' -translate-y-full flex-col-reverse',
+		'transition-opacity',
+		canvasState.connecting &&
+			canvasState.connectingFrom?.handleType === type &&
+			canvasState.connectingFrom.nodeId !== nodeId &&
+			'opacity-60'
 	]}
 >
 	{#if !hasConnections && !currentIsAgent}

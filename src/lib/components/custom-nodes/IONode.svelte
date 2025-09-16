@@ -5,7 +5,7 @@
 	import { isAgent, isFlow } from '$lib/schemas'
 	import IconInput from '~icons/material-symbols/input-circle-rounded'
 	import IconOutput from '~icons/material-symbols/output-circle-rounded'
-	import { nodeTypes, nodeTypesDict } from '$lib/constants/nodeTypes'
+	import { nodeTypesDict } from '$lib/constants/nodeTypes'
 
 	const {
 		type,
