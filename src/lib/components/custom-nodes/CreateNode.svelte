@@ -16,7 +16,7 @@
 	interface Props {
 		positionAbsoluteX: number
 		positionAbsoluteY: number
-		data: { activeNodeTypes: NodeType[]; ephemeral?: boolean }
+		data: { activeNodeTypes: NodeType[]; ephemeral?: boolean; large?: boolean }
 		id: string
 	}
 
@@ -101,12 +101,14 @@
 
 	const currentContainer = $derived(getCurrentContainer())
 	const currentIsAgent = $derived(isAgent(currentContainer))
+
+	const isSelecting = $derived(isSelectMode || data.large)
 </script>
 
 <div
 	class={[
 		'border-main-500 relative grid overflow-hidden rounded-md border border-dashed transition-all ease-(--easing-circ) *:col-start-1 *:row-start-1',
-		isSelectMode ? 'w-max' : currentIsAgent ? 'w-auto' : 'w-20'
+		isSelecting ? 'w-max' : currentIsAgent ? 'w-auto' : 'w-20'
 	]}
 	use:clickOutside={{
 		handler: cancelSelectMode
@@ -118,14 +120,13 @@
 		class={[
 			'group hover:bg-main-500/5 relative z-10 grid place-items-center transition',
 			currentIsAgent ? 'h-20' : 'size-20',
-			isSelectMode ? 'pointer-events-none opacity-0' : 'opacity-100'
+			isSelecting ? 'pointer-events-none opacity-0' : 'opacity-100'
 		]}
 	>
 		<div class="flex items-center gap-2">
 			<AddIcon
 				class="text-main-500 group-hover:text-main-400 size-6 transition group-hover:scale-110"
 			/>
-
 			{#if currentIsAgent}
 				<span class="group-hover:text-main-200 text-main-300 font-medium">Add tool</span>
 			{/if}
@@ -144,12 +145,13 @@
 	<div
 		class={[
 			'flex p-1 leading-none',
-			isSelectMode && !pendingComponentType ? 'opacity-100' : 'opacity-0',
-			pendingComponentType && 'pointer-events-none opacity-0'
+			isSelecting && !pendingComponentType ? 'opacity-100' : 'opacity-0',
+			pendingComponentType && 'pointer-events-none opacity-0',
+			data.large && 'divide-main-700 divide-x divide-dashed'
 		]}
 	>
 		{#each filteredNodeTypes as nodeType}
-			<NodeTypeButton {nodeType} onclick={() => initCreate(nodeType.type)} />
+			<NodeTypeButton {nodeType} onclick={() => initCreate(nodeType.type)} large={data.large} />
 		{/each}
 	</div>
 </div>

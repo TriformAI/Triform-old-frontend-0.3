@@ -158,7 +158,7 @@ export async function refreshFlow() {
 			y += nodeSize.y + gap
 		}
 
-		const createNode = addCreateNode({ x, y }, false, false)
+		const createNode = addCreateNode({ x, y }, false, false, isProject(container) && !nodes.length)
 		nodes.push(createNode)
 	}
 
@@ -166,7 +166,7 @@ export async function refreshFlow() {
 	setEdges(edges)
 }
 
-export const addCreateNode = (position: { x: number; y: number }, ephemeral?: boolean, update?: boolean) => {
+export const addCreateNode = (position: { x: number; y: number }, ephemeral?: boolean, update?: boolean, large?: boolean) => {
 	const nodes = getNodes()
 	const container = getCurrentContainer()
 	const node = {
@@ -177,7 +177,8 @@ export const addCreateNode = (position: { x: number; y: number }, ephemeral?: bo
 		data: {
 			activeNodeTypes: ['flow', 'agent', !isProject(container) && 'action'].filter(Boolean),
 			ephemeral,
-			props: { ...defaultProps }
+			props: { ...defaultProps },
+			large
 		}
 	} as CanvasNode
 	if (update) {

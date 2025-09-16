@@ -6,6 +6,7 @@ export const nodeTypes = [
 	{
 		type: 'action',
 		label: 'Action',
+		description: 'A Python script',
 		icon: IconAction,
 		color: 'var(--color-tertiary-300)',
 		iconColor: 'var(--color-tertiary-300)',
@@ -15,6 +16,7 @@ export const nodeTypes = [
 	{
 		type: 'flow',
 		label: 'Flow',
+		description: 'A collection of nodes, with a <b>pre-determined order</b> and flow of execution',
 		icon: IconFlow,
 		color: 'var(--color-complement-300)',
 		iconColor: 'var(--color-complement-300)',
@@ -24,6 +26,7 @@ export const nodeTypes = [
 	{
 		type: 'agent',
 		label: 'Agent',
+		description: 'A toolbox of nodes. An <b>LLM decides which nodes to run</b> and in what order',
 		icon: IconAgent,
 		color: 'var(--color-accent-300)',
 		iconColor: 'var(--color-accent-300)',
