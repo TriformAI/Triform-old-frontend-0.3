@@ -2,7 +2,7 @@
 	import Button from '$lib/components/atoms/Button.svelte'
 	import NewProject from '$lib/components/modals/NewProject.svelte'
 	import IconChevronRight from '~icons/material-symbols/chevron-right'
-	import IconAdd from '~icons/material-symbols/new-window-rounded'
+	import IconAdd from '~icons/mdi/folder-plus'
 	import Dropdown from '$lib/components/common/Dropdown.svelte'
 	import IconDots from '~icons/material-symbols/more-horiz'
 	import IconTrash from '~icons/material-symbols/delete-outline'
@@ -26,7 +26,7 @@
 		<h1 class=" text-2xl font-semibold">Projects</h1>
 		<Button variation="link" onClick={() => projectDialog?.showModal()} id="new-project-button">
 			{#snippet icon()}
-				<IconAdd />
+				<IconAdd class="size-5" />
 			{/snippet}
 		</Button>
 	</div>

@@ -2,7 +2,7 @@
 	import { breadcrumbs } from '$lib/stores/canvas.svelte'
 	import { page } from '$app/state'
 	import { fly } from 'svelte/transition'
-	import IconProject from '~icons/mdi/shape'
+	import IconProject from '~icons/material-symbols/folder-open-rounded'
 	import { nodeTypesDict, nodeTypes } from '$lib/constants/nodeTypes'
 	import ChevronRight from '~icons/mdi/chevron-right'
 
@@ -14,12 +14,7 @@
 {#if crumbs}
 	<ul class="flex gap-2.5 font-medium">
 		{#each crumbs as { path, name, type }, idx (path)}
-			{@const nodeType =
-				type === 'project'
-					? { icon: IconProject, iconClasses: '' }
-					: type
-						? nodeTypesDict[type]
-						: undefined}
+			{@const nodeType = nodeTypesDict[type]}
 
 			<li class="group" in:fly={{ duration: 300, opacity: 0, x: -5 }}>
 				<a
