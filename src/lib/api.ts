@@ -106,7 +106,7 @@ export class API<TEvent extends RequestEvent | undefined = undefined> {
 		}
 
 		const socketId = getSocketId()
-		if (socketId) headers['x-socket-id'] = socketId
+		if (socketId && !('x-socket-id' in headers)) headers['x-socket-id'] = socketId
 
 		try {
 			console.log(`--> ${method} ${this.#baseURL}/${endpoint}`)

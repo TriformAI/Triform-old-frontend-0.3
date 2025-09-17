@@ -26,6 +26,8 @@
 		refreshFlow
 	} from '$lib/stores/canvas.svelte'
 	import { clone } from '$lib/utils/clone'
+	import { onMount } from 'svelte'
+	import { openPanelItems } from '$lib/stores/panel.svelte'
 
 	const { nodeId }: { nodeId: string } = $props()
 
@@ -139,6 +141,8 @@
 				await saveContainer(snapshot)
 				refreshFlow()
 			}
+
+			debouncedBackgroundBuild()
 		}
 	}, 500)
 
@@ -156,6 +160,32 @@
 
 	const buildButtonIsActive = $derived.by(() => {
 		return !componentData.spec.checksum && componentData.spec.requirements
+	})
+
+	const triggerBackgroundBuild = async (bypassTabCheck?: boolean) => {
+		if (
+			!buildButtonIsActive ||
+			isBuildingDeps ||
+			// if they've got the requirements tab selected, don't trigger a build
+			(activeTab === 2 && !bypassTabCheck)
+		)
+			return
+		isBuildingDeps = true
+		// build w/o socket header so that it can happen in the background even if we deselect the component
+		const res = await buildComponent(componentId, { 'x-socket-id': '' })
+		isBuildingDeps = false
+	}
+	// if the user has been idle for long enough, start the background build
+	const debouncedBackgroundBuild = debounce(triggerBackgroundBuild, 5 * 1000)
+
+	// when unmounting, if the checksum is empty, trigger a deps build in the background
+	onMount(() => () => triggerBackgroundBuild())
+	// when switching to the execution tab, trigger a deps build in the background, if we're lucky
+	// the deps will be built by the time they try and execute the action
+	$effect(() => {
+		const openItems = openPanelItems.action
+		console.log('openItems', openItems, openItems.includes('execute'))
+		if (openItems.includes('execute')) triggerBackgroundBuild(true)
 	})
 </script>
 
@@ -198,11 +228,11 @@
 				</p>
 			{/if}
 
-			{#if activeTab === 2}
+			{#if activeTab === 2 || buildButtonIsActive}
 				<Button
 					disabled={!buildButtonIsActive}
-					variation="vibrant"
-					class="ms-auto"
+					variation="primary"
+					class="ms-auto py-2"
 					onClick={buildAction}
 					isLoading={isBuildingDeps}
 				>
