@@ -123,18 +123,19 @@
 	<h4 class="text-main-400 flex flex-row items-center gap-1 text-xs font-bold uppercase">
 		{type}s
 
-		<button
-			type="button"
-			disabled={readonly}
-			onclick={startAddingPort}
-			class="group grid size-6 place-content-center"
-			id={`add-${type}-port`}
-		>
-			<IconAdd
-				class="group-hover:text-main-200 size-4.5 transition-all duration-200 group-hover:size-5"
-			/>
-		</button>
-
+		{#if !readonly}
+			<button
+				type="button"
+				disabled={readonly}
+				onclick={startAddingPort}
+				class="group grid size-6 place-content-center"
+				id={`add-${type}-port`}
+			>
+				<IconAdd
+					class="group-hover:text-main-200 size-4.5 transition-all duration-200 group-hover:size-5"
+				/>
+			</button>
+		{/if}
 		<div class="bg-main-700/80 ml-1 h-px w-full"></div>
 	</h4>
 
