@@ -20,7 +20,7 @@
 <Dropdown>
 	{#snippet trigger()}
 		{#if sessionStore.user}
-			<img alt="Avatar" src={sessionStore.user.image} class="w-8 rounded-full" />
+			<img alt="Avatar" src={sessionStore.user.image} class="w-8 shrink-0 rounded-full" />
 		{/if}
 	{/snippet}
 
