@@ -231,11 +231,11 @@
 									'bg-main-950/10 border-main-800 absolute top-8 rounded-md border px-6 py-3 backdrop-blur-xs',
 									'flex flex-row items-center gap-3',
 									'text-main-300',
-									'w-auto max-w-64 truncate transition-all'
+									'w-auto max-w-96 truncate transition-all'
 								]}
 							>
 								<Icon class={['size-4', containerTypeData?.iconClasses]} />
-								<span>
+								<span class="w-full truncate">
 									{containerName}
 									<span class="text-main-400">
 										{containerSuffix}

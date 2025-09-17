@@ -184,7 +184,6 @@
 	// the deps will be built by the time they try and execute the action
 	$effect(() => {
 		const openItems = openPanelItems.action
-		console.log('openItems', openItems, openItems.includes('execute'))
 		if (openItems.includes('execute')) triggerBackgroundBuild(true)
 	})
 </script>
