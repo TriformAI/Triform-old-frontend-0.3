@@ -223,7 +223,6 @@
 					{/key}
 					{#if containerName && containerType}
 						{#key containerName + containerType}
-							{@const text = `${containerName} ${containerSuffix}`}
 							{@const containerTypeData =
 								nodeTypesDict[[...getBreadcrumbs()].pop()?.type ?? 'project']}
 							{@const Icon = nodeTypesDict[containerTypeData.type].icon}
@@ -236,7 +235,12 @@
 								]}
 							>
 								<Icon class={['size-4', containerTypeData?.iconClasses]} />
-								{text}
+								<span>
+									{containerName}
+									<span class="text-main-400">
+										{containerSuffix}
+									</span>
+								</span>
 							</div>
 						{/key}
 					{/if}
