@@ -249,7 +249,7 @@ export function parseNodes(root: NodeContainer) {
 			if (port.source === 'parent') {
 				newEdges.push({
 					type: 'default',
-					id: `${id}:input`,
+					id: `${id}:input:${inputName}`,
 					source: `${root.id}:input`,
 					sourceHandle: port.target,
 					target: id,
