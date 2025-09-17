@@ -86,7 +86,7 @@
 		title="Requirements"
 		tip="Specifications for the component, used eg by the Builder to build the resource"
 	>
-		{#snippet titleSuffix()}
+		<!-- {#snippet titleSuffix()}
 			<div class="ml-auto">
 				<GenerateButton
 					label="Generate"
@@ -97,7 +97,7 @@
 					type="generate"
 				/>
 			</div>
-		{/snippet}
+		{/snippet} -->
 		<div class="grid auto-rows-min items-start gap-3">
 			<div class="mt-4 grid gap-4">
 				<ListText
