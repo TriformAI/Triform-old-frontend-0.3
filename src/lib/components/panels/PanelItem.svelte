@@ -53,7 +53,7 @@
 				<button
 					type="button"
 					onclick={onAddClick}
-					class="text-main-400 hover:text-main-200 cursor-pointer transition"
+					class="text-main-500 hover:text-main-200 icon-btn cursor-pointer transition"
 				>
 					<IconAdd class="size-5" />
 				</button>
@@ -63,10 +63,11 @@
 				<div
 					data-balloon-instant="true"
 					aria-label={tip}
-					data-balloon-pos="down-left"
+					data-balloon-pos={isListContainer ? 'down-right' : 'down-left'}
 					data-balloon-length="medium"
+					class={[isListContainer && 'ml-auto']}
 				>
-					<IconInfo class="text-main-500 hover:text-main-400 size-4 !cursor-help transition" />
+					<IconInfo class="text-main-600 hover:text-main-400 size-5 !cursor-help transition" />
 				</div>
 			{/if}
 

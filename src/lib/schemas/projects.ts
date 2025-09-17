@@ -10,17 +10,22 @@ import { resolvedComponentModel } from './components.js'
 import { modifierMappingModel } from './modifiers.js'
 import { triggerModel } from './triggers.js'
 
+const projectNodeModel = z.strictObject({
+	component_id: z.uuidv4(),
+	triggers: z.record(z.string(), triggerModel).default({}),
+	order: z.number().default(0)
+})
+
+export const projectVariableModel = z.strictObject({
+	key: z.string(),
+	value: z.string(),
+	secret: z.literal(false)
+})
+
 // Project models (without async validations)
 export const projectSpecModel = z.strictObject({
 	readme: z.string().optional().default(''),
-	nodes: z.record(
-		z.string(),
-		z.strictObject({
-			component_id: z.uuidv4(),
-			triggers: z.record(z.string(), triggerModel).default({}),
-			order: z.number().default(0)
-		})
-	),
+	nodes: z.record(z.string(), projectNodeModel),
 	modifiers: z
 		.record(
 			nodePathModel,
@@ -30,18 +35,18 @@ export const projectSpecModel = z.strictObject({
 				})
 			)
 		)
-		.default({})
+		.default({}),
+	environment: z.object({
+		variables: z.array(projectVariableModel)
+	})
 })
 
 export const resolvedProjectSpecModel = projectSpecModel.extend({
 	nodes: z
 		.record(
 			z.string(),
-			z.strictObject({
-				component_id: z.uuidv4(),
-				spec: resolvedComponentModel,
-				triggers: z.record(z.string(), triggerModel).default({}),
-				order: z.number().default(0)
+			projectNodeModel.extend({
+				spec: resolvedComponentModel
 			})
 		)
 		.default({}),

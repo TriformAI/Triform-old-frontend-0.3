@@ -20,6 +20,7 @@ export const executeComponent = async (
 	payload: Record<string, unknown>,
 	component: ResolvedComponent,
 	modifiers: z.infer<typeof resolvedProjectModel>['spec']['modifiers'],
+	environment: z.infer<typeof resolvedProjectModel>['spec']['environment'],
 	state: {
 		isRunning: boolean
 		state: string
@@ -38,7 +39,8 @@ export const executeComponent = async (
 		spec: {
 			component,
 			modifiers,
-			payload
+			payload,
+			environment
 		}
 	} satisfies z.infer<typeof executionModel>
 

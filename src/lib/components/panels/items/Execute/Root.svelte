@@ -83,7 +83,7 @@
 			.filter(Boolean)
 			.join('/')
 		const isTopLevel = !getCurrentNodePath().length
-		const modifiers = objKeyMap(
+		const modifiers = {} /*objKeyMap(
 			// keep only relevant modifiers
 			objFilter(getProject().spec.modifiers ?? {}, (key, _value) =>
 				key.startsWith(nodePath + (nodeId === 'container' ? '/' : ''))
@@ -98,10 +98,16 @@
 					.slice(parts.indexOf(currentNodeId) + (nodeId === 'container' ? 1 : 0))
 					.join('/')
 			}
-		)
-		console.log(nodePath, modifiers)
+		)*/
 
-		executeComponent(JSON.parse(payload), componentData, modifiers, executorState, nodeId)
+		executeComponent(
+			JSON.parse(payload),
+			componentData,
+			modifiers,
+			getProject().spec.environment,
+			executorState,
+			nodeId
+		)
 	}
 
 	const additionalActions = [

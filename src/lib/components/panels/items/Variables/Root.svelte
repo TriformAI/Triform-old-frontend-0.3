@@ -1,222 +1,264 @@
 <script lang="ts">
 	import { page } from '$app/state'
 	import PanelItem from '../../PanelItem.svelte'
-	import Dialog from './Dialog.svelte'
 	import ComboBox from '$lib/components/atoms/ComboBox.svelte'
-	import { getProject, getNodePath, getCurrentNodePath } from '$lib/stores/canvas.svelte'
+	import {
+		getProject,
+		getNodePath,
+		getCurrentNodePath,
+		setProject
+	} from '$lib/stores/canvas.svelte'
 	import { saveProject } from '$lib/actions/project'
 	import { clone } from '$lib/utils/clone'
 	import { toast } from 'svelte-sonner'
 	import { confirmStore } from '$lib/stores/confirm.svelte'
-	import IconDetach from '~icons/mdi/link-variant-off'
-
-	let dialog = $state<HTMLDialogElement>()
+	import VariableEditor from './VariableEditor.svelte'
+	import IconDelete from '~icons/material-symbols/delete-outline'
+	import IconAdd from '~icons/material-symbols/check-rounded'
+	import IconEdit from '~icons/material-symbols/edit-rounded'
+	import IconMoreVert from '~icons/material-symbols/more-vert'
+	import IconSave from '~icons/material-symbols/save-rounded'
+	import IconCancel from '~icons/material-symbols/cancel-rounded'
+	import Button from '$lib/components/atoms/Button.svelte'
+	import Dropdown from '$lib/components/atoms/Dropdown.svelte'
+	import DropdownItem from '$lib/components/atoms/DropdownItem.svelte'
+	import { filterInPlace } from '$lib/utils/filterInPlace'
 
 	const { nodeId }: { nodeId: string } = $props()
 
 	const project = $derived(getProject())
-	const nodePath = $derived([...getCurrentNodePath(), nodeId].join('/'))
 
-	// Get modifiers for this node path from the project modifiers
-	const modifiers = $derived.by(() => {
-		if (!project?.spec.modifiers || !nodePath) {
-			return []
-		}
+	const variables = $derived(project.spec.environment.variables)
 
-		return project.spec.modifiers[nodePath] ?? []
+	let isAdding = $state(false)
+	let isEditing = $state<string>()
+
+	let newVariable = $state({
+		key: '',
+		value: ''
 	})
 
-	// Get all available variables from page data that aren't already attached
-	const availableVariables = $derived.by(() => {
-		const allVariables = (page.data.modifiers || []).filter(m => m.resource === 'variable/v1')
-		const attachedIds = modifiers.map(m => m.modifier_id)
-		return allVariables.filter(v => v.id && !attachedIds.includes(v.id))
+	let editVariable = $state({
+		key: '',
+		value: '',
+		originalKey: ''
 	})
 
-	let selectedVariable = $state('')
-	let variableSearchValue = $state('')
-	let isAttaching = $state(false)
-	let comboBoxElement = $state<HTMLElement | null>(null)
+	const isDuplicateKey = (key: string, excludeKey?: string) =>
+		variables.some(v => v.key === key && v.key !== excludeKey)
 
-	// Auto-attach variable when selected
-	$effect(() => {
-		if (selectedVariable && !modifiers.some(m => m.modifier_id === selectedVariable)) {
-			attachVariable(selectedVariable)
-			// Explicitly blur the ComboBox and reset values
-			const input = comboBoxElement?.querySelector('input')
-			if (input) {
-				input.blur()
-			}
-			selectedVariable = ''
-			variableSearchValue = ''
+	const addVariable = async () => {
+		if (!newVariable.key.trim()) return toast.error('Variable key cannot be empty')
+
+		if (isDuplicateKey(newVariable.key))
+			return toast.error(`Variable ${newVariable.key} already exists`)
+
+		isAdding = true
+		const newProject = clone(project)
+		const newVar = { ...newVariable, secret: false } as const
+		newProject.spec.environment.variables.push(newVar)
+		const res = await saveProject(newProject)
+		if (!res.success) {
+			toast.error('Failed to add variable')
+			isAdding = false
+			return
 		}
-	})
-
-	async function attachVariable(variableId?: string) {
-		const targetVariable = variableId || selectedVariable
-		if (!targetVariable || !project) return
-
-		isAttaching = true
-		const snapshot = clone($state.snapshot(project))
-
-		try {
-			// Find the variable to attach
-			const variableToAttach = page.data.modifiers?.find(v => v.id === targetVariable)
-			if (!variableToAttach) {
-				toast.error('Variable not found')
-				return
-			}
-
-			// Initialize modifiers object if it doesn't exist
-			if (!project.spec.modifiers) {
-				project.spec.modifiers = {}
-			}
-
-			// Initialize the array for this node path if it doesn't exist
-			if (!project.spec.modifiers[nodePath]) {
-				project.spec.modifiers[nodePath] = []
-			}
-
-			// Add the variable to the project
-			project.spec.modifiers[nodePath].push({
-				modifier_id: variableToAttach.id!,
-				spec: variableToAttach
-			})
-
-			// Save the project
-			const res = await saveProject(project)
-
-			if (!res.success) {
-				Object.assign(project, snapshot)
-				toast.error('Failed to attach variable')
-				return
-			}
-
-			toast.success('Variable attached successfully')
-		} catch (e) {
-			Object.assign(project, snapshot)
-			console.error('Failed to attach variable:', e)
-			toast.error('Failed to attach variable')
-		} finally {
-			isAttaching = false
+		variables.push(newVar)
+		toast.success('Variable added')
+		newVariable = {
+			key: '',
+			value: ''
 		}
+		isAdding = false
 	}
 
-	async function detachVariable(modifierId: string) {
-		if (!project) return
-
-		// Find the variable name for the confirmation dialog
-		const variable = modifiers.find(m => m.modifier_id === modifierId)
-		const variableName = variable?.spec.spec.key || 'this variable'
-
-		// Show confirmation dialog
+	const deleteVariable = async (key: string) => {
 		const confirmed = await confirmStore.show({
-			title: 'Detach Variable',
-			message: `Are you sure you want to detach "${variableName}"? This will remove it from this component.`
+			title: 'Are you sure?',
+			message: 'This will delete the variable for all nodes within the project immediately'
 		})
-
 		if (!confirmed) return
 
-		const snapshot = clone($state.snapshot(project))
+		const newProject = clone(project)
+		newProject.spec.environment.variables = newProject.spec.environment.variables.filter(
+			v => v.key !== key
+		)
+		const res = await saveProject(newProject)
+		if (!res.success) {
+			toast.error('Failed to delete variable')
+			return
+		}
+		filterInPlace(variables, v => v.key !== key)
+		toast.success('Variable deleted')
+	}
 
-		try {
-			// Remove the modifier from the project array
-			if (project.spec.modifiers?.[nodePath]) {
-				project.spec.modifiers[nodePath] = project.spec.modifiers[nodePath].filter(
-					m => m.modifier_id !== modifierId
-				)
+	const startEditVariable = (key: string) => {
+		if (isAdding) {
+			isAdding = false
+			newVariable = { key: '', value: '' }
+		}
 
-				// Clean up empty arrays
-				if (project.spec.modifiers[nodePath].length === 0) {
-					delete project.spec.modifiers[nodePath]
-				}
-			}
+		const variable = variables.find(v => v.key === key)
+		if (!variable) return
 
-			const res = await saveProject(project)
+		editVariable.key = variable.key
+		editVariable.value = variable.value
+		editVariable.originalKey = variable.key
+		isEditing = key
+	}
 
-			if (!res.success) {
-				toast.error('Failed to detach variable')
-				Object.assign(project, snapshot)
-			} else {
-				toast.success('Variable detached successfully')
-			}
-		} catch (e) {
-			console.error('Failed to detach variable:', e)
-			toast.error('Failed to detach variable')
-			Object.assign(project, snapshot)
+	const saveEditVariable = async () => {
+		if (!editVariable.key.trim()) return toast.error('Variable key cannot be empty')
+
+		if (isDuplicateKey(editVariable.key, editVariable.originalKey))
+			return toast.error('Variable key already exists')
+
+		const newProject = clone(project)
+		const variableIndex = newProject.spec.environment.variables.findIndex(
+			v => v.key === editVariable.originalKey
+		)
+
+		if (variableIndex === -1) return toast.error('Variable not found')
+
+		newProject.spec.environment.variables[variableIndex] = {
+			...newProject.spec.environment.variables[variableIndex],
+			key: editVariable.key,
+			value: editVariable.value
+		}
+
+		const res = await saveProject(newProject)
+		if (!res.success) {
+			toast.error('Failed to save variable')
+			return
+		}
+
+		setProject(res.data)
+
+		toast.success('Variable updated')
+		cancelEditVariable()
+	}
+
+	const cancelEditVariable = () => {
+		isEditing = undefined
+		editVariable = {
+			key: '',
+			value: '',
+			originalKey: ''
 		}
 	}
+
+	const getVariableActions = (key: string) => [
+		{
+			label: 'Edit',
+			icon: IconEdit,
+			onClick: () => startEditVariable(key)
+		},
+		{
+			label: 'Delete',
+			icon: IconDelete,
+			onClick: () => deleteVariable(key)
+		}
+	]
 </script>
 
-<Dialog bind:dialog {nodePath} />
-
-<PanelItem {nodeId} title="Environment Variables">
-	<div>
-		<div bind:this={comboBoxElement}>
-			{#key modifiers.length}
-				<ComboBox
-					bind:value={selectedVariable}
-					bind:searchValue={variableSearchValue}
-					placeholder="Search variables or type to create new..."
-					items={availableVariables.map(v => ({ value: v.id!, label: v.spec.key }))}
-					createNew={{
-						label: 'Create new environment variable',
-						trigger: () => {
-							dialog?.showModal()
-						}
-					}}
-				/>
-			{/key}
-		</div>
-
-		<ul class="mt-2 font-medium">
-			{#each modifiers as { modifier_id, spec }}
-				<li
-					class="group animate-fade-in flex flex-row items-center justify-between gap-3 py-1.5 text-sm"
-				>
-					<div class="grid grid-cols-[auto_auto_auto] items-center gap-2">
-						<span
-							class={[
-								'text-main-300 w-fit max-w-full truncate font-mono',
-								'bg-main-800 rounded-md px-2 py-1',
-								'border-main-700 border'
-							]}
+<PanelItem
+	{nodeId}
+	title="Environment Variables"
+	isListContainer
+	tip="Environment variables are globally injected into all nodes within the project"
+	onAddClick={() => {
+		if (isEditing) return
+		isAdding = !isAdding
+	}}
+>
+	<div class="grid h-fit max-h-full grid-cols-[1fr_auto_1fr_auto] items-center gap-2">
+		{#each variables as variable}
+			{#if isEditing === variable.key}
+				<div class="contents font-mono">
+					<VariableEditor
+						bind:key={editVariable.key}
+						bind:value={editVariable.value}
+						onEnter={saveEditVariable}
+					/>
+					<div class="flex gap-1">
+						<Button
+							class="p-2 transition starting:opacity-0"
+							onClick={cancelEditVariable}
+							variation="link"
 						>
-							{spec?.spec?.key}
-						</span>
-						<span class="text-main-300 font-medium"> = </span>
-						<span
-							class={[
-								'text-main-300 w-fit max-w-full truncate font-mono',
-								'bg-main-800 rounded-md px-2 py-1',
-								'border-main-700 border'
-							]}
+							{#snippet icon()}
+								<IconCancel />
+							{/snippet}
+						</Button>
+						<Button
+							class="p-2 transition starting:opacity-0"
+							onClick={saveEditVariable}
+							variation="link"
+							autoLoad="promise"
 						>
-							{spec?.spec?.value}
-						</span>
+							{#snippet icon()}
+								<IconAdd />
+							{/snippet}
+						</Button>
 					</div>
-
-					<div
-						class={[
-							'pointer-events-none ms-auto flex transform items-center gap-2 opacity-50 *:transition',
-							'group-hover:pointer-events-auto group-hover:opacity-100',
-							'*:hover:text-main-200 text-main-500 transition *:active:scale-95'
-						]}
-					>
-						<button
-							type="button"
-							title="Detach"
-							onclick={() => detachVariable(modifier_id)}
-							class="hover:text-danger-300"
-							aria-label="Detach variable"
-						>
-							<IconDetach class="size-5"></IconDetach>
-						</button>
-					</div>
-				</li>
+				</div>
 			{:else}
-				<li class="pt-2 text-sm text-main-500">No added variables</li>
-			{/each}
-		</ul>
+				<div class="contents font-mono">
+					<span
+						class="bg-main-950 text-main-300 border-main-800 rounded-md border px-2 py-2 text-sm"
+						ondblclick={() => startEditVariable(variable.key)}>{variable.key}</span
+					>
+					<span class="text-main-500">=</span>
+					<span
+						class="bg-main-950 text-main-300 border-main-800 rounded-md border px-2 py-2 text-sm"
+						ondblclick={() => startEditVariable(variable.key)}>{variable.value}</span
+					>
+					<Dropdown>
+						{#snippet trigger()}
+							<Button variation="link" class="not-hover:text-main-500 p-2">
+								{#snippet icon()}
+									<IconMoreVert />
+								{/snippet}
+							</Button>
+						{/snippet}
+
+						{#snippet children()}
+							{#each getVariableActions(variable.key) as action}
+								<DropdownItem
+									onSelect={action.onClick}
+									class="text-main-400 flex gap-2 overflow-hidden font-sans text-sm font-medium"
+								>
+									<action.icon class="size-4" />
+									{action.label}
+								</DropdownItem>
+							{/each}
+						{/snippet}
+					</Dropdown>
+				</div>
+			{/if}
+		{:else}
+			{#if !isAdding}
+				<p class="text-main-500 mt-4 w-full text-center col-span-4 starting:opacity-0 transition">
+					No variables defined yet, add one above
+				</p>
+			{/if}
+		{/each}
+		{#if isAdding}
+			<VariableEditor
+				bind:key={newVariable.key}
+				bind:value={newVariable.value}
+				onEnter={addVariable}
+			/>
+			<Button
+				class="p-2 transition starting:opacity-0"
+				onClick={addVariable}
+				variation="link"
+				autoLoad="promise"
+			>
+				{#snippet icon()}
+					<IconAdd />
+				{/snippet}
+			</Button>
+		{/if}
 	</div>
 </PanelItem>

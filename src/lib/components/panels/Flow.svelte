@@ -11,11 +11,9 @@
 	const isTopLevelNode = $derived(nodeId in (getProject()?.spec.nodes ?? {}))
 
 	const items = $derived.by(() => {
-		const items = ['execute', 'io', 'metadata']
+		const items = ['execute', 'io', 'metadata', 'variables']
 
-		if (currentIsProject || isTopLevelNode) {
-			items.push('triggers')
-		}
+		if (currentIsProject || isTopLevelNode) items.push('triggers')
 
 		return items
 	})

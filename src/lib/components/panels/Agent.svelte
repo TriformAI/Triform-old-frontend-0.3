@@ -19,6 +19,7 @@
 				'io',
 				'metadata',
 				'execute',
+				'variables',
 				(currentIsProject || isTopLevelNode) && 'triggers'
 			].filter(Boolean)}
 			{nodeId}

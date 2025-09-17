@@ -8,6 +8,6 @@
 
 <Panel {nodeId} Icon={nodeTypesDict.project.icon}>
 	{#snippet panelItems(PanelItems)}
-		<PanelItems items={['metadata', 'projectSettings']} {nodeId} />
+		<PanelItems items={['metadata', 'projectSettings', 'variables']} {nodeId} />
 	{/snippet}
 </Panel>
