@@ -123,6 +123,9 @@
 				refreshFlow()
 			} else if (payload.event === 'component:requirements:updated') {
 				updateRequirements(payload.data)
+			} else if (payload.event === 'project:updated') {
+				setProject(payload.data.project)
+				refreshFlow()
 			} else if (payload.event === 'connected') {
 				setSocketId(payload.data.id)
 			}
