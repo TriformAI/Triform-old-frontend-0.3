@@ -109,6 +109,7 @@
 							aria-label={item.label}
 							data-balloon-pos="right"
 							data-balloon-instant={true}
+							data-balloon-nofocus
 						>
 							<Icon class="size-6" />
 						</button>
