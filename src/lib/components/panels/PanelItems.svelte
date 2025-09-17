@@ -88,10 +88,11 @@
 	]}
 >
 	{#if showNav}
-		<nav class="border-main-800 sticky top-0 mb-auto border-e">
+		<nav class="border-main-800 sticky top-0 z-20 mb-auto border-e">
 			<ul>
 				{#each items as key (key)}
-					{@const Icon = allComponents[key].icon}
+					{@const item = allComponents[key]}
+					{@const Icon = item.icon}
 					<li
 						class={[
 							'border-b-main-800 border-b',
@@ -103,9 +104,11 @@
 						]}
 					>
 						<button
-							title={allComponents[key].label}
 							class="grid size-12 place-items-center transition group-active/nav-btn:scale-90"
 							onclick={() => onNavClick(key)}
+							aria-label={item.label}
+							data-balloon-pos="right"
+							data-balloon-instant={true}
 						>
 							<Icon class="size-6" />
 						</button>
