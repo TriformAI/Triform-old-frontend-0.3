@@ -14,7 +14,8 @@
 		setProject,
 		updateLocalComponent,
 		getCurrentContainer,
-		getVisibleComponent
+		getVisibleComponent,
+		getBreadcrumbs
 	} from '$lib/stores/canvas.svelte'
 	import { chat } from '$lib/stores/chat.svelte'
 	import { debounce } from '$lib/utils/debounce'
@@ -35,6 +36,9 @@
 	import { selected } from '$lib/stores/panel.svelte.js'
 	import { requirementsModel } from '$lib/schemas/requirements'
 	import DeployButton from '$lib/components/DeployButton.svelte'
+	import { nodeTypesDict } from '$lib/constants/nodeTypes.js'
+	import type { NodeType } from '$lib/constants/nodeTypes.js'
+	import { blur } from 'svelte/transition'
 
 	const { data, children } = $props()
 
@@ -150,6 +154,16 @@
 		const { spec, resource } = container
 		return resource.startsWith('project') && Object.keys(spec.nodes ?? {}).length === 0
 	})
+
+	const containerName = $derived(getCurrentContainer()?.meta.name)
+	const containerType = $derived(getCurrentContainer()?.resource.split('/')[0] as NodeType)
+	const containerSuffix = $derived.by(() => {
+		console.log('containerType', containerType)
+		if (containerType === 'project') return 'overview'
+		if (containerType === 'flow') return 'flow'
+		if (containerType === 'agent') return 'toolbox'
+		return ''
+	})
 </script>
 
 {@render children()}
@@ -204,6 +218,25 @@
 					{#key page.url.pathname}
 						<Flow bind:this={flowComponent} {isGoingDeeper} />
 					{/key}
+					{#if containerName && containerType}
+						{#key containerName + containerType}
+							{@const text = `${containerName} ${containerSuffix}`}
+							{@const containerTypeData =
+								nodeTypesDict[[...getBreadcrumbs()].pop()?.type ?? 'project']}
+							{@const Icon = nodeTypesDict[containerTypeData.type].icon}
+							<div
+								class={[
+									'bg-main-950/10 border-main-800 absolute top-8 rounded-md border px-6 py-3 backdrop-blur-xs',
+									'flex flex-row items-center gap-3',
+									'text-main-300',
+									'w-auto max-w-64 truncate transition-all'
+								]}
+							>
+								<Icon class={['size-4', containerTypeData?.iconClasses]} />
+								{text}
+							</div>
+						{/key}
+					{/if}
 				</div>
 
 				<GridResizerHandle

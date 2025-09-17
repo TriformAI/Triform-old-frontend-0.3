@@ -39,10 +39,10 @@ export const nodeTypes = [
 		label: 'Project',
 		description: 'A project',
 		icon: IconProject,
-		color: 'var(--color-primary-300)',
-		iconColor: 'var(--color-primary-300)',
+		color: 'var(--color-main-300)',
+		iconColor: 'var(--color-main-300)',
 		shape: 'square',
-		iconClasses: 'text-primary-300 drop-shadow-primary-500'
+		iconClasses: 'text-main-300 drop-shadow-main-500'
 	}
 ] as const
 
