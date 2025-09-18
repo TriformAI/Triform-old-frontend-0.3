@@ -66,11 +66,13 @@
 					</td>
 					<td class="pl-4">
 						<div class="flex items-center gap-2">
-							<Button variation="link" href={`/account/organizations/${org.id}`}>
-								{#snippet body()}
-									View
-								{/snippet}
-							</Button>
+							{#if member.role !== 'member'}
+								<Button variation="link" href={`/account/organizations/${org.id}`}>
+									{#snippet body()}
+										View
+									{/snippet}
+								</Button>
+							{/if}
 							{#if sessionStore.session?.activeOrganizationId !== org.id}
 								<button
 									onclick={() => switchOrg(org)}
