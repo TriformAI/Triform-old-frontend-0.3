@@ -29,7 +29,7 @@
 	{id}
 	style={`--node-color: ${typeData.color}`}
 	class={twMerge([
-		'relative flex h-20 w-60 items-center justify-center border p-2 transition-all',
+		'relative flex h-20 w-full min-w-60 items-center justify-center border p-2 transition-all',
 		'hover:bg-main-500/5 backdrop-blur-sm',
 		executionState?.state === 'failed'
 			? 'border-danger-400/80 bg-danger-900/5'

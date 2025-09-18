@@ -59,7 +59,7 @@
 
 	{#if node?.type !== 'output-node'}
 		<div class={[hideHandles && 'invisible']}>
-			<div class="mx-auto flex max-w-[80%] items-center justify-around gap-5">
+			<div class="mr-auto flex max-w-[80%] items-center justify-around gap-0">
 				{#each sourceHandles as name}
 					<CustomHandle id={name} {name} type="source" position={Position.Bottom} {nodeId} />
 				{/each}

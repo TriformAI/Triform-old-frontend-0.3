@@ -133,15 +133,11 @@ export async function refreshFlow() {
 		const lastNode =
 			validNodes.length > 0
 				? validNodes.reduce((highest, current) => {
-						if (current.position.y > highest.position.y) {
-							return current
-						}
+						if (current.position.y > highest.position.y) return current
 						if (
 							current.position.y === highest.position.y &&
 							current.position.x > highest.position.x
-						) {
-							return current
-						}
+						) return current
 						return highest
 					})
 				: undefined
