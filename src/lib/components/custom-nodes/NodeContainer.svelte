@@ -5,7 +5,7 @@
 	import { Position } from '@xyflow/svelte'
 	import type { MetaNodeData, NodeData } from '$lib/types/canvas'
 	import { canvasState, getCurrentContainer, getNodes } from '$lib/stores/canvas.svelte'
-	import { isAction, isProject } from '$lib/schemas'
+	import { isAction, isAgent, isProject } from '$lib/schemas'
 	import { getNodeExecutionState } from '$lib/stores/execution.svelte'
 
 	const {
@@ -22,16 +22,14 @@
 		data?: NodeData | MetaNodeData
 	} = $props()
 
-	const currentIsProject = $derived(isProject(getCurrentContainer()))
-
 	const node = $derived(getNodes().find(node => node.id === nodeId))
 
-	const hideHandles = $derived(currentIsProject)
+	const hideHandles = $derived(isProject(getCurrentContainer()) || isAgent(getCurrentContainer()))
 </script>
 
-<div class={['group/container relative w-full']}>
+<div class={['group/container relative w-full', hideHandles && 'mt-2']}>
 	{#if node?.type !== 'input-node'}
-		<div class={[hideHandles && 'invisible']}>
+		<div class={[hideHandles && 'hidden']}>
 			<div class={['mx-auto mb-2 flex h-0 max-w-[80%] items-center justify-around gap-5']}>
 				{#each targetHandles as name}
 					<CustomHandle id={name} {name} type="target" position={Position.Top} {nodeId} />
@@ -58,7 +56,7 @@
 	{@render body()}
 
 	{#if node?.type !== 'output-node'}
-		<div class={[hideHandles && 'invisible']}>
+		<div class={[hideHandles && 'hidden']}>
 			<div class="mr-auto flex max-w-[80%] items-center justify-around gap-0">
 				{#each sourceHandles as name}
 					<CustomHandle id={name} {name} type="source" position={Position.Bottom} {nodeId} />
