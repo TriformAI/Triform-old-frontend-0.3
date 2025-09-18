@@ -127,6 +127,7 @@
 					type="build"
 					disabled={!componentData?.meta?.intention?.trim().length ||
 						inProgressComponents.has(componentData?.id)}
+					loading={inProgressComponents.has(componentData?.id)}
 				/>
 			</div>
 		{/if}

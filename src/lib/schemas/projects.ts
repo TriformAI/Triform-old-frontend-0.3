@@ -25,7 +25,7 @@ export const projectVariableModel = z.strictObject({
 // Project models (without async validations)
 export const projectSpecModel = z.strictObject({
 	readme: z.string().optional().default(''),
-	nodes: z.record(z.string(), projectNodeModel),
+	nodes: z.record(z.string(), projectNodeModel).default({}),
 	modifiers: z
 		.record(
 			nodePathModel,
@@ -36,9 +36,13 @@ export const projectSpecModel = z.strictObject({
 			)
 		)
 		.default({}),
-	environment: z.object({
-		variables: z.array(projectVariableModel)
-	})
+	environment: z
+		.object({
+			variables: z.array(projectVariableModel)
+		})
+		.default({
+			variables: []
+		})
 })
 
 export const resolvedProjectSpecModel = projectSpecModel.extend({

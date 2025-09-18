@@ -156,9 +156,9 @@ export const availableAgentModels = [
 	'magistral-medium-2507',
 	'codestral-2508',
 	// gemini doesn't support tool calling & structured output simultaneously
-	'gemini-2.5-pro',
-	'gemini-2.5-flash',
-	'gemini-2.5-flash-lite',
+	'gemini/gemini-2.5-pro',
+	'gemini/gemini-2.5-flash',
+	'gemini/gemini-2.5-flash-lite',
 	'gemma-3-27b-it',
 	'qwen3-235b-a22b-instruct-2507',
 	// groq does json output with a specific json tool, we need to add our own if we want both tool calling and structured output
@@ -171,17 +171,17 @@ export const availableAgentModels = [
 	'meta-llama/llama-4-scout-17b-16e-instruct',
 	'openai/gpt-oss-120b',
 	'openai/gpt-oss-20b',
-	'gpt-5',
-	'gpt-5-mini',
-	'gpt-5-mini',
-	'gpt-5-nano',
-	'gpt-5-chat',
-	'gpt-4.1',
-	'gpt-4.1-mini',
-	'gpt-4.1-nano',
-	'o4-mini',
-	'o3-mini',
-	'gpt-4o'
+	'openai/gpt-5',
+	'openai/gpt-5-mini',
+	'openai/gpt-5-mini',
+	'openai/gpt-5-nano',
+	'openai/gpt-5-chat',
+	'openai/gpt-4.1',
+	'openai/gpt-4.1-mini',
+	'openai/gpt-4.1-nano',
+	'openai/o4-mini',
+	'openai/o3-mini',
+	'openai/gpt-4o'
 ] as const
 
 const agentSpecModel = z.strictObject({
