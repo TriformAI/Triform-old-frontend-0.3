@@ -86,7 +86,7 @@
 <div
 	class={[
 		'relative z-10 flex items-center justify-center',
-		top ? 'translate-y-full flex-col' : ' -translate-y-full flex-col-reverse',
+		top ? 'translate-y-full flex-col-reverse' : ' -translate-y-full flex-col',
 		'transition-opacity',
 		canvasState.connecting &&
 			canvasState.connectingFrom?.handleType === type &&
@@ -94,36 +94,6 @@
 			'opacity-60'
 	]}
 >
-	{#if !hasConnections && !currentIsAgent}
-		<div
-			class={[
-				top ? '-translate-y-[130%] flex-col' : 'translate-y-[130%] flex-col-reverse',
-				'absolute flex items-center',
-				hasAnyConnections &&
-					selected.node?.id !== nodeId &&
-					'opacity-0 transition delay-200 group-hover/container:opacity-100'
-			]}
-			data-tf-id={`handle-create-button-${type}`}
-		>
-			<button
-				class="text-main-600 hover:text-main-300 peer px-3 py-1 transition active:scale-95"
-				onclick={openNodeSelector}
-			>
-				<AddBox class="size-5" />
-			</button>
-			<div class="bg-main-600 peer-hover:bg-main-500 h-4 w-0.5 rounded-full transition"></div>
-		</div>
-	{/if}
-
-	<span
-		class={[
-			'text-main-300 bg-main-900/80 -mt-0.5 block h-fit truncate rounded px-1 font-sans text-xs backdrop-blur-sm',
-			top ? '-translate-y-full pb-1' : 'translate-y-full pt-1 pb-0.5'
-		]}
-	>
-		{name}
-	</span>
-
 	<Handle
 		{id}
 		{type}
@@ -138,5 +108,34 @@
 				currentIsAgent && 'opacity-50'
 			]}
 		></div>
+		{#if !hasConnections && !currentIsAgent}
+			<div
+				class={[
+					top ? '-translate-y-[150%] flex-col' : 'translate-y-[50%] flex-col-reverse',
+					'absolute flex -translate-x-1/2 items-center',
+					hasAnyConnections &&
+						selected.node?.id !== nodeId &&
+						'opacity-0 transition delay-200 group-hover/container:opacity-100'
+				]}
+				data-tf-id={`handle-create-button-${type}`}
+			>
+				<button
+					class="text-main-600 hover:text-main-300 peer px-3 py-1 transition active:scale-95"
+					onclick={openNodeSelector}
+				>
+					<AddBox class="size-5" />
+				</button>
+				<div class="bg-main-600 peer-hover:bg-main-500 h-4 w-0.5 rounded-full transition"></div>
+			</div>
+		{/if}
 	</Handle>
+
+	<span
+		class={[
+			'text-main-300 bg-main-900/80 -mt-0.5 block h-fit truncate rounded px-1 font-sans text-xs backdrop-blur-sm',
+			top ? '-translate-y-full pb-1' : 'translate-y-full pt-1 pb-0.5'
+		]}
+	>
+		{name}
+	</span>
 </div>
