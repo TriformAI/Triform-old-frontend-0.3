@@ -39,6 +39,7 @@
 	import { nodeTypesDict } from '$lib/constants/nodeTypes.js'
 	import type { NodeType } from '$lib/constants/nodeTypes.js'
 	import { blur } from 'svelte/transition'
+	import { toast } from 'svelte-sonner'
 
 	const { data, children } = $props()
 
@@ -167,9 +168,19 @@
 		if (containerType === 'agent') return 'toolbox'
 		return ''
 	})
+
+	// intercept ctrl-s
+	const onKeyDown = (event: KeyboardEvent) => {
+		if ((event.ctrlKey || event.metaKey) && event.key === 's') {
+			event.preventDefault()
+			toast.info("We're already saving your work automatically!")
+		}
+	}
 </script>
 
 {@render children()}
+
+<svelte:window onkeydown={onKeyDown} />
 
 <div class="grid h-dvh grid-rows-[auto_1fr]">
 	<Navbar>
