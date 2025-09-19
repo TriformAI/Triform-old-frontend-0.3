@@ -30,54 +30,54 @@
 <div class={['group/container relative w-full', hideHandles && 'mt-2']}>
 	{#if node?.type !== 'input-node'}
 		<div class={[hideHandles && 'hidden']}>
-			<div class={['mx-auto mb-2 flex h-0 max-w-[80%] items-center justify-around gap-5']}>
+			<div class={['mb-2 flex h-0 w-full items-center justify-around gap-0']}>
 				{#each targetHandles as name}
 					<CustomHandle id={name} {name} type="target" position={Position.Top} {nodeId} />
 				{/each}
 			</div>
-			{#if node?.type !== 'action-node'}
-				<div
-					class={[
-						targetHandles.length ? 'float-right' : 'mx-auto',
-						!canvasState.connecting && 'transition delay-200',
-						'group-hover/container:pointer-events-auto group-hover/container:opacity-100',
-						targetHandles.length &&
-							(canvasState.connectingFrom?.handleType === 'target' || !canvasState.connecting) &&
-							'pointer-events-none opacity-0',
-						node?.type === 'output-node' && targetHandles.length ? '-mt-0.5 mr-1' : '-mt-0.5'
-					]}
-				>
-					<GhostHandle type="target" {nodeId} />
-				</div>
-			{/if}
 		</div>
+		{#if node?.type !== 'action-node'}
+			<div
+				class={[
+					targetHandles.length ? 'float-right' : 'mx-auto',
+					!canvasState.connecting && 'transition delay-200',
+					'group-hover/container:pointer-events-auto group-hover/container:opacity-100',
+					targetHandles.length &&
+						(canvasState.connectingFrom?.handleType === 'target' || !canvasState.connecting) &&
+						'pointer-events-none opacity-0',
+					node?.type === 'output-node' && targetHandles.length ? '-mt-0.5 mr-1' : '-mt-0.5'
+				]}
+			>
+				<GhostHandle type="target" {nodeId} />
+			</div>
+		{/if}
 	{/if}
 
 	{@render body()}
 
 	{#if node?.type !== 'output-node'}
 		<div class={[hideHandles && 'hidden']}>
-			<div class="mr-auto flex max-w-[80%] items-center justify-around gap-0">
+			<div class="flex w-full items-center justify-around gap-0">
 				{#each sourceHandles as name}
 					<CustomHandle id={name} {name} type="source" position={Position.Bottom} {nodeId} />
 				{/each}
 			</div>
-			{#if node?.type !== 'action-node'}
-				<div
-					class={[
-						sourceHandles.length ? 'float-right' : 'mx-auto',
-						!canvasState.connecting && 'transition delay-200',
-						'group-hover/container:pointer-events-auto group-hover/container:opacity-100',
-						sourceHandles.length &&
-							(canvasState.connectingFrom?.handleType === 'source' || !canvasState.connecting) &&
-							'pointer-events-none opacity-0',
-						node?.type === 'input-node' && sourceHandles.length ? '-mt-5 mr-1' : '-mt-0.5',
-						node?.type !== 'input-node' && sourceHandles.length && '-mt-5'
-					]}
-				>
-					<GhostHandle type="source" {nodeId} />
-				</div>
-			{/if}
 		</div>
+		{#if node?.type !== 'action-node'}
+			<div
+				class={[
+					sourceHandles.length ? 'float-right' : 'mx-auto',
+					!canvasState.connecting && 'transition delay-200',
+					'group-hover/container:pointer-events-auto group-hover/container:opacity-100',
+					sourceHandles.length &&
+						(canvasState.connectingFrom?.handleType === 'source' || !canvasState.connecting) &&
+						'pointer-events-none opacity-0',
+					node?.type === 'input-node' && sourceHandles.length ? '-mt-5 mr-1' : '-mt-0.5',
+					node?.type !== 'input-node' && sourceHandles.length && '-mt-5'
+				]}
+			>
+				<GhostHandle type="source" {nodeId} />
+			</div>
+		{/if}
 	{/if}
 </div>
