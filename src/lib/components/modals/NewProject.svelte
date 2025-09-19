@@ -21,14 +21,36 @@
 			name: '',
 			intention: ''
 		},
-		spec: { nodes: {}, modifiers: {}, readme: '' }
+		spec: {
+			nodes: {},
+			modifiers: {},
+			readme: `# {{PROJECT_NAME}} Documentation  
+
+This repository was created and deployed using [Triform](https://triform.ai/) – a platform for building, connecting, and running AI Agents and Flows.  
+
+The contents of this README serve as the **technical documentation** for the project. Here you can describe:  
+- The purpose and scope of the project  
+- The Agents and Flows included  
+- Requirements, dependencies, and setup instructions  
+- Notes on usage, testing, and deployment  
+
+Triform automatically generates this README as a starting point. You are encouraged to expand it with details about your specific project.  
+
+---
+
+✨ If you discovered this repository and want to create your own AI-powered projects, visit [Triform](https://triform.ai/) to get started.`,
+			environment: { variables: [] }
+		}
 	} satisfies z.infer<typeof projectModel>)
 
 	let nameInput = $state<HTMLInputElement>()
 
 	let { handleSubmit, isLoading, errors } = $derived(
 		createFormHandler({
-			onSubmit: async data => await createProject(formData),
+			onSubmit: async data => {
+				formData.spec.readme = formData.spec.readme.replace('{{PROJECT_NAME}}', formData.meta.name)
+				return await createProject(formData)
+			},
 			successMessage: 'Project created!',
 			onSuccess: async result => {
 				console.log(result.data)
