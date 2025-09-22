@@ -27,7 +27,7 @@
 	} from '$lib/stores/canvas.svelte'
 	import { clone } from '$lib/utils/clone'
 	import { onMount } from 'svelte'
-	import { openPanelItems } from '$lib/stores/panel.svelte'
+	import { openPanelItems, toggleOpenPanelItem } from '$lib/stores/panel.svelte'
 
 	const { nodeId }: { nodeId: string } = $props()
 
@@ -186,9 +186,20 @@
 		const openItems = openPanelItems.action
 		if (openItems.includes('execute')) triggerBackgroundBuild(true)
 	})
+
+	const execute = () => {
+		toggleOpenPanelItem('action', 'execute')
+		// braindead-level hack
+		document
+			?.querySelector('#execute-button')
+			?.dispatchEvent(new MouseEvent('click', { bubbles: true, cancelable: true }))
+	}
 </script>
 
 <PanelItem title="Code" {nodeId}>
+	{#snippet titleSuffix()}
+		<Button variation="primary" onClick={execute} class="ml-auto py-1 text-sm">Execute</Button>
+	{/snippet}
 	<div class={['relative grid grid-rows-[auto_1fr]']}>
 		<Tabs {tabs} bind:activeTab />
 
