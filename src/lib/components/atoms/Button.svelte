@@ -117,6 +117,7 @@
     rounded-md p-3
     font-medium transition active:enabled:scale-95
 		disabled:cursor-not-allowed disabled:opacity-75`,
+		'group/button',
 		classProp
 	])}
 	{id}

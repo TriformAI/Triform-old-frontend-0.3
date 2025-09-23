@@ -2,6 +2,7 @@
 	import { twMerge } from 'tailwind-merge'
 	import { nodeTypesDict, type NodeType } from '$lib/constants/nodeTypes'
 	import { getNodeExecutionState } from '$lib/stores/execution.svelte'
+	import type { CanvasNode } from '$lib/types/canvas'
 
 	const {
 		type,
@@ -9,7 +10,9 @@
 		selected = false,
 		class: classes,
 		id,
-		openFn
+		openFn,
+		node: _node,
+		empty
 	}: {
 		type: NodeType
 		name: string
@@ -17,6 +20,8 @@
 		class?: string
 		id?: string
 		openFn?: () => void
+		node?: CanvasNode
+		empty?: boolean
 	} = $props()
 
 	const typeData = $derived(nodeTypesDict[type])
@@ -47,11 +52,13 @@
 		: undefined}
 	ondblclickcapture={openFn}
 >
-	<span class="flex flex-row items-center justify-center gap-3">
-		<typeData.icon
-			class="size-5 drop-shadow-[0px_0px_10px_var(--node-color)]"
-			style={`color: ${typeData.iconColor}`}
-		/>
-		<span class="truncate">{name || 'Untitled'}</span>
-	</span>
+	{#if !empty}
+		<span class="flex flex-row items-center justify-center gap-3">
+			<typeData.icon
+				class="size-5 drop-shadow-[0px_0px_10px_var(--node-color)]"
+				style={`color: ${typeData.iconColor}`}
+			/>
+			<span class="truncate">{name || 'Untitled'}</span>
+		</span>
+	{/if}
 </svelte:element>

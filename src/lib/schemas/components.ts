@@ -57,14 +57,25 @@ const positionModel = z.strictObject({
 	y: z.number()
 })
 
+const nodeLoopModel = z
+	.object({
+		enabled: z.boolean().default(false),
+		type: z.enum(['parallel']).optional()
+	})
+	.default({ enabled: false })
+	.refine(d => (d.enabled ? d.type === 'parallel' : true), {
+		error: 'Loop type must be parallel if enabled'
+	})
+
 // Flow models (without async validations)
 const flowNodeValueModel = z.strictObject({
 	component_id: z.uuidv4(),
+	inputs: z.record(z.string(), nodePortModel),
+	position: positionModel.default({ x: 0, y: 0 }),
 	get spec() {
 		return componentModel
 	},
-	inputs: z.record(z.string(), nodePortModel),
-	position: positionModel.default({ x: 0, y: 0 })
+	loop: nodeLoopModel
 })
 
 export const resolvedFlowNodeModel = z.record(
@@ -165,6 +176,7 @@ export const availableAgentModels = [
 	'qwen/qwen3-32b',
 	'qwen3-coder-30b-a3b-instruct',
 	'gemma2-9b-it',
+	'moonshotai/kimi-k2-instruct-0905',
 	'llama-3.1-8b-instruct',
 	'llama-3.3-70b-versatile',
 	'meta-llama/llama-4-maverick-17b-128e-instruct',
@@ -172,7 +184,6 @@ export const availableAgentModels = [
 	'openai/gpt-oss-120b',
 	'openai/gpt-oss-20b',
 	'openai/gpt-5',
-	'openai/gpt-5-mini',
 	'openai/gpt-5-mini',
 	'openai/gpt-5-nano',
 	'openai/gpt-5-chat',
@@ -201,6 +212,7 @@ const agentSpecModel = z.strictObject({
 		z.string(),
 		z.strictObject({
 			component_id: z.uuidv4(),
+			// loop: nodeLoopModel,
 			inputs: z.record(
 				z.string(),
 				nodePortModel.extend({

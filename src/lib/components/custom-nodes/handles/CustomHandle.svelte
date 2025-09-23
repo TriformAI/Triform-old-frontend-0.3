@@ -81,6 +81,8 @@
 	}
 
 	const currentIsAgent = $derived(isAgent(getCurrentContainer()))
+	const node = $derived(getNodes().find(node => node.id === nodeId))
+	const isLooping = $derived(node?.data?.trinode?.loop?.enabled)
 </script>
 
 <div
@@ -136,6 +138,8 @@
 			top ? '-translate-y-full pb-1' : 'translate-y-full pt-1 pb-0.5'
 		]}
 	>
-		{name}
+		{name}{#if isLooping}<span class="font-mono text-[0.65rem] tracking-wide"
+				>{isLooping && '[]'}</span
+			>{/if}
 	</span>
 </div>

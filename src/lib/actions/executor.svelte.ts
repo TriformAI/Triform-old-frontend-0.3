@@ -62,7 +62,7 @@ export const executeComponent = async (
 			console.log(event)
 			executionId = event.data.path[0]
 			if (rootNodeId) setNodeExecutionState(executionId, rootNodeId, { state: 'running' })
-			// : is other metadata such as the call id (in case the same tool is called multiple times)
+			// : is other metadata such as the call id (in case the same tool is called multiple times) or loop index (in case of a loop)
 			const nodeId = event.data.path.at(-1)?.split(':')?.[0]
 			const nodePath = [...event.data.path].map(p => p.split(':')[0]).slice(1) // remove execution id (first)
 			const node: TriNode | undefined =

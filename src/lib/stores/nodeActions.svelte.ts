@@ -9,12 +9,14 @@ import { SvelteMap } from 'svelte/reactivity'
 import IconBug from '~icons/material-symbols/bug-report-outline-rounded'
 import IconTrash from '~icons/material-symbols/delete-outline'
 import IconExpand from '~icons/mdi/circle-expand'
-import { confirmStore } from './confirm.svelte'
-import { deleteNode as deleteNodeFn } from './canvas.svelte'
-import { isAgent } from '$lib/schemas'
+import IconLoop from '~icons/material-symbols/sync-rounded'
 import IconBuild from '~icons/material-symbols/tools-wrench-outline-rounded'
+import { confirmStore } from './confirm.svelte'
+import { deleteNode as deleteNodeFn, getCurrentContainer, saveContainer } from './canvas.svelte'
 import { chat, getUserMessage } from './chat.svelte'
 import { type Node } from '$lib/types/canvas'
+import { clone } from '$lib/utils/clone'
+import { isAgent, isFlow } from '$lib/schemas'
 
 export type onClickFn = (node: CanvasNode) => Promise<Uuid | void> | void
 
@@ -102,7 +104,24 @@ const buildNode = {
 	}
 }
 
+const loopNode = {
+	label: 'Toggle loop',
+	icon: IconLoop,
+	isDangerous: false,
+	hide: () => !isFlow(getCurrentContainer()),
+	onClick: async (node: CanvasNode) => {
+		const snapshot = clone($state.snapshot(getCurrentContainer()))
+		node = node as Node
+		if (!('loop' in node.data.trinode)) node.data.trinode.loop = { enabled: false, type: 'parallel' }
+		node.data.trinode.loop.enabled = !node.data.trinode.loop.enabled
+		node.data.trinode.loop.type = 'parallel'
+		const { success } = await saveContainer(snapshot)
+		if (!success) return
+		toast.success(`Loop ${node.data.trinode.loop.enabled ? 'enabled' : 'disabled'}`)
+	}
+}
+
 // Populate map
-actionsMapStore.set('action-node', [getDebugData, buildNode, deleteNode])
-actionsMapStore.set('flow-node', [expandNode, getDebugData, buildNode, deleteNode])
-actionsMapStore.set('agent-node', [expandNode, getDebugData, buildNode, deleteNode])
+actionsMapStore.set('action-node', [getDebugData, loopNode, buildNode, deleteNode])
+actionsMapStore.set('flow-node', [expandNode, loopNode, getDebugData, buildNode, deleteNode])
+actionsMapStore.set('agent-node', [expandNode, loopNode, getDebugData, buildNode, deleteNode])

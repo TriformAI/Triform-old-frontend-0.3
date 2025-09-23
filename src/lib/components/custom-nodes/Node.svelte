@@ -51,6 +51,8 @@
 	}
 	const targetHandles = $derived(Object.keys(data.trinode.spec.spec.inputs).sort(sortHandles))
 	const sourceHandles = $derived(Object.keys(data.trinode.spec.spec.outputs).sort(sortHandles))
+
+	const isLooping = $derived(node?.data?.trinode?.loop?.enabled)
 </script>
 
 <NodeContainer {...props} {targetHandles} {sourceHandles} {id}>
@@ -64,7 +66,35 @@
 						node?.data.props.creating ? 'animate-pulse cursor-progress' : ''
 					]}
 				>
-					<InnerNode {openFn} {selected} {type} name={data?.trinode?.spec.meta.name} {id} />
+					{#if isLooping}
+						<div class="absolute top-0 left-0">
+							<div
+								class="absolute translate-x-3 translate-y-3 opacity-35 transition-all delay-200 duration-700 starting:opacity-0"
+							>
+								<InnerNode
+									{type}
+									{selected}
+									name={data?.trinode?.spec.meta.name}
+									{id}
+									{node}
+									empty={true}
+								/>
+							</div>
+							<div
+								class="absolute translate-x-1.5 translate-y-1.5 opacity-60 transition-all duration-700 starting:opacity-0"
+							>
+								<InnerNode
+									{type}
+									{selected}
+									name={data?.trinode?.spec.meta.name}
+									{id}
+									{node}
+									empty={true}
+								/>
+							</div>
+						</div>
+					{/if}
+					<InnerNode {openFn} {selected} {type} name={data?.trinode?.spec.meta.name} {id} {node} />
 				</div>
 			{/snippet}
 
