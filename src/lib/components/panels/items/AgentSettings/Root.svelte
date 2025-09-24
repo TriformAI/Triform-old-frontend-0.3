@@ -7,6 +7,7 @@
 	import type { z } from 'zod'
 	import { agentMessagesModel, agentModel, availableAgentModels } from '$lib/schemas'
 	import PromptElement from './PromptElement.svelte'
+	import AdvancedSetting from './AdvancedSetting.svelte'
 	import type { FormEventHandler } from 'svelte/elements'
 	import { tick } from 'svelte'
 	import { clone } from '$lib/utils/clone'
@@ -24,6 +25,11 @@
 
 	const agentModels = availableAgentModels
 	let messagesEnabled = $derived('messages' in componentData.spec.inputs)
+
+	// Advanced settings state
+	let temperatureEnabled = $derived(componentData.spec.settings.temperature !== undefined)
+	let topPEnabled = $derived(componentData.spec.settings.topP !== undefined)
+	let maxTokensEnabled = $derived(componentData.spec.settings.maxTokens !== undefined)
 
 	const toggleMessages = async () => {
 		await tick()
@@ -47,6 +53,28 @@
 			toast.error('Failed to toggle messages')
 		}
 	}
+
+	const createToggleFunction = <K extends keyof typeof componentData.spec.settings>(
+		key: K,
+		defaultValue: number,
+		isEnabled: () => boolean
+	) => {
+		return async () => {
+			await tick()
+			if (!isEnabled()) {
+				// If currently disabled, enable and set to default
+				;(componentData.spec.settings as Record<K, number>)[key] = defaultValue
+			} else {
+				// If currently enabled, disable and set to undefined
+				;(componentData.spec.settings as Record<K, number | undefined>)[key] = undefined
+			}
+			debouncedSave()
+		}
+	}
+
+	const toggleTemperature = createToggleFunction('temperature', 0.7, () => temperatureEnabled)
+	const toggleTopP = createToggleFunction('topP', 0.95, () => topPEnabled)
+	const toggleMaxTokens = createToggleFunction('maxTokens', 1000, () => maxTokensEnabled)
 </script>
 
 <div class="grid max-w-full gap-6 p-5 pt-4">
@@ -103,47 +131,44 @@
 
 	<div>
 		<p class="eyebrow mb-3">Advanced settings</p>
-		<div class="grid grid-cols-3 gap-2">
-			<label>
-				<span class="input-title -mt-1">Temperature</span>
-				<input
-					required
-					min="0"
-					max="1"
-					step="0.1"
-					class="input-text"
-					type="number"
-					oninput={debouncedSave}
-					bind:value={componentData.spec.settings.temperature}
-				/>
-			</label>
+		<div class="flex flex-col gap-3">
+			<AdvancedSetting
+				label="Temperature"
+				description="Controls randomness in responses"
+				enabled={temperatureEnabled}
+				bind:value={componentData.spec.settings.temperature}
+				defaultValue={0.7}
+				min={0}
+				max={1}
+				step={0.1}
+				onToggle={toggleTemperature}
+				onInput={debouncedSave}
+			/>
 
-			<label>
-				<span class="input-title">Top P</span>
-				<input
-					required
-					class="input-text"
-					type="number"
-					min="0"
-					max="1"
-					step="0.05"
-					oninput={debouncedSave}
-					bind:value={componentData.spec.settings.topP}
-				/>
-			</label>
+			<AdvancedSetting
+				label="Top P"
+				description="Controls diversity via nucleus sampling"
+				enabled={topPEnabled}
+				bind:value={componentData.spec.settings.topP}
+				defaultValue={0.95}
+				min={0}
+				max={1}
+				step={0.05}
+				onToggle={toggleTopP}
+				onInput={debouncedSave}
+			/>
 
-			<label>
-				<span class="input-title">Max Tokens</span>
-				<input
-					required
-					min="0"
-					step="10"
-					class="input-text"
-					type="number"
-					oninput={debouncedSave}
-					bind:value={componentData.spec.settings.maxTokens}
-				/>
-			</label>
+			<AdvancedSetting
+				label="Max Tokens"
+				description="Maximum response length limit"
+				enabled={maxTokensEnabled}
+				bind:value={componentData.spec.settings.maxTokens}
+				defaultValue={1000}
+				min={0}
+				step={10}
+				onToggle={toggleMaxTokens}
+				onInput={debouncedSave}
+			/>
 		</div>
 	</div>
 </div>

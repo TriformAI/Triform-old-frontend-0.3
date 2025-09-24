@@ -204,9 +204,14 @@ const agentSpecModel = z.strictObject({
 		user: agentPromptModel
 	}),
 	settings: z.strictObject({
-		temperature: z.number().min(0).max(1).default(0.7),
-		topP: z.number().min(0).max(1).default(0.95),
-		maxTokens: z.number().min(0).default(1000)
+		temperature: z.number().min(0).max(1).optional(),
+		topP: z.number().min(0).max(1).optional(),
+		maxTokens: z
+			.number()
+			.min(0)
+			.max(60 * 1024)
+			.default(2048)
+			.optional()
 	}),
 	nodes: z.record(
 		z.string(),
