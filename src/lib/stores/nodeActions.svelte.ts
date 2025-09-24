@@ -12,7 +12,7 @@ import IconExpand from '~icons/mdi/circle-expand'
 import IconLoop from '~icons/material-symbols/sync-rounded'
 import IconBuild from '~icons/material-symbols/tools-wrench-outline-rounded'
 import { confirmStore } from './confirm.svelte'
-import { deleteNode as deleteNodeFn, getCurrentContainer, saveContainer } from './canvas.svelte'
+import { deleteNode as deleteNodeFn, getCurrentContainer, saveContainer, setLoop } from './canvas.svelte'
 import { chat, getUserMessage } from './chat.svelte'
 import { type Node } from '$lib/types/canvas'
 import { clone } from '$lib/utils/clone'
@@ -105,20 +105,11 @@ const buildNode = {
 }
 
 const loopNode = {
-	label: 'Toggle loop',
+	label: 'Toggle looping',
 	icon: IconLoop,
 	isDangerous: false,
 	hide: () => !isFlow(getCurrentContainer()),
-	onClick: async (node: CanvasNode) => {
-		const snapshot = clone($state.snapshot(getCurrentContainer()))
-		node = node as Node
-		if (!('loop' in node.data.trinode)) node.data.trinode.loop = { enabled: false, type: 'parallel' }
-		node.data.trinode.loop.enabled = !node.data.trinode.loop.enabled
-		node.data.trinode.loop.type = 'parallel'
-		const { success } = await saveContainer(snapshot)
-		if (!success) return
-		toast.success(`Loop ${node.data.trinode.loop.enabled ? 'enabled' : 'disabled'}`)
-	}
+	onClick: async (node: CanvasNode) => await setLoop(node.id, !node.data.trinode?.loop?.enabled)
 }
 
 // Populate map

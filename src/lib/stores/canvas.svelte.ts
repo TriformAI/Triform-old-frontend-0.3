@@ -137,7 +137,8 @@ export async function refreshFlow() {
 						if (
 							current.position.y === highest.position.y &&
 							current.position.x > highest.position.x
-						) return current
+						)
+							return current
 						return highest
 					})
 				: undefined
@@ -162,7 +163,12 @@ export async function refreshFlow() {
 	setEdges(edges)
 }
 
-export const addCreateNode = (position: { x: number; y: number }, ephemeral?: boolean, update?: boolean, large?: boolean) => {
+export const addCreateNode = (
+	position: { x: number; y: number },
+	ephemeral?: boolean,
+	update?: boolean,
+	large?: boolean
+) => {
 	const nodes = getNodes()
 	const container = getCurrentContainer()
 	const node = {
@@ -306,7 +312,10 @@ export function parseNodes(root: NodeContainer) {
 		)
 }
 
-export const getNodeByPath = (sourcePath: string[], nodes: Record<string, TriNode> = project?.spec.nodes): TriNode | undefined => {
+export const getNodeByPath = (
+	sourcePath: string[],
+	nodes: Record<string, TriNode> = project?.spec.nodes
+): TriNode | undefined => {
 	if (!sourcePath.length) return
 	const path = [...sourcePath]
 	let node = nodes[path.shift() as string]
@@ -576,6 +585,55 @@ export const addPort = async (
 		component.spec[`${variation}s`] = snapshot
 		throw new Error('Failed to add port')
 	}
+}
+
+export const setLoop = async (nodeId: string, enabled: boolean) => {
+	const container = getCurrentContainer()
+	const snapshot = clone($state.snapshot(container))
+	const node = container.spec.nodes[nodeId]
+	if (!node) throw new Error(`Node ${nodeId} not found`)
+	node.loop = { enabled, type: 'parallel' }
+
+	const updatedComponents = new Set<string>()
+	// TODO: fix, and possibly move to backend
+	// update all edges to use arrays of inputs instead
+	// update nodes that depend on the newly-looped node
+	for (const n of Object.values(container.spec.nodes) as TriNode[]) {
+		if (!('inputs' in n)) continue
+		for (const [inputName, port] of Object.entries(n.inputs)) {
+			if (port.source !== nodeId) continue
+			const remoteNode = container.spec.nodes[port.source]
+			if (!remoteNode) continue
+			remoteNode.spec.spec.inputs[port.target].schema = enabled
+				? {
+						type: 'array',
+						items: node.spec.spec.outputs[inputName].schema
+					}
+				: node.spec.spec.outputs[inputName].schema
+			updatedComponents.add(remoteNode.component_id)
+		}
+	}
+	// update the nodes that this node is connected to
+	if ('inputs' in node) {
+		for (const [inputName, port] of Object.entries(node.inputs)) {
+			const remoteNode = container.spec.nodes[port.source]
+			if (!remoteNode) continue
+			remoteNode.spec.spec.outputs[port.target].schema = enabled
+				? {
+						type: 'array',
+						items: node.spec.spec.inputs[inputName].schema
+					}
+				: node.spec.spec.inputs[inputName].schema
+			updatedComponents.add(remoteNode.component_id)
+		}
+	}
+
+	await saveContainer(snapshot)
+
+	// save all the components that were updated
+	await Promise.all([...updatedComponents].map(c => updateComponent(container.spec.nodes[c].spec)))
+
+	await refreshFlow()
 }
 
 export const getBreadcrumbs = (): { id: string; name: string; type: NodeType; path: string }[] => {

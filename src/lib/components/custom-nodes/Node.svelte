@@ -69,7 +69,10 @@
 					{#if isLooping}
 						<div class="absolute top-0 left-0">
 							<div
-								class="absolute translate-x-3 translate-y-3 opacity-35 transition-all delay-200 duration-700 starting:opacity-0"
+								class={[
+									'absolute translate-x-3 translate-y-3 opacity-35 transition-all delay-200 duration-700',
+									'starting:translate-0 starting:opacity-0'
+								]}
 							>
 								<InnerNode
 									{type}
@@ -81,7 +84,10 @@
 								/>
 							</div>
 							<div
-								class="absolute translate-x-1.5 translate-y-1.5 opacity-60 transition-all duration-700 starting:opacity-0"
+								class={[
+									'absolute translate-x-1.5 translate-y-1.5 opacity-60 transition-all duration-700',
+									'starting:translate-0 starting:opacity-0'
+								]}
 							>
 								<InnerNode
 									{type}

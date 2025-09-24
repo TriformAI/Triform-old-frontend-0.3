@@ -83,6 +83,15 @@
 	const currentIsAgent = $derived(isAgent(getCurrentContainer()))
 	const node = $derived(getNodes().find(node => node.id === nodeId))
 	const isLooping = $derived(node?.data?.trinode?.loop?.enabled)
+	// const portDefinition = $derived.by(() => {
+	// 	const container = getCurrentContainer()
+	// 	if (node?.type === 'input-node' && 'inputs' in container.spec) return container.spec.inputs[id]
+	// 	if (node?.type === 'output-node' && 'outputs' in container.spec)
+	// 		return container.spec.outputs[id]
+	// 	const side = type === 'source' ? 'outputs' : 'inputs'
+	// 	if (!('outputs' in container.spec) && !('inputs' in container.spec)) return undefined
+	// 	return container.spec?.[side]?.[id]
+	// })
 </script>
 
 <div
@@ -138,8 +147,6 @@
 			top ? '-translate-y-full pb-1' : 'translate-y-full pt-1 pb-0.5'
 		]}
 	>
-		{name}{#if isLooping}<span class="font-mono text-[0.65rem] tracking-wide"
-				>{isLooping && '[]'}</span
-			>{/if}
+		{name}{#if isLooping}<span class="font-mono text-[0.65rem] tracking-wide">[]</span>{/if}
 	</span>
 </div>
