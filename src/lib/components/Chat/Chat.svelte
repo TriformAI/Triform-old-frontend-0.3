@@ -106,7 +106,7 @@
 
 	const insertAtCaret = async (el: HTMLTextAreaElement, snippet: string) => {
 		el.focus()
-		await tick
+		await tick()
 		// Native (preserves undo history)
 		// "end" places the caret after the inserted text
 		el.setRangeText(snippet, el.selectionStart, el.selectionEnd, 'end')
@@ -137,7 +137,8 @@
 
 	const removeFromContext = (key: string) => {
 		delete context[key]
-		message = message.replace(key, '').trim()
+		console.log(new RegExp(`${key}\s?`, ''))
+		message = message.replace(new RegExp(`${key}\\s?`, ''), '').trim()
 		forceUpdateCharPos = !forceUpdateCharPos
 	}
 
@@ -163,9 +164,7 @@
 
 		// Find the latest run (runs are added to chat.data in chronological order)
 		const runs = chat.data.filter(item => item.type === 'run')
-		if (runs.length === 0) {
-			return false
-		}
+		if (runs.length === 0) return false
 
 		const latestRun = runs[runs.length - 1]
 		return !latestRun.completed
@@ -319,7 +318,7 @@
 					const nodeTypeData = nodeTypesDict[node?.spec.resource.split('/')[0] as NodeType]
 					return {
 						text: key,
-						fill: `color-mix(in oklab, color-mix(in oklab, ${nodeTypeData?.color} 90%, black) 15%, transparent)`,
+						fill: `color-mix(in oklab, color-mix(in oklab, ${nodeTypeData?.iconColor} 90%, black) 15%, transparent)`,
 						border: 'transparent'
 					}
 				})}
