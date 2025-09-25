@@ -100,7 +100,7 @@
 		localStorage.getItem('chatPanelWidth') || DEFAULT_CHAT_PANEL_WIDTH
 	)
 
-	let chatPanelWidth = $state(6)
+	let chatPanelWidth = $state(defaultChatPanelWidth)
 
 	let componentPanelHeight = $state(
 		Number(localStorage.getItem('componentsLibPanelHeight') || DEFAULT_COMPONENT_PANEL_HEIGHT)

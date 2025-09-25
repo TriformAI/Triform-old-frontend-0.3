@@ -11,9 +11,7 @@
 	const { item }: Props = $props()
 </script>
 
-<li
-	class="grid origin-top-right scale-100 opacity-100 transition-all duration-200 ease-(--easing-circ) starting:scale-90 starting:opacity-0"
->
+<li class="grid opacity-100 transition-all duration-400 starting:translate-y-4 starting:opacity-0">
 	{#if item.type === 'message'}
 		<ChatMessage {item} />
 	{:else if item.type === 'run'}

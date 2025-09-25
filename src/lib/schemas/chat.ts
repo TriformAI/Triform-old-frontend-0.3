@@ -32,6 +32,7 @@ export const userMessageModel = baseMessageModel.omit({ runId: true }).extend({
 				z.string(),
 				z.object({
 					component_id: z.string().optional(),
+					node_path: z.array(z.string()).optional(),
 					// backwards compatibility for now, remove later
 					// no biggie that it's here for now
 					content: z.unknown().optional()

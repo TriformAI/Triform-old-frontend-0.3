@@ -46,7 +46,7 @@ export const nodeTypes = [
 	}
 ] as const
 
-export const nodeTypesDict = nodeTypes.reduce(
+export const nodeTypesDict: Record<NodeType, (typeof nodeTypes)[number]> = nodeTypes.reduce(
 	(acc, nodeType) => {
 		acc[nodeType.type] = nodeType
 		return acc

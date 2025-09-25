@@ -22,7 +22,8 @@
 		type = 'button',
 		element = $bindable(),
 		isLoading = $bindable(false),
-		id
+		id,
+		fastClick = false
 	}: {
 		variation?: 'primary' | 'vibrant' | 'link' | 'danger' | 'warning' | 'confirm'
 		// disabled
@@ -45,6 +46,7 @@
 		element?: HTMLButtonElement
 		isLoading?: boolean
 		id?: string
+		fastClick?: boolean
 	} = $props()
 
 	const content = $derived(body ?? children)
@@ -115,8 +117,8 @@
 		!hasTextColor && 'text-main-300 hover:enabled:text-main-200',
 		`active:enabled:border-main-500 flex transform cursor-pointer
     flex-row items-center justify-center gap-x-2
-    rounded-md p-3
-    font-medium transition active:enabled:scale-95
+    rounded-md p-3 font-medium transition-all
+    duration-300 active:enabled:scale-95
 		disabled:cursor-not-allowed disabled:opacity-75`,
 		'group/button',
 		classProp
@@ -124,7 +126,8 @@
 	{id}
 	{type}
 	disabled={disabled || isLoading}
-	onclick={onClick}
+	onclick={fastClick ? undefined : onClick}
+	onmousedown={fastClick ? onClick : undefined}
 	aria-label={tooltip}
 	data-balloon-pos={tooltip ? tooltipPos : undefined}
 	data-balloon-nofocus

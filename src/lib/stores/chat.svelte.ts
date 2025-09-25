@@ -21,6 +21,7 @@ export interface MessageData {
 	role: 'user' | 'assistant'
 	content: string
 	completed?: boolean
+	context?: z.infer<typeof userMessageModel>['data']['context']
 }
 
 export interface StepData {
@@ -156,24 +157,22 @@ export function handleMessage(msg: Message) {
 			toast.error(data.error?.message ?? 'Unknown error, please try again later')
 			break
 		}
+
 		// -------- USER MESSAGES --------
-		// case 'user_message': {
-		// 	if (findMessage(id)) {
-		// 		return
-		// 	}
+		case 'user_message': {
+			if (findMessage(id)) break
+			chat.data.push({
+				id,
+				type: 'message',
+				role: 'user',
+				content: (data as { content: { type: 'text'; text: string }[] }).content
+					.map(item => item.text)
+					.join(''),
+				context: data.context
+			} satisfies MessageData)
 
-		// 	const messageObj: MessageData = {
-		// 		id,
-		// 		type: 'message',
-		// 		role: 'user',
-		// 		content: (data as { content: { type: 'text'; text: string }[] }).content
-		// 			.map(item => item.text)
-		// 			.join('')
-		// 	}
-		// 	chat.data.push(messageObj)
-
-		// 	break
-		// }
+			break
+		}
 
 		// -------- TEXT MESSAGES --------
 		case 'text_message_start': {
