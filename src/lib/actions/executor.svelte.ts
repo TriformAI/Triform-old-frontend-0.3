@@ -49,10 +49,9 @@ export const executeComponent = async (
 	state.isRunning = true
 	state.id = ''
 
-	let stream = api.stream<z.infer<typeof executionEventModel>>(
-		'execute/trace',
+	let stream = api.socketStream<z.infer<typeof executionEventModel>>(
+		'execute/trace/ws',
 		execution,
-		'POST',
 		undefined,
 		state.abortController.signal
 	)

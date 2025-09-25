@@ -256,4 +256,85 @@ export class API<TEvent extends RequestEvent | undefined = undefined> {
 			}
 		}
 	}
+
+	async *socketStream<T>(
+		endpoint: string,
+		data?: unknown,
+		_headers: Record<string, string> = {},
+		signal?: AbortSignal
+	): AsyncGenerator<StreamEvent<T>, void, unknown> {
+		const wsUrl = `${this.#baseURL.replace(/^http/, 'ws')}/${endpoint}`
+		
+		const ws = new WebSocket(wsUrl)
+		const messageQueue: StreamEvent<T>[] = []
+		let isConnected = false
+		let error: Error | null = null
+		let isComplete = false
+
+		// Setup WebSocket event handlers
+		const onOpen = () => {
+			isConnected = true
+			
+			// Send initial data if provided
+			if (data) ws.send(JSON.stringify(data))
+		}
+
+		const onMessage = (event: MessageEvent) => {
+			try {
+				const parsed = JSON.parse(event.data)
+				messageQueue.push({
+					data: parsed.data as T,
+					event: parsed.event
+				})
+			} catch (err) {
+				console.error('Failed to parse WebSocket message:', err)
+			}
+		}
+
+		const onError = (_event: Event) => {
+			error = new Error('WebSocket error')
+			isComplete = true
+		}
+
+		const onClose = () => isComplete = true
+
+		// Setup abort signal handling
+		const abortHandler = () => {
+			ws.close()
+			isComplete = true
+		}
+
+		signal?.addEventListener('abort', abortHandler)
+
+		ws.addEventListener('message', onMessage)
+		ws.addEventListener('open', onOpen)
+		ws.addEventListener('error', onError)
+		ws.addEventListener('close', onClose)
+
+		try {
+			// Wait for connection
+			while (!isConnected && !error && !isComplete)
+				await new Promise(resolve => setTimeout(resolve, 50))
+
+			if (error) throw error
+
+			// Yield messages as they arrive
+			while (!isComplete) {
+				if (messageQueue.length > 0)
+					yield messageQueue.shift()!
+				else
+					await new Promise(resolve => setTimeout(resolve, 10))
+			}
+
+			// Yield any remaining messages
+			while (messageQueue.length > 0)
+				yield messageQueue.shift()!
+		} finally {
+			// Cleanup
+			signal?.removeEventListener('abort', abortHandler)
+			
+			if (ws.readyState === WebSocket.OPEN || ws.readyState === WebSocket.CONNECTING)
+				ws.close()
+		}
+	}
 }
