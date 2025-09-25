@@ -28,6 +28,7 @@ export const executeComponent = async (
 		stdout?: string
 		stderr?: string
 		abortController: AbortController
+		id: string
 	},
 	rootNodeId?: string
 ) => {
@@ -46,6 +47,7 @@ export const executeComponent = async (
 
 	state.state = 'Starting...'
 	state.isRunning = true
+	state.id = ''
 
 	let stream = api.stream<z.infer<typeof executionEventModel>>(
 		'execute/trace',
@@ -60,7 +62,7 @@ export const executeComponent = async (
 		let executionId = ''
 		for await (const event of stream) {
 			console.log(event)
-			executionId = event.data.path[0]
+			if (!state.id) state.id = event.data.path[0]
 			if (rootNodeId) setNodeExecutionState(executionId, rootNodeId, { state: 'running' })
 			// : is other metadata such as the call id (in case the same tool is called multiple times) or loop index (in case of a loop)
 			const nodeId = event.data.path.at(-1)?.split(':')?.[0]
@@ -78,6 +80,7 @@ export const executeComponent = async (
 				break
 			}
 			if (event.event === 'failed') {
+				resetExecutionState()
 				// TODO: make this identical to what an endpoint returns, and also visualise errors in some better way
 				state.result = JSON.stringify(event.data, null, 2)
 				state.abortController.abort()
@@ -99,3 +102,5 @@ export const executeComponent = async (
 
 	state.isRunning = false
 }
+
+export const cancelExecution = async (id: string) => await api.post('execute/cancel', { id })

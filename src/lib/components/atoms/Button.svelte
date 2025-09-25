@@ -24,7 +24,7 @@
 		isLoading = $bindable(false),
 		id
 	}: {
-		variation?: 'primary' | 'vibrant' | 'link' | 'danger' | 'confirm'
+		variation?: 'primary' | 'vibrant' | 'link' | 'danger' | 'warning' | 'confirm'
 		// disabled
 		// href
 		// etc...
@@ -109,7 +109,8 @@
 			'bg-accent-700 inset-shadow-accent-500/40 hover:enabled:bg-accent-600 border-accent-600 border inset-shadow-xs',
 		variation === 'link' && 'text-main-200 hover:enabled:bg-main-800',
 		variation === 'danger' &&
-			'bg-danger-200 text-danger-600 hover:enabled:text-danger-700 hover:enabled:bg-danger-300',
+			'bg-danger-900 text-danger-200 hover:enabled:text-danger-100 hover:enabled:bg-danger-800',
+		variation === 'warning' && 'bg-warning-800 text-warning-100 hover:enabled:bg-warning-700',
 		!icon && !!body && 'px-5',
 		!hasTextColor && 'text-main-300 hover:enabled:text-main-200',
 		`active:enabled:border-main-500 flex transform cursor-pointer

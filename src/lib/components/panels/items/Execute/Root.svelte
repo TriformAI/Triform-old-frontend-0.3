@@ -3,12 +3,13 @@
 	import Button from '$lib/components/atoms/Button.svelte'
 	import LightEditor from '$lib/components/atoms/LightEditor.svelte'
 	import IconPlay from '~icons/material-symbols/play-arrow-outline-rounded'
+	import IconStop from '~icons/material-symbols/stop-rounded'
 	import IconCopy from '~icons/mdi/content-copy'
 	import { selected } from '$lib/stores/panel.svelte'
 	import PanelItem from '../../PanelItem.svelte'
 	import Payload from '../common/Payload.svelte'
 	import { blur } from 'svelte/transition'
-	import { executeComponent } from '$lib/actions/executor.svelte'
+	import { executeComponent, cancelExecution } from '$lib/actions/executor.svelte'
 	import type * as z from 'zod'
 	import type { resolvedComponentModel } from '$lib/schemas'
 	import { getCurrentNodePath, getProject, getVisibleComponent } from '$lib/stores/canvas.svelte'
@@ -67,6 +68,7 @@
 		result: '',
 		stdout: '',
 		stderr: '',
+		id: '',
 		abortController: undefined as unknown as AbortController
 	})
 
@@ -141,6 +143,9 @@
 			}
 		}
 	]
+
+	const executionHandler = async () =>
+		executorState.isRunning ? cancelExecution(executorState.id) : run()
 </script>
 
 <PanelItem {nodeId} title="Execute">
@@ -234,19 +239,29 @@
 		>
 			<div class="relative">
 				<Button
-					variation="vibrant"
+					variation={executorState.isRunning
+						? executorState.id
+							? 'warning'
+							: 'primary'
+						: 'vibrant'}
 					class="w-full"
-					onClick={run}
+					onClick={executionHandler}
 					autoLoad="promise"
-					disabled={!isValidJson || executorState.isRunning}
+					disabled={!isValidJson || (executorState.isRunning && !executorState.id)}
 					id="execute-button"
 				>
 					{#snippet icon()}
-						<IconPlay class="size-6" />
+						{#if executorState.isRunning}
+							<IconStop class="size-6" />
+						{:else}
+							<IconPlay class="size-6" />
+						{/if}
 					{/snippet}
 
 					{#snippet body()}
-						<span> Execute </span>
+						<span>
+							{executorState.isRunning ? (executorState.id ? 'Cancel' : 'Starting...') : 'Execute'}
+						</span>
 					{/snippet}
 				</Button>
 			</div>
