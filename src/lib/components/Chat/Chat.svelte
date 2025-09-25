@@ -115,7 +115,6 @@
 
 	// Callback function for ChatMention
 	async function addToContext(id: string) {
-		console.log('insertMention', id)
 		if (!textarea) return
 
 		const fullNode = getCurrentContainer().spec.nodes[id]
@@ -124,7 +123,7 @@
 		// Add selected node to context
 		context[`@${name}`] = {
 			component_id: fullNode.component_id,
-			node_path: [...(getNodePath()?.split('/') ?? []), id]
+			node_path: [...(getNodePath()?.split('/') ?? []), id].filter(Boolean)
 		}
 
 		// First update textarea, then set userMessage based on the updated content in textarea
