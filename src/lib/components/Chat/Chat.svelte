@@ -94,7 +94,15 @@
 		if (!chat.socket) return
 
 		const userMessage = getUserMessage()
-		userMessage.data.context = context
+		userMessage.data.context = {
+			...context,
+			[`~currentContainer`]: {
+				container: {
+					type: getCurrentContainer().resource === 'project/v1' ? 'project' : 'component',
+					id: getCurrentContainer().id!
+				}
+			}
+		}
 		userMessage.data.content[0].text = message
 
 		chat.socket.send(JSON.stringify(userMessage))
@@ -125,6 +133,7 @@
 			component_id: fullNode.component_id,
 			node_path: [...(getNodePath()?.split('/') ?? []), id].filter(Boolean)
 		}
+		console.log('node_path', context[`@${name}`].node_path)
 
 		// First update textarea, then set userMessage based on the updated content in textarea
 		const mention = `${previousChar === '@' ? '' : '@'}${name} `
@@ -311,7 +320,7 @@
 				{oninput}
 				onmousedown={() => setTimeout(() => (forceUpdateCharPos = !forceUpdateCharPos), 1)}
 				bind:value={message}
-				class="field-sizing-content max-h-30 min-h-16 w-full resize-none pb-2 outline-0"
+				class="!z-0 field-sizing-content max-h-30 min-h-16 w-full resize-none pb-2 outline-0"
 				placeholder="Build something magical"
 				highlights={Object.entries(context).map(([key, value]) => {
 					const node = getNodeByPath(value.node_path ?? [])
