@@ -81,12 +81,7 @@
 	}
 </script>
 
-<div
-	class={[
-		'custom-scrollbar scroll-gutter-stable relative grid  overflow-y-auto',
-		showNav ? 'grid-cols-[auto_1fr]' : 'grid-cols-1'
-	]}
->
+<div class={['custom-scrollbar scroll-gutter-stable relative flex flex-row overflow-y-auto']}>
 	{#if showNav}
 		<nav class="border-main-800 sticky top-0 z-20 mb-auto border-e">
 			<ul>

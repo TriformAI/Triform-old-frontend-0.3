@@ -234,9 +234,10 @@
 		{/if}
 
 		<div
-			class="tooltip-red mt-4 grid grow gap-2"
+			class="tooltip-red sticky bottom-0 mt-4 grid grow gap-2"
 			aria-label={!isValidJson ? 'Invalid JSON data' : undefined}
 			data-balloon-pos="up"
+			data-balloon-instant={true}
 		>
 			<div class="relative">
 				<Button

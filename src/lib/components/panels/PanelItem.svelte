@@ -42,7 +42,7 @@
 	})
 </script>
 
-<div class={['grid grid-rows-[auto_1fr] p-5 pt-4', fillHeight && 'h-full']}>
+<div class={['grid grid-rows-[auto_1fr] p-5 pt-4 pr-0', fillHeight && 'h-full']}>
 	{#if getCurrentContainer()}
 		<div class="mb-4 flex flex-row items-center gap-2">
 			<h2 class={['eyebrow text-main-300 whitespace-nowrap transition-colors']}>
@@ -77,7 +77,7 @@
 		</div>
 	{/if}
 
-	<div class="grid overflow-y-hidden">
+	<div class="scroll-gutter-stable grid overflow-y-auto">
 		{@render children()}
 	</div>
 </div>
