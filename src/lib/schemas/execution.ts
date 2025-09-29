@@ -32,5 +32,6 @@ export const executionEventModel = z.strictObject({
 	payload: z.record(z.string(), z.unknown()),
 	output: z.record(z.string(), z.unknown()),
 	stdout: z.string().optional(),
-	stderr: z.string().optional()
+	stderr: z.string().optional(),
+	stacktrace: z.string().optional()
 })

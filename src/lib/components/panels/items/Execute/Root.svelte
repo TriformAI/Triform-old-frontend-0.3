@@ -207,7 +207,8 @@
 					value={executorState.result}
 					class={[
 						'text-sm transition-all duration-300',
-						executorState.isRunning ? 'blur-xs grayscale-75' : 'blur-[0px] grayscale-0'
+						executorState.isRunning ? 'blur-xs grayscale-75' : 'blur-[0px] grayscale-0',
+						'max-h-full overflow-y-auto'
 					]}
 					id="execute-result-editor"
 				/>
