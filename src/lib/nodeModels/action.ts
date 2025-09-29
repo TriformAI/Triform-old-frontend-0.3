@@ -97,10 +97,10 @@ export const getActionModel = (inputs: z.infer<typeof ioModel>, name = '') => {
 	]
 	const typingImports = getRequiredImports(allPythonTypes)
 	
-	// Generate function parameters
-	const inputArgs = Object.entries(inputTypes)
-		.map(([key, type]) => `${key}: ${type}`)
-		.join(', ')
+	// Generate Inputs class fields
+	const inputFields = Object.entries(inputTypes)
+		.map(([key, type]) => `\t${key}: ${type}`)
+		.join('\n')
 	
 	// Generate input descriptions for docstring
 	const inputDescriptions = Object.entries(inputs)
@@ -119,7 +119,7 @@ export const getActionModel = (inputs: z.infer<typeof ioModel>, name = '') => {
 	
 	// Generate return statement
 	const outputKeys = Object.keys(outputTypes)
-		.map(key => `        ${key}=${key}`)
+		.map(key => `        ${key}=inputs["${key}"]`)
 		.join(',\n')
 	
 	// Generate class definitions
@@ -134,18 +134,27 @@ ${cls.fields.join('\n')}`)
 	const classSection = classDefinitions ? classDefinitions + '\n' : ''
 	
 	const source = `
+# We use Python's "typing" module to describe the *shape* of data
+# going into and coming out of our action.
 from typing import ${typingImports.join(', ')}
 
-${classSection}@triform.output
-class Output(TypedDict):
+# ----- 1. Defining the INPUT format of our action -----
+class Inputs(TypedDict):
+${inputFields}
+
+# ----- 2. Defining the OUTPUT format of our action -----
+${classSection}class Output(TypedDict):
     """The output of the action.
     Attributes:
 ${outputDescriptions}
     """
 ${outputFields}
 
+
+# ----- 3. Defining the ENTRYPOINT (the main function) -----
+# @triform.entrypoint tells Triform that this function is the main entry point for the action.
 @triform.entrypoint
-def entrypoint(${inputArgs}) -> Output:
+def entrypoint(inputs: Inputs) -> Output:
     """A simple placeholder action.
     Args:
 ${inputDescriptions}
