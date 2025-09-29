@@ -71,15 +71,13 @@ export const executeComponent = async (
 			const comp = node?.spec ?? component
 			if (nodeId && event.event) setNodeExecutionState(executionId, nodeId, { state: event.event })
 			if (event.event === 'running') state.state = `Executing ${comp.meta.name}`
-			if (event.event === 'completed' && event.data.path.length === 1) {
+			else if (event.event === 'completed' && event.data.path.length === 1) {
 				state.state = `Completed ${comp.meta.name}`
 				state.result = JSON.stringify(event.data.output, null, 2)
 				state.stdout = event.data.stdout
 				state.stderr = event.data.stderr
 				break
-			}
-			if (event.event === 'failed') {
-				resetExecutionState()
+			} else if (event.event === 'failed') {
 				// TODO: make this identical to what an endpoint returns, and also visualise errors in some better way
 				state.result = JSON.stringify(event.data, null, 2)
 				state.abortController.abort()
