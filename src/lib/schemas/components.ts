@@ -60,7 +60,7 @@ const positionModel = z.strictObject({
 const nodeLoopModel = z
 	.object({
 		enabled: z.boolean().default(false),
-		type: z.enum(['parallel']).optional()
+		type: z.enum(['parallel']).nullish()
 	})
 	.default({ enabled: false })
 	.refine(d => (d.enabled ? d.type === 'parallel' : true), {
