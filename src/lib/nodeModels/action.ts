@@ -140,6 +140,10 @@ from typing import ${typingImports.join(', ')}
 
 # ----- 1. Defining the INPUT format of our action -----
 class Inputs(TypedDict):
+    """The input of the action.
+    Attributes:
+${inputDescriptions}
+    """
 ${inputFields}
 
 # ----- 2. Defining the OUTPUT format of our action -----
@@ -155,10 +159,6 @@ ${outputFields}
 # @triform.entrypoint tells Triform that this function is the main entry point for the action.
 @triform.entrypoint
 def entrypoint(inputs: Inputs) -> Output:
-    """A simple placeholder action.
-    Args:
-${inputDescriptions}
-    """
     return Output(
 ${outputKeys}
     )`.trim()
