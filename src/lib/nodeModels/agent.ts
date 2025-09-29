@@ -10,26 +10,28 @@ export const getAgentModel = (inputs: z.infer<typeof ioModel>, name = '') =>
 			intention: ''
 		},
 		spec: {
-			model: 'mistral/mistral-medium-latest',
+			model: 'mistral-medium-latest',
 			readme: 'New Agent',
 			prompts: {
 				system: [
 					{
 						type: 'template',
-						value: 'You are a helpful assistant.'
+						value: 'You are a helpful assistant.',
+						enabled: true
 					}
 				],
 				user: [
 					{
 						type: 'template',
-						value: ''
+						value: '',
+						enabled: false
 					}
 				]
 			},
 			settings: {
 				temperature: 0.2,
 				topP: 0.95,
-				maxTokens: 2048
+				maxTokens: 32768
 			},
 			nodes: {},
 			outputs: {
@@ -42,7 +44,8 @@ export const getAgentModel = (inputs: z.infer<typeof ioModel>, name = '') =>
 							properties: {
 								role: { type: 'string' },
 								content: { type: 'string' }
-							}
+							},
+							required: ['role', 'content']
 						}
 					}
 				},
@@ -64,7 +67,8 @@ export const getAgentModel = (inputs: z.infer<typeof ioModel>, name = '') =>
 							properties: {
 								role: { type: 'string' },
 								content: { type: 'string' }
-							}
+							},
+							required: ['role', 'content']
 						}
 					}
 				}

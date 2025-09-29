@@ -74,7 +74,7 @@
 
 	const toggleTemperature = createToggleFunction('temperature', 0.7, () => temperatureEnabled)
 	const toggleTopP = createToggleFunction('topP', 0.95, () => topPEnabled)
-	const toggleMaxTokens = createToggleFunction('maxTokens', 1000, () => maxTokensEnabled)
+	const toggleMaxTokens = createToggleFunction('maxTokens', 32768, () => maxTokensEnabled)
 </script>
 
 <div class="grid max-w-full gap-6 p-5 pt-4">
@@ -163,7 +163,7 @@
 				description="Maximum response length limit"
 				enabled={maxTokensEnabled}
 				bind:value={componentData.spec.settings.maxTokens}
-				defaultValue={1000}
+				defaultValue={32768}
 				min={0}
 				step={10}
 				onToggle={toggleMaxTokens}

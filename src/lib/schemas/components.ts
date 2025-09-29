@@ -209,8 +209,8 @@ const agentSpecModel = z.strictObject({
 		maxTokens: z
 			.number()
 			.min(0)
-			.max(60 * 1024)
-			.default(2048)
+			.max(100 * 1024)
+			.default(32768)
 			.optional()
 	}),
 	nodes: z.record(
