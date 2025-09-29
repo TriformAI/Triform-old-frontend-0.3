@@ -4,7 +4,6 @@ import {
 	getOutgoers
 } from '@xyflow/svelte'
 import type { Node } from '$lib/types/canvas'
-import { getCurrentContainer } from '$lib/stores/canvas.svelte'
 
 export const isValidConnection: AddParameters<
 	IsValidConnectionType,
@@ -19,22 +18,25 @@ export const isValidConnection: AddParameters<
 		(connection.source?.endsWith(':output') && connection.target?.endsWith(':input'))
 	) return false
 
-	const container = getCurrentContainer()
 	// no self-loops
 	if (connection.target === connection.source) return false
 	// prevent cycles with union find
 	const { getNodes, getEdges } = _useSvelteFlow
 	const nodes = getNodes()
 	const edges = getEdges()
-	const hasCycle = (node: Node, visited: Set<Node['id']>) => {
-		if (visited.has(node.id)) return true
-		if (node.id.split(':')[0] !== container.id) visited.add(node.id)
+	const hasCycle = (node: Node, visiting: Set<Node['id']>, visited: Set<Node['id']>) => {
+		if (visiting.has(node.id)) return true // Found a cycle - node is in current path
+		if (visited.has(node.id)) return false // Already processed this node completely
+		
+		visiting.add(node.id)
 		const outgoers = getOutgoers(node, nodes, edges)
-		for (const out of outgoers) {
-			if (out.id === connection.source || hasCycle(out as Node, visited)) return true
-		}
+		for (const out of outgoers)
+			if (out.id === connection.source || hasCycle(out as Node, visiting, visited)) return true
+		visiting.delete(node.id) // Remove from current path
+		visited.add(node.id) // Mark as completely processed
+		return false
 	}
 	const targetNode = nodes.find(n => n.id === connection.target)
 	if (!targetNode) return false
-	return !hasCycle(targetNode as Node, new Set())
+	return !hasCycle(targetNode as Node, new Set(), new Set())
 }
