@@ -47,7 +47,7 @@
 
 		inProgressComponents.add(componentData.id as string)
 		// switch to the code editor tab
-		toggleOpenPanelItem('action', 'codeEditor')
+		toggleOpenPanelItem('codeEditor')
 	}
 
 	let isEditingName = $state(false)

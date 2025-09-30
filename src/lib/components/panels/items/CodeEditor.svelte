@@ -27,7 +27,7 @@
 	} from '$lib/stores/canvas.svelte'
 	import { clone } from '$lib/utils/clone'
 	import { onMount } from 'svelte'
-	import { openPanelItems, toggleOpenPanelItem } from '$lib/stores/panel.svelte'
+	import { openPanelItem, toggleOpenPanelItem } from '$lib/stores/panel.svelte'
 
 	const { nodeId }: { nodeId: string } = $props()
 
@@ -183,12 +183,11 @@
 	// when switching to the execution tab, trigger a deps build in the background, if we're lucky
 	// the deps will be built by the time they try and execute the action
 	$effect(() => {
-		const openItems = openPanelItems.action
-		if (openItems.includes('execute')) triggerBackgroundBuild(true)
+		if (openPanelItem.value === 'execute') triggerBackgroundBuild(true)
 	})
 
 	const execute = () => {
-		toggleOpenPanelItem('action', 'execute')
+		toggleOpenPanelItem('execute')
 		// braindead-level hack
 		document
 			?.querySelector('#execute-button')

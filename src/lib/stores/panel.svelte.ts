@@ -37,42 +37,22 @@ export const selected = {
 	}
 }
 
-export interface OpenPanelItems {
-	project: string[]
-	flow: string[]
-	action: string[]
-	endpoint: string[]
-	agent: string[]
+function getPersistedOpenPanelItem(): string {
+	if (!browser) return ''
+
+	const persistedOpenPanelItem = localStorage.getItem('openPanelItem')
+	return persistedOpenPanelItem || ''
 }
 
-const defaultOpenPanelItems: OpenPanelItems = {
-	project: [],
-	flow: [],
-	action: [],
-	endpoint: [],
-	agent: []
+class OpenPanelItemStore {
+	value = $state(getPersistedOpenPanelItem())
 }
 
-function getPersistedOpenPanelItems(): OpenPanelItems {
-	if (!browser) return { ...defaultOpenPanelItems }
+export const openPanelItem = new OpenPanelItemStore()
 
-	const persistedOpenPanelItems = localStorage.getItem('openPanelItems')
-	if (!persistedOpenPanelItems) return { ...defaultOpenPanelItems }
-	const openPanelItems = JSON.parse(persistedOpenPanelItems)
-	return openPanelItems
-}
-
-export const openPanelItems = $state<OpenPanelItems>(getPersistedOpenPanelItems())
-
-export function toggleOpenPanelItem(nodeType: keyof typeof openPanelItems, title: string) {
-	if (!(nodeType in openPanelItems)) {
-		openPanelItems[nodeType] = []
-	}
-
-	const openItemsForType = openPanelItems[nodeType]
-
+export function toggleOpenPanelItem(title: string) {
 	// If the clicked item is already open, close it; otherwise, open only this item
-	openPanelItems[nodeType] = openItemsForType.includes(title) ? [] : [title]
+	openPanelItem.value = openPanelItem.value === title ? '' : title
 
-	localStorage.setItem('openPanelItems', JSON.stringify(openPanelItems))
+	localStorage.setItem('openPanelItem', openPanelItem.value)
 }
