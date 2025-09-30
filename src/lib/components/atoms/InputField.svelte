@@ -23,7 +23,8 @@
 		onpaste,
 		use = () => {},
 		validationFn = () => true,
-		id: customId
+		id: customId,
+		pattern
 	}: {
 		value?: string
 		el?: HTMLInputElement
@@ -47,6 +48,7 @@
 		use?: (el: HTMLInputElement) => void
 		validationFn?: (value: string) => boolean | string | undefined
 		id?: string
+		pattern?: string
 	} = $props()
 
 	const id = customId ?? Math.random().toString(36).substring(2, 15)
@@ -96,6 +98,7 @@
 			{onkeydown}
 			{oninput}
 			{onpaste}
+			{pattern}
 			use:use
 		/>
 		{#if prefix}
