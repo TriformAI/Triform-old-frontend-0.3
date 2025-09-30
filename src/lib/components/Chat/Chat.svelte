@@ -21,11 +21,13 @@
 	import LogoSpinner from '$lib/components/SpinnerLogo.svelte'
 	import { userMessageModel } from '$lib/schemas/chat'
 	import type * as z from 'zod'
-	import { fly } from 'svelte/transition'
+	import { blur, fly } from 'svelte/transition'
 	import { nodeTypesDict, type NodeType } from '$lib/constants/nodeTypes'
 	import IconClose from '~icons/material-symbols/close-rounded'
 	import { arraysDiffer } from '$lib/utils/arraysDiffer'
 	import HighlightableTextarea from '../atoms/HighlightableTextarea.svelte'
+	import { cancelChat } from '$lib/actions/chat'
+	import { toast } from 'svelte-sonner'
 
 	let {
 		onMessage
@@ -108,6 +110,11 @@
 		chat.socket.send(JSON.stringify(userMessage))
 
 		resetUserMessage()
+	}
+
+	const cancelRunningChat = async () => {
+		const res = await cancelChat(page.params.id!)
+		if (!res) return toast.error('Failed to cancel chat')
 	}
 
 	let textarea = $state<HTMLTextAreaElement>()
@@ -249,7 +256,10 @@
 	</div>
 
 	<div class="px-4 pb-4 leading-none">
-		<form onsubmit={sendMessage} class="input-text relative grid grid-rows-[1fr_auto] gap-2">
+		<form
+			onsubmit={isWaitingForAssistant ? cancelRunningChat : sendMessage}
+			class="input-text relative grid grid-rows-[1fr_auto] gap-2"
+		>
 			{#if isOpen}
 				<div
 					class="absolute inset-x-0 bottom-[calc(100%+0.25rem)]"
@@ -333,10 +343,23 @@
 				})}
 			></HighlightableTextarea>
 
-			<Button variation="vibrant" type="submit" class="ms-auto -me-2 -mb-1 px-2 py-1 text-sm">
-				<div class="flex items-center gap-0.5">
-					Send
-					<kbd>↵</kbd>
+			<Button
+				variation={isWaitingForAssistant ? 'warning' : 'vibrant'}
+				type="submit"
+				class="ms-auto -me-2 -mb-1 px-2 py-1 text-sm"
+			>
+				<div class="grid grid-cols-[1fr] grid-rows-[1fr]">
+					{#if !isWaitingForAssistant}
+						<div
+							class="col-start-1 row-start-1 flex items-center gap-0.5"
+							transition:blur={{ duration: 500 }}
+						>
+							Send
+							<kbd>↵</kbd>
+						</div>
+					{:else}
+						<div class="col-start-1 row-start-1" transition:blur={{ duration: 500 }}>Cancel</div>
+					{/if}
 				</div>
 			</Button>
 		</form>
