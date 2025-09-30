@@ -8,6 +8,7 @@
 	import { page } from '$app/state'
 	import type { Organization } from '$lib/types/auth'
 	import { authClient } from '$lib/auth-client'
+	import { sessionStore } from '$lib/stores/session.svelte'
 	let { children }: { children: Snippet } = $props()
 
 	const showToaster = $derived.by(() => {
@@ -18,6 +19,19 @@
 		// const dialogs = document.querySelectorAll('dialog[open]')
 		// console.log('dialogs', dialogs, !dialogs?.length)
 		// return !!dialogs?.length
+	})
+
+	onMount(() => {
+		// @ts-expect-error globally defined
+		if (!browser || !Featurebase) return
+		// @ts-expect-error globally defined
+		Featurebase('identify', {
+			organization: 'triform',
+			email: sessionStore.user?.email,
+			name: sessionStore.user?.name,
+			userId: sessionStore.user?.id,
+			profilePicture: sessionStore.user?.image
+		})
 	})
 </script>
 
