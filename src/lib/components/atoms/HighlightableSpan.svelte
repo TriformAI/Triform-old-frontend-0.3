@@ -1,5 +1,6 @@
 <script lang="ts">
 	import { marked } from 'marked'
+	import DOMPurify from 'dompurify'
 
 	type HighlightEntry = { text: string; fill?: string; border?: string; color?: string }
 
@@ -71,8 +72,9 @@
 
 		// Step 1: Render markdown if enabled
 		if (markdown) {
-			// Use marked.parseInline for inline markdown (no wrapping <p> tags)
-			const markdownResult = marked.parseInline(processed)
+			const markdownResult = marked.parse(processed)
+			console.log('markdownResult', markdownResult)
+			processed = DOMPurify.sanitize(markdownResult as string)
 			// Handle both sync and async results
 			processed = typeof markdownResult === 'string' ? markdownResult : processed
 		}
@@ -84,7 +86,12 @@
 	})
 </script>
 
-<span bind:this={span} class="highlightable-span {className}" {style} {...restProps}>
+<span
+	bind:this={span}
+	class={['highlightable-span', markdown && 'contents', className]}
+	{style}
+	{...restProps}
+>
 	{@html processedHtml}
 </span>
 
@@ -95,5 +102,66 @@
 		border-radius: 3px;
 		padding: 3px 5px;
 		margin: 0 3px;
+	}
+
+	:global(.highlightable-span h1) {
+		font-size: var(--text-2xl);
+		font-weight: 800;
+	}
+
+	:global(.highlightable-span h2) {
+		font-size: var(--text-xl);
+		font-weight: 700;
+	}
+
+	:global(.highlightable-span h3) {
+		font-size: var(--text-lg);
+		font-weight: 600;
+	}
+
+	:global(.highlightable-span h4) {
+		font-size: var(--text-md);
+		font-weight: 600;
+	}
+
+	:global(.highlightable-span h5) {
+		font-size: var(--text-sm);
+	}
+
+	:global(.highlightable-span ul) {
+		list-style-type: disc;
+		margin-left: 0.5rem;
+		line-height: 1rem;
+	}
+
+	:global(.highlightable-span li) {
+		list-style-type: disc;
+		margin-left: 1rem;
+	}
+
+	:global(.highlightable-span a) {
+		color: var(--color-accent-400);
+		transition: color 0.1s ease-in-out;
+	}
+
+	:global(.highlightable-span a:hover) {
+		color: var(--color-accent-300);
+		text-decoration: underline;
+	}
+
+	:global(.highlightable-span blockquote) {
+		border-left: 2px solid var(--color-main-800);
+		padding-left: 1rem;
+		margin-left: 1rem;
+	}
+
+	:global(.highlightable-span hr) {
+		border-color: var(--color-main-700);
+	}
+
+	/* Tables */
+	:global(.highlightable-span table) {
+		width: 100%;
+		border-collapse: collapse;
 	}
 </style>
