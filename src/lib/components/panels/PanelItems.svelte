@@ -37,7 +37,7 @@
 		execute: { label: 'Execute', component: Execute, icon: IconExecute },
 		metadata: { label: 'Information', component: Metadata, icon: IconMetadata },
 		projectSettings: { label: 'Project Settings', component: ProjectSettings, icon: IconProject },
-		variables: { label: 'Variables', component: Variables, icon: IconVariables },
+		variables: { label: 'Global Variables', component: Variables, icon: IconVariables },
 		triggers: { label: 'Triggers', component: Triggers, icon: IconTriggers },
 		io: { label: 'IO', component: IO, icon: IconIO },
 		agentSettings: { label: 'Agent Settings', component: AgentSettings, icon: IconAgentSettings }

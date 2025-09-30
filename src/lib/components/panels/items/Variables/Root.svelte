@@ -163,7 +163,7 @@
 
 <PanelItem
 	{nodeId}
-	title="Environment Variables"
+	title="Global Environment Variables"
 	isListContainer
 	tip="Environment variables are globally injected into all nodes within the project"
 	onAddClick={() => {
