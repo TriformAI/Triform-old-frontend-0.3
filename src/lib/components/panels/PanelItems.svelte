@@ -114,7 +114,7 @@
 		</nav>
 	{/if}
 
-	<div class="border-main-800 z-10 -ms-px border-s">
+	<div class="border-main-800 z-10 -ms-px flex-1 border-s">
 		{#if activeComponents.length === 0}
 			<p
 				class="text-main-500 animate-fade-in absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 text-center text-sm"

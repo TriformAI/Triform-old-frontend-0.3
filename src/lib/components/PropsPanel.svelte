@@ -11,7 +11,7 @@
 
 <div
 	class={twMerge(
-		' bg-main-950/60 border-main-800 @container row-span-3 grid grid-rows-[auto_1fr]  rounded-lg border',
+		'bg-main-950/60 border-main-800 @container row-span-3 grid grid-rows-[auto_1fr] rounded-lg border',
 		'h-full',
 		classes
 	)}
