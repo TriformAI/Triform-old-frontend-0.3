@@ -54,7 +54,7 @@
 				{/each}
 			</div>
 		</div>
-		{#if node?.type !== 'action-node'}
+		{#if node?.type !== 'action-node' && !hideHandles}
 			<div
 				class={[
 					targetHandles.length ? 'float-right' : 'mx-auto',
@@ -111,7 +111,7 @@
 				{/each}
 			</div>
 		</div>
-		{#if node?.type !== 'action-node'}
+		{#if node?.type !== 'action-node' && !hideHandles}
 			<div
 				class={[
 					sourceHandles.length ? 'float-right' : 'mx-auto',
