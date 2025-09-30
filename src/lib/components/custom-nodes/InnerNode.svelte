@@ -50,7 +50,7 @@
 	style:border-color={selected
 		? 'color-mix(in oklab, color-mix(in oklab, var(--node-color) 70%, black) 50%, transparent)'
 		: undefined}
-	ondblclickcapture={openFn}
+	onclickcapture={type === 'action' ? undefined : openFn}
 >
 	{#if !empty}
 		<span class="flex flex-row items-center justify-center gap-3">

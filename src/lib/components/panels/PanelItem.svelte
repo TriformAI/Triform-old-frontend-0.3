@@ -1,7 +1,6 @@
 <script lang="ts">
 	import type { Snippet } from 'svelte'
 	import { getCurrentContainer, getVisibleComponent } from '$lib/stores/canvas.svelte'
-	import { Tooltip } from 'bits-ui'
 	import IconAdd from '~icons/mdi/plus-circle-outline'
 	import IconInfo from '~icons/material-symbols/info-outline-rounded'
 
