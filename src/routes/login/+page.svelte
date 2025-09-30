@@ -49,7 +49,8 @@
 
 	let email = $state('')
 	let isLoading = $state(false)
-	const loginWithEmail = async () => {
+	const loginWithEmail = async (e: Event) => {
+		e.preventDefault()
 		isLoading = true
 		if (!email) return toast.error('Please enter an email')
 		const res = await authClient.signIn.magicLink({
@@ -128,6 +129,8 @@
 				<p class="text-main-400">
 					Click the link we just sent to {email} to login!
 				</p>
+				<br />
+				<p class="text-main-500">If you don't see it, check your spam folder.</p>
 			</div>
 		{:else}
 			<div class="col-start-1 row-start-1 flex w-xs flex-col items-center gap-y-4" transition:blur>
