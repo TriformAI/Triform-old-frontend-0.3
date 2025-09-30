@@ -32,12 +32,8 @@
 	const nodeType = $derived.by(() => {
 		if (!componentData) return
 
-		if (componentData.resource === 'flow/v1') {
-			return 'flow'
-		}
-		if (componentData.resource === 'action/v1') {
-			return 'action'
-		}
+		if (componentData.resource === 'flow/v1') return 'flow'
+		if (componentData.resource === 'action/v1') return 'action'
 		return undefined
 	})
 </script>
