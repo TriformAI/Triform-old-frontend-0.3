@@ -2,7 +2,13 @@
 	import { marked } from 'marked'
 	import DOMPurify from 'dompurify'
 
-	type HighlightEntry = { text: string; fill?: string; border?: string; color?: string }
+	type HighlightEntry = {
+		text: string
+		fill?: string
+		border?: string
+		color?: string
+		link?: string
+	}
 
 	let {
 		text = $bindable(''),
@@ -54,7 +60,15 @@
 			if (highlight.color) styles.push(`color: ${highlight.color}`)
 			const styleAttr = styles.length > 0 ? ` style="${styles.join('; ')}"` : ''
 
-			highlightedText = highlightedText.replace(regex, `<mark${styleAttr}>$&</mark>`)
+			// Wrap in anchor if link is provided
+			if (highlight.link) {
+				highlightedText = highlightedText.replace(
+					regex,
+					`<a href="${highlight.link}" class="highlight-link"><mark${styleAttr}>$&</mark></a>`
+				)
+			} else {
+				highlightedText = highlightedText.replace(regex, `<mark${styleAttr}>$&</mark>`)
+			}
 		}
 
 		return highlightedText
@@ -73,7 +87,6 @@
 		// Step 1: Render markdown if enabled
 		if (markdown) {
 			const markdownResult = marked.parse(processed)
-			console.log('markdownResult', markdownResult)
 			processed = DOMPurify.sanitize(markdownResult as string)
 			// Handle both sync and async results
 			processed = typeof markdownResult === 'string' ? markdownResult : processed
@@ -102,6 +115,20 @@
 		border-radius: 3px;
 		padding: 3px 5px;
 		margin: 0 3px;
+	}
+
+	/* Clickable highlight styling */
+	:global(.highlightable-span .highlight-link) {
+		text-decoration: none;
+		cursor: pointer;
+	}
+
+	:global(.highlightable-span .highlight-link mark) {
+		transition: all 0.1s ease-in-out;
+	}
+
+	:global(.highlightable-span .highlight-link:hover mark) {
+		filter: brightness(1.35);
 	}
 
 	:global(.highlightable-span h1) {
