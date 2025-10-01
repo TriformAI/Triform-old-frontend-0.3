@@ -7,7 +7,7 @@ type CustomSession = Session & {
 
 interface SessionState {
 	session: CustomSession | null
-	user: User | null
+	user: (User & { active: boolean }) | null
 	isLoading: boolean
 	error: string | null
 }

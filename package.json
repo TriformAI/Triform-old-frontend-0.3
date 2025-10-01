@@ -43,6 +43,7 @@
 		"svelte": "^5.39.7",
 		"svelte-adapter-bun": "^0.5.2",
 		"svelte-check": "^4.3.2",
+		"svelte-confetti": "^2.0.0",
 		"svelte-sonner": "^1.0.5",
 		"sveltekit-sse": "^0.14.3",
 		"tailwindcss": "^4.1.13",

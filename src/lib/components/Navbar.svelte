@@ -2,7 +2,7 @@
 	import logo from '$lib/images/Logo.svg'
 	import { apiStatus } from '$lib/stores/apiStatus.svelte'
 	import Spinner from './Spinner.svelte'
-	import type { Snippet } from 'svelte'
+	import { type Snippet } from 'svelte'
 	import UserNav from './UserNav.svelte'
 
 	interface Props {

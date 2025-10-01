@@ -5,11 +5,18 @@
 	import { onMount, type Snippet } from 'svelte'
 	import { toast, Toaster } from 'svelte-sonner'
 	import { browser } from '$app/environment'
-	import { page } from '$app/state'
-	import type { Organization } from '$lib/types/auth'
-	import { authClient } from '$lib/auth-client'
 	import { sessionStore } from '$lib/stores/session.svelte'
+	import InviteGate from '$lib/components/InviteGate.svelte'
+	import { page } from '$app/state'
+
 	let { children }: { children: Snippet } = $props()
+
+	const { user } = $derived(sessionStore)
+	$inspect(user)
+
+	const hideGate = $derived(page.url.pathname.startsWith('/login'))
+
+	const loaded = $derived(!!user || hideGate)
 
 	const showToaster = $derived.by(() => {
 		// TODO fix logic
@@ -24,18 +31,28 @@
 	onMount(() => {
 		// @ts-expect-error globally defined
 		if (!browser || !Featurebase) return
+		console.log('user', user)
+		if (!user?.id || !user?.email || !user?.name || !user?.image) return
 		// @ts-expect-error globally defined
 		Featurebase('identify', {
 			organization: 'triform',
-			email: sessionStore.user?.email,
-			name: sessionStore.user?.name,
-			userId: sessionStore.user?.id,
-			profilePicture: sessionStore.user?.image
+			email: user?.email,
+			name: user?.name,
+			userId: user?.id,
+			profilePicture: user?.image
 		})
 	})
 </script>
 
-<div class="relative transform">{@render children()}</div>
+{#if loaded}
+	{#if user?.active || hideGate}
+		<div class="relative transform">{@render children()}</div>
+	{:else}
+		<InviteGate />
+	{/if}
+	<!-- {:else}
+	<div class="bg-main-700 h-full w-full animate-pulse px-8 py-10"></div> -->
+{/if}
 
 {#if showToaster}
 	<Toaster

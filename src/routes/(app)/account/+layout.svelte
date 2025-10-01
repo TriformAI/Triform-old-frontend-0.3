@@ -2,12 +2,13 @@
 	import Navbar from '$lib/components/Navbar.svelte'
 	import IconOrganization from '~icons/material-symbols/domain-rounded'
 	import IconAccount from '~icons/material-symbols/person-rounded'
+	import IconInvites from '~icons/material-symbols/partner-heart-rounded'
 	import 'balloon-css'
-
-	const { children } = $props()
-
 	import { authClient } from '$lib/auth-client'
 	import { page } from '$app/state'
+	import { getInvites } from '$lib/stores/invites.svelte'
+
+	const { children } = $props()
 	const organizations = authClient.useListOrganizations()
 
 	const navItems = $derived([
@@ -16,6 +17,13 @@
 			url: '/account',
 			icon: IconAccount,
 			isCurrent: () => page.route.id === '/(app)/account'
+		},
+		{
+			name: 'Invites',
+			url: '/account/invites',
+			icon: IconInvites,
+			isCurrent: () => page.url.pathname.startsWith('/account/invites'),
+			badge: () => getInvites().length
 		},
 		{
 			name: 'Organizations',
@@ -33,19 +41,23 @@
 	<main class="container grid grid-cols-5 items-start gap-16">
 		<ul class="text-main-400 grid gap-3">
 			{#each navItems as item}
+				{@const badge = item.badge?.()}
 				{#if !item.show || item.show()}
-					<li
-						class={[
-							'border-main-700  border-b pb-2 last:border-b-0',
-							item.isCurrent() && 'text-main-200'
-						]}
-					>
+					<li class={[item.isCurrent() && 'text-main-200']}>
 						<a
 							href={item.url}
-							class={['flex items-center gap-2', !item.isCurrent() && 'hover:text-accent-300']}
+							class={[
+								'flex items-center gap-2 transition duration-100',
+								!item.isCurrent() && 'hover:text-main-200'
+							]}
 						>
 							<item.icon />
 							{item.name}
+							{#if badge}
+								<span class="badge-accent">
+									{badge}
+								</span>
+							{/if}
 						</a>
 					</li>
 				{/if}

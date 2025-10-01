@@ -60,7 +60,7 @@
 							{/if}
 							<span>{org.name}</span>
 							{#if sessionStore.session?.activeOrganizationId === org.id}
-								<span class="badge bg-main-700 text-main-100">Active</span>
+								<span class="badge badge-accent">Active</span>
 							{/if}
 						</div>
 					</td>

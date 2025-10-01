@@ -217,7 +217,11 @@
 }
 
 @utility badge {
-	@apply rounded px-2 py-1 text-xs font-semibold uppercase;
+	@apply rounded border px-1.5 py-0 text-[0.8rem] font-medium uppercase inset-shadow-xs transition duration-100;
+}
+
+@utility badge-accent {
+	@apply text-accent-100 bg-accent-600 border-accent-500 inset-shadow-accent-500/40 badge;
 }
 
 @utility animate-border {

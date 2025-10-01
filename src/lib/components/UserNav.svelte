@@ -3,6 +3,8 @@
 	import { goto } from '$app/navigation'
 	import { sessionStore } from '$lib/stores/session.svelte'
 	import { authClient } from '$lib/auth-client'
+	import { onMount } from 'svelte'
+	import { getInvites, refreshInvites } from '$lib/stores/invites.svelte'
 
 	const activeOrganization = authClient.useActiveOrganization()
 
@@ -15,12 +17,28 @@
 			}
 		})
 	}
+
+	let invites = $derived(getInvites())
+
+	onMount(async () => {
+		await refreshInvites()
+		console.log('invites', invites)
+	})
 </script>
 
 <Dropdown>
 	{#snippet trigger()}
 		{#if sessionStore.user}
-			<img alt="Avatar" src={sessionStore.user.image} class="w-8 shrink-0 rounded-full" />
+			<div class="relative">
+				<img alt="Avatar" src={sessionStore.user.image} class="w-8 shrink-0 rounded-full" />
+				{#if invites.length}
+					<div
+						class="bg-accent-500 absolute top-0 right-0 size-3 animate-ping rounded-full"
+						style="animation-iteration-count: 1"
+					></div>
+					<div class="bg-accent-500 absolute top-0 right-0 size-3 rounded-full"></div>
+				{/if}
+			</div>
 		{/if}
 	{/snippet}
 
@@ -35,6 +53,14 @@
 						class="text-accent-400 hover:text-accent-300 font-semibold">Change</a
 					>
 				</div>
+			</li>
+			<li class="group">
+				<a href="/account/invites" class="list-btn w-full">
+					<span class="badge-accent">
+						{invites.length}
+					</span>
+					personal invites left
+				</a>
 			</li>
 			<li>
 				<a href="/account" class="list-btn w-full">Account</a>
