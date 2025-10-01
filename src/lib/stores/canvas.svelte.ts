@@ -20,15 +20,18 @@ import {
 	isProject,
 	resolvedComponentModel,
 	nodePortModel,
-	jsonSchemaTypeModel
+	jsonSchemaTypeModel,
+	deployedProjectDataModel
 } from '$lib/schemas'
 import { type NodeContainer } from '$lib/types/flow'
 import { toast } from 'svelte-sonner'
-import type * as z from 'zod'
+import * as z from 'zod'
 import { clone } from '$lib/utils/clone'
 import { exclude } from '$lib/utils/exclude'
 import { resolveComponentCached } from '$lib/utils/resolveComponent'
 import type { requirementsModel } from '$lib/schemas/requirements'
+import { hashStr } from '$lib/utils/hashStr'
+import stringify from 'json-stringify-deterministic'
 
 let nodesStore = $state<CanvasNode[]>([])
 let edgesStore = $state<Edge[]>([])
@@ -72,8 +75,19 @@ export const canvasState = $state<{
 // so all changes to one node sync immediately to all other instances of the same component
 let project = $state(page.data.project as z.infer<typeof resolvedProjectModel>)
 export const getProject = () => project
-export const setProject = (newProject: z.infer<typeof resolvedProjectModel>) =>
-	(project = newProject)
+export const setProject = (newProject: z.infer<typeof resolvedProjectModel>) => {
+	project = newProject
+	if (project?.spec) refreshProjectHash()
+}
+// this could be a derived, but it's actually quite slow, so it's better to re-calculate it manually instead
+let projectHash = $state('')
+export const getProjectHash = () => projectHash
+export const refreshProjectHash = async() => (projectHash = await hashStr(stringify($state.snapshot(project.spec))))
+
+let deployment = $state<z.infer<typeof deployedProjectDataModel>>()
+export const getDeployment = () => deployment
+export const setDeployment = (newDeployment: z.infer<typeof deployedProjectDataModel>) =>
+	(deployment = newDeployment)
 
 const currentNodePath = $derived.by(() => {
 	const path = page.url.pathname.split('/')
@@ -768,4 +782,6 @@ export const updateLocalComponent = async <T extends z.infer<typeof componentMod
 			await Promise.all(Object.values(node.spec.spec.nodes).map(processNode))
 	}
 	await Promise.all(Object.values(project.spec.nodes).map(processNode))
+	// calculate hash in background
+	refreshProjectHash()
 }

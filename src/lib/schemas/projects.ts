@@ -67,3 +67,12 @@ export const projectModel = z.strictObject({
 export const resolvedProjectModel = projectModel.extend({
 	spec: resolvedProjectSpecModel
 })
+
+// data that's returned from the /deployments endpoint
+// it doesn't include the entire spec, but rather just a checksum of it
+export const deployedProjectDataModel = z.strictObject({
+	id: z.string(),
+	active: z.boolean(),
+	createdAt: z.date(),
+	checksum: z.string()
+})

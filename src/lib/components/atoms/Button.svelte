@@ -142,7 +142,7 @@
 					out:scale={{ start: 0.5, opacity: 0, duration: 500, delay: 0 }}
 					class="col-start-1 row-start-1"
 				>
-					<AutorenewIcon class="animate-spin" />
+					<AutorenewIcon class="shrink-0 animate-spin" />
 				</div>
 			{:else}
 				<div
@@ -165,7 +165,7 @@
 					out:fly={{ y: -animY, duration: 300, delay: 0 }}
 					class="col-start-1 row-start-1 mx-auto flex items-center"
 				>
-					<AutorenewIcon class="animate-spin" />
+					<AutorenewIcon class="shrink-0 animate-spin" />
 				</div>
 			{:else}
 				<div

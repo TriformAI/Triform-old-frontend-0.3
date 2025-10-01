@@ -1,5 +1,5 @@
 import { API } from '$lib/api'
-import type { resolvedProjectModel } from '$lib/schemas'
+import type { deployedProjectDataModel, resolvedProjectModel } from '$lib/schemas'
 import { requirementsModel } from '$lib/schemas/requirements'
 import type { Project } from '$lib/types/resources'
 import { unresolveProject } from '$lib/utils/unresolveComponent'
@@ -22,3 +22,7 @@ export const saveProject = async (project: z.infer<typeof resolvedProjectModel>)
 export const generateRequirements = async (id: string) => {
 	return await api.post<{ data: z.infer<typeof requirementsModel> }>(`projects/${id}/requirements/generate`, {})
 }
+
+export const deployProject = async (id: string) => await api.post<{ data: z.infer<typeof deployedProjectDataModel> & { spec: z.infer<typeof resolvedProjectModel>['spec'] } }>(`projects/${id}/deploy`, {})
+
+export const getDeployments = async (id: string) => await api.get<{ data: z.infer<typeof deployedProjectDataModel>[] }>(`projects/${id}/deployments`)

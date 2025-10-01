@@ -26,6 +26,7 @@ declare global {
 			project?: Project
 			modifiers?: z.infer<typeof modifierModel>[]
 			payloads?: Payload[]
+			deployments?: z.infer<typeof deployedProjectDataModel>[]
 			ingressTokens?: z.infer<typeof ingressTokenModel>[]
 		}
 		// interface PageState {}

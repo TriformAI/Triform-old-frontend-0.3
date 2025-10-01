@@ -45,9 +45,22 @@ const projectUpdated = baseModel.extend({
 	})
 })
 
+export const projectDeployed = baseModel.extend({
+	event: z.literal('project:deployed'),
+	data: z.strictObject({
+		deployment: z.object({
+			id: z.string(),
+			active: z.boolean(),
+			createdAt: z.string(),
+			checksum: z.string()
+		})
+	})
+})
+
 export const socketEventModel = z.discriminatedUnion('event', [
 	componentUpdated,
 	connected,
 	componentRequirementsUpdated,
-	projectUpdated
+	projectUpdated,
+	projectDeployed
 ])

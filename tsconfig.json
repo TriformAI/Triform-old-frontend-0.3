@@ -10,7 +10,7 @@
 		"sourceMap": true,
 		"strict": true,
 		"moduleResolution": "bundler",
-		"types": ["unplugin-icons/types/svelte", "fetch-event-stream/types"],
+		"types": ["unplugin-icons/types/svelte", "fetch-event-stream/types", "bun-types"],
 		"noErrorTruncation": true
 	},
 	"exclude": ["node_modules"]

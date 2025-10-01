@@ -3,7 +3,7 @@ import { fail } from '@sveltejs/kit'
 import { getNodes } from '$lib/utils/getNodes'
 import { isFlow, type Component } from '$lib/types/resources'
 import type { UUID as Uuid } from 'crypto'
-import type { ingressTokenModel, resolvedProjectModel } from '$lib/schemas'
+import type { deployedProjectDataModel, ingressTokenModel, resolvedProjectModel } from '$lib/schemas'
 import type * as z from 'zod'
 
 export async function load({ locals, params, depends }) {
@@ -13,11 +13,13 @@ export async function load({ locals, params, depends }) {
 
 	const [
 		{ data: project, success: projectSuccess },
+		{ data: deployments },
 		{ data: modifiers },
 		{ data: components },
 		{ data: ingressTokens }
 	] = await Promise.all([
 		locals.api.get<{ data: z.infer<typeof resolvedProjectModel> }>(`projects/${id}?depth=999`),
+		locals.api.get<{ data: z.infer<typeof deployedProjectDataModel>[] }>(`projects/${id}/deployments`),
 		locals.api.get<{ data: Modifier[] }>(`modifiers?full=true`),
 		//locals.api.get<Payload[]>(`payloads?full=true`),
 		locals.api.get<{ data: Component[] }>(`components?full=true`),
@@ -33,7 +35,7 @@ export async function load({ locals, params, depends }) {
 
 	return {
 		project,
-		drafts: [],
+		deployments,
 		components,
 		modifiers,
 		payloads,

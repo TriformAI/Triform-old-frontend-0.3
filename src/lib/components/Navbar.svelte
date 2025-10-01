@@ -14,7 +14,7 @@
 </script>
 
 <header
-	class="bg-main-850 sticky top-0 z-30 grid w-full grid-cols-[1fr_4fr_1fr] items-center px-5 py-2"
+	class="bg-main-850 sticky top-0 z-30 grid w-full grid-cols-[1fr_auto_1fr] items-center px-5 py-2"
 >
 	<a href="/">
 		<img alt="Triform logo" src={logo} class="w-10" />

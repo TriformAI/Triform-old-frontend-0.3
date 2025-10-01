@@ -15,14 +15,16 @@
 		updateLocalComponent,
 		getCurrentContainer,
 		getVisibleComponent,
-		getBreadcrumbs
+		getBreadcrumbs,
+		setDeployment,
+		getDeployment
 	} from '$lib/stores/canvas.svelte'
 	import { chat } from '$lib/stores/chat.svelte'
 	import { debounce } from '$lib/utils/debounce'
 	import { onMount, untrack } from 'svelte'
 	import { page } from '$app/state'
 	import type * as z from 'zod'
-	import { resolvedProjectModel } from '$lib/schemas'
+	import { deployedProjectDataModel, resolvedProjectModel } from '$lib/schemas'
 	import { ingressTokens } from '$lib/stores/ingressTokens.svelte.js'
 	import Chat from '$lib/components/Chat/Chat.svelte'
 	import { WebSocket } from 'partysocket'
@@ -56,9 +58,9 @@
 	// ensure project is set before anything else happens
 	$effect.pre(() => {
 		// don't replace the project if one is already loaded
-		if (getProject()) return
-		console.log('setting project', page.data.project)
-		setProject(page.data.project as z.infer<typeof resolvedProjectModel>)
+		if (!getProject()) setProject(page.data.project as z.infer<typeof resolvedProjectModel>)
+		if (!getDeployment())
+			setDeployment(page.data.deployments?.[0] as z.infer<typeof deployedProjectDataModel>)
 	})
 
 	$effect.pre(() => {
@@ -151,14 +153,6 @@
 		}
 	})
 
-	const projectIsEmpty = $derived.by(() => {
-		const container = getCurrentContainer()
-		if (!container) return
-
-		const { spec, resource } = container
-		return resource.startsWith('project') && Object.keys(spec.nodes ?? {}).length === 0
-	})
-
 	const containerName = $derived(getCurrentContainer()?.meta.name)
 	const containerType = $derived(getCurrentContainer()?.resource.split('/')[0] as NodeType)
 	const containerSuffix = $derived.by(() => {
@@ -187,9 +181,7 @@
 		<BreadCrumbs />
 
 		{#snippet extras()}
-			{#if !projectIsEmpty}
-				<DeployButton />
-			{/if}
+			<DeployButton />
 		{/snippet}
 	</Navbar>
 
