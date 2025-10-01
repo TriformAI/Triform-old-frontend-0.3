@@ -4,10 +4,10 @@
 	import InputField from '../atoms/InputField.svelte'
 	import Button from '../atoms/Button.svelte'
 	import { goto } from '$app/navigation'
-	import { createFormHandler } from '$lib/stores/formHandler.svelte'
 	import { createProject } from '$lib/actions/project'
 	import type * as z from 'zod'
 	import { projectModel } from '$lib/schemas'
+	import { toast } from 'svelte-sonner'
 
 	interface Props {
 		dialog?: HTMLDialogElement
@@ -44,23 +44,37 @@ Triform automatically generates this README as a starting point. You are encoura
 	} satisfies z.infer<typeof projectModel>)
 
 	let nameInput = $state<HTMLInputElement>()
+	let isLoading = $state(false)
+	let errors = $state<string[] | null>(null)
 
-	let { handleSubmit, isLoading, errors } = $derived(
-		createFormHandler({
-			onSubmit: async data => {
-				formData.spec.readme = formData.spec.readme.replace('{{PROJECT_NAME}}', formData.meta.name)
-				return await createProject(formData)
-			},
-			successMessage: 'Project created!',
-			onSuccess: async result => {
+	async function handleSubmit(e: Event) {
+		e.preventDefault()
+		isLoading = true
+		errors = null
+
+		try {
+			formData.spec.readme = formData.spec.readme.replace('{{PROJECT_NAME}}', formData.meta.name)
+			const result = await createProject(formData)
+
+			if (result.success) {
+				toast.success('Project created!')
 				console.log(result.data)
-				await goto(`project/${result.data.id}`)
-			},
-			onError: result => {
+				goto(`/project/${result.data.id}`)
+			} else {
+				const errorResult = result as { issues?: { message: string }[]; error?: string }
+				errors = errorResult.issues?.map(issue => issue.message) || [
+					errorResult.error || 'Operation failed'
+				]
 				nameInput?.focus()
 			}
-		})
-	)
+		} catch (error) {
+			console.error('Form submission error:', error)
+			errors = [error instanceof Error ? error.message : 'Unknown error']
+			nameInput?.focus()
+		} finally {
+			isLoading = false
+		}
+	}
 </script>
 
 <Dialog bind:dialog appearance="center" onOpen={() => nameInput?.focus()}>
@@ -74,7 +88,7 @@ Triform automatically generates this README as a starting point. You are encoura
 		{/snippet}
 
 		{#snippet body()}
-			<form novalidate onsubmit={e => handleSubmit(e, formData)} class="flex flex-col gap-y-4">
+			<form novalidate onsubmit={handleSubmit} class="flex flex-col gap-y-4">
 				{#if errors}
 					<div class="error-msg">
 						<ul>
