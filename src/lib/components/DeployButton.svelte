@@ -45,9 +45,6 @@
 	const hasChanges = $derived(
 		hash !== deployment?.checksum && Object.keys(project?.spec.nodes ?? {}).length
 	)
-	$effect(() => {
-		console.log('hash', hash, deployment?.checksum)
-	})
 </script>
 
 <div class="flex flex-row items-center gap-x-3">

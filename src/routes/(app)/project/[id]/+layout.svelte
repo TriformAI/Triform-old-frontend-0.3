@@ -129,6 +129,8 @@
 			} else if (payload.event === 'project:updated') {
 				setProject(payload.data.project)
 				refreshFlow()
+			} else if (payload.event === 'project:deployed') {
+				setDeployment(payload.data.deployment)
 			} else if (payload.event === 'connected') {
 				setSocketId(payload.data.id)
 			}

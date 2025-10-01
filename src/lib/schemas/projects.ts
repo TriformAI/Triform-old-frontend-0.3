@@ -73,6 +73,6 @@ export const resolvedProjectModel = projectModel.extend({
 export const deployedProjectDataModel = z.strictObject({
 	id: z.string(),
 	active: z.boolean(),
-	createdAt: z.date(),
+	createdAt: z.coerce.date(),
 	checksum: z.string()
 })

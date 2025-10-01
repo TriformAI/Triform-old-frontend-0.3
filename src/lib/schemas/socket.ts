@@ -6,7 +6,7 @@
 
 import * as z from 'zod'
 import { componentModel } from './components.js'
-import { resolvedProjectModel } from './projects.js'
+import { deployedProjectDataModel, resolvedProjectModel } from './projects.js'
 import { requirementsModel } from './requirements.js'
 
 const baseModel = z.strictObject({
@@ -48,12 +48,7 @@ const projectUpdated = baseModel.extend({
 export const projectDeployed = baseModel.extend({
 	event: z.literal('project:deployed'),
 	data: z.strictObject({
-		deployment: z.object({
-			id: z.string(),
-			active: z.boolean(),
-			createdAt: z.string(),
-			checksum: z.string()
-		})
+		deployment: deployedProjectDataModel
 	})
 })
 

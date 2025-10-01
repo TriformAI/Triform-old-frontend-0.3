@@ -31,7 +31,6 @@
 	onMount(() => {
 		// @ts-expect-error globally defined
 		if (!browser || !Featurebase) return
-		console.log('user', user)
 		if (!user?.id || !user?.email || !user?.name || !user?.image) return
 		// @ts-expect-error globally defined
 		Featurebase('identify', {
