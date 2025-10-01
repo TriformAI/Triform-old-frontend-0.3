@@ -99,7 +99,7 @@ export const getActionModel = (inputs: z.infer<typeof ioModel>, name = '') => {
 	
 	// Generate Inputs class fields
 	const inputFields = Object.entries(inputTypes)
-		.map(([key, type]) => `\t${key}: ${type}`)
+		.map(([key, type]) => `    ${key}: ${type}`)
 		.join('\n')
 	
 	// Generate input descriptions for docstring
