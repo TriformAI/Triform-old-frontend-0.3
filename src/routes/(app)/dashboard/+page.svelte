@@ -6,13 +6,30 @@
 	import Dropdown from '$lib/components/common/Dropdown.svelte'
 	import IconDots from '~icons/material-symbols/more-horiz'
 	import IconTrash from '~icons/material-symbols/delete-outline'
-	import { enhance } from '$app/forms'
+	import { deleteProject as deleteProjectAction } from '$lib/actions/project'
 	import { toast } from 'svelte-sonner'
+	import { confirmStore } from '$lib/stores/confirm.svelte.js'
+	import Confirm from '$lib/components/common/Confirm.svelte'
+	import { filterInPlace } from '$lib/utils/filterInPlace.js'
+	import { invalidateAll } from '$app/navigation'
 
 	let { data } = $props()
 	const { projects } = $derived(data)
 
 	let projectDialog = $state<HTMLDialogElement>()
+
+	const deleteProject = async (id: string) => {
+		const confirmed = await confirmStore.show({
+			title: 'Are you sure?',
+			message: 'This will delete the project immediately',
+			danger: true
+		})
+		if (!confirmed) return
+		const { success, error } = await deleteProjectAction(id)
+		if (!success) return toast.error(error ?? 'Project could not be deleted')
+		toast.success('Project deleted')
+		invalidateAll()
+	}
 </script>
 
 <svelte:head>
@@ -21,6 +38,7 @@
 
 <div class="container">
 	<NewProject bind:dialog={projectDialog} />
+	<Confirm />
 
 	<div class="flex flex-row items-center justify-start gap-2">
 		<h1 class=" text-2xl font-semibold">Projects</h1>
@@ -64,26 +82,13 @@
 						{/snippet}
 
 						{#snippet body()}
-							<form
-								action="/project/{project.id}?/delete"
-								method="POST"
-								use:enhance={() => {
-									return async ({ update, result }) => {
-										console.log(result)
-										if (result.type === 'success') {
-											toast.success(`Project "${project.meta.name}" deleted`)
-											await update()
-										} else {
-											toast.error('Project could not be deleted')
-										}
-									}
-								}}
+							<button
+								class="list-btn text-danger-400 w-full text-sm font-medium"
+								onclick={() => deleteProject(project.id)}
 							>
-								<button type="submit" class="list-btn w-full text-sm font-medium">
-									<IconTrash />
-									Delete
-								</button>
-							</form>
+								<IconTrash />
+								Delete
+							</button>
 						{/snippet}
 					</Dropdown>
 				</div>

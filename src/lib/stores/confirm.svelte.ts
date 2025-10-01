@@ -2,6 +2,7 @@ interface Props {
 	title: string
 	message: string
 	btnLabel?: string
+	danger?: boolean
 }
 
 class Confirm {
@@ -9,6 +10,7 @@ class Confirm {
 	#title = $state('')
 	#message = $state('')
 	#btnLabel = $state('')
+	#danger = $state(false)
 	#resolver: ((value: boolean) => void) | undefined = undefined
 
 	constructor() {}
@@ -24,12 +26,17 @@ class Confirm {
 	get btnLabel() {
 		return this.#btnLabel
 	}
+	
+	get danger() {
+		return this.#danger
+	}
 
-	async show({ title, message, btnLabel = 'Confirm' }: Props) {
+	async show({ title, message, btnLabel = 'Confirm', danger = false }: Props) {
 		this.active = true
 		this.#title = title
 		this.#message = message
 		this.#btnLabel = btnLabel
+		this.#danger = danger
 
 		return new Promise<boolean>(resolve => {
 			this.#resolver = resolve
@@ -44,6 +51,7 @@ class Confirm {
 			this.#title = ''
 			this.#message = ''
 			this.#btnLabel = ''
+			this.#danger = false
 		}, 300)
 	}
 

@@ -19,6 +19,8 @@ export const saveProject = async (project: z.infer<typeof resolvedProjectModel>)
 	)
 }
 
+export const deleteProject = async (id: string) => await api.delete<{ data?: { message: string }, error?: string }>(`projects/${id}`)
+
 export const generateRequirements = async (id: string) => {
 	return await api.post<{ data: z.infer<typeof requirementsModel> }>(`projects/${id}/requirements/generate`, {})
 }

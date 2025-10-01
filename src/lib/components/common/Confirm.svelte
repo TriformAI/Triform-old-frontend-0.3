@@ -53,7 +53,11 @@
 						{/snippet}
 					</Button>
 
-					<Button variation="confirm" type="submit" bind:element={submitBtn}>
+					<Button
+						variation={confirmStore.danger ? 'danger' : 'confirm'}
+						type="submit"
+						bind:element={submitBtn}
+					>
 						{#snippet body()}
 							{confirmStore.btnLabel}
 						{/snippet}
