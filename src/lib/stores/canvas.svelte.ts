@@ -379,9 +379,7 @@ export async function addNode(
 	position: { x: number; y: number } = { x: 0, y: 0 },
 	inputs: Record<string, z.infer<typeof nodePortModel>> = {}
 ) {
-	if (!project) {
-		throw new Error('No project loaded')
-	}
+	if (!project) throw new Error('No project loaded')
 
 	const newNodeId = crypto.randomUUID()
 	const container = getCurrentContainer()
@@ -420,10 +418,6 @@ export async function addNode(
 
 	await saveContainer(snapshot)
 	await refreshFlow()
-
-	// select the new node
-	const node = nodesStore.find(node => node.id === newNodeId)
-	if (node) node.selected = true
 
 	return {
 		id: newNodeId

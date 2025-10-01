@@ -43,9 +43,7 @@
 	}
 
 	const create = async () => {
-		if (!pendingComponentType) {
-			return
-		}
+		if (!pendingComponentType || pendingComponentType === 'project') return
 
 		isCreating = true
 
