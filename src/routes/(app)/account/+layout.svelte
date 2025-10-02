@@ -6,7 +6,7 @@
 	import 'balloon-css'
 	import { authClient } from '$lib/auth-client'
 	import { page } from '$app/state'
-	import { getInvites } from '$lib/stores/invites.svelte'
+	import { getActiveInvites } from '$lib/stores/invites.svelte'
 
 	const { children } = $props()
 	const organizations = authClient.useListOrganizations()
@@ -23,7 +23,7 @@
 			url: '/account/invites',
 			icon: IconInvites,
 			isCurrent: () => page.url.pathname.startsWith('/account/invites'),
-			badge: () => getInvites().length
+			badge: () => getActiveInvites().length
 		},
 		{
 			name: 'Organizations',

@@ -4,7 +4,7 @@
 	import { sessionStore } from '$lib/stores/session.svelte'
 	import { authClient } from '$lib/auth-client'
 	import { onMount } from 'svelte'
-	import { getInvites, refreshInvites } from '$lib/stores/invites.svelte'
+	import { getInvites, refreshInvites, getActiveInvites } from '$lib/stores/invites.svelte'
 
 	const activeOrganization = authClient.useActiveOrganization()
 
@@ -18,11 +18,10 @@
 		})
 	}
 
-	let invites = $derived(getInvites())
+	const activeInvites = $derived(getActiveInvites())
 
 	onMount(async () => {
 		await refreshInvites()
-		console.log('invites', invites)
 	})
 </script>
 
@@ -31,7 +30,7 @@
 		{#if sessionStore.user}
 			<div class="relative">
 				<img alt="Avatar" src={sessionStore.user.image} class="w-8 shrink-0 rounded-full" />
-				{#if invites.length}
+				{#if activeInvites.length}
 					<div
 						class="bg-accent-500 absolute top-0 right-0 size-3 animate-ping rounded-full"
 						style="animation-iteration-count: 1"
@@ -57,7 +56,7 @@
 			<li class="group">
 				<a href="/account/invites" class="list-btn w-full">
 					<span class="badge-accent">
-						{invites.length}
+						{activeInvites.length}
 					</span>
 					personal invites left
 				</a>
