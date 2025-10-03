@@ -22,7 +22,7 @@
 	<DropdownMenu.Portal>
 		<DropdownMenu.Content
 			class={[
-				'bg-main-950 border-main-800 z-10 w-42 rounded border py-1 transition-all',
+				'bg-main-950 border-main-800 custom-scrollbar z-50 max-h-80 w-42 overflow-y-auto rounded border py-1 transition-all',
 				contentClass
 			]}
 			forceMount

@@ -14,15 +14,22 @@
 </script>
 
 <header
-	class="bg-main-850 sticky top-0 z-30 grid w-full grid-cols-[1fr_auto_1fr] items-center px-5 py-2"
+	class={[
+		'bg-main-850 sticky top-0 z-30 w-full items-center px-2 py-2 md:px-5',
+		'flex flex-row md:grid md:grid-cols-[1fr_auto_1fr]'
+	]}
 >
 	<a href="/">
-		<img alt="Triform logo" src={logo} class="w-10" />
+		<img alt="Triform logo" src={logo} class="mt-1 w-7 md:mt-0 md:w-10" />
 	</a>
 
-	<div class="divide-main-700 mx-auto flex translate-y-[2px] flex-row items-center divide-x">
-		<div class="flex items-center pl-5">
-			{@render children?.()}
+	<div
+		class="divide-main-700 mx-auto flex min-w-0 translate-y-[2px] flex-row items-center divide-x"
+	>
+		<div class="flex min-w-0 items-center pl-2 md:pl-5">
+			<div class="min-w-0 flex-1">
+				{@render children?.()}
+			</div>
 
 			<p class="text-complement-500 ms-2 grid text-sm font-semibold *:col-start-1 *:row-start-1">
 				<span
@@ -37,7 +44,7 @@
 		</div>
 	</div>
 
-	<div class="ms-auto mt-2 flex flex-row items-center gap-4">
+	<div class="ms-auto mt-2 flex shrink-0 flex-row items-center gap-4">
 		{@render extras?.()}
 
 		<UserNav />

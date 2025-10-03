@@ -38,7 +38,7 @@
 <div class="grid h-dvh grid-rows-[auto_1fr]">
 	<Navbar />
 
-	<main class="container grid grid-cols-5 items-start gap-16">
+	<main class="container flex flex-col items-start gap-16 md:grid md:grid-cols-5">
 		<ul class="text-main-400 grid gap-3">
 			{#each navItems as item}
 				{@const badge = item.badge?.()}

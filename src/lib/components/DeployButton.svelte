@@ -47,10 +47,10 @@
 	)
 </script>
 
-<div class="flex flex-row items-center gap-x-3">
+<div class="flex flex-row items-center gap-x-1 md:gap-x-3">
 	{#if deployment?.createdAt}
 		{#key hash}
-			<span class="text-main-500 text-sm">
+			<span class="text-main-500 hidden text-sm md:block">
 				Deployed
 				<span class="text-main-300">{formatRelativeDate(new Date(deployment.createdAt))}</span>
 			</span>
@@ -65,7 +65,9 @@
 		disabled={!hasChanges}
 	>
 		{#snippet body()}
-			<span class="font-semibold"> Deploy project </span>
+			<span class="font-semibold">
+				Deploy <span class="hidden md:block">project</span>
+			</span>
 		{/snippet}
 		{#snippet icon()}
 			<IconDeploy class="size-4 shrink-0" />

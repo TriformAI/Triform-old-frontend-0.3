@@ -28,7 +28,7 @@
 <Dropdown>
 	{#snippet trigger()}
 		{#if sessionStore.user}
-			<div class="relative">
+			<div class="relative shrink-0">
 				<img alt="Avatar" src={sessionStore.user.image} class="w-8 shrink-0 rounded-full" />
 				{#if activeInvites.length}
 					<div

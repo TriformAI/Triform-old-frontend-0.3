@@ -108,6 +108,15 @@
 		Number(localStorage.getItem('componentsLibPanelHeight') || DEFAULT_COMPONENT_PANEL_HEIGHT)
 	)
 
+	type MobileTab = 'chat' | 'canvas' | 'properties'
+	let activeMobileTab = $state<MobileTab>('chat')
+
+	const mobileTabs: { id: MobileTab; label: string }[] = [
+		{ id: 'chat', label: 'Chat' },
+		{ id: 'canvas', label: 'Canvas' },
+		{ id: 'properties', label: 'Properties' }
+	]
+
 	type Requirements = z.infer<typeof requirementsModel>
 
 	// Updates requirements from socket for the currently selected component if component_id matches
@@ -189,10 +198,11 @@
 
 	<main class="overflow-hidden">
 		<SvelteFlowProvider>
+			<!-- Desktop: 3-column layout -->
 			<div
 				bind:this={gridContainer}
 				style={`grid-template-columns: ${chatPanelWidth}px ${GUTTER_SIZE}px 1fr ${GUTTER_SIZE}px ${propsPanelWidth}px; grid-template-rows: 1fr`}
-				class={`bg-main-850 grid h-full px-2 pt-1 pb-2 ease-(--easing-circ)`}
+				class={`bg-main-850 hidden h-full px-2 pt-1 pb-2 ease-(--easing-circ) md:grid`}
 			>
 				<Chat
 					onMessage={() => {
@@ -237,9 +247,9 @@
 									'flex flex-row items-center gap-3',
 									'text-main-300',
 									'w-auto max-w-96 truncate transition-all'
-								]}
+								].join(' ')}
 							>
-								<Icon class={['size-4', containerTypeData?.iconClasses]} />
+								<Icon class={['size-4', containerTypeData?.iconClasses].join(' ')} />
 								<span class="w-full truncate">
 									{containerName}
 									<span class="text-main-400">
@@ -284,6 +294,89 @@
 				/>
 
 				<ComponentLibrary class={propsPanelWidth <= 30 ? 'border-main-850' : ''} /> -->
+			</div>
+
+			<!-- Mobile: Single full-screen panel with tabs -->
+			<div class="bg-main-850 flex h-full flex-col md:hidden">
+				<div class="relative flex-1 overflow-hidden p-2">
+					<!-- Chat Panel -->
+					{#if activeMobileTab === 'chat'}
+						<div class="grid h-full grid-rows-[1fr]">
+							<Chat
+								onMessage={() => {
+									if (chat.data.length === 0) {
+										setTimeout(() => {
+											console.log('chatPanelWidth', chatPanelWidth)
+											chatPanelWidth = defaultChatPanelWidth
+										}, 50)
+									}
+								}}
+							/>
+						</div>
+					{/if}
+
+					<!-- Canvas Panel -->
+					{#if activeMobileTab === 'canvas'}
+						<div
+							class="bg-main-900 border-main-800 flow-container relative grid h-full place-items-center overflow-hidden border"
+						>
+							{#key page.url.pathname}
+								<Flow bind:this={flowComponent} {isGoingDeeper} />
+							{/key}
+							{#if containerName && containerType}
+								{#key containerName + containerType}
+									{@const containerTypeData =
+										nodeTypesDict[[...getBreadcrumbs()].pop()?.type ?? 'project']}
+									{@const Icon = nodeTypesDict[containerTypeData.type].icon}
+									<div
+										class={[
+											'bg-main-950/10 border-main-800 absolute top-8 rounded-md border px-6 py-3 backdrop-blur-xs',
+											'flex flex-row items-center gap-3',
+											'text-main-300',
+											'w-auto max-w-96 truncate transition-all'
+										].join(' ')}
+									>
+										<Icon class={['size-4', containerTypeData?.iconClasses].join(' ')} />
+										<span class="w-full truncate">
+											{containerName}
+											<span class="text-main-400">
+												{containerSuffix}
+											</span>
+										</span>
+									</div>
+								{/key}
+							{/if}
+						</div>
+					{/if}
+
+					<!-- Properties Panel -->
+					{#if activeMobileTab === 'properties'}
+						<div class="h-full">
+							<PropsPanel />
+						</div>
+					{/if}
+				</div>
+
+				<!-- Mobile Tab Navigation -->
+				<nav
+					class={[
+						'border-main-800 bg-main-950/60 mx-2 mb-2 flex overflow-hidden rounded-md border'
+					]}
+				>
+					{#each mobileTabs as tab}
+						<button
+							onclick={() => (activeMobileTab = tab.id)}
+							class={[
+								'flex-1 justify-center py-4 text-center text-sm transition',
+								activeMobileTab === tab.id
+									? 'text-main-50 bg-main-900/90 font-bold'
+									: 'text-main-500 hover:text-main-200 font-medium'
+							].join(' ')}
+						>
+							{tab.label}
+						</button>
+					{/each}
+				</nav>
 			</div>
 		</SvelteFlowProvider>
 	</main>
