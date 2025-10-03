@@ -66,17 +66,18 @@ const throttledScrollToBottom = throttle(scrollToBottom, 100)
 
 export const messages = $state<Message[]>([])
 
-export function initWebsocket(
+export const initWebsocket =(
 	projectId: string,
 	chatMessagesContainer: HTMLElement,
 	onMessage?: () => void
-) {
+) => new Promise((resolve) => {
 	const socket = new WebSocket(
 		() => `/api/projects/${projectId}/chat?startId=${chat.startId ?? '0'}`
 	)
 
 	socket.onopen = () => {
 		console.log('WebSocket connected')
+		resolve(socket)
 	}
 
 	socket.onmessage = async e => {
@@ -105,7 +106,7 @@ export function initWebsocket(
 	}
 
 	chat.socket = socket
-}
+})
 
 function findRun(id: string): RunData | undefined {
 	return chat.data.find(it => it.type === 'run' && it.id === id) as RunData

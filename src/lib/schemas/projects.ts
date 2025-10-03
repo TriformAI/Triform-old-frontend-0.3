@@ -76,3 +76,10 @@ export const deployedProjectDataModel = z.strictObject({
 	createdAt: z.coerce.date(),
 	checksum: z.string()
 })
+
+export const generatedProjectMetaModel = z.strictObject({
+	name: z.string().nonempty().describe('The name of the project'),
+	readme: z
+		.string()
+		.describe('A concise markdown-formatted readme describing the project')
+})

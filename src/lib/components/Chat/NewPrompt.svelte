@@ -1,0 +1,109 @@
+<script lang="ts">
+	import Button from '../atoms/Button.svelte'
+	import HighlightableTextarea from '../atoms/HighlightableTextarea.svelte'
+	import Marquee from '../atoms/Marquee.svelte'
+	import SendIcon from '~icons/material-symbols/arrow-upward-alt-rounded'
+	import { generateProjectMeta, createProject } from '$lib/actions/project'
+	import { toast } from 'svelte-sonner'
+	import type * as z from 'zod'
+	import { projectModel } from '$lib/schemas'
+	import { goto } from '$app/navigation'
+
+	let textarea = $state<HTMLTextAreaElement>()
+	let value = $state('')
+
+	const samplePrompts = [
+		{
+			label: 'Swedish news analyst',
+			prompt:
+				'Build an agent that scrapes the latest news from the top Swedish news sites, analyzes the content and creates a concise summary'
+		},
+		{
+			label: 'Customer support bot',
+			prompt:
+				'Build an agent that answers customer support queries based on our website content using a web tool'
+		},
+		{
+			label: 'Blog post writer',
+			prompt: 'Build an agent that researches and writes a blog post about a given topic'
+		}
+	]
+
+	const onSampleSelect = (prompt: (typeof samplePrompts)[number]) => (value = prompt.prompt)
+
+	let isLoading = $state(false)
+	const sendPrompt = async () => {
+		if (!value.trim().length) return toast.error('Please enter a prompt')
+
+		isLoading = true
+
+		const { success: metaSuccess, data: meta } = await generateProjectMeta(value)
+		if (!metaSuccess) {
+			isLoading = false
+			return toast.error('Failed to generate project meta')
+		}
+
+		const { success: projectSuccess, data: project } = await createProject({
+			resource: 'project/v1',
+			meta: {
+				name: meta.name,
+				intention: ''
+			},
+			spec: {
+				nodes: {},
+				modifiers: {},
+				readme: meta.readme,
+				environment: {
+					variables: []
+				}
+			}
+		} satisfies z.infer<typeof projectModel>)
+
+		if (!projectSuccess) {
+			isLoading = false
+			return toast.error('Failed creating new proejct')
+		}
+
+		goto(`/project/${project.id}`, {
+			state: {
+				initPrompt: value
+			}
+		})
+	}
+</script>
+
+<div class="flex w-full max-w-2xl flex-col items-center gap-3">
+	<div
+		class="bg-main-850 border-main-800 flex h-32 w-full flex-col items-end rounded-md border px-3 py-2"
+	>
+		<HighlightableTextarea
+			bind:textarea
+			bind:value
+			class="h-full w-full"
+			placeholder="Build an agent that..."
+		/>
+		<Button
+			variation="vibrant"
+			disabled={!value.trim().length}
+			type="submit"
+			class="p-1"
+			{isLoading}
+			onClick={sendPrompt}
+		>
+			{#snippet icon()}
+				<SendIcon class="size-5" />
+			{/snippet}
+		</Button>
+	</div>
+	<Marquee speed={50} gap={8} pauseOnHover={true} class="max-w-[80vw]">
+		{#each samplePrompts as prompt}
+			<Button
+				variation="vibrant"
+				class="bg-main-850 text-main-400 border-main-800 hover:text-main-100 rounded-full py-1 whitespace-nowrap not-hover:inset-shadow-none"
+				onClick={() => onSampleSelect(prompt)}
+			>
+				{prompt.label}
+			</Button>
+		{/each}
+	</Marquee>
+</div>

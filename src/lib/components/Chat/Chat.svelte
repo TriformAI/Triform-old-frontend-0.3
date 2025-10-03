@@ -54,11 +54,17 @@
 		parseHistory(messages)
 	}
 
-	function initChat(el: HTMLElement) {
+	const initChat = async (el: HTMLElement) => {
 		chat.data = []
 		chat.startId = '0'
 		chatMessagesContainer = el
-		initWebsocket(page.params.id!, el, onMessage)
+		// if we got an init prompt from the page, fill it and then send it once the socket is connected
+		if (page.state.initPrompt) {
+			message = page.state.initPrompt
+			page.state.initPrompt = undefined
+		}
+		await initWebsocket(page.params.id!, el, onMessage)
+		sendMessage(new Event('submit'))
 	}
 
 	onMount(() => {

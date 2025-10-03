@@ -29,6 +29,9 @@ declare global {
 			deployments?: z.infer<typeof deployedProjectDataModel>[]
 			ingressTokens?: z.infer<typeof ingressTokenModel>[]
 		}
+		interface PageState {
+			initPrompt?: string
+		}
 		// interface PageState {}
 		// interface Platform {}
 		/// <reference types="svelte" />

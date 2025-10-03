@@ -1,5 +1,7 @@
 <script lang="ts">
 	import { marked } from 'marked'
+	import markedShiki from 'marked-shiki'
+	import { codeToHtml } from 'shiki'
 	import DOMPurify from 'dompurify'
 
 	type HighlightEntry = {
@@ -184,6 +186,22 @@
 
 	:global(.highlightable-span hr) {
 		border-color: var(--color-main-700);
+	}
+
+	:global(.highlightable-span pre) {
+		white-space: pre-wrap;
+	}
+
+	:global(.highlightable-span pre code) {
+		background-color: var(--color-main-850);
+		border-radius: 3px;
+		border: 1px solid var(--color-main-700);
+		display: inline-block;
+		padding: 0.5rem;
+	}
+
+	:global(.highlightable-span strong) {
+		font-weight: 800;
 	}
 
 	/* Tables */
