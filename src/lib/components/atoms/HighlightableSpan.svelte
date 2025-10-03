@@ -163,9 +163,18 @@
 		line-height: 1rem;
 	}
 
+	:global(.highlightable-span ol) {
+		list-style-type: decimal;
+		margin-left: 0.5rem;
+		line-height: 1rem;
+	}
+
 	:global(.highlightable-span li) {
-		list-style-type: disc;
 		margin-left: 1rem;
+	}
+
+	:global(.highlightable-span li) {
+		margin-bottom: 0px;
 	}
 
 	:global(.highlightable-span a) {
