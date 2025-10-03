@@ -128,6 +128,22 @@
 		{ id: 'properties', label: 'Properties' }
 	]
 
+	let isMobile = $state(false)
+
+	onMount(() => {
+		const mq = window.matchMedia('(max-width: 768px)')
+		const update = () => (isMobile = mq.matches)
+		update()
+		mq.addEventListener('change', update)
+		return () => mq.removeEventListener('change', update)
+	})
+
+	const gridStyle = $derived.by(() =>
+		isMobile
+			? 'grid-template-columns: 1fr; grid-template-rows: 1fr'
+			: `grid-template-columns: ${chatPanelWidth}px ${GUTTER_SIZE}px 1fr ${GUTTER_SIZE}px ${propsPanelWidth}px; grid-template-rows: 1fr`
+	)
+
 	type Requirements = z.infer<typeof requirementsModel>
 
 	// Updates requirements from socket for the currently selected component if component_id matches
@@ -209,26 +225,16 @@
 
 	<main class="overflow-hidden">
 		<SvelteFlowProvider>
-			<!-- Combined responsive layout container -->
+			<!-- Desktop: 3-column layout -->
 			<div
 				bind:this={gridContainer}
-				style={`grid-template-columns: ${chatPanelWidth}px ${GUTTER_SIZE}px 1fr ${GUTTER_SIZE}px ${propsPanelWidth}px; grid-template-rows: 1fr`}
-				class={[
-					'bg-main-850 h-full',
-					// Mobile: flex layout
-					'flex flex-col',
-					// Desktop: grid layout
-					'ease-(--easing-circ) md:grid md:px-2 md:pt-1 md:pb-2'
-				].join(' ')}
+				style={gridStyle}
+				class={`bg-main-850 grid h-full px-2 pt-1 pb-2 ease-(--easing-circ)`}
 			>
-				<!-- Chat component - rendered once, positioned differently on mobile vs desktop -->
 				<div
 					class={[
-						// Mobile: within flex container, conditional visibility
-						activeMobileTab === 'chat' ? 'block' : 'hidden',
-						'flex-1 p-2',
-						// Desktop: grid child, always visible
-						'md:block md:flex-none md:p-0'
+						isMobile && activeMobileTab !== 'chat' ? 'hidden' : 'block',
+						'h-full min-h-0 overflow-y-auto'
 					].join(' ')}
 				>
 					<Chat
@@ -243,8 +249,7 @@
 					/>
 				</div>
 
-				<!-- Desktop-only grid resizer for chat panel -->
-				<div class="hidden md:contents">
+				{#if !isMobile}
 					<GridResizerHandle
 						name="chatPanel"
 						axis="x"
@@ -259,52 +264,43 @@
 							})
 						}, 300)}
 					/>
-				</div>
+				{/if}
 
-				<!-- Canvas Panel -->
 				<div
 					class={[
-						// Mobile: within flex container, conditional visibility
-						activeMobileTab === 'canvas' ? 'block' : 'hidden',
-						'flex-1 p-2',
-						// Desktop: grid child, always visible
-						'md:block md:flex-none md:p-0'
+						'bg-main-900 border-main-800 flow-container relative grid place-items-center overflow-hidden border',
+						isMobile && activeMobileTab !== 'canvas' ? 'hidden' : ''
 					].join(' ')}
 				>
-					<div
-						class="bg-main-900 border-main-800 flow-container relative grid h-full place-items-center overflow-hidden border"
-					>
-						{#key page.url.pathname}
-							<Flow bind:this={flowComponent} {isGoingDeeper} />
-						{/key}
-						{#if containerName && containerType}
-							{#key containerName + containerType}
-								{@const containerTypeData =
-									nodeTypesDict[[...getBreadcrumbs()].pop()?.type ?? 'project']}
-								{@const Icon = nodeTypesDict[containerTypeData.type].icon}
-								<div
-									class={[
-										'bg-main-950/10 border-main-800 absolute top-8 rounded-md border px-6 py-3 backdrop-blur-xs',
-										'flex flex-row items-center gap-3',
-										'text-main-300',
-										'w-auto max-w-96 truncate transition-all'
-									].join(' ')}
-								>
-									<Icon class={['size-4', containerTypeData?.iconClasses].join(' ')} />
-									<span class="w-full truncate">
-										{containerName}
-										<span class="text-main-400">
-											{containerSuffix}
-										</span>
+					{#key page.url.pathname}
+						<Flow bind:this={flowComponent} {isGoingDeeper} />
+					{/key}
+					{#if containerName && containerType}
+						{#key containerName + containerType}
+							{@const containerTypeData =
+								nodeTypesDict[[...getBreadcrumbs()].pop()?.type ?? 'project']}
+							{@const Icon = nodeTypesDict[containerTypeData.type].icon}
+							<div
+								class={[
+									'bg-main-950/10 border-main-800 absolute top-8 rounded-md border px-6 py-3 backdrop-blur-xs',
+									'flex flex-row items-center gap-3',
+									'text-main-300',
+									'w-auto max-w-96 truncate transition-all'
+								].join(' ')}
+							>
+								<Icon class={['size-4', containerTypeData?.iconClasses].join(' ')} />
+								<span class="w-full truncate">
+									{containerName}
+									<span class="text-main-400">
+										{containerSuffix}
 									</span>
-								</div>
-							{/key}
-						{/if}
-					</div>
+								</span>
+							</div>
+						{/key}
+					{/if}
 				</div>
 
-				<!-- Desktop-only grid resizer for props panel -->
-				<div class="hidden md:contents">
+				{#if !isMobile}
 					<GridResizerHandle
 						name="propsPanel"
 						axis="x"
@@ -319,42 +315,11 @@
 							})
 						}, 300)}
 					/>
-				</div>
+				{/if}
 
-				<!-- Properties Panel -->
-				<div
-					class={[
-						// Mobile: within flex container, conditional visibility
-						activeMobileTab === 'properties' ? 'block' : 'hidden',
-						'flex-1 p-2',
-						// Desktop: grid child, always visible
-						'md:block md:flex-none md:p-0'
-					].join(' ')}
-				>
+				<div class={isMobile && activeMobileTab !== 'properties' ? 'hidden' : 'block'}>
 					<PropsPanel class={propsPanelWidth <= 30 ? 'border-main-850' : ''} />
 				</div>
-
-				<!-- Mobile Tab Navigation -->
-				<nav
-					class={[
-						'border-main-800 bg-main-950/60 mx-2 mb-2 flex overflow-hidden rounded-md border',
-						'md:hidden'
-					].join(' ')}
-				>
-					{#each mobileTabs as tab}
-						<button
-							onclick={() => (activeMobileTab = tab.id)}
-							class={[
-								'flex-1 justify-center py-4 text-center text-sm transition',
-								activeMobileTab === tab.id
-									? 'text-main-50 bg-main-900/90 font-bold'
-									: 'text-main-500 hover:text-main-200 font-medium'
-							].join(' ')}
-						>
-							{tab.label}
-						</button>
-					{/each}
-				</nav>
 
 				<!-- <GridResizerHandle
 					name="componentsLibPanel"
@@ -372,6 +337,29 @@
 				/>
 
 				<ComponentLibrary class={propsPanelWidth <= 30 ? 'border-main-850' : ''} /> -->
+			</div>
+
+			<!-- Mobile Tab Navigation -->
+			<div class="md:hidden">
+				<nav
+					class={[
+						'border-main-800 bg-main-950/60 mx-2 mb-2 flex overflow-hidden rounded-md border'
+					]}
+				>
+					{#each mobileTabs as tab}
+						<button
+							onclick={() => (activeMobileTab = tab.id)}
+							class={[
+								'flex-1 justify-center py-4 text-center text-sm transition',
+								activeMobileTab === tab.id
+									? 'text-main-50 bg-main-900/90 font-bold'
+									: 'text-main-500 hover:text-main-200 font-medium'
+							].join(' ')}
+						>
+							{tab.label}
+						</button>
+					{/each}
+				</nav>
 			</div>
 		</SvelteFlowProvider>
 	</main>
