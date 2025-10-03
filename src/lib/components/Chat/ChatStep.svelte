@@ -105,7 +105,8 @@
 		transition:
 			max-height 0.2s ease-out,
 			opacity 0.15s ease-out;
-		max-height: 1000px;
+		max-height: auto;
+		transition-behavior: allow-discrete;
 		opacity: 1;
 	}
 
