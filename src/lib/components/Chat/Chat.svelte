@@ -40,16 +40,21 @@
 		;(async () => {
 			// Wait for chatMessagesContainer to be bound
 			await tick()
-			if (!chatMessagesContainer) return
+			if (!chatMessagesContainer) {
+				console.log('chatMessagesContainer not bound')
+				return
+			}
 
 			// Initialize chat (shared across all Chat component instances)
 			await initChat(page.params.id!, chatMessagesContainer, onMessage, getMessages)
 
+			console.log('chat initialized', page.state)
+
 			// if we got an init prompt from the page, fill it and then send it once the socket is connected
 			if (page.state.initPrompt) {
 				message = page.state.initPrompt
-				page.state.initPrompt = undefined
 				if (message) sendMessage(new Event('submit'))
+				page.state.initPrompt = undefined
 			}
 		})()
 
@@ -223,7 +228,7 @@
 </script>
 
 <div
-	class="bg-main-950/60 custom-scrollbar scroll-gutter-stable border-main-800 row-span-3 grid grid-rows-[1fr_auto] rounded-lg border"
+	class="bg-main-950/60 custom-scrollbar scroll-gutter-stable border-main-800 row-span-3 grid h-full grid-rows-[1fr_auto] rounded-lg border"
 >
 	<div class="grid items-start overflow-y-auto p-4" bind:this={chatMessagesContainer}>
 		<ul class="chat grid gap-4 pb-6 text-sm">
