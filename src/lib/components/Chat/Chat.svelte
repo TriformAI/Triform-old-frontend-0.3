@@ -2,15 +2,13 @@
 	import { onMount, tick } from 'svelte'
 	import ChatItem from './ChatItem.svelte'
 	import {
-		parseHistory,
 		chat,
-		messages,
 		getUserMessage,
 		type MessageData,
 		type ParsedItem,
 		type UserMessage,
-		initWebsocket,
-		scrollToBottom
+		initChat,
+		unregisterChatContainer
 	} from '$lib/stores/chat.svelte'
 	import Button from '../atoms/Button.svelte'
 	import { page } from '$app/state'
@@ -37,43 +35,28 @@
 
 	let chatMessagesContainer = $state<HTMLElement>()
 
-	// Scroll to bottom when new messages are added
-	$effect(() => {
-		if (!chat.data.length) return
-		setTimeout(() => {
-			if (!chatMessagesContainer) return
-			scrollToBottom(chatMessagesContainer)
-		}, 100)
-	})
-
-	async function loadHistory() {
-		chat.data = []
-
-		const messages = await getMessages(page.params.id!)
-
-		parseHistory(messages)
-	}
-
-	const initChat = async (el: HTMLElement) => {
-		chat.data = []
-		chat.startId = '0'
-		chatMessagesContainer = el
-		// if we got an init prompt from the page, fill it and then send it once the socket is connected
-		if (page.state.initPrompt) {
-			message = page.state.initPrompt
-			page.state.initPrompt = undefined
-		}
-		await initWebsocket(page.params.id!, el, onMessage)
-		sendMessage(new Event('submit'))
-	}
-
 	onMount(() => {
+		// Async initialization
+		;(async () => {
+			// Wait for chatMessagesContainer to be bound
+			await tick()
+			if (!chatMessagesContainer) return
+
+			// Initialize chat (shared across all Chat component instances)
+			await initChat(page.params.id!, chatMessagesContainer, onMessage, getMessages)
+
+			// if we got an init prompt from the page, fill it and then send it once the socket is connected
+			if (page.state.initPrompt) {
+				message = page.state.initPrompt
+				page.state.initPrompt = undefined
+				if (message) sendMessage(new Event('submit'))
+			}
+		})()
+
+		// Unregister this container when the component unmounts
 		return () => {
-			try {
-				chat.socket?.close()
-				chat.socket = null
-			} catch (err) {
-				console.error('error closing socket', err)
+			if (chatMessagesContainer) {
+				unregisterChatContainer(chatMessagesContainer, onMessage)
 			}
 		}
 	})
@@ -242,7 +225,7 @@
 <div
 	class="bg-main-950/60 custom-scrollbar scroll-gutter-stable border-main-800 row-span-3 grid grid-rows-[1fr_auto] rounded-lg border"
 >
-	<div class="grid items-start overflow-y-auto p-4" bind:this={chatMessagesContainer} use:initChat>
+	<div class="grid items-start overflow-y-auto p-4" bind:this={chatMessagesContainer}>
 		<ul class="chat grid gap-4 pb-6 text-sm">
 			{#each chat.data as item}
 				<ChatItem {item} />

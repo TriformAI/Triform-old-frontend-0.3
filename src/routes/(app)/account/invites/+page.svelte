@@ -20,7 +20,7 @@
 		</p>
 	</div>
 
-	{#if invites.length === 0}
+	{#if invites.length}
 		<div
 			class="border-main-700 bg-main-850 flex flex-col items-center justify-center rounded-xl border px-12 py-16"
 		>

@@ -19,7 +19,7 @@
 		setDeployment,
 		getDeployment
 	} from '$lib/stores/canvas.svelte'
-	import { chat } from '$lib/stores/chat.svelte'
+	import { chat, cleanupChat } from '$lib/stores/chat.svelte'
 	import { debounce } from '$lib/utils/debounce'
 	import { onMount, untrack } from 'svelte'
 	import { page } from '$app/state'
@@ -51,8 +51,11 @@
 	onMount(() => {
 		loadComponents(data.components ?? [])
 
-		// @ts-expect-error undefined
-		return () => setProject(undefined)
+		return () => {
+			// @ts-expect-error undefined
+			setProject(undefined)
+			cleanupChat()
+		}
 	})
 
 	// ensure project is set before anything else happens
@@ -72,6 +75,14 @@
 	})
 
 	let isGoingDeeper = $state(false)
+	let previousProjectId = $state<string>()
+
+	// Clean up chat when project ID changes
+	$effect(() => {
+		const currentProjectId = page.params.id
+		if (previousProjectId && previousProjectId !== currentProjectId) cleanupChat()
+		previousProjectId = currentProjectId
+	})
 
 	onNavigate(async (navigation: OnNavigate) => {
 		if (!navigation.to || !navigation.from) return

@@ -47,17 +47,25 @@ export type UserMessage = Omit<
 	'id' | 'runId' | 'sourceId' | 'stepId'
 >
 
-export const chat = $state<{ socket: WebSocket | null; startId: string; data: ParsedItem[] }>({
+export const chat = $state<{ 
+	socket: WebSocket | null
+	startId: string
+	data: ParsedItem[]
+	isInitialized: boolean
+	isInitializing: boolean
+}>({
 	socket: null,
 	startId: '0',
-	data: []
+	data: [],
+	isInitialized: false,
+	isInitializing: false
 })
 
-export function scrollToBottom(chatMessagesContainer: HTMLElement) {
+export function scrollToBottom(chatMessagesContainer: HTMLElement, instant = false) {
 	if (chatMessagesContainer) {
 		chatMessagesContainer.scrollTo({
 			top: chatMessagesContainer.scrollHeight,
-			behavior: 'smooth'
+			behavior: instant ? 'instant' : 'smooth'
 		})
 	}
 }
@@ -66,7 +74,10 @@ const throttledScrollToBottom = throttle(scrollToBottom, 100)
 
 export const messages = $state<Message[]>([])
 
-export const initWebsocket =(
+const activeScrollContainers = new Set<HTMLElement>()
+const activeOnMessageCallbacks = new Set<() => void>()
+
+export const initWebsocket = (
 	projectId: string,
 	chatMessagesContainer: HTMLElement,
 	onMessage?: () => void
@@ -81,16 +92,21 @@ export const initWebsocket =(
 	}
 
 	socket.onmessage = async e => {
-		//console.log('WebSocket message', JSON.parse(e.data))
-
 		try {
-			messages.push(JSON.parse(e.data))
-			handleMessage(JSON.parse(e.data))
+			const message = JSON.parse(e.data)
+			messages.push(message)
+			handleMessage(message)
 
-			if (onMessage) onMessage()
+			// Call all registered callbacks
+			for (const callback of activeOnMessageCallbacks) {
+				callback()
+			}
 
 			await tick()
-			scrollToBottom(chatMessagesContainer)
+			// Scroll all active containers
+			for (const container of activeScrollContainers) {
+				scrollToBottom(container)
+			}
 		} catch (error) {
 			console.error('error handling message', error)
 			toast.error('Unknown error, please try again later')
@@ -99,6 +115,7 @@ export const initWebsocket =(
 
 	socket.onclose = () => {
 		console.log('Socket closed')
+		chat.isInitialized = false
 	}
 
 	socket.onerror = err => {
@@ -107,6 +124,67 @@ export const initWebsocket =(
 
 	chat.socket = socket
 })
+
+export const initChat = async (
+	projectId: string,
+	chatMessagesContainer: HTMLElement,
+	onMessage: (() => void) | undefined,
+	getMessages: (id: string) => Promise<Message[]>
+) => {
+	// Add this container to the set of active containers
+	activeScrollContainers.add(chatMessagesContainer)
+	if (onMessage) activeOnMessageCallbacks.add(onMessage)
+
+	// Guard against double initialization - if already initialized, just register this container
+	if (chat.socket || chat.isInitializing || chat.isInitialized) {
+		console.log('Socket already initialized or initializing, registered new container')
+		return
+	}
+
+	chat.isInitializing = true
+	chat.data = []
+	chat.startId = '0'
+
+	try {
+		// First load the message history
+		const msgs = await getMessages(projectId)
+		parseHistory(msgs)
+		setTimeout(() => {
+			// Scroll all active containers
+			for (const container of activeScrollContainers) {
+				scrollToBottom(container, true)
+			}
+		}, 100)
+
+		// Then establish WebSocket connection with the correct startId (set by parseHistory)
+		await initWebsocket(projectId, chatMessagesContainer, onMessage)
+		
+		chat.isInitialized = true
+	} finally {
+		chat.isInitializing = false
+	}
+}
+
+export const unregisterChatContainer = (
+	chatMessagesContainer: HTMLElement,
+	onMessage?: () => void
+) => {
+	activeScrollContainers.delete(chatMessagesContainer)
+	if (onMessage) activeOnMessageCallbacks.delete(onMessage)
+}
+
+export const cleanupChat = () => {
+	try {
+		chat.socket?.close()
+		chat.socket = null
+		chat.isInitialized = false
+		chat.isInitializing = false
+		activeScrollContainers.clear()
+		activeOnMessageCallbacks.clear()
+	} catch (err) {
+		console.error('error closing socket', err)
+	}
+}
 
 function findRun(id: string): RunData | undefined {
 	return chat.data.find(it => it.type === 'run' && it.id === id) as RunData
