@@ -115,7 +115,7 @@
 			<div
 				data-panel-item={key}
 				class={[
-					' relative z-10 overflow-hidden starting:h-0',
+					' relative z-10 overflow-x-hidden starting:h-0',
 					isActive(key) ? 'h-full' : 'h-0',
 					isMounted && 'transition-height duration-500 ease-(--easing-circ)'
 				]}

@@ -317,7 +317,12 @@
 					/>
 				{/if}
 
-				<div class={isMobile && activeMobileTab !== 'properties' ? 'hidden' : 'block'}>
+				<div
+					class={[
+						isMobile && activeMobileTab !== 'properties' ? 'hidden' : 'block',
+						'h-full min-h-0 overflow-y-auto'
+					].join(' ')}
+				>
 					<PropsPanel class={propsPanelWidth <= 30 ? 'border-main-850' : ''} />
 				</div>
 
