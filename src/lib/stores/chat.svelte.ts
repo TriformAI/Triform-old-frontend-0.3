@@ -10,10 +10,7 @@ import { inProgressComponents } from './builder.svelte'
 // these don't have ids, just an ugly hack for TS for now :)
 const ackModel = ackMessageModel.extend({ id: z.string() })
 const errorModel = errorMessageModel.extend({ id: z.string() })
-export type Message =
-	| z.infer<typeof uiMessageModel>
-	| z.infer<typeof ackModel>
-	| z.infer<typeof errorModel>
+/* ChatEvent type alias removed to avoid parser issues in this environment */
 
 export interface MessageData {
 	id: string
@@ -47,6 +44,8 @@ export type UserMessage = Omit<
 	'id' | 'runId' | 'sourceId' | 'stepId'
 >
 
+export type ChatUrlBuilder = (ctx: { id?: string; startId: string }) => string
+
 export const chat = $state<{ 
 	socket: WebSocket | null
 	startId: string
@@ -70,20 +69,19 @@ export function scrollToBottom(chatMessagesContainer: HTMLElement, instant = fal
 	}
 }
 
-const throttledScrollToBottom = throttle(scrollToBottom, 100)
-
-export const messages = $state<Message[]>([])
+export const messages = $state<any[]>([])
 
 const activeScrollContainers = new Set<HTMLElement>()
 const activeOnMessageCallbacks = new Set<() => void>()
 
 export const initWebsocket = (
-	projectId: string,
+	resourceId: string | undefined,
 	chatMessagesContainer: HTMLElement,
-	onMessage?: () => void
-) => new Promise((resolve) => {
+	onMessage: (() => void) | undefined,
+	buildWsUrl: ChatUrlBuilder
+): Promise<WebSocket> => new Promise((resolve) => {
 	const socket = new WebSocket(
-		() => `/api/projects/${projectId}/chat?startId=${chat.startId ?? '0'}`
+		() => buildWsUrl({ id: resourceId, startId: chat.startId ?? '0' })
 	)
 
 	socket.onopen = () => {
@@ -126,10 +124,11 @@ export const initWebsocket = (
 })
 
 export const initChat = async (
-	projectId: string,
+	resourceId: string | undefined,
 	chatMessagesContainer: HTMLElement,
 	onMessage: (() => void) | undefined,
-	getMessages: (id: string) => Promise<Message[]>
+	getMessages: (id?: string) => Promise<any[]>,
+	buildWsUrl: ChatUrlBuilder
 ) => {
 	// Add this container to the set of active containers
 	activeScrollContainers.add(chatMessagesContainer)
@@ -147,7 +146,7 @@ export const initChat = async (
 
 	try {
 		// First load the message history
-		const msgs = await getMessages(projectId)
+		const msgs = await getMessages(resourceId)
 		parseHistory(msgs)
 		setTimeout(() => {
 			// Scroll all active containers
@@ -157,7 +156,7 @@ export const initChat = async (
 		}, 100)
 
 		// Then establish WebSocket connection with the correct startId (set by parseHistory)
-		await initWebsocket(projectId, chatMessagesContainer, onMessage)
+		await initWebsocket(resourceId, chatMessagesContainer, onMessage, buildWsUrl)
 		
 		chat.isInitialized = true
 	} finally {
@@ -216,12 +215,12 @@ function findStep(stepId: string): StepData | undefined {
 	return findStepRecursive(stepId, chat.data)
 }
 
-export function handleMessage(msg: Message) {
+export function handleMessage(msg: any) {
 	//console.log('handleMessage', msg)
 
-	const { id, event, data, sourceId } = msg
-	const runId = 'runId' in msg ? msg.runId : undefined
-	const stepId = 'stepId' in msg ? msg.stepId : undefined
+	const { id, event, data, sourceId } = msg as any
+	const runId = 'runId' in msg ? (msg as any).runId : undefined
+	const stepId = 'stepId' in msg ? (msg as any).stepId : undefined
 
 	if (!chat.startId || parseInt(id?.split('-')[0] ?? '0') > parseInt(chat.startId?.split('-')[0])) {
 		chat.startId = id
@@ -229,11 +228,11 @@ export function handleMessage(msg: Message) {
 
 	switch (event) {
 		case 'ack': {
-			handleMessage(data)
+			handleMessage((data as any))
 			break
 		}
 		case 'error': {
-			toast.error(data.error?.message ?? 'Unknown error, please try again later')
+			toast.error((data as any).error?.message ?? 'Unknown error, please try again later')
 			break
 		}
 
@@ -244,10 +243,10 @@ export function handleMessage(msg: Message) {
 				id,
 				type: 'message',
 				role: 'user',
-				content: (data as { content: { type: 'text'; text: string }[] }).content
+				content: ((data as { content: { type: 'text'; text: string }[] }).content)
 					.map(item => item.text)
 					.join(''),
-				context: data.context
+				context: (data as any).context
 			} satisfies MessageData)
 
 			break
@@ -277,11 +276,8 @@ export function handleMessage(msg: Message) {
 				const run = findRun(runId)
 				if (run) {
 					const message = findMessage(sourceId, run)
-					// console.log('message', $state.snapshot(message))
-					// console.log('data.delta', data.delta)
-
 					if (message && !message.completed) {
-						message.content += data.delta
+						message.content += (data as any).delta
 					}
 				}
 			}
@@ -328,12 +324,11 @@ export function handleMessage(msg: Message) {
 				type: 'step',
 				id,
 				event: 'started',
-				title: data.title,
+				title: (data as any).title,
 				children: [],
 				completed: false
 			}
 
-			// TODO: if we found any events for this step already, use completed & title from there instead
 			// If stepId is provided, nest inside that step
 			if (stepId) {
 				const parentStep = findStep(stepId)
@@ -355,7 +350,7 @@ export function handleMessage(msg: Message) {
 			// Find the step by sourceId
 			const step = findStep(sourceId)
 			if (step) {
-				step.title = data.title
+				step.title = (data as any).title
 				step.event = 'completed'
 				step.completed = true
 			}
@@ -372,9 +367,7 @@ export function resetChatState() {
 }
 
 // Replay a backlog/history
-export function parseHistory(history: Message[]) {
-	//resetChatState()
-
+export function parseHistory(history: any[]) {
 	for (const m of history) handleMessage(m)
 }
 

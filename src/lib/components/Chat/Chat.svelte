@@ -8,11 +8,12 @@
 		type ParsedItem,
 		type UserMessage,
 		initChat,
-		unregisterChatContainer
+		unregisterChatContainer,
+		type ChatUrlBuilder
 	} from '$lib/stores/chat.svelte'
 	import Button from '../atoms/Button.svelte'
 	import { page } from '$app/state'
-	import { getMessages } from '$lib/remote/chat.remote'
+	import { getMessages as getProjectMessages } from '$lib/remote/chat.remote'
 	import ChatMention from './ChatMention.svelte'
 	import { type Item } from './ChatMention.svelte'
 	import { getCurrentContainer, getNodePath, getNodeByPath } from '$lib/stores/canvas.svelte'
@@ -24,13 +25,24 @@
 	import IconClose from '~icons/material-symbols/close-rounded'
 	import { arraysDiffer } from '$lib/utils/arraysDiffer'
 	import HighlightableTextarea from '../atoms/HighlightableTextarea.svelte'
-	import { cancelChat } from '$lib/actions/chat'
+	import { cancelChat as cancelProjectChat } from '$lib/actions/chat'
 	import { toast } from 'svelte-sonner'
 
 	let {
-		onMessage
+		onMessage,
+		id,
+		getMessages = getProjectMessages as (id?: string) => Promise<any[]>,
+		buildWsUrl = (({ id, startId }) =>
+			`/api/projects/${id}/chat?startId=${startId}`) as ChatUrlBuilder,
+		enableContextMentions = true,
+		cancel = cancelProjectChat as (id?: string) => Promise<boolean>
 	}: {
 		onMessage?: () => void
+		id?: string
+		getMessages?: (id?: string) => Promise<any[]>
+		buildWsUrl?: ChatUrlBuilder
+		enableContextMentions?: boolean
+		cancel?: (id?: string) => Promise<boolean>
 	} = $props()
 
 	let chatMessagesContainer = $state<HTMLElement>()
@@ -45,8 +57,10 @@
 				return
 			}
 
+			const resourceId = id ?? page.params.id
+
 			// Initialize chat (shared across all Chat component instances)
-			await initChat(page.params.id!, chatMessagesContainer, onMessage, getMessages)
+			await initChat(resourceId, chatMessagesContainer, onMessage, getMessages, buildWsUrl)
 
 			console.log('chat initialized', page.state)
 
@@ -90,12 +104,14 @@
 		if (!chat.socket) return
 
 		const userMessage = getUserMessage()
-		userMessage.data.context = {
-			...context,
-			[`~currentContainer`]: {
-				container: {
-					type: getCurrentContainer().resource === 'project/v1' ? 'project' : 'component',
-					id: getCurrentContainer().id!
+		if (enableContextMentions) {
+			userMessage.data.context = {
+				...context,
+				[`~currentContainer`]: {
+					container: {
+						type: getCurrentContainer().resource === 'project/v1' ? 'project' : 'component',
+						id: getCurrentContainer().id!
+					}
 				}
 			}
 		}
@@ -107,7 +123,7 @@
 	}
 
 	const cancelRunningChat = async () => {
-		const res = await cancelChat(page.params.id!)
+		const res = await cancel(id ?? page.params.id)
 		if (!res) return toast.error('Failed to cancel chat')
 	}
 
@@ -254,7 +270,7 @@
 			onsubmit={isWaitingForAssistant ? cancelRunningChat : sendMessage}
 			class="input-text relative grid grid-rows-[1fr_auto] gap-2"
 		>
-			{#if isOpen}
+			{#if enableContextMentions && isOpen}
 				<div
 					class="absolute inset-x-0 bottom-[calc(100%+0.25rem)]"
 					transition:fly={{ y: 10, opacity: 0, duration: 200 }}
@@ -268,55 +284,54 @@
 				</div>
 			{/if}
 
-			<div class="-ml-0.5 flex flex-row flex-wrap items-center justify-start gap-1">
-				<Button
-					variation="primary"
-					type="button"
-					class="text-main-400 shrink-0 px-2 py-1.5 text-xs"
-					onClick={() => (isOpen = true)}
-					fastClick={true}
-					tooltip="Add a node to the context"
-					tooltipPos="right"
-				>
-					@
-				</Button>
-				{#each Object.entries(context) as [key, value]}
-					{@const node = getNodeByPath(value.node_path ?? [])}
-					{@const nodeTypeData = nodeTypesDict[node?.spec.resource.split('/')[0] as NodeType]}
-					<div
-						class={[
-							'text-main-300 border-main-800 bg-main-850 rounded-md border px-2 py-1 text-sm transition',
-							'hover:border-main-700 hover:text-main-200',
-							'flex flex-row items-center gap-1.5',
-							'group/item'
-						]}
+			{#if enableContextMentions}
+				<div class="-ml-0.5 flex flex-row flex-wrap items-center justify-start gap-1">
+					<Button
+						variation="primary"
+						type="button"
+						class="text-main-400 shrink-0 px-2 py-1.5 text-xs"
+						onClick={() => (isOpen = true)}
+						fastClick={true}
+						tooltip="Add a node to the context"
+						tooltipPos="right"
 					>
-						<div class="relative">
-							{#if nodeTypeData}
-								<nodeTypeData.icon
+						@
+					</Button>
+					{#each Object.entries(context) as [key, value]}
+						{@const node = getNodeByPath(value.node_path ?? [])}
+						{@const nodeTypeData = nodeTypesDict[node?.spec.resource.split('/')[0] as NodeType]}
+						<div
+							class={[
+								'text-main-300 border-main-800 bg-main-850 rounded-md border px-2 py-1 text-sm transition',
+								'hover:border-main-700 hover:text-main-200',
+								'flex flex-row items-center gap-1.5',
+								'group/item'
+							]}
+						>
+							<div class="relative">
+								{#if nodeTypeData}
+									<nodeTypeData.icon
+										class={`mx-0.5 block size-3 transition group-hover/item:hidden starting:scale-0 starting:opacity-0 ${Array.isArray(nodeTypeData.iconClasses) ? nodeTypeData.iconClasses.join(' ') : nodeTypeData.iconClasses || ''}`}
+									/>
+								{/if}
+								<button
+									onclick={() => removeFromContext(key)}
 									class={[
-										'mx-0.5 block size-3 transition group-hover/item:hidden starting:scale-0 starting:opacity-0',
-										nodeTypeData.iconClasses
+										'h-full group-hover/item:block starting:scale-0 starting:opacity-0',
+										nodeTypeData && 'hidden',
+										'text-main-400 hover:text-main-200',
+										'transition'
 									]}
-								/>
-							{/if}
-							<button
-								onclick={() => removeFromContext(key)}
-								class={[
-									'h-full group-hover/item:block starting:scale-0 starting:opacity-0',
-									nodeTypeData && 'hidden',
-									'text-main-400 hover:text-main-200',
-									'transition'
-								]}
-								type="button"
-							>
-								<IconClose class="size-4" />
-							</button>
+									type="button"
+								>
+									<IconClose class="size-4" />
+								</button>
+							</div>
+							{key.split('@').slice(1).join('@')}
 						</div>
-						{key.split('@').slice(1).join('@')}
-					</div>
-				{/each}
-			</div>
+					{/each}
+				</div>
+			{/if}
 
 			<HighlightableTextarea
 				bind:textarea
@@ -326,15 +341,17 @@
 				bind:value={message}
 				class="!z-0 field-sizing-content max-h-30 min-h-16 w-full resize-none pb-2 outline-0"
 				placeholder="Build something magical"
-				highlights={Object.entries(context).map(([key, value]) => {
-					const node = getNodeByPath(value.node_path ?? [])
-					const nodeTypeData = nodeTypesDict[node?.spec.resource.split('/')[0] as NodeType]
-					return {
-						text: key,
-						fill: `color-mix(in oklab, color-mix(in oklab, ${nodeTypeData?.iconColor} 90%, black) 15%, transparent)`,
-						border: 'transparent'
-					}
-				})}
+				highlights={enableContextMentions
+					? Object.entries(context).map(([key, value]) => {
+							const node = getNodeByPath(value.node_path ?? [])
+							const nodeTypeData = nodeTypesDict[node?.spec.resource.split('/')[0] as NodeType]
+							return {
+								text: key,
+								fill: `color-mix(in oklab, color-mix(in oklab, ${nodeTypeData?.iconColor} 90%, black) 15%, transparent)`,
+								border: 'transparent'
+							}
+						})
+					: []}
 			></HighlightableTextarea>
 
 			<Button
