@@ -12,8 +12,6 @@
 		type ChatUrlBuilder
 	} from '$lib/stores/chat.svelte'
 	import Button from '../atoms/Button.svelte'
-	import { page } from '$app/state'
-	import { getMessages as getProjectMessages } from '$lib/remote/chat.remote'
 	import ChatMention from './ChatMention.svelte'
 	import { type Item } from './ChatMention.svelte'
 	import { getCurrentContainer, getNodePath, getNodeByPath } from '$lib/stores/canvas.svelte'
@@ -25,24 +23,24 @@
 	import IconClose from '~icons/material-symbols/close-rounded'
 	import { arraysDiffer } from '$lib/utils/arraysDiffer'
 	import HighlightableTextarea from '../atoms/HighlightableTextarea.svelte'
-	import { cancelChat as cancelProjectChat } from '$lib/actions/chat'
 	import { toast } from 'svelte-sonner'
 
 	let {
 		onMessage,
 		id,
-		getMessages = getProjectMessages as (id?: string) => Promise<any[]>,
-		buildWsUrl = (({ id, startId }) =>
-			`/api/projects/${id}/chat?startId=${startId}`) as ChatUrlBuilder,
-		enableContextMentions = true,
-		cancel = cancelProjectChat as (id?: string) => Promise<boolean>
+		getMessages,
+		buildWsUrl,
+		enableContextMentions,
+		cancel,
+		initialMessage
 	}: {
 		onMessage?: () => void
 		id?: string
-		getMessages?: (id?: string) => Promise<any[]>
-		buildWsUrl?: ChatUrlBuilder
+		getMessages: (id?: string) => Promise<any[]>
+		buildWsUrl: ChatUrlBuilder
 		enableContextMentions?: boolean
-		cancel?: (id?: string) => Promise<boolean>
+		cancel: (id?: string) => Promise<boolean>
+		initialMessage?: string
 	} = $props()
 
 	let chatMessagesContainer = $state<HTMLElement>()
@@ -57,18 +55,13 @@
 				return
 			}
 
-			const resourceId = id ?? page.params.id
-
 			// Initialize chat (shared across all Chat component instances)
-			await initChat(resourceId, chatMessagesContainer, onMessage, getMessages, buildWsUrl)
+			await initChat(id, chatMessagesContainer, onMessage, getMessages, buildWsUrl)
 
-			console.log('chat initialized', page.state)
-
-			// if we got an init prompt from the page, fill it and then send it once the socket is connected
-			if (page.state.initPrompt) {
-				message = page.state.initPrompt
-				if (message) sendMessage(new Event('submit'))
-				page.state.initPrompt = undefined
+			// send initial message if provided
+			if (initialMessage) {
+				message = initialMessage
+				sendMessage(new Event('submit'))
 			}
 		})()
 
@@ -123,7 +116,7 @@
 	}
 
 	const cancelRunningChat = async () => {
-		const res = await cancel(id ?? page.params.id)
+		const res = await cancel(id)
 		if (!res) return toast.error('Failed to cancel chat')
 	}
 
@@ -343,14 +336,14 @@
 				placeholder="Build something magical"
 				highlights={enableContextMentions
 					? Object.entries(context).map(([key, value]) => {
-							const node = getNodeByPath(value.node_path ?? [])
-							const nodeTypeData = nodeTypesDict[node?.spec.resource.split('/')[0] as NodeType]
-							return {
-								text: key,
-								fill: `color-mix(in oklab, color-mix(in oklab, ${nodeTypeData?.iconColor} 90%, black) 15%, transparent)`,
-								border: 'transparent'
-							}
-						})
+						const node = getNodeByPath(value.node_path ?? [])
+						const nodeTypeData = nodeTypesDict[node?.spec.resource.split('/')[0] as NodeType]
+						return {
+							text: key,
+							fill: `color-mix(in oklab, color-mix(in oklab, ${nodeTypeData?.iconColor} 90%, black) 15%, transparent)`,
+							border: 'transparent'
+						}
+					})
 					: []}
 			></HighlightableTextarea>
 

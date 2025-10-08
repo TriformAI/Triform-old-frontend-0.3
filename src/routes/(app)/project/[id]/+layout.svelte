@@ -26,7 +26,7 @@
 	import type * as z from 'zod'
 	import { deployedProjectDataModel, resolvedProjectModel } from '$lib/schemas'
 	import { ingressTokens } from '$lib/stores/ingressTokens.svelte.js'
-	import Chat from '$lib/components/Chat/Chat.svelte'
+	import BuilderChat from '$lib/components/Chat/BuilderChat.svelte'
 	import { WebSocket } from 'partysocket'
 	import { socketEventModel } from '$lib/schemas/socket.js'
 	import { setSocketId } from '$lib/stores/socket.svelte.js'
@@ -237,7 +237,7 @@
 						'h-full min-h-0 overflow-y-auto'
 					].join(' ')}
 				>
-					<Chat
+					<BuilderChat
 						onMessage={() => {
 							if (chat.data.length === 0) {
 								setTimeout(() => {
