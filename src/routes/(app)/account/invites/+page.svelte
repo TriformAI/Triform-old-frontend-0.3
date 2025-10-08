@@ -5,6 +5,7 @@
 	import InviteCard from './InviteCard.svelte'
 
 	let invites = $derived(getInvites())
+	$inspect(invites)
 
 	onMount(async () => {
 		await refreshInvites()
@@ -20,18 +21,16 @@
 		</p>
 	</div>
 
-	{#if invites.length}
-		<div
-			class="border-main-700 bg-main-850 flex flex-col items-center justify-center rounded-xl border px-12 py-16"
-		>
-			<IconGift class="text-main-600 mb-4 size-16" />
-			<p class="text-main-400 text-center text-sm">You don't have any invites yet.</p>
-		</div>
-	{:else}
-		<div class="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
-			{#each invites as invite}
-				<InviteCard {invite} />
-			{/each}
-		</div>
-	{/if}
+	<div class="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
+		{#each invites as invite}
+			<InviteCard {invite} />
+		{:else}
+			<div
+				class="border-main-700 bg-main-850 flex flex-col items-center justify-center rounded-xl border px-12 py-16"
+			>
+				<IconGift class="text-main-600 mb-4 size-16" />
+				<p class="text-main-400 text-center text-sm">You don't have any invites yet.</p>
+			</div>
+		{/each}
+	</div>
 </div>
