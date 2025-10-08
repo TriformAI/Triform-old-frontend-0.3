@@ -116,14 +116,14 @@ export const getCurrentContainer = (): NodeContainer => {
 }
 
 const nodeSize = {
-	x: 60 * 4,
+	x: 70 * 4,
 	y: 20 * 4
 }
 const gap = 50
-const maxWidth = 600
+const maxWidth = 900
 
 // Initialize the nodes on project or flow level
-export async function refreshFlow() {
+export const refreshFlow = async () => {
 	const container = getCurrentContainer()
 	// parse in all the nodes into the nodesStore
 	const { nodes, edges } = parseNodes(container)
@@ -191,6 +191,8 @@ export async function refreshFlow() {
 
 	setNodes(nodes)
 	setEdges(edges)
+
+	setTimeout(updateNodeLayout, 10)
 }
 
 export const addCreateNode = (
@@ -224,6 +226,45 @@ export const addCreateNode = (
 		setNodes([...nodes, node])
 	}
 	return node
+}
+
+const updateNodeLayout = () => {
+	// ensure that the current container is ordered
+	const container = getCurrentContainer()
+	if (!isProject(container) && !isAgent(container)) return
+
+	
+	const nodes = getNodes()
+	console.log('updating node layout', $state.snapshot(nodes))
+	const orderedNodes = nodes
+		.sort((a, b) => (a.data?.trinode?.order ?? Infinity) - (b.data?.trinode?.order ?? Infinity))
+
+	// Greedy row wrap: place nodes left-to-right; wrap before exceeding maxWidth
+	const initialYOffset = isAgent(container) ? nodeSize.y + gap : 0
+	let cursorX = 0
+	let cursorY = initialYOffset
+	let currentRowMaxHeight = 0
+
+	orderedNodes.forEach(node => {
+		const width = node.measured?.width ?? nodeSize.x
+		const height = node.measured?.height ?? nodeSize.y
+
+		// If placing this node would exceed the row width, wrap to the next row
+		if (cursorX > 0 && cursorX + width > maxWidth) {
+			cursorX = 0
+			cursorY += currentRowMaxHeight + gap
+			currentRowMaxHeight = 0
+		}
+
+		node.position.x = cursorX
+		node.position.y = cursorY + (node.type === 'create-node' ? 8 : 0)
+
+		cursorX += width + gap
+		if (height > currentRowMaxHeight) currentRowMaxHeight = height
+	})
+
+	console.log('setting nodes', $state.snapshot(nodes))
+	setNodes(nodes)
 }
 
 // Get nodes from project
