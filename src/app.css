@@ -379,6 +379,10 @@
 		@apply text-xs font-semibold tracking-wide uppercase;
 	}
 
+	.eyebrow-secondary {
+		@apply text-main-400 text-xs font-extrabold uppercase;
+	}
+
 	.input-text {
 		@apply border-main-700 bg-main-800 text-main-200 not-disabled:group-hover:border-main-600 not-disabled:focus:border-main-600 w-full rounded-md border px-3 py-2 text-sm transition outline-none;
 	}

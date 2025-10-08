@@ -1,8 +1,12 @@
 <script lang="ts">
 	import PanelItem from '../../PanelItem.svelte'
-	import Item from './ListItem.svelte'
-	import Dialog from './Dialog.svelte'
-	import { getCurrentNodePath, getProject } from '$lib/stores/canvas.svelte'
+	import { getCurrentNodePath, getProject, saveContainer } from '$lib/stores/canvas.svelte'
+	import { page } from '$app/state'
+	import EndpointTrigger from './Endpoint/Root.svelte'
+	import { clone } from '$lib/utils/clone'
+	import { toast } from 'svelte-sonner'
+	import { tick } from 'svelte'
+	import ChatTrigger from './ChatTrigger.svelte'
 
 	let dialog = $state<HTMLDialogElement>()
 
@@ -10,29 +14,48 @@
 
 	const currentNodeId = $derived(nodeId === 'container' ? getCurrentNodePath().at(-1)! : nodeId)
 
-	// triggers can only exist on top-level nodes
-	const node = $derived(getProject()?.spec.nodes[currentNodeId])
+	const project = getProject()
 
-	// const triggers = $derived(
-	// 	page.data.triggers?.filter((t: Trigger) => t.spec.component_id === componentData.id)
-	// )
-	const triggers = $derived(node?.triggers ?? {})
+	const triggers = $derived(project?.spec.triggers)
+
+	const onUpdate = async () => {
+		await tick()
+		const snapshot = clone($state.snapshot(project))
+		const res = await saveContainer(snapshot)
+		if (!res.success) toast.error('Failed to save triggers')
+	}
 </script>
-
-<Dialog bind:dialog nodeId={currentNodeId} />
 
 <PanelItem
 	nodeId={currentNodeId}
 	title="Triggers"
-	isListContainer
 	onAddClick={() => dialog?.showModal()}
-	tip="Entrypoints for your project. Can only be added to top-level nodes."
+	tip="The interface for the nodes in your project"
 >
 	<div class="flex flex-col gap-4">
-		{#each Object.entries(triggers) as [triggerId, trigger]}
-			<Item nodeId={currentNodeId} {triggerId} {trigger} />
-		{:else}
-			<p class="text-main-500 text-sm text-center">No triggers yet</p>
+		{#each Object.keys(triggers) as triggerName}
+			{@const trigger = triggers[triggerName as keyof typeof project.spec.triggers]}
+			<div
+				class={[
+					'bg-main-900 flex flex-col gap-2 rounded-md p-4 transition',
+					!trigger.enabled && 'opacity-60'
+				]}
+			>
+				<div class="flex flex-row justify-between">
+					<h3 class="eyebrow">{triggerName}</h3>
+					<input
+						type="checkbox"
+						class="checkbox mt-1 size-[1.3rem]"
+						bind:checked={trigger.enabled}
+						onchange={onUpdate}
+					/>
+				</div>
+				{#if triggerName === 'endpoints'}
+					<EndpointTrigger />
+				{:else if triggerName === 'chat'}
+					<ChatTrigger />
+				{/if}
+			</div>
 		{/each}
 	</div>
 </PanelItem>

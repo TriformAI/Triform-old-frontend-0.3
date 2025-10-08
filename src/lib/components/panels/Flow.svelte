@@ -1,27 +1,12 @@
 <script lang="ts">
-	import { isProject } from '$lib/schemas'
-	import { getCurrentContainer, getCurrentNodePath, getProject } from '$lib/stores/canvas.svelte'
 	import Panel from './Panel.svelte'
 	import Icon from '~icons/material-symbols/network-node'
 
 	const { nodeId }: { nodeId: string } = $props()
-
-	const currentIsProject = $derived(isProject(getCurrentContainer()))
-
-	const realNodeId = $derived(nodeId === 'container' ? getCurrentNodePath().at(-1) : nodeId)
-	const isTopLevelNode = $derived(realNodeId && realNodeId in (getProject()?.spec.nodes ?? {}))
-
-	const items = $derived.by(() => {
-		const items = ['execute', 'io', 'metadata', 'variables']
-
-		if (currentIsProject || isTopLevelNode) items.push('triggers')
-
-		return items
-	})
 </script>
 
 <Panel {nodeId} {Icon}>
 	{#snippet panelItems(PanelItems)}
-		<PanelItems {items} {nodeId} />
+		<PanelItems items={['execute', 'io', 'metadata', 'variables']} {nodeId} />
 	{/snippet}
 </Panel>

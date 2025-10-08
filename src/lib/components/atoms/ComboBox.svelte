@@ -13,7 +13,9 @@
 		items,
 		createNew,
 		placeholder,
-		target
+		target,
+		class: classes,
+		expandOnMount = false
 	}: {
 		value: string
 		searchValue?: string
@@ -27,6 +29,8 @@
 			trigger: () => void
 		}
 		target?: HTMLElement
+		class?: string
+		expandOnMount?: boolean
 	} = $props()
 
 	const filteredItems = $derived.by(() => {
@@ -43,7 +47,7 @@
 	})
 
 	let input = $state<HTMLInputElement | null>(null)
-	let showItems = $state(false)
+	let showItems = $state(expandOnMount)
 </script>
 
 <Combobox.Root
@@ -63,7 +67,7 @@
 		if (!o) searchValue = ''
 	}}
 >
-	<div class="relative">
+	<div class={['relative', classes]}>
 		<Combobox.Input
 			onclick={() => {
 				showItems = true

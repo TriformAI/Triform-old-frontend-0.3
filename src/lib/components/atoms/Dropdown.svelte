@@ -9,9 +9,17 @@
 		class?: string
 		contentClass?: string
 		disabled?: boolean
+		portal?: HTMLDivElement
 	}
 
-	let { trigger, children, class: classes, contentClass, disabled = false }: Props = $props()
+	let {
+		trigger,
+		children,
+		class: classes,
+		contentClass,
+		disabled = false,
+		portal
+	}: Props = $props()
 </script>
 
 <DropdownMenu.Root>
@@ -19,10 +27,10 @@
 		{@render trigger()}
 	</DropdownMenu.Trigger>
 
-	<DropdownMenu.Portal>
+	<DropdownMenu.Portal to={portal}>
 		<DropdownMenu.Content
 			class={[
-				'bg-main-950 border-main-800 custom-scrollbar z-50 max-h-80 w-42 overflow-y-auto rounded border py-1 transition-all',
+				'bg-main-900 border-main-800 custom-scrollbar z-50 max-h-80 w-42 overflow-y-auto rounded border py-1 transition-all',
 				contentClass
 			]}
 			forceMount

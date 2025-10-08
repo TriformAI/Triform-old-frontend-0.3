@@ -8,11 +8,9 @@ import * as z from 'zod'
 import { metaModel, nodePathModel } from './common.js'
 import { resolvedComponentModel } from './components.js'
 import { modifierMappingModel } from './modifiers.js'
-import { triggerModel } from './triggers.js'
 
 const projectNodeModel = z.strictObject({
 	component_id: z.uuidv4(),
-	triggers: z.record(z.string(), triggerModel).default({}),
 	order: z.number().default(0)
 })
 
@@ -42,6 +40,35 @@ export const projectSpecModel = z.strictObject({
 		})
 		.default({
 			variables: []
+		}),
+	triggers: z
+		.object({
+			endpoints: z.object({
+				enabled: z.boolean().default(false),
+				nodes: z.record(
+					z.string(),
+					z.object({
+						method: z.literal('POST'),
+						payload_mapping: z.record(z.string(), z.string())
+					})
+				),
+				ingress_tokens: z.array(z.uuidv4()).default([])
+			}),
+			chat: z
+				.object({
+					enabled: z.boolean().default(false)
+				})
+				.default({ enabled: false })
+		})
+		.default({
+			endpoints: {
+				enabled: false,
+				nodes: {},
+				ingress_tokens: []
+			},
+			chat: {
+				enabled: false
+			}
 		})
 })
 
@@ -78,7 +105,7 @@ export const deployedProjectDataModel = z.strictObject({
 })
 
 export const generatedProjectMetaModel = z.strictObject({
-	name: z.string().nonempty().describe('The name of the project'),
+	name: z.string().nonempty().describe('Human-friendly name of the project'),
 	readme: z
 		.string()
 		.describe('A concise markdown-formatted readme describing the project')
