@@ -5,7 +5,6 @@
 	import IconPlay from '~icons/material-symbols/play-arrow-outline-rounded'
 	import IconStop from '~icons/material-symbols/stop-rounded'
 	import IconCopy from '~icons/mdi/content-copy'
-	import { selected } from '$lib/stores/panel.svelte'
 	import PanelItem from '../../PanelItem.svelte'
 	import Payload from '../common/Payload.svelte'
 	import { blur } from 'svelte/transition'
@@ -19,8 +18,8 @@
 	import { objectMap } from '$lib/utils/objectMap'
 	import { generateMockInputs } from '$lib/actions/components'
 	import { confirmStore } from '$lib/stores/confirm.svelte'
-	import { objFilter } from '$lib/utils/objectFilter'
-	import { objKeyMap } from '$lib/utils/objKeyMap'
+	import { getNodeExecutionState } from '$lib/stores/execution.svelte'
+	import type { Component } from 'svelte'
 
 	const { nodeId }: { nodeId: string } = $props()
 
@@ -28,7 +27,7 @@
 		getVisibleComponent(nodeId) as z.infer<typeof resolvedComponentModel>
 	)
 
-	const objectToSchema = (obj: Record<string, unknown>) => ({
+	const objectToSchema = (obj: Record<string, { schema: unknown }>) => ({
 		type: 'object',
 		properties: objectMap(obj, (value, _key) => value.schema)
 	})
@@ -36,8 +35,12 @@
 	const getDefaultPayload = () =>
 		JSON.stringify(getSamplePayload(objectToSchema(componentData.spec.inputs)) ?? {}, null, 2)
 
-	let payload = $state(getDefaultPayload())
-	if (selected.payload) payload = selected.payload
+	const loadInitialPayload = () => {
+		const input = getNodeExecutionState(nodeId)?.input
+		return input ? JSON.stringify(input, null, 2) : getDefaultPayload()
+	}
+
+	let payload = $state(loadInitialPayload())
 
 	const formattedExecutionState = $derived.by(() => {
 		const state = executorState.state.split('_').join(' ')
@@ -54,13 +57,16 @@
 	})
 
 	async function copyResult() {
-		await navigator.clipboard.writeText(executorState.result)
+		await navigator.clipboard.writeText(resultString)
 		toast.success('Result copied to clipboard')
 	}
 
-	$effect(() => {
-		selected.payload = payload
-	})
+	const nodeExecution = $derived.by(() => getNodeExecutionState(nodeId))
+	const resultString = $derived.by(() =>
+		nodeExecution?.output ? JSON.stringify(nodeExecution.output, null, 2) : executorState.result
+	)
+	const stdoutString = $derived.by(() => nodeExecution?.stdout ?? executorState.stdout)
+	const stderrString = $derived.by(() => nodeExecution?.stderr ?? executorState.stderr)
 
 	const executorState = $state({
 		isRunning: false,
@@ -112,34 +118,38 @@
 		)
 	}
 
-	const additionalActions = [
+	const additionalActions: { icon: Component; label: string; onClick: () => void } = [
 		{
-			icon: IconMagic,
+			icon: IconMagic as unknown as Component,
 			label: 'Generate sample payload',
-			onClick: async () => {
-				if (!componentData?.id) return
-				if (payload !== getDefaultPayload()) {
-					const confirmed = await confirmStore.show({
-						title: 'Generate sample payload',
-						message: 'This will overwrite your current payload'
-					})
-					if (!confirmed) return
-				}
-				const { data, success } = await generateMockInputs(componentData.id)
-				if (!success) return toast.error('Failed to generate sample payload')
-				payload = JSON.stringify(data, null, 2)
+			onClick: () => {
+				void (async () => {
+					if (!componentData?.id) return
+					if (payload !== getDefaultPayload()) {
+						const confirmed = await confirmStore.show({
+							title: 'Generate sample payload',
+							message: 'This will overwrite your current payload'
+						})
+						if (!confirmed) return
+					}
+					const { data, success } = await generateMockInputs(componentData.id)
+					if (!success) return toast.error('Failed to generate sample payload')
+					payload = JSON.stringify(data, null, 2)
+				})()
 			}
 		},
 		{
-			icon: IconReload,
+			icon: IconReload as unknown as Component,
 			label: 'Reload sample payload',
-			onClick: async () => {
-				const confirmed = await confirmStore.show({
-					title: 'Generate default sample payload',
-					message: 'This will overwrite your current payload'
-				})
-				if (!confirmed) return
-				payload = getDefaultPayload()
+			onClick: () => {
+				void (async () => {
+					const confirmed = await confirmStore.show({
+						title: 'Generate default sample payload',
+						message: 'This will overwrite your current payload'
+					})
+					if (!confirmed) return
+					payload = getDefaultPayload()
+				})()
 			}
 		}
 	]
@@ -157,7 +167,7 @@
 				<p class="text-sm font-medium">
 					<span class="text-main-300">Result</span>
 				</p>
-				{#if executorState.result}
+				{#if resultString}
 					<button
 						class="text-main-400 hover:text-main-300 ms-auto -mt-1 transition-colors"
 						onclick={() => copyResult()}><IconCopy class="size-4.5" /></button
@@ -204,7 +214,7 @@
 					readOnly={true}
 					wordWrap={true}
 					language="json"
-					value={executorState.result}
+					value={resultString}
 					class={[
 						'text-sm transition-all duration-300',
 						executorState.isRunning ? 'blur-xs grayscale-75' : 'blur-[0px] grayscale-0',
@@ -215,20 +225,20 @@
 			</div>
 		</div>
 
-		{#if executorState.stdout}
+		{#if stdoutString}
 			<div class="bg-main-800/50 grid grid-rows-[auto_min-h-16] rounded-lg p-3">
 				<span class="text-sm font-medium">Stdout</span>
 				<div class="overflow-x-auto px-2 py-1">
-					<pre class="text-main-300 mt-2 text-sm">{executorState.stdout}</pre>
+					<pre class="text-main-300 mt-2 text-sm">{stdoutString}</pre>
 				</div>
 			</div>
 		{/if}
 
-		{#if executorState.stderr}
+		{#if stderrString}
 			<div class="bg-main-800/50 grid grid-rows-[auto_min-h-16] rounded-lg p-3">
 				<span class="text-sm font-medium">Stderr</span>
 				<div class="overflow-x-auto px-2">
-					<pre class="text-danger-400 mt-2 text-sm">{executorState.stderr}</pre>
+					<pre class="text-danger-400 mt-2 text-sm">{stderrString}</pre>
 				</div>
 			</div>
 		{/if}

@@ -8,7 +8,7 @@ import type { executionModel, resolvedComponentModel, resolvedProjectModel } fro
 import type * as z from 'zod'
 import { API } from '$lib/api'
 import { executionEventModel } from '$lib/schemas'
-import { resetExecutionState, setNodeExecutionState } from '$lib/stores/execution.svelte'
+import { resetExecutionState, setNodeExecutionState, setActiveExecutionId } from '$lib/stores/execution.svelte'
 import { getNodeByPath } from '$lib/stores/canvas.svelte'
 import type { TriNode } from '$lib/types/flow'
 
@@ -58,26 +58,32 @@ export const executeComponent = async (
 
 	try {
 		resetExecutionState()
-		let executionId = ''
 		for await (const event of stream) {
 			console.log(event)
-			if (!state.id) state.id = event.data.path[0]
-			if (rootNodeId) setNodeExecutionState(executionId, rootNodeId, { state: 'running' })
+			if (!state.id) {
+				state.id = event.data.path[0]
+				setActiveExecutionId(state.id)
+			}
+			if (rootNodeId) setNodeExecutionState(state.id, rootNodeId, { state: 'running' as const, input: event.data.payload })
+
 			// : is other metadata such as the call id (in case the same tool is called multiple times) or loop index (in case of a loop)
 			const nodeId = event.data.path.at(-1)?.split(':')?.[0]
 			const nodePath = [...event.data.path].map(p => p.split(':')[0]).slice(1) // remove execution id (first)
 			const node: TriNode | undefined =
 				'nodes' in component.spec ? getNodeByPath(nodePath, component.spec.nodes) : undefined
 			const comp = node?.spec ?? component
-			if (nodeId && event.event) setNodeExecutionState(executionId, nodeId, { state: event.event })
-			if (event.event === 'running') state.state = `Executing ${comp.meta.name}`
-			else if (event.event === 'completed' && event.data.path.length === 1) {
+			const {payload: input, ...data} = event.data
+			const eventState = event.event as 'running' | 'completed' | 'failed'
+
+			if (nodeId && eventState) setNodeExecutionState(state.id, nodeId, { state: eventState, input, ...data })
+			if (eventState === 'running') state.state = `Executing ${comp.meta.name}`
+			else if (eventState === 'completed' && event.data.path.length === 1) {
 				state.state = `Completed ${comp.meta.name}`
 				state.result = JSON.stringify(event.data.output, null, 2)
 				state.stdout = event.data.stdout
 				state.stderr = event.data.stderr
 				break
-			} else if (event.event === 'failed' && !event.data.path.at(-1)?.split(':').pop()?.startsWith('tool_')) {
+			} else if (eventState === 'failed' && !event.data.path.at(-1)?.split(':').pop()?.startsWith('tool_')) {
 				// TODO: make this identical to what an endpoint returns, and also visualise errors in some better way
 				state.result = JSON.stringify(event.data, null, 2)
 				state.abortController.abort()
@@ -86,7 +92,13 @@ export const executeComponent = async (
 				break
 			}
 		}
-		if (rootNodeId) setNodeExecutionState(executionId, rootNodeId, { state: 'completed' })
+		if (rootNodeId) setNodeExecutionState(state.id, rootNodeId, {
+			state: 'completed' as const,
+			input: payload,
+			output: typeof state.result === 'string' ? JSON.parse(state.result) : state.result,
+			stdout: state.stdout,
+			stderr: state.stderr
+		})
 	} catch (err) {
 		console.error('Execution failed', err)
 		state.state = 'Error'
