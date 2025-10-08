@@ -8,21 +8,20 @@ export default tseslint.config(
 	eslint.configs.recommended,
 	...tseslint.configs.recommended,
 	...svelte.configs['flat/recommended'],
+	...svelte.configs.prettier,
 	prettier,
 	...svelte.configs['flat/prettier'],
 	{
 		languageOptions: {
-			globals: {
-				...globals.browser,
-				...globals.node
-			}
+			globals: { ...globals.browser, ...globals.node }
 		}
 	},
 	{
 		files: ['**/*.svelte'],
 		languageOptions: {
 			parserOptions: {
-				parser: tseslint.parser
+				parser: tseslint.parser,
+				ecmaVersion: 'latest'
 			}
 		}
 	},
@@ -44,8 +43,6 @@ export default tseslint.config(
 	},
 	{
 		files: ['src/lib/types/**/*.ts'],
-		linterOptions: {
-			reportUnusedDisableDirectives: 'off'
-		}
+		linterOptions: { reportUnusedDisableDirectives: 'off' }
 	}
 )
