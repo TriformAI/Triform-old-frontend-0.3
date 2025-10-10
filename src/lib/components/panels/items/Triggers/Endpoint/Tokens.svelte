@@ -9,6 +9,8 @@
 	import { clone } from '$lib/utils/clone'
 	import { toast } from 'svelte-sonner'
 	import { confirmStore } from '$lib/stores/confirm.svelte'
+	import Button from '$lib/components/atoms/Button.svelte'
+	import { slide } from 'svelte/transition'
 
 	const project = getProject()
 
@@ -23,6 +25,7 @@
 	let selectedTokenId = $state('')
 	let searchValue = $state('')
 	let open = $state(false)
+	let createdPlaintextToken = $state('')
 
 	const items = $derived(
 		(ingressTokensStore ?? []).filter(t => !!t.id).map(t => ({ value: t.id!, label: t.meta.name }))
@@ -39,13 +42,15 @@
 		}
 		if (!name) return
 
-		const { success, data } = await createIngressToken({ meta: { name, intention: '' } })
+		const { success, data, token } = await createIngressToken({ meta: { name, intention: '' } })
 		if (!success || !data) {
 			toast.error('Failed to create token')
 			return
 		}
 
 		ingressTokensStore.push(data)
+		// Show the one-time plaintext token to the user
+		createdPlaintextToken = token || ''
 		await onSelectToken(data.id!)
 	}
 
@@ -75,6 +80,7 @@
 	}
 
 	const onSelectToken = async (tokenId: string) => {
+		open = false
 		if (!project) {
 			toast.error('No project found')
 			return
@@ -89,14 +95,12 @@
 		}
 		selectedTokenId = ''
 		searchValue = ''
-		open = false
 	}
 
-	$effect(() => {
-		if (selectedTokenId) {
-			onSelectToken(selectedTokenId)
-		}
-	})
+	const handleSelect = async (tokenId: string) => {
+		selectedTokenId = tokenId
+		await onSelectToken(tokenId)
+	}
 </script>
 
 <div class="flex flex-col gap-2">
@@ -119,10 +123,46 @@
 					placeholder="Select or create a token"
 					createNew={{ label: `Create \"${searchValue || 'token'}\"`, trigger: addToken }}
 					expandOnMount={true}
+					onSelect={handleSelect}
 				/>
 			</div>
 		</Popover>
 	</div>
+	{#if createdPlaintextToken}
+		<div
+			class="border-main-700 bg-main-900 text-main-200 flex flex-col gap-2 rounded-md border p-3"
+			transition:slide={{ axis: 'y' }}
+		>
+			<div class="flex flex-col">
+				<span class="text-main-300 text-sm">New token</span>
+				<span class="text-main-400 text-xs">
+					Your token is only shown once, make sure to save it now!
+				</span>
+			</div>
+			<div class="bg-main-950 rounded px-3 py-2 font-mono text-sm break-all">
+				{createdPlaintextToken}
+			</div>
+			<div class="flex justify-end gap-2">
+				<Button onClick={() => (createdPlaintextToken = '')} variation="link" class="py-1 text-sm">
+					Dismiss
+				</Button>
+				<Button
+					type="button"
+					class="py-1 text-sm"
+					onClick={async () => {
+						try {
+							await navigator.clipboard.writeText(createdPlaintextToken)
+							toast.success('Token copied to clipboard')
+						} catch {
+							toast.error('Failed to copy')
+						}
+					}}
+				>
+					Copy
+				</Button>
+			</div>
+		</div>
+	{/if}
 	<div class="flex flex-row gap-x-2 overflow-x-auto">
 		{#each tokens as token}
 			<div class="bg-main-950 flex flex-row items-center gap-x-2 rounded-md py-2 pl-3">
