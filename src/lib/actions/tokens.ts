@@ -11,5 +11,9 @@ export const getIngressTokens = async () => {
 const _createIngressTokenSchema = ingressTokenModel.pick({ meta: true })
 
 export const createIngressToken = async (payload: z.infer<typeof _createIngressTokenSchema>) => {
-	return await api.post<{ data: z.infer<typeof ingressTokenModel> }>('/tokens/ingress', payload)
+    // API returns both the created token resource (data) and the one-time plaintext token (token)
+    return await api.post<{ data: z.infer<typeof ingressTokenModel>; token: string }>(
+        '/tokens/ingress',
+        payload
+    )
 }
