@@ -223,7 +223,7 @@
 		{/snippet}
 	</Navbar>
 
-	<main class="overflow-hidden">
+	<main class="grid grid-rows-[1fr_auto] overflow-hidden md:block">
 		<SvelteFlowProvider>
 			<!-- Desktop: 3-column layout -->
 			<div
