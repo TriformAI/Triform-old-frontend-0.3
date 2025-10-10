@@ -44,7 +44,7 @@
 		</div>
 	</div>
 
-	<div class="ms-auto mt-2 flex shrink-0 flex-row items-center gap-4">
+	<div class="ms-auto mt-2 flex shrink-0 flex-row items-center justify-end gap-4 md:w-full">
 		{@render extras?.()}
 
 		<UserNav />

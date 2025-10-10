@@ -66,7 +66,7 @@
 	>
 		{#snippet body()}
 			<span class="font-semibold">
-				Deploy <span class="hidden md:block">project</span>
+				Deploy <span class="hidden md:inline">project</span>
 			</span>
 		{/snippet}
 		{#snippet icon()}
