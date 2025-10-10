@@ -175,7 +175,6 @@ export const availableAgentModels = [
 	// groq does json output with a specific json tool, we need to add our own if we want both tool calling and structured output
 	'qwen/qwen3-32b',
 	'qwen3-coder-30b-a3b-instruct',
-	'gemma2-9b-it',
 	'moonshotai/kimi-k2-instruct-0905',
 	'llama-3.1-8b-instruct',
 	'llama-3.3-70b-versatile',

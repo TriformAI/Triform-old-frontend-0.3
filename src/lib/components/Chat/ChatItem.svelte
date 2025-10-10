@@ -6,14 +6,15 @@
 
 	interface Props {
 		item: ParsedItem
+		useCanvasContext?: boolean
 	}
 
-	const { item }: Props = $props()
+	const { item, useCanvasContext = false }: Props = $props()
 </script>
 
 <li class="grid opacity-100 transition-all duration-400 starting:translate-y-4 starting:opacity-0">
 	{#if item.type === 'message'}
-		<ChatMessage {item} />
+		<ChatMessage {item} {useCanvasContext} />
 	{:else if item.type === 'run'}
 		<ChatRun {item} />
 	{/if}

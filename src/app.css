@@ -1,5 +1,9 @@
 @import 'tailwindcss';
 
+:root {
+	color-scheme: dark;
+}
+
 @property --border-gradient-angle {
 	syntax: '<angle>';
 	initial-value: 0deg;

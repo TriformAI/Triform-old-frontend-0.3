@@ -2,19 +2,37 @@
 	import { type MessageData } from '$lib/stores/chat.svelte'
 	import { marked } from 'marked'
 	import HighlightableSpan from '../atoms/HighlightableSpan.svelte'
-	import { getNodeByPath, getProject, getProjectNodes } from '$lib/stores/canvas.svelte'
 	import { nodeTypesDict, type NodeType } from '$lib/constants/nodeTypes'
+	import { onMount } from 'svelte'
 
 	interface Props {
 		item: MessageData
+		useCanvasContext?: boolean
 	}
 
-	const { item }: Props = $props()
+	const { item, useCanvasContext = false }: Props = $props()
+
+	let getNodeByPathFn: (path: string[]) => any = () => undefined
+	let getProjectNodesFn: () => Iterable<any> = () => []
+	let getProjectFn: () => { id?: string } = () => ({ id: undefined })
+
+	onMount(async () => {
+		if (!useCanvasContext) return
+		try {
+			const mod = await import('$lib/stores/canvas.svelte')
+			getNodeByPathFn = mod.getNodeByPath
+			getProjectNodesFn = mod.getProjectNodes
+			getProjectFn = mod.getProject
+		} catch (e) {
+			// ignore: running outside canvas context
+		}
+	})
 
 	const highlights = $derived.by(() => {
+		if (!useCanvasContext) return []
 		if (item.role === 'user')
 			return Object.entries(item.context ?? {}).map(([key, value]) => {
-				const node = getNodeByPath(value.node_path ?? [])
+				const node = getNodeByPathFn(value.node_path ?? [])
 				const nodeTypeData = nodeTypesDict[node?.spec.resource.split('/')[0] as NodeType]
 				return {
 					text: key,
@@ -24,8 +42,8 @@
 			})
 
 		const res = []
-		const nodes = getProjectNodes()
-		const project = getProject()
+		const nodes = Array.from(getProjectNodesFn() ?? [])
+		const project = getProjectFn()
 		for (const node of nodes) {
 			// console.log(
 			// 	'checking',
@@ -41,7 +59,7 @@
 				text: `@${node.node.spec.meta.name}`,
 				fill: `color-mix(in oklab, ${nodeTypeData.color ?? 'var(--color-main-300)'} 40%, black)`,
 				color: `color-mix(in oklab, ${nodeTypeData.color ?? 'var(--color-main-300)'} 40%, white)`,
-				link: `/project/${project.id}/${nodePath.join('/') ?? ''}`
+				link: project?.id ? `/project/${project.id}/${nodePath.join('/') ?? ''}` : undefined
 			})
 		}
 		return res

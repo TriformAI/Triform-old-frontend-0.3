@@ -83,6 +83,7 @@ export const initWebsocket = (
 	const socket = new WebSocket(
 		() => buildWsUrl({ id: resourceId, startId: chat.startId ?? '0' })
 	)
+	chat.socket = socket
 
 	socket.onopen = () => {
 		console.log('WebSocket connected')
@@ -120,7 +121,6 @@ export const initWebsocket = (
 		console.error('Socket error', err)
 	}
 
-	chat.socket = socket
 })
 
 export const initChat = async (
@@ -137,7 +137,6 @@ export const initChat = async (
 	// Guard against double initialization - if already initialized, just register this container
 	if (chat.socket || chat.isInitializing || chat.isInitialized) {
 		console.log('Socket already initialized or initializing, registered new container')
-		return
 	}
 
 	chat.isInitializing = true
@@ -157,7 +156,6 @@ export const initChat = async (
 
 		// Then establish WebSocket connection with the correct startId (set by parseHistory)
 		await initWebsocket(resourceId, chatMessagesContainer, onMessage, buildWsUrl)
-		
 		chat.isInitialized = true
 	} finally {
 		chat.isInitializing = false
@@ -173,6 +171,7 @@ export const unregisterChatContainer = (
 }
 
 export const cleanupChat = () => {
+	console.log('cleanupChat', chat.socket)
 	try {
 		chat.socket?.close()
 		chat.socket = null
@@ -216,7 +215,7 @@ function findStep(stepId: string): StepData | undefined {
 }
 
 export function handleMessage(msg: any) {
-	//console.log('handleMessage', msg)
+	console.log('handleMessage', msg)
 
 	const { id, event, data, sourceId } = msg as any
 	const runId = 'runId' in msg ? (msg as any).runId : undefined

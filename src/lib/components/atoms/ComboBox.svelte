@@ -15,7 +15,8 @@
 		placeholder,
 		target,
 		class: classes,
-		expandOnMount = false
+		expandOnMount = false,
+		onSelect
 	}: {
 		value: string
 		searchValue?: string
@@ -31,6 +32,7 @@
 		target?: HTMLElement
 		class?: string
 		expandOnMount?: boolean
+		onSelect?: (value: string) => void
 	} = $props()
 
 	const filteredItems = $derived.by(() => {
@@ -61,6 +63,8 @@
 			showItems = false
 			searchValue = ''
 			value = ''
+		} else if (newVal) {
+			onSelect?.(newVal)
 		}
 	}}
 	onOpenChange={o => {

@@ -157,5 +157,27 @@ export const newMessageModel = z.discriminatedUnion('event', [
 	stepCompletedModel.omit({ id: true })
 ] as const)
 
+const cancelMessageModel = baseMessageModel
+	.omit({ id: true, runId: true, stepId: true })
+	.extend({
+		event: z.literal('cancel'),
+		data: z.object({}).default({})
+	})
+
+// removes context & id
+export const chatTriggerUiMessageModel = z.discriminatedUnion('event', [
+	userMessageModel
+		.extend({ data: userMessageModel.shape.data.omit({ context: true }) })
+		.omit({ id: true }),
+	cancelMessageModel,
+	textMessageStartedModel.omit({ id: true }),
+	textMessageContentModel.omit({ id: true }),
+	textMessageEndModel.omit({ id: true }),
+	runStartedModel.omit({ id: true }),
+	runCompletedModel.omit({ id: true }),
+	stepStartedModel.omit({ id: true }),
+	stepCompletedModel.omit({ id: true })
+])
+
 // Array of messages
 export const uiMessagesModel = z.array(uiMessageModel)

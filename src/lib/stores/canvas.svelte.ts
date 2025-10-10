@@ -43,22 +43,6 @@ export const getEdges = () => edgesStore
 export const setNodes = (newNodes: CanvasNode[]) => (nodesStore = newNodes)
 export const setEdges = (newEdges: Edge[]) => (edgesStore = newEdges)
 
-const projectNodes = $derived.by(() => {
-	const projNodes = new Set<{ path: string[]; node: TriNode }>()
-	const processNodes = (nodes: NodeContainer['spec']['nodes'], path: string[]) => {
-		for (const [id, node] of Object.entries(nodes) as [string, TriNode][]) {
-			projNodes.add({
-				path: [...path, id],
-				node
-			})
-			if ('nodes' in node.spec.spec) processNodes(node.spec.spec.nodes, [...path, id])
-		}
-	}
-	processNodes(project.spec.nodes, [])
-	return projNodes
-})
-export const getProjectNodes = () => projectNodes
-
 export const canvasState = $state<{
 	connecting: boolean
 	connectingFrom?: {
@@ -88,6 +72,22 @@ let deployment = $state<z.infer<typeof deployedProjectDataModel>>()
 export const getDeployment = () => deployment
 export const setDeployment = (newDeployment: z.infer<typeof deployedProjectDataModel>) =>
 	(deployment = newDeployment)
+
+const projectNodes = $derived.by(() => {
+	const projNodes = new Set<{ path: string[]; node: TriNode }>()
+	const processNodes = (nodes: NodeContainer['spec']['nodes'], path: string[]) => {
+		for (const [id, node] of Object.entries(nodes) as [string, TriNode][]) {
+			projNodes.add({
+				path: [...path, id],
+				node
+			})
+			if ('nodes' in node.spec.spec) processNodes(node.spec.spec.nodes, [...path, id])
+		}
+	}
+	processNodes(project.spec.nodes, [])
+	return projNodes
+})
+export const getProjectNodes = () => projectNodes
 
 const currentNodePath = $derived.by(() => {
 	const path = page.url.pathname.split('/')

@@ -7,7 +7,7 @@
 	import BreadCrumbs from '$lib/components/canvas/Breadcrumbs.svelte'
 	import PropsPanel from '$lib/components/PropsPanel.svelte'
 	import Confirm from '$lib/components/common/Confirm.svelte'
-	import { loadComponents } from '$lib/stores/library.svelte'
+	// import { loadComponents } from '$lib/stores/library.svelte'
 	import {
 		getProject,
 		refreshFlow,
@@ -26,7 +26,7 @@
 	import type * as z from 'zod'
 	import { deployedProjectDataModel, resolvedProjectModel } from '$lib/schemas'
 	import { ingressTokens } from '$lib/stores/ingressTokens.svelte.js'
-	import BuilderChat from '$lib/components/Chat/BuilderChat.svelte'
+	import Chat from '$lib/components/Chat/BuilderChat.svelte'
 	import { WebSocket } from 'partysocket'
 	import { socketEventModel } from '$lib/schemas/socket.js'
 	import { setSocketId } from '$lib/stores/socket.svelte.js'
@@ -49,8 +49,6 @@
 	let flowComponent = $state<Flow>()
 
 	onMount(() => {
-		loadComponents(data.components ?? [])
-
 		return () => {
 			// @ts-expect-error undefined
 			setProject(undefined)
@@ -237,7 +235,7 @@
 						'h-full min-h-0 overflow-y-auto'
 					].join(' ')}
 				>
-					<BuilderChat
+					<Chat
 						onMessage={() => {
 							if (chat.data.length === 0) {
 								setTimeout(() => {

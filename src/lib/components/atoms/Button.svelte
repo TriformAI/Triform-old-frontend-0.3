@@ -25,7 +25,7 @@
 		id,
 		fastClick = false
 	}: {
-		variation?: 'primary' | 'vibrant' | 'link' | 'danger' | 'warning' | 'confirm'
+		variation?: 'primary' | 'vibrant' | 'link' | 'danger' | 'warning' | 'confirm' | 'ghost'
 		// disabled
 		// href
 		// etc...
@@ -105,10 +105,11 @@
 	class={twMerge([
 		variation === 'primary' &&
 			'border-main-700 bg-main-800 hover:enabled:border-main-600 hover:enabled:bg-main-700 border',
-		variation === 'confirm' &&
-			'border-complement-600 bg-complement-700 text-complement-100! hover:text-complement-50! hover:enabled:border-complement-500 hover:enabled:bg-complement-600 border',
 		variation === 'vibrant' &&
 			'bg-accent-700 inset-shadow-accent-500/40 hover:enabled:bg-accent-600 border-accent-600 border inset-shadow-xs',
+		variation === 'ghost' && 'bg-main-600/15 hover:enabled:bg-main-700/80',
+		variation === 'confirm' &&
+			'border-complement-600 bg-complement-700 text-complement-100! hover:text-complement-50! hover:enabled:border-complement-500 hover:enabled:bg-complement-600 border',
 		variation === 'link' && 'text-main-200 hover:enabled:bg-main-800',
 		variation === 'danger' &&
 			'bg-danger-900 text-danger-100 hover:enabled:text-danger-50 hover:enabled:bg-danger-800',

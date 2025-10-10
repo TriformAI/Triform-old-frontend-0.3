@@ -18,11 +18,13 @@
 
 	const triggers = $derived(project?.spec.triggers)
 
-	const onUpdate = async () => {
+	const onUpdate = async (changedTrigger: string) => {
 		await tick()
 		const snapshot = clone($state.snapshot(project))
 		const res = await saveContainer(snapshot)
-		if (!res.success) toast.error('Failed to save triggers')
+		if (!res.success) return toast.error('Failed to save triggers')
+		if (changedTrigger.toLowerCase() === 'chat' && project?.spec.triggers.chat.enabled)
+			toast.info('Chat trigger enabled, remember to deploy the project!')
 	}
 </script>
 
@@ -47,7 +49,7 @@
 						type="checkbox"
 						class="checkbox mt-1 size-[1.3rem]"
 						bind:checked={trigger.enabled}
-						onchange={onUpdate}
+						onchange={() => onUpdate(triggerName)}
 					/>
 				</div>
 				{#if triggerName === 'endpoints'}
