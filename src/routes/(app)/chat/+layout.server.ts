@@ -1,10 +1,23 @@
 import type { Thread } from '$lib/actions/chat'
+import type { resolvedProjectModel } from '$lib/schemas/projects'
+import type * as z from 'zod'
+
 
 export async function load({ locals }) {
-	const { success, data: threads } = await locals.api.get<{ data: Thread[] }>('chat/threads')
-	if (!success) {
+	let [
+    { success: threadsSuccess, data: threads },
+    { success: toolboxesSuccess, data: toolboxes }
+  ] = await Promise.all([
+    await locals.api.get<{ data: Thread[] }>('chat/threads'),
+    await locals.api.get<{ data: z.infer<typeof resolvedProjectModel>[] }>('chat/toolboxes')
+  ])
+	if (!threadsSuccess) {
     console.error('Failed to get threads')
-    return { threads: [] }
+    threads = []
   }
-  return { threads }
+  if (!toolboxesSuccess) {
+    console.error('Failed to get toolboxes')
+    toolboxes = []
+  }
+  return { threads, toolboxes }
 }

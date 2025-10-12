@@ -16,6 +16,8 @@
 	import { cleanupChat } from '$lib/stores/chat.svelte'
 	import type { PageProps } from './$types'
 	import { chatTriggerUiMessageModel } from '$lib/schemas/chat'
+	import type * as z from 'zod'
+	import { selectedTools } from '$lib/stores/triggerChat.svelte'
 
 	let { onMessage, data }: { onMessage?: () => void; data: PageProps['data'] } = $props()
 
@@ -108,9 +110,10 @@
 						type: 'text',
 						text: message
 					}
-				]
+				],
+				tools: selectedTools.tools
 			}
-		}
+		} satisfies z.infer<typeof chatTriggerUiMessageModel>
 
 		chat.socket.send(JSON.stringify(userMessage))
 
@@ -124,6 +127,7 @@
 		items={chat.data}
 		{isWaitingForAssistant}
 		useCanvasContext={false}
+		class={['mr-1 rounded-md']}
 	/>
 	<ChatInput
 		bind:message

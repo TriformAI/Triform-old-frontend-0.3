@@ -164,11 +164,26 @@ const cancelMessageModel = baseMessageModel
 		data: z.object({}).default({})
 	})
 
+export const chatTriggerUserMessageModel = userMessageModel
+	.omit({ id: true })
+	.extend({
+		data: userMessageModel.shape.data.omit({ context: true }).extend({
+			tools: z
+				.array(
+					z.object({
+						projectId: z.string(),
+						// support for selecting only a subset of the nodes, for now we just send them all
+						// so there'll be n tools where n=nof top-level nodes in the project
+						nodeId: z.string()
+					})
+				)
+				.default([])
+		})
+	})
+
 // removes context & id
 export const chatTriggerUiMessageModel = z.discriminatedUnion('event', [
-	userMessageModel
-		.extend({ data: userMessageModel.shape.data.omit({ context: true }) })
-		.omit({ id: true }),
+	chatTriggerUserMessageModel,
 	cancelMessageModel,
 	textMessageStartedModel.omit({ id: true }),
 	textMessageContentModel.omit({ id: true }),

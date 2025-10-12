@@ -7,27 +7,35 @@
 	import { goto } from '$app/navigation'
 	import Button from '$lib/components/atoms/Button.svelte'
 	import { setThreads, threads } from '$lib/stores/triggerChat.svelte'
-	import { onMount } from 'svelte'
-	import { fly } from 'svelte/transition'
+	import { onMount, type Snippet } from 'svelte'
+	import { fly, slide } from 'svelte/transition'
 	import { formatRelativeDate } from '$lib/utils/formatRelativeDate'
+	import ChatToolsSelector from '$lib/components/Chat/ChatToolsSelector.svelte'
+	import type { PageData } from './$types.js'
 
-	const { children } = $props()
+	const { children, data }: { children: Snippet; data: PageData } = $props()
 
-	onMount(() => setThreads(page.data.threads ?? []))
+	onMount(() => setThreads(data.threads ?? []))
+	const toolboxes = $derived(data.toolboxes ?? [])
 
 	const threadId = $derived(page.params.id)
 
 	let gridContainer = $state<HTMLDivElement>()
 
-	const DEFAULT_CHAT_PANEL_WIDTH = 300
+	const DEFAULT_PANEL_WIDTH = 300
 	const GUTTER_SIZE = 8
 
 	let chatPanelWidth = $state(
-		Number(localStorage.getItem('trichatPanelWidth') || DEFAULT_CHAT_PANEL_WIDTH)
+		Number(localStorage.getItem('trichatPanelWidth') || DEFAULT_PANEL_WIDTH)
+	)
+
+	let toolsPanelWidth = $state(
+		Number(localStorage.getItem('chatToolsPanelWidth') || DEFAULT_PANEL_WIDTH)
 	)
 
 	const gridStyle = $derived.by(
-		() => `grid-template-columns: ${chatPanelWidth}px ${GUTTER_SIZE}px 1fr`
+		() =>
+			`grid-template-columns: ${chatPanelWidth}px ${GUTTER_SIZE}px 1fr ${GUTTER_SIZE}px ${toolsPanelWidth}px`
 	)
 </script>
 
@@ -50,7 +58,7 @@
 						{/snippet}
 						<span class="truncate text-sm">New chat</span>
 					</Button>
-					{#each threads as thread}
+					{#each threads as thread (thread.id)}
 						{@const isActive = threadId === thread.id}
 						<a
 							class={[
@@ -59,6 +67,7 @@
 								isActive ? 'bg-main-900/80' : 'bg-main-950/60'
 							]}
 							href={`/chat/${thread.id}`}
+							transition:slide={{ axis: 'y', duration: 350 }}
 						>
 							<div
 								class={[
@@ -93,6 +102,26 @@
 						{@render children()}
 					</div>
 				{/key}
+			</div>
+			<GridResizerHandle
+				name="chatToolsPanel"
+				axis="x"
+				side="right"
+				bind:size={toolsPanelWidth}
+				gutterSize={GUTTER_SIZE}
+				{gridContainer}
+			/>
+			<div
+				class="bg-main-950/60 border-main-800 row-span-3 flex h-full min-h-0 flex-col overflow-hidden rounded-lg border"
+			>
+				<div class="bg-main-950 border-main-850 border-b p-4 pt-3">
+					<h3 class="text-main-300 text-base font-semibold">Available toolboxes</h3>
+					<p class="text-main-400 text-sm">
+						These are projects where the Chat trigger is enabled. Each top-level node in the project
+						will be available as a tool.
+					</p>
+				</div>
+				<ChatToolsSelector {toolboxes} />
 			</div>
 		</div>
 	</main>

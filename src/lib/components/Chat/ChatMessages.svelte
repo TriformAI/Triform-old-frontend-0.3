@@ -7,16 +7,21 @@
 		container = $bindable(),
 		items,
 		isWaitingForAssistant,
-		useCanvasContext = true
+		useCanvasContext = true,
+		class: classes = []
 	}: {
 		container?: HTMLElement
 		items: ParsedItem[]
 		isWaitingForAssistant: boolean
 		useCanvasContext?: boolean
+		class?: string[]
 	} = $props()
 </script>
 
-<div class="grid h-full items-start overflow-y-auto p-4" bind:this={container}>
+<div
+	class={['scroll-fade-y grid h-full items-start overflow-y-auto p-4', ...classes]}
+	bind:this={container}
+>
 	<ul class="chat grid gap-4 pb-6 text-sm">
 		{#each items as item}
 			<ChatItem {item} {useCanvasContext} />

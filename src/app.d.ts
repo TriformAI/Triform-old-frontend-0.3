@@ -5,7 +5,7 @@ import type { User, Session } from 'better-auth/types'
 import type { Organization } from 'better-auth/plugins/organization'
 import type { ingressTokenModel } from '$lib/schemas/triggers'
 import type * as z from 'zod'
-import type { modifierModel } from '$lib/schemas'
+import type { modifierModel, resolvedProjectModel } from '$lib/schemas'
 import type { Thread } from '$lib/actions/chat'
 
 // See https://kit.svelte.dev/docs/types#app
@@ -29,7 +29,6 @@ declare global {
 			payloads?: Payload[]
 			deployments?: z.infer<typeof deployedProjectDataModel>[]
 			ingressTokens?: z.infer<typeof ingressTokenModel>[]
-			threads?: Thread[]
 		}
 		interface PageState {
 			initPrompt?: string

@@ -17,7 +17,7 @@
 			isLoading = false
 			return toast.error('Failed to create thread')
 		}
-		threads.push(thread)
+		threads.unshift(thread)
 		goto(`/chat/${thread.id}`, {
 			state: {
 				initialMessage: message
