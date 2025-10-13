@@ -79,6 +79,16 @@
 				readme: meta.readme,
 				environment: {
 					variables: []
+				},
+				triggers: {
+					endpoints: {
+						enabled: false,
+						nodes: {},
+						ingress_tokens: []
+					},
+					chat: {
+						enabled: false
+					}
 				}
 			}
 		} satisfies z.infer<typeof projectModel>)
@@ -105,18 +115,25 @@
 			bind:value
 			class="h-full w-full"
 			placeholder="Build an agent that..."
+			onkeydown={e => {
+				if (e.key === 'Enter' && !e.shiftKey) {
+					e.preventDefault()
+					sendPrompt()
+				}
+			}}
 		/>
 		<Button
 			variation="vibrant"
 			disabled={!value.trim().length}
 			type="submit"
-			class="p-1"
+			class="px-2 py-1"
 			{isLoading}
 			onClick={sendPrompt}
 		>
-			{#snippet icon()}
-				<SendIcon class="size-5" />
-			{/snippet}
+			<div class="flex items-center gap-0.5">
+				Create
+				<kbd>↵</kbd>
+			</div>
 		</Button>
 	</div>
 	<Marquee speed={85} gap={8} pauseOnHover={true} class="max-w-[80vw]">
