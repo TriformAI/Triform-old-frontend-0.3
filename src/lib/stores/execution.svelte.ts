@@ -13,6 +13,7 @@ export interface ExecutionNodeState {
 const executionNodeStates = $state<Record<string, { nodes: Record<string, ExecutionNodeState> }>>(
 	{}
 )
+export const getExecutionNodeStates = () => executionNodeStates
 
 let activeExecutionId = $state<string | undefined>(undefined)
 

@@ -8,7 +8,7 @@ import type { executionModel, resolvedComponentModel, resolvedProjectModel } fro
 import type * as z from 'zod'
 import { API } from '$lib/api'
 import { executionEventModel } from '$lib/schemas'
-import { resetExecutionState, setNodeExecutionState, setActiveExecutionId } from '$lib/stores/execution.svelte'
+import { resetExecutionState, setNodeExecutionState, setActiveExecutionId, getExecutionNodeStates, getNodeExecutionState } from '$lib/stores/execution.svelte'
 import { getNodeByPath } from '$lib/stores/canvas.svelte'
 import type { TriNode } from '$lib/types/flow'
 
@@ -89,6 +89,14 @@ export const executeComponent = async (
 				state.abortController.abort()
 				state.stdout = event.data.stdout
 				state.stderr = event.data.stderr
+				// clear all the other running nodes
+				const executionNodeStates = getExecutionNodeStates()
+				for (const executionId in executionNodeStates) {
+					for (const nodeId in executionNodeStates[executionId].nodes) {
+						const state = executionNodeStates[executionId].nodes[nodeId]
+						if (state?.state === 'running') delete executionNodeStates[executionId]?.nodes?.[nodeId]
+					}
+				}
 				break
 			}
 		}
