@@ -43,7 +43,8 @@
 	const deployment = $derived(getDeployment())
 	const hash = $derived(getProjectHash())
 	const hasChanges = $derived(
-		hash !== deployment?.checksum && Object.keys(project?.spec.nodes ?? {}).length
+		true
+		// hash !== deployment?.checksum && Object.keys(project?.spec.nodes ?? {}).length
 	)
 </script>
 
