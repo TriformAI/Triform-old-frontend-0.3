@@ -118,12 +118,12 @@
 		)
 	}
 
-	const additionalActions: { icon: Component; label: string; onClick: () => void } = [
-		{
-			icon: IconMagic as unknown as Component,
-			label: 'Generate sample payload',
-			onClick: () => {
-				void (async () => {
+	const additionalActions: { icon: Component; label: string; onClick: () => Promise<void> | void } =
+		[
+			{
+				icon: IconMagic as unknown as Component,
+				label: 'Generate sample payload',
+				onClick: async () => {
 					if (!componentData?.id) return
 					if (payload !== getDefaultPayload()) {
 						const confirmed = await confirmStore.show({
@@ -135,24 +135,21 @@
 					const { data, success } = await generateMockInputs(componentData.id)
 					if (!success) return toast.error('Failed to generate sample payload')
 					payload = JSON.stringify(data, null, 2)
-				})()
-			}
-		},
-		{
-			icon: IconReload as unknown as Component,
-			label: 'Reload sample payload',
-			onClick: () => {
-				void (async () => {
+				}
+			},
+			{
+				icon: IconReload as unknown as Component,
+				label: 'Reload sample payload',
+				onClick: async () => {
 					const confirmed = await confirmStore.show({
 						title: 'Generate default sample payload',
 						message: 'This will overwrite your current payload'
 					})
 					if (!confirmed) return
 					payload = getDefaultPayload()
-				})()
+				}
 			}
-		}
-	]
+		]
 
 	const executionHandler = async () =>
 		executorState.isRunning ? cancelExecution(executorState.id) : run()
