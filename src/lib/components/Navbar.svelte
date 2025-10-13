@@ -4,6 +4,7 @@
 	import Spinner from './Spinner.svelte'
 	import { type Snippet } from 'svelte'
 	import UserNav from './UserNav.svelte'
+	import { page } from '$app/state'
 
 	interface Props {
 		children?: Snippet
@@ -11,6 +12,8 @@
 	}
 
 	const { children, extras }: Props = $props()
+
+	const isChat = $derived(page.url.pathname.startsWith('/chat'))
 </script>
 
 <header
@@ -19,9 +22,36 @@
 		'flex flex-row md:grid md:grid-cols-[1fr_auto_1fr]'
 	]}
 >
-	<a href="/">
-		<img alt="Triform logo" src={logo} class="mt-1 w-7 md:mt-0 md:w-10" />
-	</a>
+	<div class="flex flex-row items-center md:gap-4">
+		<a href="/">
+			<img alt="Triform logo" src={logo} class="mt-1 w-7 md:mt-0 md:w-10" />
+		</a>
+		<div class="flex flex-row items-center gap-2">
+			<a
+				href="/dashboard"
+				class={[
+					isChat
+						? 'text-main-500 hover:text-main-400'
+						: 'text-main-300 hover:text-main-200 font-medium',
+					'transition'
+				]}
+			>
+				Build
+			</a>
+			<span class="text-main-500 font-medium"> / </span>
+			<a
+				href="/chat"
+				class={[
+					isChat
+						? 'text-main-300 hover:text-main-200 font-medium'
+						: 'text-main-500 hover:text-main-400',
+					'transition'
+				]}
+			>
+				Chat
+			</a>
+		</div>
+	</div>
 
 	<div
 		class="divide-main-700 mx-auto flex min-w-0 translate-y-[2px] flex-row items-center divide-x"
