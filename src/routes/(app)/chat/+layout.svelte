@@ -111,7 +111,7 @@
 					{gridContainer}
 				/>
 			</div>
-			<div class="row-span-3 grid min-h-0 grid-cols-[1fr] overflow-y-hidden">
+			<div class="row-span-3 grid h-full min-h-0 grid-cols-[1fr] overflow-y-hidden">
 				{#key page.params.id}
 					<div
 						in:fly={{ y: 20, duration: 350, delay: 100 }}
@@ -133,7 +133,7 @@
 				/>
 			</div>
 			<div
-				class="border-main-800 row-span-3 hidden h-full min-h-0 flex-col overflow-hidden rounded-lg border md:flex"
+				class="bg-main-950/60 border-main-800 row-span-3 hidden h-full min-h-0 flex-col overflow-hidden rounded-lg border md:flex"
 			>
 				<div class="bg-main-950 border-main-850 border-b p-4 pt-3">
 					<h3 class="text-main-300 text-base font-semibold">Available toolboxes</h3>
