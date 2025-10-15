@@ -83,7 +83,7 @@ export const executeComponent = async (
 				state.stdout = event.data.stdout
 				state.stderr = event.data.stderr
 				break
-			} else if (eventState === 'failed' && !event.data.path.at(-1)?.split(':').pop()?.startsWith('tool_')) {
+			} else if (eventState === 'failed' && !event.data.path.some(p => p.split(':').pop()?.startsWith('tool_'))) {
 				// TODO: make this identical to what an endpoint returns, and also visualise errors in some better way
 				state.result = JSON.stringify(event.data, null, 2)
 				state.abortController.abort()
