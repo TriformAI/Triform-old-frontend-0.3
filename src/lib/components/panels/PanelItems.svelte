@@ -73,6 +73,7 @@
 <div class={['custom-scrollbar scroll-gutter-stable relative flex flex-row overflow-y-auto']}>
 	{#if showNav}
 		<nav class="border-main-800 sticky top-0 z-20 mb-auto h-full">
+			<!-- <div class="bg-main-850/50 border-main-800 h-6 w-full rounded-br border-r border-b"></div> -->
 			<ul class="h-full">
 				{#each items as key (key)}
 					{@const item = allComponents[key]}
@@ -82,7 +83,7 @@
 							'border-main-800 border-r border-b',
 							'hover:bg-main-800/20',
 							'group/nav-btn box-content transition',
-							'rounded-r first:rounded-tr-none nth-last-2:rounded-br-none',
+							'rounded-r nth-last-2:rounded-br-none',
 							isActive(key)
 								? 'text-main-100 border-r-transparent bg-transparent'
 								: 'bg-main-850/80 text-main-400 hover:text-main-300 border-r-main-800'

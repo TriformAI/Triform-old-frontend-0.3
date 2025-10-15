@@ -103,33 +103,51 @@
 </script>
 
 <div
-	class="border-b-main-800 bg-main-950 sticky top-0 z-20 grid grid-cols-[auto_1fr] border-b pe-5"
+	class="border-b-main-800 bg-main-950 sticky top-0 z-20 grid grid-rows-[auto_1fr] border-b pe-5"
 >
-	<div class="border-main-800 flex flex-col">
-		{#each contextToggles as toggle}
+	<div class="border-main-800 flex flex-row">
+		{#each contextToggles as toggle (toggle.id)}
 			{@const isActive = activeContext === toggle.id}
-			<button
-				class={[
-					'group flex size-12 items-center justify-center',
-					'border-main-800 box-content rounded-r border-t border-r first:rounded-tr-none first:border-t-0 last:rounded-br-none',
-					'text-main-300',
-					'transition active:scale-95',
-					isActive ? 'border-r-0 bg-transparent' : 'bg-main-900/80',
-					toggle.disabled && 'pointer-events-none opacity-50 blur-[2px]'
-				]}
-				onclick={() => setActiveContext(toggle.id)}
-			>
-				<toggle.icon
+			{#if !toggle.disabled}
+				<div
 					class={[
-						'size-6 transition group-hover:opacity-85',
-						isActive ? 'opacity-100' : 'opacity-50',
-						toggle.iconClasses
-					].join(' ')}
-				/>
-			</button>
+						'group flex h-12 items-center justify-center',
+						'border-main-800 box-content',
+						'border-b border-l first:border-t-0 first:border-l-0 nth-last-2:border-r-0',
+						'rounded-b first:rounded-bl-none',
+						'text-main-300 shrink-0',
+						'transition-all',
+						isActive ? 'border-b-0 border-l-0 bg-transparent' : 'bg-main-900/80 not-last:border-r'
+					]}
+				>
+					<button
+						class={[
+							'flex h-full w-full items-center justify-center px-4 transition active:scale-95'
+						]}
+						onclick={() => setActiveContext(toggle.id)}
+					>
+						<toggle.icon
+							class={[
+								'size-6 transition',
+								isActive ? 'opacity-100' : 'opacity-50 group-hover:opacity-85',
+								toggle.iconClasses
+							].join(' ')}
+						/>
+						<span
+							class={[
+								'text-sm capitalize transition',
+								isActive ? 'text-main-200' : 'text-main-400 group-hover:text-main-300'
+							]}
+						>
+							{toggle.id === 'project' ? 'Project' : nodeType?.label}
+						</span>
+					</button>
+				</div>
+			{/if}
 		{/each}
+		<div class="border-main-800 grow rounded-bl border-b border-l"></div>
 	</div>
-	<div class="grid grid-cols-[auto_1fr] items-center pt-2 pl-5">
+	<div class="grid grid-cols-[auto_1fr] items-center gap-y-1 py-3 pl-4">
 		<!-- {#if Icon}
 			<Icon
 				class={[
