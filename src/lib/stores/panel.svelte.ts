@@ -56,3 +56,7 @@ export function toggleOpenPanelItem(title: string) {
 
 	localStorage.setItem('openPanelItem', openPanelItem.value)
 }
+
+let activeContext = $state<'project' | 'node'>('project')
+export const getActiveContext = () => activeContext
+export const setActiveContext = (context: 'project' | 'node') => (activeContext = context)

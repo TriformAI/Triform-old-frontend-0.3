@@ -5,16 +5,16 @@
 	import { saveProject } from '$lib/actions/project'
 	import type { z } from 'zod'
 	import type { resolvedProjectModel } from '$lib/schemas'
-	import { getVisibleComponent } from '$lib/stores/canvas.svelte'
+	import { getProject, getVisibleComponent } from '$lib/stores/canvas.svelte'
 	import LightEditor from '$lib/components/atoms/LightEditor.svelte'
 
 	const { nodeId }: { nodeId: string } = $props()
 
-	const componentData = $derived(
-		getVisibleComponent(nodeId) as z.infer<typeof resolvedProjectModel>
-	)
+	const componentData = $derived(getProject())
 
 	const debouncedSave = debounce(async () => {
+		if (!componentData)
+			return console.warn('couldnt save project settings, componentData not found')
 		const res = await saveProject(componentData)
 		console.log(res)
 	}, 500)

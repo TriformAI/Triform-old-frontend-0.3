@@ -1,12 +1,14 @@
 <script lang="ts">
 	import Project from '$lib/components/panels/Project.svelte'
-	import { selected } from '$lib/stores/panel.svelte'
+	import { selected, getActiveContext } from '$lib/stores/panel.svelte'
 	import { getCurrentContainer, getProject } from '$lib/stores/canvas.svelte'
 	import { twMerge } from 'tailwind-merge'
 	import PanelWrapper from './panels/PanelWrapper.svelte'
 	import { isProject } from '$lib/schemas'
 
 	let { class: classes }: { class?: string } = $props()
+
+	const activeContext = $derived(getActiveContext())
 </script>
 
 <div
@@ -18,7 +20,7 @@
 >
 	{#if selected.isMultiple}
 		<p class="mx-3">Multiple nodes selected</p>
-	{:else if getProject() && isProject(getCurrentContainer()) && !selected.node}
+	{:else if activeContext === 'project' || (getProject() && isProject(getCurrentContainer()) && !selected.node)}
 		<Project />
 	{:else}
 		<PanelWrapper />

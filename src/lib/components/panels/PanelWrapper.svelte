@@ -4,7 +4,7 @@
 	import Flow from './Flow.svelte'
 	import Action from './Action.svelte'
 	import Agent from './Agent.svelte'
-	import { selected } from '$lib/stores/panel.svelte'
+	import { selected, getActiveContext } from '$lib/stores/panel.svelte'
 
 	const nodeId = $derived.by(() => {
 		if (

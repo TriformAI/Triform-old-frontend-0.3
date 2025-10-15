@@ -44,6 +44,7 @@
 	import AgentNode from '../custom-nodes/AgentNode.svelte'
 	import { createNodeImportMeta } from 'vite/module-runner'
 	import { onconnectstart } from './FlowEvents/connectStart.svelte'
+	import { setActiveContext } from '$lib/stores/panel.svelte'
 
 	const useSvelteFlow = svelteFlowHook()
 	const { fitView, screenToFlowPosition } = useSvelteFlow
@@ -115,6 +116,11 @@
 		addCreateNode(position, true, true)
 	}
 
+	// switch from project view to node context when selecting a node
+	const handleNodeClick = (nodes: Node[]) => {
+		setActiveContext('node')
+	}
+
 	onMount(async () => {
 		refreshFlow()
 		await tick()
@@ -176,6 +182,7 @@
 		zoomOnDoubleClick={false}
 		onbeforedelete={handleBeforeDelete}
 		ondelete={handleDelete}
+		onnodeclick={handleNodeClick}
 		onnodedragstop={handleDragStop}
 		onpanecontextmenu={handleCanvasContextMenu}
 		onbeforeconnect={e => {
