@@ -64,7 +64,11 @@
 	</Navbar>
 
 	<main class="min-h-0">
-		<div bind:this={gridContainer} style={gridStyle} class="block h-full min-h-0 px-2 py-2 md:grid">
+		<div
+			bind:this={gridContainer}
+			style={gridStyle}
+			class="block h-full min-h-0 grid-rows-1 px-2 py-2 md:grid"
+		>
 			<div
 				class="md:bg-main-950/60 border-main-800 row-span-3 hidden h-full min-h-0 flex-col gap-6 rounded-lg border md:flex"
 			>
