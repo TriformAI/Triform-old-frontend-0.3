@@ -5,6 +5,7 @@
 	import IconCompleted from '~icons/mdi/checkbox-marked-circle'
 	import Spinner from '../Spinner.svelte'
 	import IconChevronDown from '~icons/mdi/chevron-down'
+	import IconError from '~icons/mdi/alert-circle'
 
 	interface Props {
 		item: StepData
@@ -57,8 +58,10 @@
 		<p class="text-main-300 grid grid-cols-[auto_1fr] items-center gap-1.5">
 			{#if item.event === 'started' && !item.completed}
 				<Spinner class="text-main-400 size-4" />
-			{:else}
+			{:else if item.status === 'success'}
 				<IconCompleted class="text-main-300 size-4" />
+			{:else if item.status === 'error'}
+				<IconError class="text-danger-400 size-4" />
 			{/if}
 			{item.title}
 		</p>
@@ -70,8 +73,10 @@
 			>
 				{#if item.event === 'started' && !item.completed}
 					<Spinner class="text-main-400 size-4" />
-				{:else}
+				{:else if item.status === 'success'}
 					<IconCompleted class="text-main-300 size-4" />
+				{:else if item.status === 'error'}
+					<IconError class="text-danger-400 size-4" />
 				{/if}
 				<div>
 					<span>

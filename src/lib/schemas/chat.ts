@@ -107,7 +107,8 @@ export const stepCompletedModel = baseMessageModel.extend({
 	sourceId: z.string().nonoptional(),
 	runId: z.string().nonoptional(),
 	data: z.object({
-		title: z.string()
+		title: z.string(),
+		status: z.enum(['success', 'error']).default('success')
 	})
 })
 

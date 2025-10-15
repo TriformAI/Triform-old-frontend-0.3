@@ -1,4 +1,4 @@
-import { ackMessageModel, errorMessageModel, uiMessageModel } from '$lib/schemas/chat'
+import { ackMessageModel, errorMessageModel, stepCompletedModel, uiMessageModel } from '$lib/schemas/chat'
 import { userMessageModel } from '$lib/schemas/chat'
 import { toast } from 'svelte-sonner'
 import { WebSocket } from 'partysocket'
@@ -26,6 +26,7 @@ export interface StepData {
 	id: string
 	event: 'started' | 'completed'
 	title: string
+	status?: z.infer<typeof stepCompletedModel>['data']['status']
 	children: (StepData | MessageData)[]
 	completed?: boolean
 }
@@ -351,6 +352,7 @@ export function handleMessage(msg: any) {
 			if (step) {
 				step.title = (data as any).title
 				step.event = 'completed'
+				step.status = (data as any).status
 				step.completed = true
 			}
 			break
