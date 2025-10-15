@@ -72,17 +72,20 @@
 
 <div class={['custom-scrollbar scroll-gutter-stable relative flex flex-row overflow-y-auto']}>
 	{#if showNav}
-		<nav class="border-main-800 sticky top-0 z-20 mb-auto border-e">
-			<ul>
+		<nav class="border-main-800 sticky top-0 z-20 mb-auto h-full">
+			<ul class="h-full">
 				{#each items as key (key)}
 					{@const item = allComponents[key]}
 					{@const Icon = item.icon}
 					<li
 						class={[
-							'border-b-main-800 border-b',
-							'hover:bg-main-800/50',
-							'group/nav-btn transition',
-							isActive(key) ? 'bg-main-850/90 text-main-100' : 'text-main-400 hover:text-main-300'
+							'border-main-800 border-r border-b',
+							'hover:bg-main-800/20',
+							'group/nav-btn box-content transition',
+							'rounded-r first:rounded-tr-none nth-last-2:rounded-br-none',
+							isActive(key)
+								? 'text-main-100 border-r-transparent bg-transparent'
+								: 'bg-main-850/80 text-main-400 hover:text-main-300 border-r-main-800'
 						]}
 					>
 						<button
@@ -90,18 +93,18 @@
 							onclick={() => onNavClick(key)}
 							aria-label={item.label}
 							data-balloon-pos="right"
-							data-balloon-instant={true}
 							data-balloon-nofocus
 						>
 							<Icon class="size-6" />
 						</button>
 					</li>
 				{/each}
+				<li class="border-main-800 h-full border-r"></li>
 			</ul>
 		</nav>
 	{/if}
 
-	<div class="border-main-800 z-10 -ms-px flex-1 border-s">
+	<div class="border-main-800 z-10 -ms-px flex-1">
 		{#if !openPanelItem.value}
 			<p
 				class="text-main-500 animate-fade-in absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 text-center text-sm"
