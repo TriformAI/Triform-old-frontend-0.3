@@ -30,12 +30,12 @@
 		{@const isSelected = selectedTools.tools.some(tool => tool.projectId === toolbox.id)}
 		<div
 			class={[
-				'bg-main-900 flex flex-col gap-2 rounded-md p-4 transition',
-				!isSelected && 'opacity-60'
+				'border-main-800 flex flex-col gap-2 rounded-md border p-4 transition',
+				isSelected ? 'bg-main-900' : 'bg-main-900/60 border-transparent'
 			]}
 		>
 			<div class="flex flex-row justify-between gap-1">
-				<h4 class="text-main-300 font-medium">
+				<h4 class={['font-medium', isSelected ? 'text-main-200' : 'text-main-300/90']}>
 					{toolbox.meta.name}
 				</h4>
 				<input
@@ -46,7 +46,7 @@
 				/>
 			</div>
 			{#each Object.values(toolbox.spec.nodes) as node}
-				<span class="text-main-400 line-clamp-2 text-sm">
+				<span class={['line-clamp-2 text-sm', isSelected ? 'text-main-400' : 'text-main-500']}>
 					{node.spec.meta.name}
 				</span>
 			{/each}
