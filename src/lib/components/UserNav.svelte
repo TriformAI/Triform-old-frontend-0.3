@@ -29,7 +29,12 @@
 	{#snippet trigger()}
 		{#if sessionStore.user}
 			<div class="relative shrink-0">
-				<img alt="Avatar" src={sessionStore.user.image} class="w-8 shrink-0 rounded-full" />
+				<img
+					alt="Avatar"
+					src={sessionStore.user.image ??
+						`https://api.dicebear.com/9.x/notionists-neutral/svg?seed=${sessionStore.user.id}`}
+					class="w-8 shrink-0 rounded-full"
+				/>
 				{#if activeInvites.length}
 					<div
 						class="bg-accent-500 absolute top-0 right-0 size-3 animate-ping rounded-full"
