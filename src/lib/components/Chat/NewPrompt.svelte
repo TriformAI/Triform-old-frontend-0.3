@@ -16,40 +16,40 @@
 		{
 			label: 'Swedish news analyst',
 			prompt:
-				'Build an agent that scrapes the latest news from the top Swedish news sites, analyzes the content and creates a concise summary'
+				'Build a tool that scrapes the latest news from the top Swedish news sites, analyzes the content and creates a concise summary'
 		},
 		{
 			label: 'Customer support bot',
 			prompt:
-				'Build an agent that answers customer support queries based on our website content using a web tool'
+				'Build a tool that answers customer support queries based on our website content using a web tool'
 		},
 		{
 			label: 'Blog post writer',
-			prompt: 'Build an agent that researches and writes a blog post about a given topic'
+			prompt: 'Build a tool that researches and writes a blog post about a given topic'
 		},
 		{
 			label: 'Automatic Newsletter',
 			prompt:
-				'Build an agent that fetches the latest AI news from public sources and creates a formatted newsletter with summaries and source links'
+				'Build a tool that fetches the latest AI news from public sources and creates a formatted newsletter with summaries and source links'
 		},
 		{
 			label: 'SEO Analyst',
-			prompt: 'Build an agent that scrapes a website and provides SEO recommendations for each page'
+			prompt: 'Build a tool that scrapes a website and provides SEO recommendations for each page'
 		},
 		{
 			label: 'Documentation writer',
 			prompt:
-				'Build an agent that analyzes a webpage and generates complete documentation for all its functionality'
+				'Build a tool that analyzes a webpage and generates complete documentation for all its functionality'
 		},
 		{
 			label: 'Lead Generator',
 			prompt:
-				'Build an agent that researches companies using public sources and generates a structured report with company details and employee lists'
+				'Build a tool that researches companies using public sources and generates a structured report with company details and employee lists'
 		},
 		{
 			label: 'Lead Research',
 			prompt:
-				'Build an agent that researches board members and executives using public sources and provides personality profiles with communication recommendations'
+				'Build a tool that researches board members and executives using public sources and provides personality profiles with communication recommendations'
 		}
 	]
 
@@ -114,7 +114,7 @@
 			bind:textarea
 			bind:value
 			class="h-full w-full"
-			placeholder="Build an agent that..."
+			placeholder="Build a tool that..."
 			onkeydown={e => {
 				if (e.key === 'Enter' && !e.shiftKey) {
 					e.preventDefault()
