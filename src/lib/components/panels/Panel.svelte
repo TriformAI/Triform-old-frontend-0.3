@@ -44,7 +44,9 @@
 			id: 'node',
 			icon: nodeType?.icon,
 			iconClasses: nodeType?.iconClasses,
-			disabled: nodeId === 'container' && getCurrentContainer()?.resource === 'project/v1'
+			disabled:
+				!selectedNodeComponent ||
+				(nodeId === 'container' && getCurrentContainer()?.resource === 'project/v1')
 		}
 	] as const)
 	const activeContext = $derived(getActiveContext())
