@@ -29,7 +29,12 @@
 
 	const { nodeId, Icon, panelItems }: Props = $props()
 
-	const selectedNodeComponent = $derived(getVisibleComponent(selected.node?.id ?? 'container'))
+	const selectedNodeId = $derived.by(() => {
+		if (selected.node?.id.endsWith(':input') || selected.node?.id.endsWith(':output'))
+			return 'container'
+		return selected.node?.id ?? 'container'
+	})
+	const selectedNodeComponent = $derived(getVisibleComponent(selectedNodeId))
 	const nodeType = $derived(
 		nodeTypesDict[selectedNodeComponent?.resource.split('/')[0] as NodeType]
 	)
