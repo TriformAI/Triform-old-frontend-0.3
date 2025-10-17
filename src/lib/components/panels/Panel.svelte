@@ -52,7 +52,7 @@
 	const componentData = $derived(activeContext === 'project' ? getProject() : selectedNodeComponent)
 	const title = $derived(componentData?.meta?.name ?? 'Project')
 	const desc = $derived(
-		'intention' in componentData?.meta ? (componentData?.meta?.intention ?? '') : ''
+		'intention' in (componentData?.meta ?? {}) ? (componentData?.meta?.intention ?? '') : ''
 	)
 	$inspect(componentData)
 
