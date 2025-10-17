@@ -125,6 +125,7 @@
 		oninput={onTextareaInput}
 		onmousedown={onTextareaMousedown}
 		class="!z-0 field-sizing-content max-h-30 min-h-16 w-full resize-none pb-2 outline-0"
+		style="word-break: break-word;"
 		{placeholder}
 		{highlights}
 	/>

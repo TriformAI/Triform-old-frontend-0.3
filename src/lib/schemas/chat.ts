@@ -40,6 +40,7 @@ export const userMessageModel = baseMessageModel.omit({ runId: true }).extend({
 				text: z.string()
 			})
 		),
+		snapshot: z.string().optional(),
 		context: z
 			.record(
 				z.string(),
@@ -112,6 +113,37 @@ export const stepCompletedModel = baseMessageModel.extend({
 	})
 })
 
+const variableWidgetModel = z.object({
+	type: z.literal('variable_prompt'),
+	props: z.object({
+		variables: z.array(
+			z.object({
+				key: z.string(),
+				hint: z
+					.object({
+						text: z.string(),
+						url: z.string()
+					})
+					.optional()
+			})
+		)
+	}),
+	metadata: z.object({
+		pendingComponents: z.object({
+			componentId: z.string()
+		})
+	})
+})
+
+export const widgetStartedModel = baseMessageModel.extend({
+	event: z.literal('widget_start'),
+	data: z.discriminatedUnion('type', [variableWidgetModel])
+})
+export const widgetCompletedModel = baseMessageModel.extend({
+	event: z.literal('widget_complete'),
+	data: z.object({})
+})
+
 // Meta message schemas
 export const ackMessageModel = baseMessageModel.omit({ id: true }).extend({
 	event: z.literal('ack'),
@@ -135,7 +167,9 @@ const uiMessages = [
 	runStartedModel,
 	runCompletedModel,
 	stepStartedModel,
-	stepCompletedModel
+	stepCompletedModel,
+	widgetStartedModel,
+	widgetCompletedModel
 ] as const
 
 // Union of all message types
@@ -155,7 +189,9 @@ export const newMessageModel = z.discriminatedUnion('event', [
 	runStartedModel.omit({ id: true }),
 	runCompletedModel.omit({ id: true }),
 	stepStartedModel.omit({ id: true }),
-	stepCompletedModel.omit({ id: true })
+	stepCompletedModel.omit({ id: true }),
+	widgetStartedModel.omit({ id: true }),
+	widgetCompletedModel.omit({ id: true })
 ] as const)
 
 const cancelMessageModel = baseMessageModel
@@ -168,18 +204,20 @@ const cancelMessageModel = baseMessageModel
 export const chatTriggerUserMessageModel = userMessageModel
 	.omit({ id: true })
 	.extend({
-		data: userMessageModel.shape.data.omit({ context: true }).extend({
-			tools: z
-				.array(
-					z.object({
-						projectId: z.string(),
-						// support for selecting only a subset of the nodes, for now we just send them all
-						// so there'll be n tools where n=nof top-level nodes in the project
-						nodeId: z.string()
-					})
-				)
-				.default([])
-		})
+		data: userMessageModel.shape.data
+			.omit({ context: true, snapshot: true })
+			.extend({
+				tools: z
+					.array(
+						z.object({
+							projectId: z.string(),
+							// support for selecting only a subset of the nodes, for now we just send them all
+							// so there'll be n tools where n=nof top-level nodes in the project
+							nodeId: z.string()
+						})
+					)
+					.default([])
+			})
 	})
 
 // removes context & id

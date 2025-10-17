@@ -6,11 +6,20 @@
 		type ParsedItem,
 		initChat,
 		unregisterChatContainer,
-		type ChatUrlBuilder
+		type ChatUrlBuilder,
+		type MessageData,
+		resetChatState,
+		parseHistory
 	} from '$lib/stores/chat.svelte'
 	import ChatMessages from './ChatMessages.svelte'
 	import ChatInput, { type Highlight, type ContextChip } from './ChatInput.svelte'
-	import { getCurrentContainer, getNodePath, getNodeByPath } from '$lib/stores/canvas.svelte'
+	import {
+		getCurrentContainer,
+		getNodePath,
+		getNodeByPath,
+		setProject,
+		refreshFlow
+	} from '$lib/stores/canvas.svelte'
 	import { nodeTypesDict, type NodeType } from '$lib/constants/nodeTypes'
 	import { arraysDiffer } from '$lib/utils/arraysDiffer'
 	import { userMessageModel } from '$lib/schemas/chat'
@@ -22,6 +31,9 @@
 		cancelChat as cancelProjectChat
 	} from '$lib/actions/builderChat'
 	import { page } from '$app/state'
+	import { objFilter } from '$lib/utils/objectFilter'
+	import { confirmStore } from '$lib/stores/confirm.svelte'
+	import { revert } from '$lib/actions/builderChat'
 
 	let {
 		onMessage
@@ -246,6 +258,34 @@
 	const handleTextareaMousedown = () => {
 		setTimeout(() => (forceUpdateCharPos = !forceUpdateCharPos), 1)
 	}
+
+	const handleRevert = async (item: MessageData) => {
+		if (!page.params.id || !item.snapshot) return
+		const confirmed = await confirmStore.show({
+			title: 'Are you sure?',
+			message:
+				'This will revert the entire project (including your own changes) to the state it was in when this message was sent.<br><br><b>This cannot currently be undone.</b>'
+		})
+		if (!confirmed) return
+		console.log('restoring', item.snapshot)
+		const res = await revert(page.params.id, item.snapshot)
+		if (!res.success) return void toast.error('Error reverting to message')
+		const { project, uiMessages } = res.data
+		console.log('project', project)
+		console.log('uiMessages', uiMessages)
+		setProject(project)
+		refreshFlow()
+		resetChatState()
+		parseHistory(uiMessages)
+		message = item.content
+		context = objFilter(item.context ?? {}, key => key.startsWith('@'))
+		forceUpdateCharPos = !forceUpdateCharPos
+		if (textarea) {
+			textarea.focus()
+			textarea.selectionStart = message.length
+			textarea.selectionEnd = message.length
+		}
+	}
 </script>
 
 <div
@@ -256,6 +296,7 @@
 		items={chat.data as ParsedItem[]}
 		{isWaitingForAssistant}
 		useCanvasContext={true}
+		onRevert={handleRevert}
 	/>
 
 	<div class="px-4 pb-4 leading-none">

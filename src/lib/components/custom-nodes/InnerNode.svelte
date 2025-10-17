@@ -75,7 +75,7 @@
 {#if type !== 'action'}
 	<button
 		class={[
-			'pointer-events-none opacity-0 transition',
+			'pointer-events-none opacity-0 transition delay-150',
 			'peer-hover:pointer-events-auto peer-hover:opacity-100 hover:pointer-events-auto hover:opacity-100',
 			'absolute -bottom-4 -left-4 flex items-center justify-center',
 			'text-main-400 text-sm',

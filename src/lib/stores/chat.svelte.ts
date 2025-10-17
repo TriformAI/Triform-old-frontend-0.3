@@ -19,6 +19,7 @@ export interface MessageData {
 	content: string
 	completed?: boolean
 	context?: z.infer<typeof userMessageModel>['data']['context']
+	snapshot?: string
 }
 
 export interface StepData {
@@ -246,7 +247,8 @@ export function handleMessage(msg: any) {
 				content: ((data as { content: { type: 'text'; text: string }[] }).content)
 					.map(item => item.text)
 					.join(''),
-				context: (data as any).context
+				context: data.context,
+				snapshot: data.snapshot
 			} satisfies MessageData)
 
 			break

@@ -2,7 +2,6 @@
 	import Button from '../atoms/Button.svelte'
 	import HighlightableTextarea from '../atoms/HighlightableTextarea.svelte'
 	import Marquee from '../atoms/Marquee.svelte'
-	import SendIcon from '~icons/material-symbols/arrow-upward-alt-rounded'
 	import { generateProjectMeta, createProject } from '$lib/actions/project'
 	import { toast } from 'svelte-sonner'
 	import type * as z from 'zod'
@@ -14,11 +13,6 @@
 
 	const samplePrompts = [
 		{
-			label: 'Swedish news analyst',
-			prompt:
-				'Build a tool that scrapes the latest news from the top Swedish news sites, analyzes the content and creates a concise summary'
-		},
-		{
 			label: 'Customer support bot',
 			prompt:
 				'Build a tool that answers customer support queries based on our website content using a web tool'
@@ -26,6 +20,11 @@
 		{
 			label: 'Blog post writer',
 			prompt: 'Build a tool that researches and writes a blog post about a given topic'
+		},
+		{
+			label: 'Swedish news analyst',
+			prompt:
+				'Build a tool that scrapes the latest news from the top Swedish news sites in parallel, analyzes the content and creates a concise summary'
 		},
 		{
 			label: 'Automatic Newsletter',

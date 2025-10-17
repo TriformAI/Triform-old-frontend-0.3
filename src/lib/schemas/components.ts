@@ -191,7 +191,8 @@ export const availableAgentModels = [
 	'openai/gpt-4.1-nano',
 	'openai/o4-mini',
 	'openai/o3-mini',
-	'openai/gpt-4o'
+	'openai/gpt-4o',
+	'GLM-4.6-AWQ'
 ] as const
 
 const agentSpecModel = z.strictObject({
@@ -203,14 +204,14 @@ const agentSpecModel = z.strictObject({
 		user: agentPromptModel
 	}),
 	settings: z.strictObject({
-		temperature: z.number().min(0).max(1).optional(),
-		topP: z.number().min(0).max(1).optional(),
+		temperature: z.number().min(0).max(1).nullish(),
+		topP: z.number().min(0).max(1).nullish(),
 		maxTokens: z
 			.number()
 			.min(0)
 			.max(100 * 1024)
 			.default(32768)
-			.optional()
+			.nullish()
 	}),
 	nodes: z.record(
 		z.string(),

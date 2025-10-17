@@ -1,16 +1,26 @@
 <script lang="ts">
-	import { type MessageData } from '$lib/stores/chat.svelte'
+	import { resetChatState, parseHistory, type MessageData } from '$lib/stores/chat.svelte'
 	import { marked } from 'marked'
 	import HighlightableSpan from '../atoms/HighlightableSpan.svelte'
 	import { nodeTypesDict, type NodeType } from '$lib/constants/nodeTypes'
 	import { onMount } from 'svelte'
+	import IconRevert from '~icons/material-symbols/undo-rounded'
+	import { confirmStore } from '$lib/stores/confirm.svelte'
+	import Button from '../atoms/Button.svelte'
+	import { revert } from '$lib/actions/builderChat'
+	import { page } from '$app/state'
+	import { toast } from 'svelte-sonner'
+	import { resolvedProjectModel } from '$lib/schemas'
 
-	interface Props {
+	const {
+		item,
+		useCanvasContext = false,
+		onRevert
+	}: {
 		item: MessageData
 		useCanvasContext?: boolean
-	}
-
-	const { item, useCanvasContext = false }: Props = $props()
+		onRevert?: (item: MessageData) => void | Promise<void>
+	} = $props()
 
 	let getNodeByPathFn: (path: string[]) => any = () => undefined
 	let getProjectNodesFn: () => Iterable<any> = () => []
@@ -68,16 +78,38 @@
 
 <div
 	class={[
-		'bubble',
-		'whitespace-pre-wrap', // preserve user newlines
-		'wrap-anywhere', // break long words/urls
-		'word-break-[break-word]', // fallback
-		'*:whitespace-pre-wrap', // For code blocks
-		'relative inline-grid max-w-4/5 gap-2',
+		'bubble max-w-4/5',
+		'flex flex-row gap-1',
+		'group/message',
 		item.role === 'user' &&
 			'text-main-200 bg-main-800 border-main-700 ms-auto w-fit rounded border p-3',
 		item.role === 'assistant' && 'text-main-300/90 mb-2'
 	]}
 >
-	<HighlightableSpan text={item.content} {highlights} markdown={true} />
+	<div
+		class={[
+			'whitespace-pre-wrap', // preserve user newlines
+			'wrap-anywhere', // break long words/urls
+			'word-break-[break-word]', // fallback
+			'*:whitespace-pre-wrap', // For code blocks
+			'relative inline-grid gap-2'
+		]}
+	>
+		<HighlightableSpan text={item.content} {highlights} markdown={true} />
+	</div>
+	{#if item.role === 'user' && item.snapshot}
+		<Button
+			class={[
+				'text-main-500 icon-btn -mr-2 -mb-1.5 self-end',
+				'hover:text-main-200 group-hover/message:text-main-400'
+			]}
+			onClick={async () => await onRevert?.(item)}
+			variation="link"
+			autoLoad="promise"
+		>
+			{#snippet icon()}
+				<IconRevert class="size-4" />
+			{/snippet}
+		</Button>
+	{/if}
 </div>
