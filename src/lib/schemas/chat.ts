@@ -139,25 +139,32 @@ export const widgetStartedModel = baseMessageModel.extend({
 	event: z.literal('widget_start'),
 	data: z.discriminatedUnion('type', [variableWidgetModel])
 })
-export const widgetCompletedModel = baseMessageModel.extend({
-	event: z.literal('widget_complete'),
-	data: z.object({})
-})
+export const widgetCompletedModel = baseMessageModel
+	.omit({ runId: true })
+	.extend({
+		event: z.literal('widget_complete'),
+		sourceId: z.string().nonoptional(),
+		data: z.object({})
+	})
 
 // Meta message schemas
-export const ackMessageModel = baseMessageModel.omit({ id: true }).extend({
-	event: z.literal('ack'),
-	get data() {
-		return uiMessageModel
-	}
-})
-
-export const errorMessageModel = baseMessageModel.omit({ id: true }).extend({
-	event: z.literal('error'),
-	data: z.object({
-		error: z.any() // Can contain validation errors or other error info
+export const ackMessageModel = baseMessageModel
+	.omit({ id: true, runId: true })
+	.extend({
+		event: z.literal('ack'),
+		get data() {
+			return uiMessageModel
+		}
 	})
-})
+
+export const errorMessageModel = baseMessageModel
+	.omit({ id: true, runId: true })
+	.extend({
+		event: z.literal('error'),
+		data: z.object({
+			error: z.any() // Can contain validation errors or other error info
+		})
+	})
 
 const uiMessages = [
 	userMessageModel,

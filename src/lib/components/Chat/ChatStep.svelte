@@ -6,12 +6,15 @@
 	import Spinner from '../Spinner.svelte'
 	import IconChevronDown from '~icons/mdi/chevron-down'
 	import IconError from '~icons/mdi/alert-circle'
+	import ChatWidget from './ChatWidget.svelte'
 
-	interface Props {
+	const {
+		item,
+		onWidgetComplete
+	}: {
 		item: StepData
-	}
-
-	const { item }: Props = $props()
+		onWidgetComplete?: () => void | Promise<void>
+	} = $props()
 
 	let detailsElement = $state<HTMLDetailsElement>()
 	let isCollapsed = $state(false)
@@ -93,9 +96,11 @@
 					{#each item.children as child}
 						<li>
 							{#if child.type === 'step'}
-								<ChatStep item={child} />
+								<ChatStep item={child} {onWidgetComplete} />
 							{:else if child.type === 'message'}
 								<ChatMessage item={child} />
+							{:else if child.type === 'widget'}
+								<ChatWidget item={child} onComplete={onWidgetComplete} />
 							{/if}
 						</li>
 					{/each}

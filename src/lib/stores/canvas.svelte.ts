@@ -400,7 +400,7 @@ export const getNodeByPath = (
 	return node
 }
 
-const rollbackContainer = (snapshot: NodeContainer) => {
+export const rollbackContainer = (snapshot: NodeContainer) => {
 	if (isProject(snapshot)) {
 		if (!project) {
 			toast.error('No project found')

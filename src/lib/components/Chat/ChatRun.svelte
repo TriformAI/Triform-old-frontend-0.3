@@ -1,13 +1,16 @@
 <script lang="ts">
-	import { type RunData } from '$lib/stores/chat.svelte'
+	import { type RunData, type WidgetCompleteCallback } from '$lib/stores/chat.svelte'
 	import ChatMessage from './ChatMessage.svelte'
 	import ChatStep from './ChatStep.svelte'
+	import ChatWidget from './ChatWidget.svelte'
 
-	interface Props {
+	const {
+		item,
+		onWidgetComplete
+	}: {
 		item: RunData
-	}
-
-	const { item }: Props = $props()
+		onWidgetComplete?: WidgetCompleteCallback
+	} = $props()
 </script>
 
 <ul class="grid gap-2">
@@ -16,7 +19,9 @@
 			{#if child.type === 'message'}
 				<ChatMessage item={child} />
 			{:else if child.type === 'step'}
-				<ChatStep item={child} />
+				<ChatStep item={child} {onWidgetComplete} />
+			{:else if child.type === 'widget'}
+				<ChatWidget item={child} onComplete={onWidgetComplete} />
 			{/if}
 		</li>
 	{/each}

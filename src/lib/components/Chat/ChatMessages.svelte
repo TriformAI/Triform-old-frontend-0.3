@@ -1,7 +1,7 @@
 <script lang="ts">
 	import ChatItem from './ChatItem.svelte'
 	import LogoSpinner from '$lib/components/SpinnerLogo.svelte'
-	import type { ParsedItem, MessageData } from '$lib/stores/chat.svelte'
+	import type { ParsedItem, MessageData, WidgetCompleteCallback } from '$lib/stores/chat.svelte'
 
 	let {
 		container = $bindable(),
@@ -9,7 +9,8 @@
 		isWaitingForAssistant,
 		useCanvasContext = true,
 		class: classes = [],
-		onRevert
+		onRevert,
+		onWidgetComplete
 	}: {
 		container?: HTMLElement
 		items: ParsedItem[]
@@ -17,6 +18,7 @@
 		useCanvasContext?: boolean
 		class?: string[]
 		onRevert?: (item: MessageData) => void | Promise<void>
+		onWidgetComplete?: WidgetCompleteCallback
 	} = $props()
 </script>
 
@@ -26,7 +28,7 @@
 >
 	<ul class="chat grid gap-4 pb-6 text-sm">
 		{#each items as item}
-			<ChatItem {item} {useCanvasContext} {onRevert} />
+			<ChatItem {item} {useCanvasContext} {onRevert} {onWidgetComplete} />
 		{/each}
 
 		<li>

@@ -22,7 +22,7 @@
 	} from '$lib/stores/canvas.svelte'
 	import { nodeTypesDict, type NodeType } from '$lib/constants/nodeTypes'
 	import { arraysDiffer } from '$lib/utils/arraysDiffer'
-	import { userMessageModel } from '$lib/schemas/chat'
+	import { newMessageModel, userMessageModel } from '$lib/schemas/chat'
 	import type * as z from 'zod'
 	import { toast } from 'svelte-sonner'
 	import type { Item } from './ChatMention.svelte'
@@ -278,6 +278,7 @@
 		resetChatState()
 		parseHistory(uiMessages)
 		message = item.content
+		// TODO: add component data and whatever so the icon works
 		context = objFilter(item.context ?? {}, key => key.startsWith('@'))
 		forceUpdateCharPos = !forceUpdateCharPos
 		if (textarea) {
@@ -285,6 +286,16 @@
 			textarea.selectionStart = message.length
 			textarea.selectionEnd = message.length
 		}
+	}
+
+	const onWidgetComplete = async (widgetId: string) => {
+		chat.socket?.send(
+			JSON.stringify({
+				event: 'widget_complete',
+				sourceId: widgetId,
+				data: {}
+			} satisfies z.infer<typeof newMessageModel>)
+		)
 	}
 </script>
 
@@ -297,6 +308,7 @@
 		{isWaitingForAssistant}
 		useCanvasContext={true}
 		onRevert={handleRevert}
+		{onWidgetComplete}
 	/>
 
 	<div class="px-4 pb-4 leading-none">

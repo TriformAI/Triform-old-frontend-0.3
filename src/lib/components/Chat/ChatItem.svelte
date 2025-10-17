@@ -3,21 +3,25 @@
 	import { type ParsedItem } from '$lib/stores/chat.svelte'
 	import ChatMessage from './ChatMessage.svelte'
 	import ChatRun from './ChatRun.svelte'
-	import type { MessageData } from '$lib/stores/chat.svelte'
+	import type { MessageData, WidgetCompleteCallback } from '$lib/stores/chat.svelte'
 
-	interface Props {
+	const {
+		item,
+		useCanvasContext = false,
+		onWidgetComplete,
+		onRevert
+	}: {
 		item: ParsedItem
 		useCanvasContext?: boolean
+		onWidgetComplete?: WidgetCompleteCallback
 		onRevert?: (item: MessageData) => void | Promise<void>
-	}
-
-	const { item, useCanvasContext = false, onRevert }: Props = $props()
+	} = $props()
 </script>
 
 <li class="grid opacity-100 transition-all duration-400 starting:translate-y-4 starting:opacity-0">
 	{#if item.type === 'message'}
 		<ChatMessage {item} {useCanvasContext} {onRevert} />
 	{:else if item.type === 'run'}
-		<ChatRun {item} />
+		<ChatRun {item} {onWidgetComplete} />
 	{/if}
 </li>

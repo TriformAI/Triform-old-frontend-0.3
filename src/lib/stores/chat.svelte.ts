@@ -1,4 +1,4 @@
-import { ackMessageModel, errorMessageModel, stepCompletedModel, uiMessageModel } from '$lib/schemas/chat'
+import { ackMessageModel, errorMessageModel, stepCompletedModel, uiMessageModel, widgetStartedModel } from '$lib/schemas/chat'
 import { userMessageModel } from '$lib/schemas/chat'
 import { toast } from 'svelte-sonner'
 import { WebSocket } from 'partysocket'
@@ -28,18 +28,25 @@ export interface StepData {
 	event: 'started' | 'completed'
 	title: string
 	status?: z.infer<typeof stepCompletedModel>['data']['status']
-	children: (StepData | MessageData)[]
+	children: (StepData | MessageData | WidgetData)[]
 	completed?: boolean
 }
 
 export interface RunData {
 	type: 'run'
 	id: string
-	children: (StepData | MessageData)[]
+	children: (StepData | MessageData | WidgetData)[]
 	completed: boolean
 }
 
-export type ParsedItem = MessageData | RunData | StepData
+export interface WidgetData {
+	type: 'widget'
+	id: string
+	data: z.infer<typeof widgetStartedModel>['data']
+	completed: boolean
+}
+
+export type ParsedItem = MessageData | RunData | StepData | WidgetData
 
 export type UserMessage = Omit<
 	z.infer<typeof userMessageModel>,
@@ -48,15 +55,19 @@ export type UserMessage = Omit<
 
 export type ChatUrlBuilder = (ctx: { id?: string; startId: string }) => string
 
+export type WidgetCompleteCallback = (widgetId: string) => void | Promise<void>
+
 export const chat = $state<{ 
 	socket: WebSocket | null
 	startId: string
+	currentRunId: string | undefined
 	data: ParsedItem[]
 	isInitialized: boolean
 	isInitializing: boolean
 }>({
 	socket: null,
 	startId: '0',
+	currentRunId: undefined,
 	data: [],
 	isInitialized: false,
 	isInitializing: false
@@ -216,6 +227,24 @@ function findStep(stepId: string): StepData | undefined {
 	return findStepRecursive(stepId, chat.data)
 }
 
+function findWidgetRecursive(widgetId: string, items: ParsedItem[]): WidgetData | undefined {
+	for (const item of items) {
+		if (item.type === 'widget' && item.id === widgetId) {
+			return item
+		}
+		if (item.type === 'run' || item.type === 'step') {
+			const found = findWidgetRecursive(widgetId, item.children)
+			if (found) return found
+		}
+	}
+	return undefined
+}
+
+function findWidget(widgetId: string): WidgetData | undefined {
+	return findWidgetRecursive(widgetId, chat.data)
+}
+
+const parseId = (id: string) => parseInt(id.split('-')[0])
 export function handleMessage(msg: any) {
 	console.log('handleMessage', msg)
 
@@ -306,6 +335,10 @@ export function handleMessage(msg: any) {
 				break
 			}
 
+			// if this run id is higher than the current run id, set it as the current run id
+			if (parseId(id) > parseId(chat.currentRunId ?? '0'))
+				chat.currentRunId = id
+
 			chat.data.push({ type: 'run', id, children: [], completed: false })
 			break
 		}
@@ -316,6 +349,8 @@ export function handleMessage(msg: any) {
 			const run = findRun(sourceId)
 			if (run) {
 				run.completed = true
+				// end current run
+				chat.currentRunId = undefined
 			}
 			break
 		}
@@ -359,6 +394,47 @@ export function handleMessage(msg: any) {
 			}
 			break
 		}
+
+			// -------- WIDGETS --------
+			case 'widget_start': {
+				const newWidget: WidgetData = {
+					type: 'widget',
+					id,
+					data: data as any,
+					completed: false
+				}
+
+				if (stepId) {
+					const parentStep = findStep(stepId)
+					if (parentStep) {
+						parentStep.children.push(newWidget)
+					}
+				} else if (runId) {
+					const run = findRun(runId)
+					if (run) {
+						run.children.push(newWidget)
+					}
+				}
+
+				try {
+					const componentId = (data as any)?.metadata?.pendingComponents?.componentId as string | undefined
+					if (componentId) inProgressComponents.add(componentId)
+				} catch {}
+
+				break
+			}
+
+			case 'widget_complete': {
+				const widget = findWidget(sourceId)
+				if (widget) {
+					widget.completed = true
+					try {
+						const componentId = (widget.data as any)?.metadata?.pendingComponents?.componentId as string | undefined
+						if (componentId) inProgressComponents.delete(componentId)
+					} catch {}
+				}
+				break
+			}
 
 		default:
 			break
