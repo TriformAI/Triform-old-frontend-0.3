@@ -1,9 +1,11 @@
 <script lang="ts">
-	import IconRevert from '~icons/mdi/replay'
-	import { type ParsedItem } from '$lib/stores/chat.svelte'
+	import {
+		type ParsedItem,
+		type MessageData,
+		type WidgetCompleteCallback
+	} from '$lib/stores/chat.svelte'
 	import ChatMessage from './ChatMessage.svelte'
 	import ChatRun from './ChatRun.svelte'
-	import type { MessageData, WidgetCompleteCallback } from '$lib/stores/chat.svelte'
 
 	const {
 		item,

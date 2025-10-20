@@ -9,7 +9,7 @@
 		onWidgetComplete
 	}: {
 		item: RunData
-		onWidgetComplete?: WidgetCompleteCallback
+		onWidgetComplete: WidgetCompleteCallback
 	} = $props()
 </script>
 

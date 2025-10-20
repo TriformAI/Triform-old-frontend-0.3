@@ -1,6 +1,5 @@
 <script lang="ts">
 	import type { resolvedProjectModel } from '$lib/schemas/projects'
-	import type { chatTriggerUserMessageModel } from '$lib/schemas/chat'
 	import type * as z from 'zod'
 	import { selectedTools } from '$lib/stores/triggerChat.svelte'
 

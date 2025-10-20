@@ -1,6 +1,5 @@
 <script lang="ts">
 	import type { WidgetData, WidgetCompleteCallback } from '$lib/stores/chat.svelte'
-	import VariablesPrompt from './widgets/VariablesPrompt.svelte'
 
 	const {
 		item,
@@ -10,15 +9,16 @@
 		onComplete?: WidgetCompleteCallback
 	} = $props()
 
-	const widgetMap = $derived({
+	const widgetMap = $derived.by(async () => ({
 		variable_prompt: {
-			component: VariablesPrompt,
+			// ensure it's only imported when it's needed, as the parent components are used outside of the canvas ctx
+			component: await import('./widgets/VariablesPrompt.svelte'),
 			title: 'Required variables',
 			description: item.completed
 				? 'Variables were provided'
 				: 'The variables below are required to execute your components.'
 		}
-	})
+	}))
 
 	const { component: Widget, title, description } = $derived(widgetMap[item.data.type])
 </script>

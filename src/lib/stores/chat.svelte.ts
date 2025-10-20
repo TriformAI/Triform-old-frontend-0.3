@@ -2,7 +2,6 @@ import { ackMessageModel, errorMessageModel, stepCompletedModel, uiMessageModel,
 import { userMessageModel } from '$lib/schemas/chat'
 import { toast } from 'svelte-sonner'
 import { WebSocket } from 'partysocket'
-import { throttle } from '$lib/utils/throttle'
 import * as z from 'zod'
 import { tick } from 'svelte'
 import { inProgressComponents } from './builder.svelte'

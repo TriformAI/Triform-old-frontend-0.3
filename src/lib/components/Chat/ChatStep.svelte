@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { type StepData } from '$lib/stores/chat.svelte'
+	import { type StepData, type WidgetCompleteCallback } from '$lib/stores/chat.svelte'
 	import ChatMessage from './ChatMessage.svelte'
 	import ChatStep from './ChatStep.svelte'
 	import IconCompleted from '~icons/mdi/checkbox-marked-circle'
@@ -13,7 +13,7 @@
 		onWidgetComplete
 	}: {
 		item: StepData
-		onWidgetComplete?: () => void | Promise<void>
+		onWidgetComplete: WidgetCompleteCallback
 	} = $props()
 
 	let detailsElement = $state<HTMLDetailsElement>()
