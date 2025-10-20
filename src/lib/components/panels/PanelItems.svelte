@@ -15,6 +15,7 @@
 	import IconVariables from '~icons/material-symbols/vpn-key-rounded'
 	import IconIO from '~icons/material-symbols/input-circle-rounded'
 	import IconSettings from '~icons/mdi/tune-vertical'
+	import { slide } from 'svelte/transition'
 
 	import { openPanelItem, toggleOpenPanelItem } from '$lib/stores/panel.svelte'
 	import { onMount } from 'svelte'
@@ -115,16 +116,11 @@
 
 		{#each items as key}
 			{@const Component = allComponents[key].component}
-			<div
-				data-panel-item={key}
-				class={[
-					' relative z-10 overflow-x-hidden starting:h-0',
-					isActive(key) ? 'h-full' : 'h-0',
-					isMounted && 'transition-height duration-500 ease-(--easing-circ)'
-				]}
-			>
-				<Component {nodeId} />
-			</div>
+			{#if isActive(key)}
+				<div data-panel-item={key} class={['relative z-10']} transition:slide={{ axis: 'y' }}>
+					<Component {nodeId} />
+				</div>
+			{/if}
 		{/each}
 	</div>
 </div>
