@@ -129,9 +129,11 @@ const variableWidgetModel = z.object({
 		)
 	}),
 	metadata: z.object({
-		pendingComponents: z.object({
-			componentId: z.string()
-		})
+		pendingComponents: z.array(
+			z.object({
+				componentId: z.string()
+			})
+		)
 	})
 })
 
