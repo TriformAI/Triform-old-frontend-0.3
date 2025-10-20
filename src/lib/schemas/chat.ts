@@ -99,7 +99,8 @@ export const stepStartedModel = baseMessageModel.extend({
 	event: z.literal('step_start'),
 	runId: z.string().nonoptional(),
 	data: z.object({
-		title: z.string()
+		title: z.string(),
+		input: z.unknown().optional()
 	})
 })
 
@@ -109,7 +110,8 @@ export const stepCompletedModel = baseMessageModel.extend({
 	runId: z.string().nonoptional(),
 	data: z.object({
 		title: z.string(),
-		status: z.enum(['success', 'error']).default('success')
+		status: z.enum(['success', 'error']).default('success'),
+		output: z.unknown().optional()
 	})
 })
 

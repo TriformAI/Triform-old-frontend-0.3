@@ -29,6 +29,8 @@ export interface StepData {
 	status?: z.infer<typeof stepCompletedModel>['data']['status']
 	children: (StepData | MessageData | WidgetData)[]
 	completed?: boolean
+	input?: unknown
+	output?: unknown
 }
 
 export interface RunData {
@@ -362,7 +364,8 @@ export function handleMessage(msg: any) {
 				event: 'started',
 				title: (data as any).title,
 				children: [],
-				completed: false
+				completed: false,
+				input: data.input
 			}
 
 			// If stepId is provided, nest inside that step
@@ -390,6 +393,7 @@ export function handleMessage(msg: any) {
 				step.event = 'completed'
 				step.status = (data as any).status
 				step.completed = true
+				step.output = data.output
 			}
 			break
 		}
