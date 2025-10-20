@@ -117,7 +117,11 @@
 		{#each items as key (key)}
 			{@const Component = allComponents[key].component}
 			{#if isActive(key)}
-				<div data-panel-item={key} class={['relative z-10']} transition:slide={{ axis: 'y' }}>
+				<div
+					data-panel-item={key}
+					class={['relative z-10 h-full']}
+					transition:slide={{ axis: 'y' }}
+				>
 					<Component {nodeId} />
 				</div>
 			{/if}
