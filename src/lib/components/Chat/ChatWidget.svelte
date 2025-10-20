@@ -1,5 +1,6 @@
 <script lang="ts">
 	import type { WidgetData, WidgetCompleteCallback } from '$lib/stores/chat.svelte'
+	import { onMount } from 'svelte'
 
 	const {
 		item,
@@ -9,7 +10,11 @@
 		onComplete?: WidgetCompleteCallback
 	} = $props()
 
-	const variablesPrompt = await import('./widgets/VariablesPrompt.svelte')
+	let variablesPrompt = $state()
+
+	onMount(async () => {
+		variablesPrompt = (await import('./widgets/VariablesPrompt.svelte')).default
+	})
 
 	const widgetMap = $derived({
 		variable_prompt: {
@@ -32,5 +37,7 @@
 	<p class="text-main-500">
 		{description}
 	</p>
-	<Widget {item} {onComplete} />
+	{#if Widget}
+		<Widget {item} {onComplete} />
+	{/if}
 </div>
