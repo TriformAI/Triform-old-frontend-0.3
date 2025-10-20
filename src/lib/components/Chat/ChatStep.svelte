@@ -20,6 +20,7 @@
 	} = $props()
 
 	let previousCompleted = $state(item.completed)
+	let hasEverHadChildren = $state(false)
 
 	// Get the newest nested step for collapsed display
 	const newestNestedStep = $derived.by(() => {
@@ -39,6 +40,16 @@
 		return item.title
 	})
 
+	let isOpen = $state(false)
+
+	// Auto-open when children are first added (if not completed)
+	$effect(() => {
+		if (!hasEverHadChildren && isCollapsible && item.children.length && !item.completed) {
+			hasEverHadChildren = true
+			isOpen = true
+		}
+	})
+
 	// Close when transitioning to completed (if currently open)
 	$effect(() => {
 		if (!previousCompleted && item.completed && isOpen) {
@@ -47,7 +58,6 @@
 		previousCompleted = item.completed
 	})
 
-	let isOpen = $state(!item.completed)
 	const isCollapsible = $derived(item.children.length || item.input || item.output)
 </script>
 
