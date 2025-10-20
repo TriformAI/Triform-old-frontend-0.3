@@ -34,6 +34,7 @@
 	import { objFilter } from '$lib/utils/objectFilter'
 	import { confirmStore } from '$lib/stores/confirm.svelte'
 	import { revert } from '$lib/actions/builderChat'
+	import { goto } from '$app/navigation'
 
 	let {
 		onMessage
@@ -268,6 +269,9 @@
 		})
 		if (!confirmed) return
 		console.log('restoring', item.snapshot)
+		// go to the root of the project to ensure we're not in a container when reverting
+		await goto(`/project/${page.params.id}`)
+		await tick()
 		const res = await revert(page.params.id, item.snapshot)
 		if (!res.success) return void toast.error('Error reverting to message')
 		const { project, uiMessages } = res.data
