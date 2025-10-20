@@ -9,16 +9,18 @@
 		onComplete?: WidgetCompleteCallback
 	} = $props()
 
-	const widgetMap = $derived.by(async () => ({
+	const variablesPrompt = await import('./widgets/VariablesPrompt.svelte')
+
+	const widgetMap = $derived({
 		variable_prompt: {
 			// ensure it's only imported when it's needed, as the parent components are used outside of the canvas ctx
-			component: await import('./widgets/VariablesPrompt.svelte'),
+			component: variablesPrompt,
 			title: 'Required variables',
 			description: item.completed
 				? 'Variables were provided'
 				: 'The variables below are required to execute your components.'
 		}
-	}))
+	})
 
 	const { component: Widget, title, description } = $derived(widgetMap[item.data.type])
 </script>

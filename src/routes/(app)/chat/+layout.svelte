@@ -73,12 +73,14 @@
 				class="md:bg-main-950/60 border-main-800 row-span-3 hidden h-full min-h-0 flex-col gap-6 rounded-lg border md:flex"
 			>
 				<div class="flex flex-1 flex-col gap-2 overflow-x-hidden overflow-y-auto p-2">
-					<Button variation="ghost" onClick={() => goto('/chat')} class="text-main-300">
-						{#snippet icon()}
-							<NewChatIcon class="size-4" />
-						{/snippet}
-						<span class="truncate text-sm">New chat</span>
-					</Button>
+					<div class="bg-main-950/80 sticky top-0 w-full rounded-b backdrop-blur">
+						<Button variation="ghost" onClick={() => goto('/chat')} class="text-main-300 w-full">
+							{#snippet icon()}
+								<NewChatIcon class="size-4" />
+							{/snippet}
+							<span class="truncate text-sm">New chat</span>
+						</Button>
+					</div>
 					{#each threads as thread (thread.id)}
 						{@const isActive = threadId === thread.id}
 						<a
@@ -137,7 +139,7 @@
 				/>
 			</div>
 			<div
-				class="bg-main-950/60 border-main-800 row-span-3 hidden h-full min-h-0 flex-col overflow-hidden rounded-lg border md:flex"
+				class="bg-main-950/60 border-main-800 row-span-3 hidden h-full min-h-0 flex-col overflow-hidden overflow-y-auto rounded-lg border md:flex"
 			>
 				<div class="bg-main-950 border-main-850 border-b p-4 pt-3">
 					<h3 class="text-main-300 text-base font-semibold">Available toolboxes</h3>
@@ -173,19 +175,21 @@
 						<div
 							class="flex h-[calc(100%-3rem)] flex-col gap-2 overflow-x-hidden overflow-y-auto p-2"
 						>
-							<Button
-								variation="ghost"
-								onClick={() => {
-									isLeftOpen = false
-									goto('/chat')
-								}}
-								class="text-main-300"
-							>
-								{#snippet icon()}
-									<NewChatIcon class="size-4" />
-								{/snippet}
-								<span class="truncate text-sm">New chat</span>
-							</Button>
+							<div class="bg-main-950/60 sticky top-0 rounded-b backdrop-blur">
+								<Button
+									variation="ghost"
+									onClick={() => {
+										isLeftOpen = false
+										goto('/chat')
+									}}
+									class="text-main-300 w-full"
+								>
+									{#snippet icon()}
+										<NewChatIcon class="size-4" />
+									{/snippet}
+									<span class="truncate text-sm">New chat</span>
+								</Button>
+							</div>
 							{#each threads as thread (thread.id)}
 								{@const isActive = threadId === thread.id}
 								<a
