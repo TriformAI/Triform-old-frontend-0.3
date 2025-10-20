@@ -109,9 +109,7 @@
 	}
 </script>
 
-<div
-	class="border-b-main-800 bg-main-950 sticky top-0 z-20 grid grid-rows-[auto_1fr] border-b pe-5"
->
+<div class="border-b-main-800 bg-main-950 sticky top-0 z-20 grid grid-rows-[auto_1fr] border-b">
 	<div class="border-main-800 flex flex-row">
 		{#each contextToggles as toggle (toggle.id)}
 			{@const isActive = activeContext === toggle.id}
@@ -152,9 +150,9 @@
 				</div>
 			{/if}
 		{/each}
-		<div class="border-main-800 grow rounded-bl border-b border-l"></div>
+		<div class="border-main-800 bg-main-900/80 grow rounded-bl border-b border-l"></div>
 	</div>
-	<div class="grid grid-cols-[auto_1fr] items-center gap-y-1 py-3 pl-4">
+	<div class="grid grid-cols-[auto_1fr] items-center gap-y-1 py-3 pr-5 pl-4">
 		<!-- {#if Icon}
 			<Icon
 				class={[
