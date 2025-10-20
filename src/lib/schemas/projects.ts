@@ -56,9 +56,9 @@ export const projectSpecModel = z.strictObject({
 			}),
 			chat: z
 				.object({
-					enabled: z.boolean().default(false)
+					enabled: z.boolean().default(true)
 				})
-				.default({ enabled: false })
+				.default({ enabled: true })
 		})
 		.default({
 			endpoints: {
@@ -67,7 +67,7 @@ export const projectSpecModel = z.strictObject({
 				ingress_tokens: []
 			},
 			chat: {
-				enabled: false
+				enabled: true
 			}
 		})
 })
