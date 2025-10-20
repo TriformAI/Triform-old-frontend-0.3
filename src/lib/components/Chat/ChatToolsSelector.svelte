@@ -2,6 +2,7 @@
 	import type { resolvedProjectModel } from '$lib/schemas/projects'
 	import type * as z from 'zod'
 	import { selectedTools } from '$lib/stores/triggerChat.svelte'
+	import { onMount } from 'svelte'
 
 	let {
 		toolboxes
@@ -22,6 +23,19 @@
 			]
 		}
 	}
+
+	onMount(() => {
+		selectedTools.cleanTools(
+			toolboxes.flatMap(toolbox =>
+				Object.keys(toolbox.spec.nodes)
+					.map(nodeId => ({
+						projectId: toolbox.id!,
+						nodeId
+					}))
+					.filter(t => t.projectId !== undefined)
+			)
+		)
+	})
 </script>
 
 <div class="flex flex-col gap-2 p-2">
