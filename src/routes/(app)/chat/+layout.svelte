@@ -15,6 +15,7 @@
 	import { formatRelativeDate } from '$lib/utils/formatRelativeDate'
 	import ChatToolsSelector from '$lib/components/Chat/ChatToolsSelector.svelte'
 	import type { PageData } from './$types.js'
+	import { nodeTypesDict } from '$lib/constants/nodeTypes.js'
 
 	const { children, data }: { children: Snippet; data: PageData } = $props()
 
@@ -43,6 +44,8 @@
 		() =>
 			`grid-template-columns: ${chatPanelWidth}px ${GUTTER_SIZE}px 1fr ${GUTTER_SIZE}px ${toolsPanelWidth}px`
 	)
+
+	const projectTypeData = $derived(nodeTypesDict.project)
 </script>
 
 <svelte:head>
@@ -141,11 +144,14 @@
 			<div
 				class="bg-main-950/60 border-main-800 row-span-3 hidden h-full min-h-0 flex-col overflow-hidden overflow-y-auto rounded-lg border md:flex"
 			>
-				<div class="bg-main-950 border-main-850 border-b p-4 pt-3">
-					<h3 class="text-main-300 text-base font-semibold">Available toolboxes</h3>
+				<div class="bg-main-950 border-main-850 border-b p-4 pt-3.5">
+					<div class="mb-1.5 flex flex-row items-center gap-2">
+						<projectTypeData.icon class={[projectTypeData.iconClasses, 'size-5'].join(' ')} />
+						<h3 class="text-main-300 text-base font-semibold">Available toolboxes</h3>
+					</div>
 					<p class="text-main-400 text-sm">
-						These are projects where the Chat trigger is enabled. Each top-level node in the project
-						will be available as a tool.
+						These are toolboxes where the Chat trigger is enabled. Each top-level node in the
+						toolbox will be available as a tool.
 					</p>
 				</div>
 				<ChatToolsSelector {toolboxes} />

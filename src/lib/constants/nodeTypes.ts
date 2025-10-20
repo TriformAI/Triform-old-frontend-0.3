@@ -1,7 +1,7 @@
 import IconAction from '~icons/mdi/rhombus'
 import IconFlow from '~icons/material-symbols/network-node'
 import IconAgent from '~icons/material-symbols/psychology-rounded'
-import IconProject from '~icons/material-symbols/folder-open-rounded'
+import IconProject from '~icons/material-symbols/service-toolbox-rounded'
 
 export const nodeTypes = [
 	{
@@ -39,10 +39,10 @@ export const nodeTypes = [
 		label: 'Project',
 		description: 'A project',
 		icon: IconProject,
-		color: 'var(--color-main-300)',
-		iconColor: 'var(--color-main-300)',
+		color: 'var(--color-danger-300)',
+		iconColor: 'var(--color-danger-300)',
 		shape: 'square',
-		iconClasses: 'text-main-300 drop-shadow-main-500'
+		iconClasses: 'text-danger-400 drop-shadow-danger-500'
 	}
 ] as const
 

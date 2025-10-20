@@ -163,9 +163,9 @@
 
 <PanelItem
 	{nodeId}
-	title="Project Variables"
+	title="Variables"
 	isListContainer
-	tip="Project variables are globally injected into all nodes within the project"
+	tip="Variables are globally injected into all nodes within the toolbox"
 	onAddClick={() => {
 		if (isEditing) return
 		isAdding = !isAdding

@@ -41,7 +41,7 @@
 							idx !== crumbs.length - 1 && 'text-main-400 group-hover:text-main-300 transition'
 						].join(' ')}
 					>
-						{name}
+						{name === 'Projects' ? 'Toolboxes' : name}
 					</span>
 				</a>
 			</li>

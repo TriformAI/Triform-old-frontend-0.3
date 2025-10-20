@@ -57,7 +57,7 @@
 	const activeContext = $derived(getActiveContext())
 
 	const componentData = $derived(activeContext === 'project' ? getProject() : selectedNodeComponent)
-	const title = $derived(componentData?.meta?.name ?? 'Project')
+	const title = $derived(componentData?.meta?.name ?? 'Toolbox')
 	const desc = $derived(
 		'intention' in (componentData?.meta ?? {}) ? (componentData?.meta?.intention ?? '') : ''
 	)
@@ -146,7 +146,7 @@
 								isActive ? 'text-main-200' : 'text-main-400 group-hover:text-main-300'
 							]}
 						>
-							{toggle.id === 'project' ? 'Project' : nodeType?.label}
+							{toggle.id === 'project' ? 'Toolbox' : nodeType?.label}
 						</span>
 					</button>
 				</div>
