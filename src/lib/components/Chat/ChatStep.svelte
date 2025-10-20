@@ -59,6 +59,8 @@
 	})
 
 	const isCollapsible = $derived(item.children.length || item.input || item.output)
+
+	const stepIconClasses = 'size-4 shrink-0'
 </script>
 
 <div class="grid gap-2">
@@ -66,11 +68,11 @@
 		<!-- Step with no children - render as before -->
 		<p class="text-main-300 grid grid-cols-[auto_1fr] items-center gap-1.5">
 			{#if item.event === 'started' && !item.completed}
-				<Spinner class="text-main-400 size-4" />
+				<Spinner class={[stepIconClasses, 'text-main-400'].join(' ')} />
 			{:else if item.status === 'success'}
-				<IconCompleted class="text-main-300 size-4" />
+				<IconCompleted class={[stepIconClasses, 'text-main-300'].join(' ')} />
 			{:else if item.status === 'error'}
-				<IconError class="text-danger-400 size-4" />
+				<IconError class={[stepIconClasses, 'text-danger-400'].join(' ')} />
 			{/if}
 			{item.title}
 		</p>
@@ -79,11 +81,11 @@
 		<Disclosure bind:open={isOpen} showChevron={true}>
 			{#snippet trigger()}
 				{#if item.event === 'started' && !item.completed}
-					<Spinner class="text-main-400 size-4" />
+					<Spinner class={[stepIconClasses, 'text-main-400'].join(' ')} />
 				{:else if item.status === 'success'}
-					<IconCompleted class="text-main-300/90 size-4" />
+					<IconCompleted class={[stepIconClasses, 'text-main-300/90'].join(' ')} />
 				{:else if item.status === 'error'}
-					<IconError class="text-danger-400 size-4" />
+					<IconError class={[stepIconClasses, 'text-danger-400'].join(' ')} />
 				{/if}
 				<span class="text-left">
 					{titleToShow}
@@ -97,7 +99,7 @@
 								<span
 									class="text-main-500 group-hover/trigger:text-main-300 in-[.open]:text-main-300 transition"
 								>
-									<IconInput class="mr-1 inline size-4 rotate-90" />
+									<IconInput class={[stepIconClasses, 'mr-1 inline rotate-90'].join(' ')} />
 									Input
 								</span>
 							{/snippet}
@@ -123,7 +125,7 @@
 								<span
 									class="text-main-500 group-hover/trigger:text-main-300 in-[.open]:text-main-300 transition"
 								>
-									<IconOutput class="mr-1 inline size-4 rotate-90" />
+									<IconOutput class={[stepIconClasses, 'mr-1 inline rotate-90'].join(' ')} />
 									Output
 								</span>
 							{/snippet}
