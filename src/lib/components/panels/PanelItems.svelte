@@ -114,7 +114,7 @@
 			</p>
 		{/if}
 
-		{#each items as key}
+		{#each items as key (key)}
 			{@const Component = allComponents[key].component}
 			{#if isActive(key)}
 				<div data-panel-item={key} class={['relative z-10']} transition:slide={{ axis: 'y' }}>

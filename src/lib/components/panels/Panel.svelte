@@ -51,7 +51,7 @@
 			iconClasses: nodeType?.iconClasses,
 			disabled:
 				!selectedNodeComponent ||
-				(nodeId === 'container' && getCurrentContainer()?.resource === 'project/v1')
+				(selectedNodeId === 'container' && getCurrentContainer()?.resource === 'project/v1')
 		}
 	] as const)
 	const activeContext = $derived(getActiveContext())
