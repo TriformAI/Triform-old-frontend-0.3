@@ -54,27 +54,23 @@
 		}
 	}
 
-	const createToggleFunction = <K extends keyof typeof componentData.spec.settings>(
-		key: K,
-		defaultValue: number,
-		isEnabled: () => boolean
-	) => {
-		return async () => {
-			await tick()
-			if (!isEnabled()) {
-				// If currently disabled, enable and set to default
-				;(componentData.spec.settings as Record<K, number>)[key] = defaultValue
-			} else {
-				// If currently enabled, disable and set to undefined
-				;(componentData.spec.settings as Record<K, number | undefined>)[key] = undefined
-			}
-			debouncedSave()
-		}
+	const toggleTemperature = async () => {
+		await tick()
+		componentData.spec.settings.temperature = temperatureEnabled ? null : 0.7
+		debouncedSave()
 	}
 
-	const toggleTemperature = createToggleFunction('temperature', 0.7, () => temperatureEnabled)
-	const toggleTopP = createToggleFunction('topP', 0.95, () => topPEnabled)
-	const toggleMaxTokens = createToggleFunction('maxTokens', 32768, () => maxTokensEnabled)
+	const toggleTopP = async () => {
+		await tick()
+		componentData.spec.settings.topP = topPEnabled ? null : 0.95
+		debouncedSave()
+	}
+
+	const toggleMaxTokens = async () => {
+		await tick()
+		componentData.spec.settings.maxTokens = maxTokensEnabled ? null : 32768
+		debouncedSave()
+	}
 </script>
 
 <div class="grid max-w-full gap-6 p-5 pt-4">
