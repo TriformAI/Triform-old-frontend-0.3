@@ -85,11 +85,9 @@
 				{:else if item.status === 'error'}
 					<IconError class="text-danger-400 size-4" />
 				{/if}
-				<div>
-					<span>
-						{titleToShow}
-					</span>
-				</div>
+				<span class="text-left">
+					{titleToShow}
+				</span>
 			{/snippet}
 			<div class="pt-2">
 				<div class="border-main-700 ml-1.5 border-l pl-4">
