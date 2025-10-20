@@ -7,6 +7,7 @@
 	import IconChevronDown from '~icons/mdi/chevron-down'
 	import IconError from '~icons/mdi/alert-circle'
 	import ChatWidget from './ChatWidget.svelte'
+	import Disclosure from '../atoms/Disclosure.svelte'
 
 	const {
 		item,
@@ -16,9 +17,7 @@
 		onWidgetComplete: WidgetCompleteCallback
 	} = $props()
 
-	let detailsElement = $state<HTMLDetailsElement>()
-	let isCollapsed = $state(false)
-	let wasAutoClosedOnCompletion = $state(false)
+	let previousCompleted = $state(item.completed)
 
 	// Get the newest nested step for collapsed display
 	const newestNestedStep = $derived.by(() => {
@@ -32,31 +31,26 @@
 		if (item.completed) return item.title
 
 		// If not completed and collapsed, show newest nested step title
-		if (isCollapsed && newestNestedStep) return newestNestedStep.title
+		if (!isOpen && newestNestedStep) return newestNestedStep.title
 
 		// Otherwise show parent title
 		return item.title
 	})
 
-	// Automatically close when step completes (but only once)
+	// Close when transitioning to completed (if currently open)
 	$effect(() => {
-		if (item.completed && !wasAutoClosedOnCompletion && detailsElement && detailsElement.open) {
-			detailsElement.open = false
-			isCollapsed = true
-			wasAutoClosedOnCompletion = true
+		if (!previousCompleted && item.completed && isOpen) {
+			isOpen = false
 		}
+		previousCompleted = item.completed
 	})
 
-	// Handle toggle event to track collapse state
-	function handleToggle() {
-		if (detailsElement) {
-			isCollapsed = !detailsElement.open
-		}
-	}
+	let isOpen = $state(!item.completed)
+	const isCollapsible = $derived(item.children.length)
 </script>
 
 <div class="grid gap-2">
-	{#if item.children.length === 0}
+	{#if !isCollapsible}
 		<!-- Step with no children - render as before -->
 		<p class="text-main-300 grid grid-cols-[auto_1fr] items-center gap-1.5">
 			{#if item.event === 'started' && !item.completed}
@@ -70,14 +64,12 @@
 		</p>
 	{:else}
 		<!-- Step with children - make it collapsible -->
-		<details bind:this={detailsElement} ontoggle={handleToggle} open class="group">
-			<summary
-				class="text-main-300 group/summary grid cursor-pointer list-none grid-cols-[auto_1fr] items-center gap-1.5"
-			>
+		<Disclosure bind:open={isOpen}>
+			{#snippet trigger()}
 				{#if item.event === 'started' && !item.completed}
 					<Spinner class="text-main-400 size-4" />
 				{:else if item.status === 'success'}
-					<IconCompleted class="text-main-300 size-4" />
+					<IconCompleted class="text-main-300/90 size-4" />
 				{:else if item.status === 'error'}
 					<IconError class="text-danger-400 size-4" />
 				{/if}
@@ -86,13 +78,15 @@
 						{titleToShow}
 					</span>
 					<IconChevronDown
-						class="text-main-600 group-hover/summary:text-main-300 group-open:text-main-400 inline size-4 -rotate-90 transition-all duration-200 group-open:rotate-0"
+						class={[
+							'text-main-600 group-hover/summary:text-main-300 group-open:text-main-400 inline size-4 transition-all duration-200',
+							isOpen ? 'rotate-0' : '-rotate-90'
+						].join(' ')}
 					/>
 				</div>
-			</summary>
-
-			<div class="details-content overflow-hidden">
-				<ul class="mt-2 mb-1 ml-4.5 grid gap-2">
+			{/snippet}
+			<div class="ml-2">
+				<ul class="mt-1 grid gap-2 py-1">
 					{#each item.children as child}
 						<li>
 							{#if child.type === 'step'}
@@ -106,25 +100,6 @@
 					{/each}
 				</ul>
 			</div>
-		</details>
+		</Disclosure>
 	{/if}
 </div>
-
-<style>
-	details .details-content {
-		transition:
-			max-height 0.2s ease-out,
-			opacity 0.15s ease-out;
-		max-height: auto;
-		transition-behavior: allow-discrete;
-		opacity: 1;
-	}
-
-	details:not([open]) .details-content {
-		max-height: 0;
-		opacity: 0;
-		transition:
-			max-height 0.2s ease-in,
-			opacity 0.15s ease-in;
-	}
-</style>

@@ -3,13 +3,14 @@
 	import { slide } from 'svelte/transition'
 	import type { Snippet } from 'svelte'
 
-	let open = $state(false)
 	let {
+		open = $bindable(false),
 		trigger,
 		children,
 		class: classes,
 		triggerClass
 	}: {
+		open?: boolean
 		trigger?: Snippet
 		children?: Snippet
 		class?: string[]
