@@ -195,7 +195,7 @@
 		console.log('containerType', containerType)
 		if (containerType === 'project') return 'overview'
 		if (containerType === 'flow') return 'flow'
-		if (containerType === 'agent') return 'tools'
+		if (containerType === 'agent') return 'toolbox'
 		return ''
 	})
 

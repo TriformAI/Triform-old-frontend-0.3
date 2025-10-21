@@ -60,13 +60,15 @@
 			// 	node.node.spec.meta.name,
 			// 	item.content.includes(`@${node.node.spec.meta.name}`)
 			// )
-			if (!item.content.includes(`@${node.node.spec.meta.name}`)) continue
-			const nodeTypeData = nodeTypesDict[node.node.spec.resource.split('/')[0] as NodeType]
+			const nodeSpec = node?.node?.spec
+			if (!nodeSpec) continue
+			if (!item.content.includes(`@${nodeSpec.meta.name}`)) continue
+			const nodeType = nodeSpec.resource.split('/')[0] as NodeType
+			const nodeTypeData = nodeTypesDict[nodeType]
 			if (!nodeTypeData) continue
-			const nodePath =
-				node.node.spec.resource.split('/')[0] === 'action' ? node.path.slice(0, -1) : node.path
+			const nodePath = nodeType === 'action' ? node.path.slice(0, -1) : node.path
 			res.push({
-				text: `@${node.node.spec.meta.name}`,
+				text: `@${nodeSpec.meta.name}`,
 				fill: `color-mix(in oklab, ${nodeTypeData.color ?? 'var(--color-main-300)'} 40%, black)`,
 				color: `color-mix(in oklab, ${nodeTypeData.color ?? 'var(--color-main-300)'} 40%, white)`,
 				link: project?.id ? `/project/${project.id}/${nodePath.join('/') ?? ''}` : undefined

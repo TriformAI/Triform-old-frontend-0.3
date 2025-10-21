@@ -13,8 +13,9 @@
 	import IconMetadata from '~icons/material-symbols/info-outline'
 	import IconTriggers from '~icons/mdi/lightning-bolt'
 	import IconVariables from '~icons/material-symbols/vpn-key-rounded'
+	import IconProject from '~icons/mdi/shape'
 	import IconIO from '~icons/material-symbols/input-circle-rounded'
-	import IconSettings from '~icons/mdi/tune-vertical'
+	import IconAgentSettings from '~icons/mdi/tune-vertical'
 	import { slide } from 'svelte/transition'
 
 	import { openPanelItem, toggleOpenPanelItem } from '$lib/stores/panel.svelte'
@@ -32,11 +33,11 @@
 		codeEditor: { label: 'Code', component: CodeEditor, icon: IconCode },
 		execute: { label: 'Execute', component: Execute, icon: IconExecute },
 		metadata: { label: 'Information', component: Metadata, icon: IconMetadata },
-		projectSettings: { label: 'Settings', component: ProjectSettings, icon: IconSettings },
+		projectSettings: { label: 'Project Settings', component: ProjectSettings, icon: IconProject },
 		variables: { label: 'Global Variables', component: Variables, icon: IconVariables },
 		triggers: { label: 'Triggers', component: Triggers, icon: IconTriggers },
 		io: { label: 'IO', component: IO, icon: IconIO },
-		agentSettings: { label: 'Agent Settings', component: AgentSettings, icon: IconSettings }
+		agentSettings: { label: 'Agent Settings', component: AgentSettings, icon: IconAgentSettings }
 	}
 
 	let { items, nodeId, showNav = true }: Props = $props()

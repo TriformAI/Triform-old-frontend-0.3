@@ -80,11 +80,11 @@ Triform automatically generates this README as a starting point. You are encoura
 <Dialog bind:dialog appearance="center" onOpen={() => nameInput?.focus()}>
 	<Card onClose={() => dialog?.close()}>
 		{#snippet title()}
-			New Toolbox
+			New Project
 		{/snippet}
 
 		{#snippet subtitle()}
-			A toolbox is a collection of flows and agents that can be consumed through the chat
+			A project is a discrete collection of nodes that are connected into a flow
 		{/snippet}
 
 		{#snippet body()}
@@ -101,7 +101,7 @@ Triform automatically generates this README as a starting point. You are encoura
 
 				<InputField
 					bind:el={nameInput}
-					label="Toolbox Name"
+					label="Project Name"
 					required
 					bind:value={formData.meta.name}
 					id="new-project-name-input"

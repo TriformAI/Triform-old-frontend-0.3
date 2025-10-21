@@ -33,7 +33,7 @@
 </script>
 
 <svelte:head>
-	<title>Toolboxes | Triform</title>
+	<title>Projects | Triform</title>
 </svelte:head>
 
 <div class="container flex flex-col items-center gap-y-8">
@@ -46,7 +46,7 @@
 
 	<div>
 		<div class="flex flex-row items-center justify-start gap-2">
-			<h1 class=" text-2xl font-semibold">Toolboxes</h1>
+			<h1 class=" text-2xl font-semibold">Projects</h1>
 			<Button variation="link" onClick={() => projectDialog?.showModal()} id="new-project-button">
 				{#snippet icon()}
 					<IconAdd class="size-5" />

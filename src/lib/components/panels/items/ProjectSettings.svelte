@@ -20,7 +20,7 @@
 	}, 500)
 </script>
 
-<PanelItem {nodeId} title="Settings" forceOpen={true}>
+<PanelItem {nodeId} title="Project Settings" forceOpen={true}>
 	<div class="flex flex-col gap-y-4">
 		<div>
 			<span class="input-title">Readme</span>
