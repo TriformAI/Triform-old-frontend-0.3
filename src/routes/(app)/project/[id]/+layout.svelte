@@ -221,13 +221,13 @@
 		{/snippet}
 	</Navbar>
 
-	<main class="grid grid-rows-[1fr_auto] overflow-hidden md:block">
+	<main class="grid w-screen grid-rows-[auto_1fr] overflow-hidden md:block md:w-auto">
 		<SvelteFlowProvider>
 			<!-- Desktop: 3-column layout -->
 			<div
 				bind:this={gridContainer}
 				style={gridStyle}
-				class={`bg-main-850 grid h-full px-2 pt-1 pb-2 ease-(--easing-circ)`}
+				class={['bg-main-850 grid px-2 pt-1 pb-2 ease-(--easing-circ)', 'h-[80dvh] md:h-full']}
 			>
 				<div
 					class={[
@@ -341,30 +341,27 @@
 
 				<ComponentLibrary class={propsPanelWidth <= 30 ? 'border-main-850' : ''} /> -->
 			</div>
-
-			<!-- Mobile Tab Navigation -->
-			<div class="md:hidden">
-				<nav
-					class={[
-						'border-main-800 bg-main-950/60 mx-2 mb-2 flex overflow-hidden rounded-md border'
-					]}
-				>
-					{#each mobileTabs as tab}
-						<button
-							onclick={() => (activeMobileTab = tab.id)}
-							class={[
-								'flex-1 justify-center py-4 text-center text-sm transition',
-								activeMobileTab === tab.id
-									? 'text-main-50 bg-main-900/90 font-bold'
-									: 'text-main-500 hover:text-main-200 font-medium'
-							].join(' ')}
-						>
-							{tab.label}
-						</button>
-					{/each}
-				</nav>
-			</div>
 		</SvelteFlowProvider>
+		<!-- Mobile Tab Navigation -->
+		<div class="md:hidden">
+			<nav
+				class={['border-main-800 bg-main-950/60 mx-2 mb-2 flex overflow-hidden rounded-md border']}
+			>
+				{#each mobileTabs as tab}
+					<button
+						onclick={() => (activeMobileTab = tab.id)}
+						class={[
+							'flex-1 justify-center py-4 text-center text-sm transition',
+							activeMobileTab === tab.id
+								? 'text-main-50 bg-main-900/90 font-bold'
+								: 'text-main-500 hover:text-main-200 font-medium'
+						].join(' ')}
+					>
+						{tab.label}
+					</button>
+				{/each}
+			</nav>
+		</div>
 	</main>
 </div>
 

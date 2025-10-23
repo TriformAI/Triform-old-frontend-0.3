@@ -18,7 +18,7 @@
 
 <header
 	class={[
-		'bg-main-850 sticky top-0 z-30 w-full items-center px-2 py-2 md:pr-5 md:pl-2.5',
+		'bg-main-850 sticky top-0 z-30 w-full max-w-screen items-center px-2 py-2 md:pr-5 md:pl-2.5',
 		'flex flex-row md:grid md:grid-cols-[1fr_auto_1fr]'
 	]}
 >
