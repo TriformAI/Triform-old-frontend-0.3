@@ -3,6 +3,7 @@
 	import ChatMessage from './ChatMessage.svelte'
 	import ChatStep from './ChatStep.svelte'
 	import ChatWidget from './ChatWidget.svelte'
+	import ChatAction from './ChatAction.svelte'
 
 	const {
 		item,
@@ -25,4 +26,9 @@
 			{/if}
 		</li>
 	{/each}
+	<div class="flex flex-row flex-wrap gap-4">
+		{#each item.actions as action}
+			<ChatAction {action} run={item} />
+		{/each}
+	</div>
 </ul>
