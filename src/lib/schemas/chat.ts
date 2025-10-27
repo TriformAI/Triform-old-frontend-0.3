@@ -88,10 +88,39 @@ export const runStartedModel = baseMessageModel.omit({ runId: true }).extend({
 	data: z.object({})
 })
 
+const actionModels = z.discriminatedUnion('type', [
+	z.object({
+		type: z.literal('message_button'),
+		message: z
+			.string()
+			.describe('the message to send when the button is clicked'),
+		label: z.string().describe('the text on the button'),
+		variation: z
+			.enum([
+				'primary',
+				'vibrant',
+				'link',
+				'danger',
+				'warning',
+				'confirm',
+				'ghost'
+			])
+			.default('primary')
+			.describe('the variation of the button')
+	}),
+	z.object({
+		type: z
+			.literal('chat_project')
+			.describe('deploys & opens the chat with the project selected')
+	})
+])
+
 export const runCompletedModel = baseMessageModel.omit({ runId: true }).extend({
 	event: z.literal('run_complete'),
 	sourceId: z.string().nonoptional(),
-	data: z.object({})
+	data: z.object({
+		actions: z.array(actionModels).default([])
+	})
 })
 
 // Step schemas

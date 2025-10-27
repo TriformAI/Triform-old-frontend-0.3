@@ -1,4 +1,4 @@
-import { ackMessageModel, errorMessageModel, stepCompletedModel, uiMessageModel, widgetStartedModel } from '$lib/schemas/chat'
+import { ackMessageModel, errorMessageModel, runCompletedModel, stepCompletedModel, uiMessageModel, widgetStartedModel } from '$lib/schemas/chat'
 import { userMessageModel } from '$lib/schemas/chat'
 import { toast } from 'svelte-sonner'
 import { WebSocket } from 'partysocket'
@@ -38,6 +38,7 @@ export interface RunData {
 	id: string
 	children: (StepData | MessageData | WidgetData)[]
 	completed: boolean
+	actions: z.infer<typeof runCompletedModel>['data']['actions']
 }
 
 export interface WidgetData {
@@ -340,7 +341,7 @@ export function handleMessage(msg: any) {
 			if (parseId(id) > parseId(chat.currentRunId ?? '0'))
 				chat.currentRunId = id
 
-			chat.data.push({ type: 'run', id, children: [], completed: false })
+			chat.data.push({ type: 'run', id, children: [], completed: false, actions: [] })
 			break
 		}
 
@@ -351,7 +352,8 @@ export function handleMessage(msg: any) {
 			if (run) {
 				run.completed = true
 				// end current run
-				chat.currentRunId = undefined
+				// chat.currentRunId = undefined
+				if (data && 'actions' in data) run.actions = data.actions
 			}
 			break
 		}
