@@ -1,0 +1,122 @@
+name: Auto Documentation Publisher
+
+on:
+  push:
+    branches: [ main, develop ]
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  actions: write
+
+jobs:
+  generate-docs:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout frontend repo
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Get recent commits
+        id: commits
+        run: |
+          COMMITS=$(git log --oneline -10 --pretty=format:"%s")
+          echo "commits<<EOF" >> $GITHUB_OUTPUT
+          echo "$COMMITS" >> $GITHUB_OUTPUT
+          echo "EOF" >> $GITHUB_OUTPUT
+
+      - name: Install OpenCode
+        run: |
+          curl -fsSL https://opencode.ai/install.sh | sh
+          echo "$HOME/.local/bin" >> $GITHUB_PATH
+
+      - name: Configure OpenCode
+        env:
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+        run: |
+          mkdir -p ~/.local/share/opencode
+          cat > ~/.local/share/opencode/auth.json << AUTHEOF
+          {
+            "anthropic": {
+              "apiKey": "$ANTHROPIC_API_KEY"
+            }
+          }
+          AUTHEOF
+
+      - name: Generate documentation
+        id: generate_docs
+        run: |
+          cat > /tmp/docs_prompt.md << PROMPTEOF
+          You are a technical documentation writer for a frontend application.
+          
+          Repository: TriformAI/frontend (Svelte/TypeScript application)
+          Recent changes: ${{ steps.commits.outputs.commits }}
+          
+          Generate documentation in this format:
+          
+          # Frontend Updates - $(date +"%B %d, %Y")
+          
+          ## 🚀 New Features
+          ## 🔧 Improvements  
+          ## 🐛 Bug Fixes
+          ## 🎨 UI/UX Changes
+          ## 🏗️ Technical Changes
+          ## 📚 Developer Notes
+          
+          Rules: Focus on user-facing changes, use clear language, group related changes, only include sections with actual changes.
+          PROMPTEOF
+          
+          ~/.local/bin/opencode run --model anthropic/claude-3-5-sonnet-20241022 --prompt-file /tmp/docs_prompt.md > /tmp/generated_docs.md
+          
+          echo "docs_content<<DOCSEOF" >> $GITHUB_OUTPUT
+          cat /tmp/generated_docs.md >> $GITHUB_OUTPUT
+          echo "DOCSEOF" >> $GITHUB_OUTPUT
+
+      - name: Checkout docs repo
+        uses: actions/checkout@v4
+        with:
+          repository: TriformAI/docs
+          token: ${{ secrets.DOCS_REPO_TOKEN }}
+          path: docs-repo
+
+      - name: Update documentation
+        run: |
+          cd docs-repo
+          CHANGELOG_FILE="frontend-updates/$(date +%Y-%m-%d)-update.md"
+          mkdir -p frontend-updates
+          
+          cat > "$CHANGELOG_FILE" << 'CONTENTEOF'
+          ${{ steps.generate_docs.outputs.docs_content }}
+          CONTENTEOF
+
+      - name: Commit and push to docs repo
+        run: |
+          cd docs-repo
+          git config user.name "Frontend Bot"
+          git config user.email "bot@triform.ai"
+          git add .
+          
+          if ! git diff --staged --quiet; then
+            git commit -m "📝 Auto-update: Frontend changes from $(date +%Y-%m-%d)"
+            git push
+            echo "✅ Documentation pushed to docs repo"
+          fi
+
+      - name: Publish to FeatureBase
+        env:
+          FEATUREBASE_API_KEY: ${{ secrets.FEATUREBASE_API_KEY }}
+        run: |
+          DOCS_CONTENT="${{ steps.generate_docs.outputs.docs_content }}"
+          
+          curl -X 'POST' 'https://do.featurebase.app/v2/changelog' \
+            -H "X-API-Key: $FEATUREBASE_API_KEY" \
+            -H 'Content-Type: application/json' \
+            -d "{
+              \"title\": \"Frontend Updates - $(date +\"%B %d, %Y\")\",
+              \"markdownContent\": $(echo "$DOCS_CONTENT" | jq -Rs .),
+              \"changelogCategories\": [\"New\", \"Improved\", \"Fixed\"],
+              \"state\": \"draft\"
+            }"
+          
+          echo "✅ Published to FeatureBase as draft"
