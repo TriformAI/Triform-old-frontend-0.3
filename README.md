@@ -20,3 +20,9 @@ and placed it in the same folder as triform-app repo, then you can simply run
 `bun run parse:schema`
 
 this will generate the ts types and put them in this file `src/lib/types/agent.ts`
+
+##
+
+ADD THIS INFROMATION TO THE DOCS
+
+print("hello world")

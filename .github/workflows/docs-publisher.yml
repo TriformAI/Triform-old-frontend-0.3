@@ -18,12 +18,43 @@ jobs:
         with:
           fetch-depth: 0
 
-      - name: Get recent commits
+      - name: Get detailed changes
         id: commits
         run: |
+          # Get commit messages
           COMMITS=$(git log --oneline -10 --pretty=format:"%s")
           echo "commits<<EOF" >> $GITHUB_OUTPUT
           echo "$COMMITS" >> $GITHUB_OUTPUT
+          echo "EOF" >> $GITHUB_OUTPUT
+          
+          # Get detailed file changes
+          FILES_CHANGED=$(git diff --name-only HEAD~10..HEAD | head -20)
+          echo "files_changed<<EOF" >> $GITHUB_OUTPUT
+          echo "$FILES_CHANGED" >> $GITHUB_OUTPUT
+          echo "EOF" >> $GITHUB_OUTPUT
+          
+          # Get actual code diff (limited to avoid huge output)
+          CODE_DIFF=$(git diff HEAD~5..HEAD --stat)
+          echo "code_diff<<EOF" >> $GITHUB_OUTPUT
+          echo "$CODE_DIFF" >> $GITHUB_OUTPUT
+          echo "EOF" >> $GITHUB_OUTPUT
+          
+          # Get actual code changes (sample of key files)
+          CODE_SAMPLES=""
+          for file in $(git diff --name-only HEAD~5..HEAD | grep -E '\.(js|ts|svelte|vue|jsx|tsx)$' | head -5); do
+            if [ -f "$file" ]; then
+              CODE_SAMPLES="$CODE_SAMPLES
+
+### Changes in $file:
+\`\`\`diff
+$(git diff HEAD~5..HEAD -- "$file" | head -50)
+\`\`\`
+"
+            fi
+          done
+          
+          echo "code_samples<<EOF" >> $GITHUB_OUTPUT
+          echo "$CODE_SAMPLES" >> $GITHUB_OUTPUT
           echo "EOF" >> $GITHUB_OUTPUT
 
       - name: Install OpenCode
@@ -62,21 +93,64 @@ jobs:
           cat > /tmp/docs_prompt.md << PROMPTEOF
           You are a technical documentation writer for a frontend application.
           
-          Repository: TriformAI/frontend (Svelte/TypeScript application)
-          Recent changes: ${{ steps.commits.outputs.commits }}
+          ## Context:
+          - **Repository**: TriformAI/frontend (Svelte/TypeScript application)
+          - **Branch**: ${{ github.ref_name }}
+          - **Commit**: ${{ github.sha }}
           
-          Generate documentation in this format:
+          ## Recent Changes Analysis:
+          
+          ### Commit Messages:
+          ${{ steps.commits.outputs.commits }}
+          
+          ### Files Changed:
+          ${{ steps.commits.outputs.files_changed }}
+          
+          ### Code Statistics:
+          ${{ steps.commits.outputs.code_diff }}
+          
+          ### Actual Code Changes:
+          ${{ steps.commits.outputs.code_samples }}
+          
+          ## Task:
+          Analyze these changes and generate comprehensive documentation. Focus on:
+          1. **User-facing impact** - How do these changes affect end users?
+          2. **Developer impact** - What do developers need to know?
+          3. **Breaking changes** - Any changes that might break existing functionality?
+          4. **New capabilities** - What new things can users/developers do?
+          
+          ## Output Format:
           
           # Frontend Updates - $(date +"%B %d, %Y")
           
           ## 🚀 New Features
-          ## 🔧 Improvements  
-          ## 🐛 Bug Fixes
-          ## 🎨 UI/UX Changes
-          ## 🏗️ Technical Changes
-          ## 📚 Developer Notes
+          [Only include if there are actual new features - be specific about what they do]
           
-          Rules: Focus on user-facing changes, use clear language, group related changes, only include sections with actual changes.
+          ## 🔧 Improvements  
+          [Performance, UX, or functionality improvements]
+          
+          ## 🐛 Bug Fixes
+          [Issues that were resolved]
+          
+          ## 🎨 UI/UX Changes
+          [Visual or interaction changes users will notice]
+          
+          ## 🏗️ Technical Changes
+          [Architecture, build, or developer-focused changes]
+          
+          ## 📚 Developer Notes
+          [Important information for developers working with the codebase]
+          
+          ## ⚠️ Breaking Changes
+          [Any changes that might break existing integrations - only include if applicable]
+          
+          ## Rules:
+          - **Be specific and actionable** - don't use generic descriptions
+          - **Focus on impact** - explain WHY changes matter, not just WHAT changed
+          - **Use clear language** - avoid technical jargon for user-facing features
+          - **Only include sections with actual content** - skip empty sections
+          - **Prioritize user-visible changes** over internal refactoring
+          - **Include code examples** if new APIs or components were added
           PROMPTEOF
           
           # Ensure OpenCode is in PATH 
@@ -121,24 +195,135 @@ jobs:
       - name: Update documentation
         run: |
           cd docs-repo
-          CHANGELOG_FILE="frontend-updates/$(date +%Y-%m-%d)-update.md"
-          mkdir -p frontend-updates
+          
+          # 1. Update changelog
+          CHANGELOG_FILE="changelog/$(date +%Y-%m-%d).mdx"
+          mkdir -p changelog
           
           cat > "$CHANGELOG_FILE" << 'CONTENTEOF'
+          ---
+          title: "Frontend Updates - $(date +"%B %d, %Y")"
+          description: "Latest updates and improvements to the Triform frontend application"
+          date: "$(date +"%Y-%m-%d")"
+          ---
+          
           ${{ steps.generate_docs.outputs.docs_content }}
           CONTENTEOF
+          
+          # 2. Update existing documentation based on changes
+          CHANGES="${{ steps.commits.outputs.commits }}"
+          
+          # Update API documentation if API changes detected
+          if echo "$CHANGES" | grep -i "api\|endpoint\|route"; then
+            if [ -f "api/overview.mdx" ]; then
+              echo "" >> api/overview.mdx
+              echo "## Recent Updates" >> api/overview.mdx
+              echo "- Updated $(date +"%B %d, %Y"): API improvements and fixes" >> api/overview.mdx
+            fi
+          fi
+          
+          # Update UI components docs if UI changes detected
+          if echo "$CHANGES" | grep -i "component\|ui\|style\|css"; then
+            if [ -f "components/overview.mdx" ]; then
+              echo "" >> components/overview.mdx
+              echo "## Recent Updates" >> components/overview.mdx
+              echo "- Updated $(date +"%B %d, %Y"): UI components and styling improvements" >> components/overview.mdx
+            fi
+          fi
+          
+          # Update getting started if setup/config changes detected
+          if echo "$CHANGES" | grep -i "config\|setup\|install\|env"; then
+            if [ -f "getting-started/installation.mdx" ]; then
+              echo "" >> getting-started/installation.mdx
+              echo "## Recent Updates" >> getting-started/installation.mdx
+              echo "- Updated $(date +"%B %d, %Y"): Configuration and setup improvements" >> getting-started/installation.mdx
+            fi
+          fi
+          
+          # Update features documentation if new features added
+          if echo "$CHANGES" | grep -i "feat\|feature\|add"; then
+            if [ -f "features/overview.mdx" ]; then
+              echo "" >> features/overview.mdx
+              echo "## Recent Updates" >> features/overview.mdx
+              echo "- Updated $(date +"%B %d, %Y"): New features and enhancements" >> features/overview.mdx
+            fi
+          fi
+          
+          # 3. Update mint.json navigation
+          if [ -f "mint.json" ]; then
+            TEMP_FILE=$(mktemp)
+            jq --arg new_entry "changelog/$(date +%Y-%m-%d)" '
+              if .navigation then
+                if (.navigation[] | select(.group == "Changelog")) then
+                  .navigation |= map(
+                    if .group == "Changelog" then
+                      .pages = [$new_entry] + .pages
+                    else . end
+                  )
+                else
+                  .navigation += [{
+                    "group": "Changelog",
+                    "pages": [$new_entry]
+                  }]
+                end
+              else
+                .navigation = [{
+                  "group": "Changelog", 
+                  "pages": [$new_entry]
+                }]
+              end
+            ' mint.json > "$TEMP_FILE" && mv "$TEMP_FILE" mint.json
+          fi
+          
+          echo "✅ Updated Mintlify documentation based on frontend changes"
 
-      - name: Commit and push to docs repo
+      - name: Create Pull Request for docs repo
         run: |
           cd docs-repo
+          
+          # Create a new branch for the changes
+          BRANCH_NAME="auto-docs-$(date +%Y-%m-%d)-${{ github.run_number }}"
+          git checkout -b "$BRANCH_NAME"
+          
           git config user.name "Frontend Bot"
           git config user.email "bot@triform.ai"
           git add .
           
           if ! git diff --staged --quiet; then
-            git commit -m "📝 Auto-update: Frontend changes from $(date +%Y-%m-%d)"
-            git push
-            echo "✅ Documentation pushed to docs repo"
+            git commit -m "📝 Auto-update: Frontend changes from $(date +%Y-%m-%d)
+            
+            Changes detected:
+            ${{ steps.commits.outputs.commits }}
+            
+            Generated by: ${{ github.repository }}@${{ github.sha }}"
+            
+            git push origin "$BRANCH_NAME"
+            
+            # Create Pull Request using GitHub CLI
+            gh pr create \
+              --title "📝 Auto-update: Frontend changes from $(date +%Y-%m-%d)" \
+              --body "## 🤖 Automated Documentation Update
+            
+            This PR contains automatically generated documentation updates based on recent frontend changes.
+            
+            ### Changes Detected:
+            \`\`\`
+            ${{ steps.commits.outputs.commits }}
+            \`\`\`
+            
+            ### Files Updated:
+            - Changelog entry: \`changelog/$(date +%Y-%m-%d).mdx\`
+            - Relevant documentation sections based on change detection
+            
+            **Source**: [${{ github.repository }}](${{ github.server_url }}/${{ github.repository }}/commit/${{ github.sha }})
+            
+            Please review and merge if the updates look correct." \
+              --head "$BRANCH_NAME" \
+              --base main
+            
+            echo "✅ Created PR for documentation updates"
+          else
+            echo "No changes to commit"
           fi
 
       - name: Publish to FeatureBase
