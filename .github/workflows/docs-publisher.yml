@@ -30,12 +30,18 @@ jobs:
         run: |
           # Install using official method
           curl -fsSL https://opencode.ai/install | bash
+          
+          # Add both possible paths
           echo "$HOME/.local/bin" >> $GITHUB_PATH
+          echo "$HOME/.opencode/bin" >> $GITHUB_PATH
+          
+          # Source bashrc and verify installation
+          source ~/.bashrc || true
+          export PATH="$HOME/.local/bin:$HOME/.opencode/bin:$PATH"
           
           # Verify installation
-          export PATH="$HOME/.local/bin:$PATH"
-          which opencode
-          opencode --version
+          which opencode || echo "OpenCode not found in PATH"
+          opencode --version || echo "OpenCode version check failed"
 
       - name: Configure OpenCode
         env:
@@ -73,7 +79,10 @@ jobs:
           Rules: Focus on user-facing changes, use clear language, group related changes, only include sections with actual changes.
           PROMPTEOF
           
-          export PATH="$HOME/.local/bin:$PATH"
+          # Ensure OpenCode is in PATH
+          export PATH="$HOME/.local/bin:$HOME/.opencode/bin:$PATH"
+          
+          # Generate documentation
           opencode run --model anthropic/claude-3-5-sonnet-20241022 --prompt-file /tmp/docs_prompt.md > /tmp/generated_docs.md
           
           echo "docs_content<<DOCSEOF" >> $GITHUB_OUTPUT
