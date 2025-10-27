@@ -84,7 +84,7 @@ jobs:
           
           # Debug: Check if OpenCode is working
           echo "Checking OpenCode installation..."
-          which opencode
+          which opencode 
           opencode --version
           
           # Generate documentation with error handling
