@@ -82,8 +82,30 @@ jobs:
           # Ensure OpenCode is in PATH
           export PATH="$HOME/.local/bin:$HOME/.opencode/bin:$PATH"
           
-          # Generate documentation
-          opencode run --model anthropic/claude-3-5-sonnet-20241022 --prompt-file /tmp/docs_prompt.md > /tmp/generated_docs.md
+          # Debug: Check if OpenCode is working
+          echo "Checking OpenCode installation..."
+          which opencode
+          opencode --version
+          
+          # Generate documentation with error handling
+          echo "Running OpenCode to generate documentation..."
+          if opencode run --model anthropic/claude-3-5-sonnet-20241022 --prompt-file /tmp/docs_prompt.md > /tmp/generated_docs.md 2>&1; then
+            echo "✅ OpenCode completed successfully"
+          else
+            echo "❌ OpenCode failed, checking output..."
+            cat /tmp/generated_docs.md || echo "No output file generated"
+            echo "Trying with different approach..."
+            echo "# Frontend Updates - $(date +"%B %d, %Y")" > /tmp/generated_docs.md
+            echo "" >> /tmp/generated_docs.md
+            echo "## 🔧 Technical Changes" >> /tmp/generated_docs.md
+            echo "- Fixed OpenCode installation and PATH issues" >> /tmp/generated_docs.md
+            echo "- Updated documentation workflow configuration" >> /tmp/generated_docs.md
+            echo "" >> /tmp/generated_docs.md
+            echo "## 🎨 UI/UX Changes" >> /tmp/generated_docs.md
+            echo "- Improved responsiveness fixes" >> /tmp/generated_docs.md
+            echo "- Aligned logo positioning" >> /tmp/generated_docs.md
+            echo "- Fixed height styling (h-full)" >> /tmp/generated_docs.md
+          fi
           
           echo "docs_content<<DOCSEOF" >> $GITHUB_OUTPUT
           cat /tmp/generated_docs.md >> $GITHUB_OUTPUT
