@@ -28,12 +28,14 @@ jobs:
 
       - name: Install OpenCode
         run: |
-          curl -fsSL https://opencode.ai/install.sh | sh
-          export PATH="$HOME/.local/bin:$PATH"
+          # Install using official method
+          curl -fsSL https://opencode.ai/install | bash
           echo "$HOME/.local/bin" >> $GITHUB_PATH
+          
           # Verify installation
-          ls -la $HOME/.local/bin/
-          which opencode || echo "OpenCode not found in PATH"
+          export PATH="$HOME/.local/bin:$PATH"
+          which opencode
+          opencode --version
 
       - name: Configure OpenCode
         env:
