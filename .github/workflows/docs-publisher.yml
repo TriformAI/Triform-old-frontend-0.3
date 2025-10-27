@@ -79,7 +79,7 @@ jobs:
           Rules: Focus on user-facing changes, use clear language, group related changes, only include sections with actual changes.
           PROMPTEOF
           
-          # Ensure OpenCode is in PATH
+          # Ensure OpenCode is in PATH 
           export PATH="$HOME/.local/bin:$HOME/.opencode/bin:$PATH"
           
           # Debug: Check if OpenCode is working
