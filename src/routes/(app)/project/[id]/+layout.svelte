@@ -160,7 +160,10 @@
 				refreshFlow()
 			} else if (payload.event === 'component:requirements:updated') {
 				updateRequirements(payload.data)
-			} else if (payload.event === 'project:updated') {
+			} else if (
+				payload.event === 'project:updated' &&
+				payload.data.project.id === page.params.id
+			) {
 				setProject(payload.data.project)
 				refreshFlow()
 			} else if (payload.event === 'project:deployed') {
