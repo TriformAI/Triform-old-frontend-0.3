@@ -14,7 +14,11 @@
 	}: { action: z.infer<typeof runCompletedModel>['data']['actions'][number]; run: RunData } =
 		$props()
 
-	const variation = $derived(action.type === 'message_button' ? action.variation : 'primary')
+	const variation = $derived.by(() => {
+		if (action.type === 'message_button') return action.variation
+		if (action.type === 'chat_project') return 'vibrant'
+		return 'primary'
+	})
 	const label = $derived.by(() => {
 		if ('label' in action) return action.label
 		if (action.type === 'chat_project') return 'Deploy & chat'
