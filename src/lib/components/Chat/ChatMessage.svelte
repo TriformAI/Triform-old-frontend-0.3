@@ -108,6 +108,8 @@
 			onClick={async () => await onRevert?.(item)}
 			variation="link"
 			autoLoad="promise"
+			tooltip="Revert to state at time of message"
+			tooltipPos="left"
 		>
 			{#snippet icon()}
 				<IconRevert class="size-4" />
