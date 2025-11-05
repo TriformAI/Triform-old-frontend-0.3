@@ -31,8 +31,8 @@
 				<IconChevronDown
 					class={chevronClass ??
 						[
-							'text-main-600 group-hover/trigger:text-main-300 group-open:text-main-400 inline size-4 shrink-0 transition-all duration-200',
-							open ? 'rotate-0' : '-rotate-90'
+							'group-hover/trigger:text-main-300 group-open:text-main-400 inline size-4 shrink-0 transition-all duration-200',
+							open ? 'text-main-300 rotate-0' : 'text-main-600 -rotate-90'
 						].join(' ')}
 				/>
 			{/if}
