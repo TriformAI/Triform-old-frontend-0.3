@@ -32,7 +32,7 @@
 			method: 'POST',
 			payload_mapping: objectMap(node.spec.spec.inputs ?? {}, (_value, key) => `$.${key}`)
 		}
-		const res = await saveContainer(snapshot)
+		const res = await saveContainer(snapshot, project)
 		if (!res.success) return toast.error('Failed to expose node')
 	}
 
@@ -47,7 +47,7 @@
 		if (!confirmed) return
 		const snapshot = clone($state.snapshot(project))
 		delete project.spec.triggers.endpoints.nodes[nodeId]
-		const res = await saveContainer(snapshot)
+		const res = await saveContainer(snapshot, project)
 		if (!res.success) return toast.error('Failed to unexpose node')
 	}
 </script>

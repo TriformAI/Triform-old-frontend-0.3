@@ -21,7 +21,7 @@
 	const onUpdate = async (changedTrigger: string) => {
 		await tick()
 		const snapshot = clone($state.snapshot(project))
-		const res = await saveContainer(snapshot)
+		const res = await saveContainer(snapshot, project)
 		if (!res.success) return toast.error('Failed to save triggers')
 		if (changedTrigger.toLowerCase() === 'chat' && project?.spec.triggers.chat.enabled)
 			toast.info('Chat trigger enabled, remember to deploy the project!')

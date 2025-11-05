@@ -401,30 +401,33 @@ export const getNodeByPath = (
 }
 
 export const rollbackContainer = (snapshot: NodeContainer) => {
+export const rollbackContainer = (snapshot: NodeContainer, path?: string[]) => {
 	if (isProject(snapshot)) {
 		if (!project) {
 			toast.error('No project found')
 			throw new Error('No project found')
 		}
 		project.spec = snapshot.spec
+		project.meta = snapshot.meta
 		return
 	}
-	const parent = getNodeByPath(currentNodePath)?.spec as NodeContainer | undefined
+	const currPath = path ?? getCurrentNodePath()
+	const parent = getNodeByPath(currPath)?.spec as NodeContainer | undefined
 	if (!parent) {
 		toast.error('No parent container found')
-		throw new Error(`No parent container found for ${currentNodePath.join('/')}`)
+		throw new Error(`No parent container found for ${currPath.join('/')}`)
 	}
 	parent.spec = snapshot.spec
 }
 
 // TODO: update the local component with the new one we get back from the api
-export const saveContainer = async (snapshot: NodeContainer) => {
-	const container = getCurrentContainer()
+export const saveContainer = async (snapshot: NodeContainer, cont?: NodeContainer, path?: string[]) => {
+	const container = cont ?? getCurrentContainer()
 	const res = isProject(container) ? await saveProject(container) : await updateComponent(container)
 	if (!res.success) {
 		toast.error('There was an error saving the container')
 		console.log('failed', res.data)
-		rollbackContainer(snapshot)
+		rollbackContainer(snapshot, path)
 	}
 	return res
 }
