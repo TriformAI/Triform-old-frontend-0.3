@@ -66,7 +66,7 @@
 <div class="grid gap-2">
 	{#if !isCollapsible}
 		<!-- Step with no children - render as before -->
-		<p class="text-main-300 grid grid-cols-[auto_1fr] items-center gap-1.5">
+		<p class="text-main-300 grid grid-cols-[auto_1fr] items-start gap-1.5">
 			{#if item.event === 'started' && !item.completed}
 				<Spinner class={[stepIconClasses, 'text-main-400'].join(' ')} />
 			{:else if item.status === 'success'}
