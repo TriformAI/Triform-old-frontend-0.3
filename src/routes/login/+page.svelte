@@ -25,7 +25,7 @@
 			icon: GithubIcon
 		},
 		{
-			name: 'Magic Link',
+			name: 'Email',
 			key: 'magic-link',
 			icon: MailIcon
 		}
