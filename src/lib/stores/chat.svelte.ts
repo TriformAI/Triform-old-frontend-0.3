@@ -248,7 +248,7 @@ function findWidget(widgetId: string): WidgetData | undefined {
 
 const parseId = (id: string) => parseInt(id.split('-')[0])
 export function handleMessage(msg: any) {
-	console.log('handleMessage', msg)
+	// console.log('handleMessage', msg)
 
 	const { id, event, data, sourceId } = msg as any
 	const runId = 'runId' in msg ? (msg as any).runId : undefined
