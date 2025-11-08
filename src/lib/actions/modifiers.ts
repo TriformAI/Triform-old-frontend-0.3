@@ -1,6 +1,7 @@
 import { API } from '$lib/api'
 import type { modifierModel } from '$lib/schemas/modifiers'
 import type * as z from 'zod'
+import { pick } from '$lib/utils/pick'
 
 export const getModifiers = async () => {
 	const api = new API()
@@ -16,7 +17,7 @@ export const updateModifier = async (modifier: z.infer<typeof modifierModel>) =>
 	const api = new API()
 	return await api.patch<{ data: z.infer<typeof modifierModel> }>(
 		`modifiers/${modifier.id}`,
-		modifier
+		pick(modifier, ['meta', 'spec'])
 	)
 }
 

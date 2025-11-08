@@ -59,6 +59,15 @@ export const executeComponent = async (
 	try {
 		resetExecutionState()
 		for await (const event of stream) {
+			// not a node-event, but rather an actual error in the payload or something
+			if (event.event === 'error') {
+				state.state = 'Error'
+				state.result = JSON.stringify(event.data, null, 2)
+				state.abortController.abort()
+				resetExecutionState()
+				state.isRunning = false
+				return
+			}
 			console.log(event)
 			if (!state.id) {
 				state.id = event.data.path[0]

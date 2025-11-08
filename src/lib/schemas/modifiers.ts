@@ -7,23 +7,44 @@
 import * as z from 'zod'
 import { metaModel, nodePathModel } from './common.js'
 
-// Variable models
-export const variableSpecModel = z.strictObject({
-	key: z.string(),
-	value: z.string(),
-	secret: z.literal(false) // can only be false for now
+// Auth models
+// TODO: add a custom provider that allows users to provide their own client id/secret
+export const authSpecModel = z.strictObject({
+	provider: z.enum([
+		'google',
+		'notion',
+		'github',
+		'dropbox',
+		'microsoft'
+		// 'shopify'
+	]),
+	scopes: z.array(z.string()).describe('scopes to request from the provider'),
+	identifier: z
+		.string()
+		.nullish()
+		.default(null)
+		.describe('human readable identifier, set on authorisation success'),
+	refreshToken: z
+		.object({
+			iv: z.string(),
+			tag: z.string(),
+			ciphertext: z.string()
+		})
+		.nullish()
+		.default(null)
+		.describe('encrypted refresh token, set on authorisation success')
 })
 
-export const variableModel = z.strictObject({
+export const authModel = z.strictObject({
 	id: z.uuidv4().optional(),
-	resource: z.literal('variable/v1'),
+	resource: z.literal('oauth/v1'),
 	meta: metaModel,
-	spec: variableSpecModel
+	spec: authSpecModel
 })
 
 // Modifier union models
-export const modifierSpecModel = z.union([variableSpecModel])
-export const modifierModel = z.discriminatedUnion('resource', [variableModel])
+export const modifierSpecModel = z.union([authSpecModel])
+export const modifierModel = z.discriminatedUnion('resource', [authModel])
 
 // Basic modifier mapping without async validation
 export const modifierMappingModel = z.record(

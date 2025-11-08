@@ -8,6 +8,7 @@
 	import Triggers from './items/Triggers/Root.svelte'
 	import IO from './items/IO/Root.svelte'
 	import AgentSettings from './items/AgentSettings/Root.svelte'
+	import Modifiers from './items/Modifiers/Root.svelte'
 	import IconExecute from '~icons/material-symbols/play-arrow-rounded'
 	import IconCode from '~icons/material-symbols/code-rounded'
 	import IconMetadata from '~icons/material-symbols/info-outline'
@@ -16,6 +17,7 @@
 	import IconProject from '~icons/mdi/shape'
 	import IconIO from '~icons/material-symbols/input-circle-rounded'
 	import IconAgentSettings from '~icons/mdi/tune-vertical'
+	import IconModifiers from '~icons/material-symbols/tools-wrench-rounded'
 	import { slide } from 'svelte/transition'
 
 	import { openPanelItem, toggleOpenPanelItem } from '$lib/stores/panel.svelte'
@@ -37,7 +39,8 @@
 		variables: { label: 'Global Variables', component: Variables, icon: IconVariables },
 		triggers: { label: 'Triggers', component: Triggers, icon: IconTriggers },
 		io: { label: 'IO', component: IO, icon: IconIO },
-		agentSettings: { label: 'Agent Settings', component: AgentSettings, icon: IconAgentSettings }
+		agentSettings: { label: 'Agent Settings', component: AgentSettings, icon: IconAgentSettings },
+		modifiers: { label: 'Modifiers', component: Modifiers, icon: IconModifiers }
 	}
 
 	let { items, nodeId, showNav = true }: Props = $props()

@@ -6,6 +6,7 @@
 
 import * as z from 'zod'
 import { componentModel } from './components.js'
+import { modifierModel } from './modifiers.js'
 import { deployedProjectDataModel, resolvedProjectModel } from './projects.js'
 import { requirementsModel } from './requirements.js'
 
@@ -27,6 +28,13 @@ const componentUpdated = baseModel.extend({
 	event: z.literal('component:updated'),
 	data: z.strictObject({
 		component: componentModel
+	})
+})
+
+const modifierUpdated = baseModel.extend({
+	event: z.literal('modifier:updated'),
+	data: z.strictObject({
+		modifier: modifierModel
 	})
 })
 
@@ -55,6 +63,7 @@ export const projectDeployed = baseModel.extend({
 export const socketEventModel = z.discriminatedUnion('event', [
 	componentUpdated,
 	connected,
+	modifierUpdated,
 	componentRequirementsUpdated,
 	projectUpdated,
 	projectDeployed

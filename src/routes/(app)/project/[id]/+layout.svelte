@@ -17,7 +17,10 @@
 		getVisibleComponent,
 		getBreadcrumbs,
 		setDeployment,
-		getDeployment
+		getDeployment,
+		getModifiers,
+		setModifiers,
+		setModifier
 	} from '$lib/stores/canvas.svelte'
 	import { chat, cleanupChat } from '$lib/stores/chat.svelte'
 	import { debounce } from '$lib/utils/debounce'
@@ -60,6 +63,8 @@
 	$effect.pre(() => {
 		// don't replace the project if one is already loaded
 		if (!getProject()) setProject(page.data.project as z.infer<typeof resolvedProjectModel>)
+		if (!Object.keys(getModifiers() ?? {}).length)
+			setModifiers(Object.fromEntries(page.data.modifiers?.map(m => [m.id, m]) ?? []))
 		if (!getDeployment())
 			setDeployment(page.data.deployments?.[0] as z.infer<typeof deployedProjectDataModel>)
 	})
@@ -158,6 +163,8 @@
 			if (payload.event === 'component:updated') {
 				await updateLocalComponent(payload.data.component)
 				refreshFlow()
+			} else if (payload.event === 'modifier:updated') {
+				setModifier(payload.data.modifier)
 			} else if (payload.event === 'component:requirements:updated') {
 				updateRequirements(payload.data)
 			} else if (

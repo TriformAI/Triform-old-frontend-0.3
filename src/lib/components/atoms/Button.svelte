@@ -2,9 +2,10 @@
 	import { type Snippet } from 'svelte'
 
 	import { fly, scale } from 'svelte/transition'
-	import { twMerge } from 'tailwind-merge'
+	import { twJoin, twMerge } from 'tailwind-merge'
 
 	import AutorenewIcon from '~icons/material-symbols/autorenew-rounded'
+	import IconRight from '~icons/material-symbols/chevron-right-rounded'
 
 	let {
 		variation = 'primary',
@@ -14,6 +15,7 @@
 		autoLoad,
 		icon,
 		class: classProp,
+		contentClass,
 		href,
 		target,
 		disabled,
@@ -25,7 +27,16 @@
 		id,
 		fastClick = false
 	}: {
-		variation?: 'primary' | 'vibrant' | 'link' | 'danger' | 'warning' | 'confirm' | 'ghost'
+		variation?:
+			| 'primary'
+			| 'vibrant'
+			| 'link'
+			| 'danger'
+			| 'warning'
+			| 'confirm'
+			| 'ghost'
+			| 'icon'
+			| 'item'
 		// disabled
 		// href
 		// etc...
@@ -37,6 +48,7 @@
 		// If it returns a promise, show loading indicator until it resolves
 		onClick?: () => unknown | Promise<unknown>
 		class?: string | string[]
+		contentClass?: string | string[]
 		href?: string
 		target?: '_blank'
 		disabled?: boolean
@@ -114,13 +126,18 @@
 		variation === 'danger' &&
 			'bg-danger-900 text-danger-100 hover:enabled:text-danger-50 hover:enabled:bg-danger-800',
 		variation === 'warning' && 'bg-warning-800 text-warning-100 hover:enabled:bg-warning-700',
+		variation === 'icon' && 'icon-btn bg-none p-0! hover:enabled:bg-none',
+		variation === 'item' &&
+			'border-main-700 bg-main-800/50 not-disabled:hover:bg-main-800/90! disabled:bg-main-800/20 disabled:border-main-800 group flex w-full flex-col items-start justify-start gap-2 rounded-md border p-3 text-left transition not-disabled:active:scale-[0.98] disabled:[&>*]:opacity-35',
 		!icon && !!body && 'px-5',
 		!hasTextColor && 'text-main-300 hover:enabled:text-main-200',
-		`active:enabled:border-main-500 flex transform cursor-pointer
+		variation !== 'item' &&
+			`active:enabled:border-main-500 flex transform cursor-pointer
     flex-row items-center justify-center gap-x-2
     rounded-md p-3 font-medium transition-all
     duration-300 active:enabled:scale-95
 		disabled:cursor-not-allowed disabled:opacity-75`,
+		variation === 'item' && 'cursor-pointer disabled:cursor-not-allowed',
 		'group/button',
 		classProp
 	])}
@@ -136,7 +153,7 @@
 >
 	<!-- If we have an icon, animate it for loading state -->
 	{#if !!icon}
-		<div class="grid grid-cols-[1fr] grid-rows-[1fr]">
+		<div class={twJoin('grid grid-cols-[1fr] grid-rows-[1fr]', contentClass)}>
 			{#if isLoading}
 				<div
 					in:scale={{ start: 1.5, opacity: 0, duration: 500, delay: 50 }}
@@ -159,7 +176,7 @@
 	{:else}
 		<!-- If we don't have an icon, replace the entire text with the loading icon -->
 		{@const animY = 10}
-		<div class="grid grid-cols-[1fr] grid-rows-[1fr]">
+		<div class={twJoin('grid grid-cols-[1fr] grid-rows-[1fr]', contentClass)}>
 			{#if isLoading}
 				<div
 					in:fly={{ y: animY, duration: 300, delay: 50 }}
@@ -174,12 +191,32 @@
 					out:fly={{ y: -animY, duration: 300, delay: 0 }}
 					class="col-start-1 row-start-1"
 				>
-					{@render content?.()}
+					{#if variation === 'item'}
+						<div class="relative w-full">
+							{@render content?.()}
+							{#if !disabled}
+								<IconRight
+									class="text-main-400 absolute top-0 right-2 size-4 shrink-0 opacity-0 transition-all group-hover/button:right-0 group-hover/button:opacity-100"
+								/>
+							{/if}
+						</div>
+					{:else}
+						{@render content?.()}
+					{/if}
 				</div>
 			{/if}
 			<!-- Copy of the body to make sure the button is always the same width even when loading -->
 			<div class="pointer-events-none invisible col-start-1 row-start-1">
-				{@render content?.()}
+				{#if variation === 'item'}
+					<div class="relative w-full">
+						{@render content?.()}
+						{#if !disabled}
+							<IconRight class="absolute top-0 right-0 size-4 shrink-0" />
+						{/if}
+					</div>
+				{:else}
+					{@render content?.()}
+				{/if}
 			</div>
 		</div>
 	{/if}

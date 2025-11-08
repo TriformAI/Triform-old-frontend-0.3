@@ -191,8 +191,7 @@ export const availableAgentModels = [
 	'openai/gpt-4.1-nano',
 	'openai/o4-mini',
 	'openai/o3-mini',
-	'openai/gpt-4o',
-	'GLM-4.6-AWQ'
+	'openai/gpt-4o'
 ] as const
 
 const agentSpecModel = z.strictObject({

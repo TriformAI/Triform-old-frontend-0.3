@@ -6,7 +6,6 @@ import { updateComponent } from '$lib/actions/components'
 import { saveProject } from '$lib/actions/project'
 import { page } from '$app/state'
 import { selected } from '$lib/stores/panel.svelte'
-import { getNodeSelector } from '$lib/utils/getNodeSelector'
 import { type NodeType } from '$lib/constants/nodeTypes'
 import {
 	isAction,
@@ -21,17 +20,18 @@ import {
 	resolvedComponentModel,
 	nodePortModel,
 	jsonSchemaTypeModel,
-	deployedProjectDataModel
+	deployedProjectDataModel,
+	modifierModel
 } from '$lib/schemas'
 import { type NodeContainer } from '$lib/types/flow'
 import { toast } from 'svelte-sonner'
 import * as z from 'zod'
 import { clone } from '$lib/utils/clone'
-import { exclude } from '$lib/utils/exclude'
 import { resolveComponentCached } from '$lib/utils/resolveComponent'
 import type { requirementsModel } from '$lib/schemas/requirements'
 import { hashStr } from '$lib/utils/hashStr'
 import stringify from 'json-stringify-deterministic'
+import { objectMap } from '$lib/utils/objectMap'
 
 let nodesStore = $state<CanvasNode[]>([])
 let edgesStore = $state<Edge[]>([])
@@ -113,6 +113,29 @@ export const getCurrentContainer = (): NodeContainer => {
 		throw new Error('Invalid node path!')
 	}
 	return newContainer as NodeContainer
+}
+
+let modifiers = $state<Record<string, z.infer<typeof modifierModel>>>({})
+export const getModifiers = () => modifiers
+export const setModifiers = (newModifiers: Record<string, z.infer<typeof modifierModel>>) => {
+	modifiers = newModifiers
+}
+export const setModifier = (modifier: z.infer<typeof modifierModel>) => {
+	if (!modifier.id) return
+	modifiers[modifier.id] = modifier
+}
+
+export const getNodeModifiers = (nodePath: string[]) => {
+	const attachedModifiers = project.spec.modifiers?.[nodePath.join('/')] ?? []
+	return attachedModifiers.map(m => modifiers[m.modifier_id]).filter(Boolean)
+}
+
+export const getProjectModifiers = () => {
+	// the modifiers exactly as in project.spec.modifiers, but with the correct reference (to the shared modifier map)
+	return objectMap(project.spec.modifiers, value => value.map(m => ({
+		...m,
+		spec: modifiers[m.modifier_id]
+	})))
 }
 
 const nodeSize = {
@@ -400,7 +423,6 @@ export const getNodeByPath = (
 	return node
 }
 
-export const rollbackContainer = (snapshot: NodeContainer) => {
 export const rollbackContainer = (snapshot: NodeContainer, path?: string[]) => {
 	if (isProject(snapshot)) {
 		if (!project) {
@@ -702,6 +724,31 @@ export const setLoop = async (nodeId: string, enabled: boolean) => {
 	await Promise.all([...updatedComponents].map(c => updateComponent(container.spec.nodes[c].spec)))
 
 	await refreshFlow()
+}
+
+export const attachModifier = async (nodePath: string[], modifier: z.infer<typeof modifierModel>) => {
+	const snapshot = clone($state.snapshot(project))
+	const modifiers = project.spec.modifiers ?? {}
+	const path = nodePath.join('/')
+	if (!(path in modifiers))
+		modifiers[path] = []
+	modifiers[path].push({
+		modifier_id: modifier.id!,
+		spec: modifier
+	})
+	project.spec.modifiers = modifiers
+	await saveContainer(snapshot, project)
+}
+
+export const detachModifier = async (nodePath: string[], modifierId: string) => {
+	const snapshot = clone($state.snapshot(project))
+	const modifiers = project.spec.modifiers ?? {}
+	const path = nodePath.join('/')
+	if (!(path in modifiers))
+		modifiers[path] = []
+	modifiers[path] = modifiers[path].filter(m => m.modifier_id !== modifierId)
+	project.spec.modifiers = modifiers
+	await saveContainer(snapshot, project)
 }
 
 export const getBreadcrumbs = (): { id: string; name: string; type: NodeType; path: string }[] => {

@@ -11,7 +11,12 @@
 	import { executeComponent, cancelExecution } from '$lib/actions/executor.svelte'
 	import type * as z from 'zod'
 	import type { resolvedComponentModel } from '$lib/schemas'
-	import { getCurrentNodePath, getProject, getVisibleComponent } from '$lib/stores/canvas.svelte'
+	import {
+		getCurrentNodePath,
+		getProject,
+		getProjectModifiers,
+		getVisibleComponent
+	} from '$lib/stores/canvas.svelte'
 	import IconMagic from '~icons/mdi/shimmer'
 	import IconReload from '~icons/material-symbols/refresh-rounded'
 	import { getSamplePayload } from '$lib/schemas'
@@ -20,6 +25,8 @@
 	import { confirmStore } from '$lib/stores/confirm.svelte'
 	import { getNodeExecutionState } from '$lib/stores/execution.svelte'
 	import type { Component } from 'svelte'
+	import { objFilter } from '$lib/utils/objectFilter'
+	import { objKeyMap } from '$lib/utils/objKeyMap'
 
 	const { nodeId }: { nodeId: string } = $props()
 
@@ -91,22 +98,23 @@
 			.filter(Boolean)
 			.join('/')
 		const isTopLevel = !getCurrentNodePath().length
-		const modifiers = {} /*objKeyMap(
+		const modifiers =
 			// keep only relevant modifiers
-			objFilter(getProject().spec.modifiers ?? {}, (key, _value) =>
-				key.startsWith(nodePath + (nodeId === 'container' ? '/' : ''))
-			),
-			// correct the path so it starts from the currently selected node, so remove everything before the current node
-			(key, value) => {
-				// if we're on the top level, just drop the first node id
-				if (isTopLevel) return key.split('/').slice(1).join('/')
-				if (!currentNodeId) return key
-				const parts = key.split('/')
-				return parts
-					.slice(parts.indexOf(currentNodeId) + (nodeId === 'container' ? 1 : 0))
-					.join('/')
-			}
-		)*/
+			objKeyMap(
+				objFilter(getProjectModifiers(), (key, _value) =>
+					key.startsWith(nodePath + (nodeId === 'container' ? '/' : ''))
+				),
+				// correct the path so it starts from the currently selected node, so remove everything before the current node
+				(key, _value) => {
+					// if we're on the top level, just drop the first node id
+					if (isTopLevel) return key.split('/').slice(1).join('/')
+					if (!currentNodeId) return key
+					const parts = key.split('/')
+					return parts
+						.slice(parts.indexOf(currentNodeId) + (nodeId === 'container' ? 1 : 0))
+						.join('/')
+				}
+			)
 
 		executeComponent(
 			JSON.parse(payload),
