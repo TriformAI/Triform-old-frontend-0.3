@@ -61,9 +61,10 @@
 
 	// ensure project is set before anything else happens
 	$effect.pre(() => {
-		// don't replace the project if one is already loaded
+		const currentModifiers = untrack(() => getModifiers())
+		
 		if (!getProject()) setProject(page.data.project as z.infer<typeof resolvedProjectModel>)
-		if (!Object.keys(getModifiers() ?? {}).length)
+		if (!Object.keys(currentModifiers ?? {}).length)
 			setModifiers(Object.fromEntries(page.data.modifiers?.map(m => [m.id, m]) ?? []))
 		if (!getDeployment())
 			setDeployment(page.data.deployments?.[0] as z.infer<typeof deployedProjectDataModel>)
