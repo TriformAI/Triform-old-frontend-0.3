@@ -12,10 +12,10 @@ import { metaModel, nodePathModel } from './common.js'
 export const authSpecModel = z.strictObject({
 	provider: z.enum([
 		'google',
-		'notion',
-		'github',
-		'dropbox',
-		'microsoft'
+		'notion'
+		// 'github',
+		// 'dropbox',
+		// 'microsoft'
 		// 'shopify'
 	]),
 	scopes: z.array(z.string()).describe('scopes to request from the provider'),
