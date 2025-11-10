@@ -24,6 +24,11 @@ const connected = baseModel.extend({
 	})
 })
 
+const ping = baseModel.extend({
+	event: z.literal('ping'),
+	data: z.object({}).default({})
+})
+
 const componentUpdated = baseModel.extend({
 	event: z.literal('component:updated'),
 	data: z.strictObject({
@@ -63,6 +68,7 @@ export const projectDeployed = baseModel.extend({
 export const socketEventModel = z.discriminatedUnion('event', [
 	componentUpdated,
 	connected,
+	ping,
 	modifierUpdated,
 	componentRequirementsUpdated,
 	projectUpdated,

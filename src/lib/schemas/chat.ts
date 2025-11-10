@@ -199,6 +199,13 @@ export const errorMessageModel = baseMessageModel
 		})
 	})
 
+export const pingMessageModel = baseMessageModel
+	.omit({ id: true, runId: true })
+	.extend({
+		event: z.literal('ping'),
+		data: z.object({}).default({})
+	})
+
 const uiMessages = [
 	userMessageModel,
 	textMessageStartedModel,
@@ -217,7 +224,8 @@ export const uiMessageModel = z.discriminatedUnion('event', uiMessages)
 export const messageModel = z.discriminatedUnion('event', [
 	...uiMessages,
 	ackMessageModel,
-	errorMessageModel
+	errorMessageModel,
+	pingMessageModel
 ])
 
 // same but without id
