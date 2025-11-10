@@ -32,12 +32,13 @@
 	const attachedModifiers = $derived(getNodeModifiers(nodePath))
 
 	const filteredModifiers = $derived(
-		Object.values(modifiers ?? {}).filter(
+		Object.values(modifiers).filter(
 			m =>
-				(m.meta.name.toLowerCase().includes(filter.toLowerCase()) ||
+				(!filter.trim() ||
+					m.meta.name.toLowerCase().includes(filter.toLowerCase()) ||
 					m.spec.identifier?.toLowerCase().includes(filter.toLowerCase())) &&
 				// ensure it's not already attached to this node
-				attachedModifiers.every(am => am.id !== m.id)
+				(!attachedModifiers.length || attachedModifiers.every(am => am.id !== m.id))
 		)
 	)
 
@@ -125,44 +126,40 @@
 			<div class="flex flex-col gap-4">
 				<p class="text-main-400 text-center text-sm">Use existing</p>
 				<InputField placeholder="Search modifiers" bind:value={filter} />
-				{#if modifiers?.length}
-					<div class="flex flex-col gap-2">
-						{#each filteredModifiers as modifier}
-							{@const modifierType = modifierTypesDict[modifier.resource as ModifierType]}
-							<Button
-								variation="item"
-								contentClass="w-full"
-								onClick={async () => await selectModifier(modifier)}
-								autoLoad="promise"
-							>
-								{#snippet body()}
-									<div class="flex w-full flex-row flex-wrap items-center gap-2">
-										<div class="contents" style={`color: ${modifierType?.colour};`}>
-											{#if modifierType}
-												<modifierType.icon class="-ml-0.5 size-6 shrink-0" />
-											{/if}
-										</div>
-										<span class="text-main-300 truncate font-semibold">
-											{modifier.meta.name}
-										</span>
-									</div>
-									<span class="text-main-400 text-sm">
-										<span class="text-main-300 capitalize">
-											{modifier.spec.provider}
-										</span>
-										{#if modifier.spec.identifier}
-											<span>
-												({modifier.spec.identifier})
-											</span>
+				<div class="flex flex-col gap-2">
+					{#each filteredModifiers as modifier}
+						{@const modifierType = modifierTypesDict[modifier.resource as ModifierType]}
+						<Button
+							variation="item"
+							contentClass="w-full"
+							onClick={async () => await selectModifier(modifier)}
+							autoLoad="promise"
+						>
+							{#snippet body()}
+								<div class="flex w-full flex-row flex-wrap items-center gap-2">
+									<div class="contents" style={`color: ${modifierType?.colour};`}>
+										{#if modifierType}
+											<modifierType.icon class="-ml-0.5 size-6 shrink-0" />
 										{/if}
+									</div>
+									<span class="text-main-300 truncate font-semibold">
+										{modifier.meta.name}
 									</span>
-								{/snippet}
-							</Button>
-						{/each}
-					</div>
-				{:else}
-					<p class="text-main-400 text-center text-sm">No modifiers created yet</p>
-				{/if}
+								</div>
+								<span class="text-main-400 text-sm">
+									<span class="text-main-300 capitalize">
+										{modifier.spec.provider}
+									</span>
+									{#if modifier.spec.identifier}
+										<span>
+											({modifier.spec.identifier})
+										</span>
+									{/if}
+								</span>
+							{/snippet}
+						</Button>
+					{/each}
+				</div>
 			</div>
 		</div>
 	{/if}
