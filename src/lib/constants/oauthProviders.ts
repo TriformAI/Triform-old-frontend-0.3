@@ -37,11 +37,11 @@ export const oauthProviders = [
 			'https://www.googleapis.com/auth/photoslibrary.readonly'
 		]
 	},
-	{
-		id: 'microsoft',
-		label: 'Microsoft',
-		icon: IconMicrosoft,
-	},
+	// {
+	// 	id: 'microsoft',
+	// 	label: 'Microsoft',
+	// 	icon: IconMicrosoft,
+	// },
 	// {
 	// 	id: 'github',
 	// 	label: 'GitHub',
