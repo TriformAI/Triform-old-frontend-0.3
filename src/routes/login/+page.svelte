@@ -152,11 +152,11 @@
 								{provider.name}
 							{/snippet}
 						</Button>
-						{#if provider.name === lastOption}
+						{#if provider.key === lastOption}
 							<span
 								class={[
 									'absolute -top-2 -right-5 px-3 py-1',
-									'text-accent-200 bg-accent-700 border-accent-600 rounded-full border inset-shadow-xs',
+									'badge-accent rounded-md',
 									'text-xs font-bold tracking-wider uppercase',
 									'peer-hover:bg-accent-600 peer-hover:border-accent-500 peer-hover:text-accent-50 transition'
 								]}
