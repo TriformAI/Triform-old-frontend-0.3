@@ -117,7 +117,8 @@
 		if (!initPrompt) return
 		initPrompt = decodeURIComponent(initPrompt)
 		// reset the cookie so we don't get duplicates
-		document.cookie = '__tf-init-prompt=; Path=/; Expires=Thu, 01 Jan 1970 00:00:01 GMT;'
+		const rootDomain = window.location.hostname.split('.').slice(-2).join('.')
+		document.cookie = `__tf-init-prompt=; Path=/; Expires=Thu, 01 Jan 1970 00:00:01 GMT; domain=.${rootDomain};`
 		value = initPrompt
 		sendPrompt()
 	})
