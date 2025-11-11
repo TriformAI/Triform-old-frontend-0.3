@@ -1,4 +1,4 @@
-FROM oven/bun:1.2.23-slim AS builder
+FROM oven/bun:1.3.2-slim AS builder
 WORKDIR /app
 
 RUN apt-get update && apt-get install -y git python3 make g++
@@ -11,7 +11,7 @@ COPY . .
 RUN bun run build
 
 
-FROM oven/bun:1.2.23-slim
+FROM oven/bun:1.3.2-slim
 WORKDIR /app
 
 COPY package.json bun.lock .
