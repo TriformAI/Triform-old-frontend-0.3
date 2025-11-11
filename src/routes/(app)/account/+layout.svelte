@@ -18,13 +18,13 @@
 			icon: IconAccount,
 			isCurrent: () => page.route.id === '/(app)/account'
 		},
-		{
-			name: 'Invites',
-			url: '/account/invites',
-			icon: IconInvites,
-			isCurrent: () => page.url.pathname.startsWith('/account/invites'),
-			badge: () => getActiveInvites().length
-		},
+		// {
+		// 	name: 'Invites',
+		// 	url: '/account/invites',
+		// 	icon: IconInvites,
+		// 	isCurrent: () => page.url.pathname.startsWith('/account/invites'),
+		// 	badge: () => getActiveInvites().length
+		// },
 		{
 			name: 'Organizations',
 			url: '/account/organizations',

@@ -35,13 +35,13 @@
 						`https://api.dicebear.com/9.x/notionists-neutral/svg?seed=${sessionStore.user.id}`}
 					class="w-8 shrink-0 rounded-full"
 				/>
-				{#if activeInvites.length}
+				<!-- {#if activeInvites.length}
 					<div
 						class="bg-accent-500 absolute top-0 right-0 size-3 animate-ping rounded-full"
 						style="animation-iteration-count: 1"
 					></div>
 					<div class="bg-accent-500 absolute top-0 right-0 size-3 rounded-full"></div>
-				{/if}
+				{/if} -->
 			</div>
 		{/if}
 	{/snippet}
@@ -58,14 +58,14 @@
 					>
 				</div>
 			</li>
-			<li class="group">
+			<!-- <li class="group">
 				<a href="/account/invites" class="list-btn w-full">
 					<span class="badge-accent">
 						{activeInvites.length}
 					</span>
 					personal invites left
 				</a>
-			</li>
+			</li> -->
 			<li>
 				<a href="/account" class="list-btn w-full">Account</a>
 			</li>
