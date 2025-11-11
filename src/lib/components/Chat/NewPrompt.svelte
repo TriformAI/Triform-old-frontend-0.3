@@ -7,6 +7,9 @@
 	import type * as z from 'zod'
 	import { projectModel } from '$lib/schemas'
 	import { goto } from '$app/navigation'
+	import { onMount } from 'svelte'
+	import { browser } from '$app/environment'
+	import { sessionStore } from '$lib/stores/session.svelte'
 
 	let textarea = $state<HTMLTextAreaElement>()
 	let value = $state('')
@@ -103,6 +106,21 @@
 			}
 		})
 	}
+
+	onMount(() => {
+		// if they're logged in and the __tf-init-prompt cookie is set, send the prompt
+		if (!browser || !sessionStore.isAuthenticated) return
+		let initPrompt = document.cookie
+			.split('; ')
+			.find(row => row.startsWith('__tf-init-prompt='))
+			?.split('=')[1]
+		if (!initPrompt) return
+		initPrompt = decodeURIComponent(initPrompt)
+		// reset the cookie so we don't get duplicates
+		document.cookie = '__tf-init-prompt=; Path=/; Expires=Thu, 01 Jan 1970 00:00:01 GMT;'
+		value = initPrompt
+		sendPrompt()
+	})
 </script>
 
 <div class="flex w-full max-w-2xl flex-col items-center gap-3">
