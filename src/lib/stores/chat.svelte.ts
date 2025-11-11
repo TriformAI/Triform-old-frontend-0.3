@@ -75,6 +75,11 @@ export const chat = $state<{
 	isInitializing: false
 })
 
+const isNearBottom = (container: HTMLElement, threshold = 50): boolean => {
+	const { scrollTop, scrollHeight, clientHeight } = container
+	return scrollHeight - scrollTop - clientHeight < threshold
+}
+
 export function scrollToBottom(chatMessagesContainer: HTMLElement, instant = false) {
 	if (chatMessagesContainer) {
 		chatMessagesContainer.scrollTo({
@@ -117,9 +122,12 @@ export const initWebsocket = (
 			}
 
 			await tick()
-			// Scroll all active containers
-			for (const container of activeScrollContainers) {
-				scrollToBottom(container)
+			// Always scroll to bottom for user messages, otherwise only if near bottom
+			const isAckMessage = message.event === 'ack'
+				for (const container of activeScrollContainers) {
+					if (isAckMessage || isNearBottom(container)) {
+						scrollToBottom(container)
+					}
 			}
 		} catch (error) {
 			console.error('error handling message', error)
