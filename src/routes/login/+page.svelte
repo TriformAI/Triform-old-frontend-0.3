@@ -6,6 +6,8 @@
 	import logo from '$lib/images/Logo.svg'
 	import DiscordIcon from '~icons/bxl/discord-alt'
 	import GithubIcon from '~icons/bxl/github'
+	import GoogleIcon from '~icons/bxl/google'
+	import MicrosoftIcon from '~icons/bxl/microsoft'
 	import MailIcon from '~icons/material-symbols/mail-rounded'
 	import { authClient } from '$lib/auth-client'
 	import InputField from '$lib/components/atoms/InputField.svelte'
@@ -23,6 +25,16 @@
 			name: 'Github',
 			key: 'github',
 			icon: GithubIcon
+		},
+		{
+			name: 'Google',
+			key: 'google',
+			icon: GoogleIcon
+		},
+		{
+			name: 'Microsoft',
+			key: 'microsoft',
+			icon: MicrosoftIcon
 		},
 		{
 			name: 'Email',
@@ -135,7 +147,7 @@
 		{:else}
 			<div class="col-start-1 row-start-1 flex w-xs flex-col items-center gap-y-4" transition:blur>
 				<p class="mb-6 text-center">
-					<span class=" text-main-400 text-center">Please login to continue</span>
+					<span class=" text-main-400 text-center">Please authenticate to continue</span>
 				</p>
 				{#each providers as provider}
 					<div class="relative w-full">
