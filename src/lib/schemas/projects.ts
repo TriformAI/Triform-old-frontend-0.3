@@ -58,7 +58,24 @@ export const projectSpecModel = z.strictObject({
 				.object({
 					enabled: z.boolean().default(true)
 				})
-				.default({ enabled: true })
+				.default({ enabled: true }),
+			// whenever we deploy a project, we create scheduled invocations for each node defined here
+			// that way the crons only start "biting" whenever it's actually deployed
+			scheduled: z
+				.object({
+					enabled: z.boolean().default(false),
+					nodes: z
+						.array(
+							z.object({
+								nodeId: z.string(),
+								schedule: z.string(),
+								payload: z.record(z.string(), z.unknown())
+								// TODO: add the scheduled invocation id here so we can map between them
+							})
+						)
+						.default([])
+				})
+				.default({ enabled: false, nodes: [] })
 		})
 		.default({
 			endpoints: {
@@ -68,6 +85,10 @@ export const projectSpecModel = z.strictObject({
 			},
 			chat: {
 				enabled: true
+			},
+			scheduled: {
+				enabled: false,
+				nodes: []
 			}
 		})
 })

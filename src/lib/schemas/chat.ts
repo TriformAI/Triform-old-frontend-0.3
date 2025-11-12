@@ -144,7 +144,21 @@ export const stepCompletedModel = baseMessageModel.extend({
 	})
 })
 
-const variableWidgetModel = z.object({
+const widgetBaseModel = z.object({
+	type: z.string().describe('the type of the widget'),
+	props: z.object({}).describe('props that will be used in the frontend'),
+	metadata: z
+		.object({
+			pendingComponents: z.array(
+				z.object({
+					componentId: z.string()
+				})
+			)
+		})
+		.describe('metadata mainly used by the builder to persist state')
+})
+
+const variableWidgetModel = widgetBaseModel.extend({
 	type: z.literal('variable_prompt'),
 	props: z.object({
 		variables: z.array(
@@ -158,19 +172,26 @@ const variableWidgetModel = z.object({
 					.optional()
 			})
 		)
-	}),
-	metadata: z.object({
-		pendingComponents: z.array(
-			z.object({
-				componentId: z.string()
-			})
-		)
 	})
 })
 
+const oauthWidgetModel = widgetBaseModel.extend({
+	type: z.literal('oauth_prompt'),
+	props: z.object({
+		modifier_id: z
+			.string()
+			.describe('the id of the modifier pending authorisation')
+	})
+})
+
+export const widgetsModel = z.discriminatedUnion('type', [
+	variableWidgetModel,
+	oauthWidgetModel
+])
+
 export const widgetStartedModel = baseMessageModel.extend({
 	event: z.literal('widget_start'),
-	data: z.discriminatedUnion('type', [variableWidgetModel])
+	data: widgetsModel
 })
 export const widgetCompletedModel = baseMessageModel
 	.omit({ runId: true })

@@ -1,5 +1,5 @@
 <script lang="ts">
-	import CronInput from './CronInput.svelte'
+	import CronInput from './Cron/CronInput.svelte'
 	import Payload from '../common/Payload.svelte'
 
 	let {

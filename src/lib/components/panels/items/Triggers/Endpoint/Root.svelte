@@ -1,5 +1,4 @@
 <script lang="ts">
-	import { page } from '$app/state'
 	import { getProject } from '$lib/stores/canvas.svelte'
 	import Tokens from './Tokens.svelte'
 	import Nodes from './Nodes.svelte'

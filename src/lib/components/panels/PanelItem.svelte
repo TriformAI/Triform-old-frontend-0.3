@@ -72,7 +72,7 @@
 		</div>
 	{/if}
 
-	<div class="scroll-gutter-stable grid overflow-y-auto">
+	<div class="grid">
 		{@render children()}
 	</div>
 </div>

@@ -1,12 +1,12 @@
 <script lang="ts">
 	import PanelItem from '../../PanelItem.svelte'
 	import { getCurrentNodePath, getProject, saveContainer } from '$lib/stores/canvas.svelte'
-	import { page } from '$app/state'
-	import EndpointTrigger from './Endpoint/Root.svelte'
 	import { clone } from '$lib/utils/clone'
 	import { toast } from 'svelte-sonner'
 	import { tick } from 'svelte'
+	import EndpointTrigger from './Endpoint/Root.svelte'
 	import ChatTrigger from './ChatTrigger.svelte'
+	import CronTrigger from './Cron/Root.svelte'
 
 	let dialog = $state<HTMLDialogElement>()
 
@@ -35,7 +35,7 @@
 	tip="The interface for the nodes in your project"
 >
 	<div class="flex flex-col gap-4">
-		{#each Object.keys(triggers) as triggerName}
+		{#each Object.keys(triggers).sort() as triggerName}
 			{@const trigger = triggers[triggerName as keyof typeof project.spec.triggers]}
 			<div
 				class={[
@@ -56,6 +56,8 @@
 					<EndpointTrigger />
 				{:else if triggerName === 'chat'}
 					<ChatTrigger />
+				{:else if triggerName === 'scheduled'}
+					<CronTrigger />
 				{/if}
 			</div>
 		{/each}

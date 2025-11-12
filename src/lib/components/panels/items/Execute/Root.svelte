@@ -19,14 +19,13 @@
 	} from '$lib/stores/canvas.svelte'
 	import IconMagic from '~icons/mdi/shimmer'
 	import IconReload from '~icons/material-symbols/refresh-rounded'
-	import { getSamplePayload } from '$lib/schemas'
-	import { objectMap } from '$lib/utils/objectMap'
 	import { generateMockInputs } from '$lib/actions/components'
 	import { confirmStore } from '$lib/stores/confirm.svelte'
 	import { getNodeExecutionState } from '$lib/stores/execution.svelte'
 	import type { Component } from 'svelte'
 	import { objFilter } from '$lib/utils/objectFilter'
 	import { objKeyMap } from '$lib/utils/objKeyMap'
+	import { getDefaultPayload as getDefaultPayloadUtil } from '$lib/utils/getDefaultPayload'
 
 	const { nodeId }: { nodeId: string } = $props()
 
@@ -34,13 +33,7 @@
 		getVisibleComponent(nodeId) as z.infer<typeof resolvedComponentModel>
 	)
 
-	const objectToSchema = (obj: Record<string, { schema: unknown }>) => ({
-		type: 'object',
-		properties: objectMap(obj, (value, _key) => value.schema)
-	})
-
-	const getDefaultPayload = () =>
-		JSON.stringify(getSamplePayload(objectToSchema(componentData.spec.inputs)) ?? {}, null, 2)
+	const getDefaultPayload = () => getDefaultPayloadUtil(componentData.spec.inputs)
 
 	const loadInitialPayload = () => {
 		const input = getNodeExecutionState(nodeId)?.input
