@@ -91,7 +91,7 @@
 							{/snippet}
 						</Button>
 					{/each}
-					<Button
+					<!-- <Button
 						variation="link"
 						tooltip="Save payload"
 						tooltipPos="left"
@@ -101,7 +101,7 @@
 						{#snippet icon()}
 							<IconAdd class="size-5" />
 						{/snippet}
-					</Button>
+					</Button> -->
 				</div>
 			</div>
 
