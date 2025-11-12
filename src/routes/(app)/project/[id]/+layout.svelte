@@ -62,7 +62,7 @@
 	// ensure project is set before anything else happens
 	$effect.pre(() => {
 		const currentModifiers = untrack(() => getModifiers())
-		
+
 		if (!getProject()) setProject(page.data.project as z.infer<typeof resolvedProjectModel>)
 		if (!Object.keys(currentModifiers ?? {}).length)
 			setModifiers(Object.fromEntries(page.data.modifiers?.map(m => [m.id, m]) ?? []))
@@ -238,7 +238,7 @@
 			<div
 				bind:this={gridContainer}
 				style={gridStyle}
-				class={['bg-main-850 grid px-2 pt-1 pb-2 ease-(--easing-circ)', 'h-[80dvh] md:h-full']}
+				class={['bg-main-900 grid px-2 pt-1 pb-2 ease-(--easing-circ)', 'h-[80dvh] md:h-full']}
 			>
 				<div
 					class={[

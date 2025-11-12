@@ -14,42 +14,58 @@
 	const { children, extras }: Props = $props()
 
 	const isChat = $derived(page.url.pathname.startsWith('/chat'))
+	const isMonitor = $derived(page.url.pathname.startsWith('/monitor'))
+
+	const tabs = $derived([
+		{
+			label: 'Build',
+			href: '/dashboard',
+			isActive:
+				page.url.pathname.startsWith('/dashboard') || page.url.pathname.startsWith('/project')
+		},
+		{
+			label: 'Chat',
+			href: '/chat',
+			isActive: page.url.pathname.startsWith('/chat')
+		}
+		// {
+		// 	label: 'Monitor',
+		// 	href: '/monitor/executions',
+		// 	isActive: page.url.pathname.startsWith('/monitor/executions')
+		// }
+	])
 </script>
 
 <header
 	class={[
-		'bg-main-850 sticky top-0 z-30 w-full max-w-screen items-center px-2 py-2 md:pr-5 md:pl-2.5',
-		'flex flex-row md:grid md:grid-cols-[1fr_auto_1fr]'
+		'bg-main-850 sticky top-0 z-30 w-full max-w-screen items-center px-2 md:pr-5 md:pl-2.5',
+		'flex flex-row md:grid md:grid-cols-[1fr_auto_1fr]',
+		'border-main-800 border-b'
 	]}
 >
-	<div class="flex flex-row items-center md:gap-4">
-		<a href="/">
+	<div class="flex h-full flex-row items-center md:gap-4">
+		<a href="/" class="py-2">
 			<img alt="Triform logo" src={logo} class="mt-1 w-7 md:mt-0 md:w-10" />
 		</a>
-		<div class="flex flex-row items-center gap-2">
-			<a
-				href="/dashboard"
-				class={[
-					isChat
-						? 'text-main-500 hover:text-main-400'
-						: 'text-main-300 hover:text-main-200 font-medium',
-					'transition'
-				]}
-			>
-				Build
-			</a>
-			<span class="text-main-500 font-medium"> / </span>
-			<a
-				href="/chat"
-				class={[
-					isChat
-						? 'text-main-300 hover:text-main-200 font-medium'
-						: 'text-main-500 hover:text-main-400',
-					'transition'
-				]}
-			>
-				Chat
-			</a>
+		<div class="flex h-full flex-row items-center pt-2">
+			{#each tabs as tab}
+				{@const { isActive } = tab}
+				<a
+					class={[
+						isActive
+							? 'text-main-300 hover:text-main-200 border-b-main-900 font-medium'
+							: 'text-main-500 hover:text-main-400',
+						'flex h-full items-center transition-all',
+						'bg-main-900 px-4',
+						'border-main-800 box-content rounded-t border border-b',
+						'not-first:border-l-0',
+						'hover:pb-1 active:pb-0'
+					]}
+					href={tab.href}
+				>
+					{tab.label}
+				</a>
+			{/each}
 		</div>
 	</div>
 
