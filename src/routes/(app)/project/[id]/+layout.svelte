@@ -32,7 +32,7 @@
 	import Chat from '$lib/components/Chat/BuilderChat.svelte'
 	import { WebSocket } from 'partysocket'
 	import { socketEventModel } from '$lib/schemas/socket.js'
-	import { setSocketId } from '$lib/stores/socket.svelte.js'
+	import { onSocketMessage, setSocketId } from '$lib/stores/socket.svelte.js'
 	import { isProject } from '$lib/schemas'
 	import { onNavigate } from '$app/navigation'
 	import type { OnNavigate } from '@sveltejs/kit'
@@ -161,6 +161,7 @@
 	async function handleMessage(data: z.infer<typeof socketEventModel>) {
 		try {
 			const payload = socketEventModel.parse(data)
+			onSocketMessage(payload)
 			if (payload.event === 'component:updated') {
 				await updateLocalComponent(payload.data.component)
 				refreshFlow()
