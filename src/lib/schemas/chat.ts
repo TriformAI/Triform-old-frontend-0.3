@@ -178,7 +178,7 @@ const variableWidgetModel = widgetBaseModel.extend({
 const oauthWidgetModel = widgetBaseModel.extend({
 	type: z.literal('oauth_prompt'),
 	props: z.object({
-		modifier_id: z
+		modifierId: z
 			.string()
 			.describe('the id of the modifier pending authorisation')
 	})
