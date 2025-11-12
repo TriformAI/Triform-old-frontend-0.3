@@ -60,7 +60,7 @@ export const canvasState = $state<{
 let project = $state(page.data.project as z.infer<typeof resolvedProjectModel>)
 export const getProject = () => project
 export const setProject = (newProject: z.infer<typeof resolvedProjectModel>) => {
-	project = resolvedProjectModel.parse(newProject)
+	project = newProject ? resolvedProjectModel.parse(newProject) : undefined
 	if (project?.spec) refreshProjectHash()
 }
 // this could be a derived, but it's actually quite slow, so it's better to re-calculate it manually instead
