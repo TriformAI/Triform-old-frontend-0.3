@@ -5,6 +5,7 @@
 	import { type Snippet } from 'svelte'
 	import UserNav from './UserNav.svelte'
 	import { page } from '$app/state'
+	import { getActiveBuildPath, setActiveBuildPath } from '$lib/stores/navbar.svelte'
 
 	interface Props {
 		children?: Snippet
@@ -13,18 +14,28 @@
 
 	const { children, extras }: Props = $props()
 
-	const isChat = $derived(page.url.pathname.startsWith('/chat'))
-	const isMonitor = $derived(page.url.pathname.startsWith('/monitor'))
+	const activeBuildPath = $derived(getActiveBuildPath())
+	const onTabClick = (id: string) => {
+		if (id === 'build') {
+			// if we're going to the build tab (and we're currently in it), go to the dashboard
+			if (tabs.find(t => t.id === 'build')?.isActive) setActiveBuildPath('/dashboard')
+			return
+		}
+		// if we're leaving the build tab, store the project we were in so we can return to it
+		setActiveBuildPath(page.url.pathname)
+	}
 
 	const tabs = $derived([
 		{
 			label: 'Build',
-			href: '/dashboard',
+			id: 'build',
+			href: activeBuildPath,
 			isActive:
 				page.url.pathname.startsWith('/dashboard') || page.url.pathname.startsWith('/project')
 		},
 		{
 			label: 'Chat',
+			id: 'chat',
 			href: '/chat',
 			isActive: page.url.pathname.startsWith('/chat')
 		}
@@ -62,6 +73,7 @@
 						'hover:pb-1 active:pb-0'
 					]}
 					href={tab.href}
+					onclick={() => onTabClick(tab.id)}
 				>
 					{tab.label}
 				</a>
