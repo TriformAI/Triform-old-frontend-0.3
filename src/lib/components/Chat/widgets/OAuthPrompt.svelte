@@ -26,7 +26,8 @@
 			if (
 				msg.event === 'modifier:updated' &&
 				msg.data.modifier.id === modifierId &&
-				msg.data.modifier.spec.refreshToken?.ciphertext
+				msg.data.modifier.spec.refreshToken?.ciphertext &&
+				!item.completed // Only complete if this widget hasn't been completed yet
 			) {
 				await onComplete?.(item.id)
 			}
