@@ -15,33 +15,48 @@
 	import IconSend from '~icons/material-symbols/send-rounded'
 	import { blur } from 'svelte/transition'
 
-	const providers = [
+	const isInAppBrowser = $derived(
+		typeof window !== 'undefined' &&
+			(/FBAN|FBAV|Instagram|Twitter|LinkedInApp|wv|MicroMessenger/i.test(
+				window.navigator.userAgent
+			) ||
+				('standalone' in window.navigator &&
+					(window.navigator as { standalone?: boolean }).standalone === false))
+	)
+
+	const providers = $derived([
 		{
 			name: 'Discord',
 			key: 'discord',
-			icon: DiscordIcon
+			icon: DiscordIcon,
+			show: true
 		},
 		{
 			name: 'Github',
 			key: 'github',
-			icon: GithubIcon
+			icon: GithubIcon,
+			show: true
 		},
 		{
 			name: 'Google',
 			key: 'google',
-			icon: GoogleIcon
+			icon: GoogleIcon,
+			// hide if we're in an in-app browser
+			show: !isInAppBrowser
 		},
 		{
 			name: 'Microsoft',
 			key: 'microsoft',
-			icon: MicrosoftIcon
+			icon: MicrosoftIcon,
+			show: true
 		},
 		{
 			name: 'Email',
 			key: 'magic-link',
-			icon: MailIcon
+			icon: MailIcon,
+			show: true
 		}
-	]
+	])
 
 	// Disable others
 	let chosenProvider = $state<string | null>(null)
@@ -155,7 +170,10 @@
 							class="peer w-full"
 							onClick={() => onLogin(provider.key)}
 							autoLoad="promise"
-							disabled={chosenProvider === provider.name}
+							disabled={chosenProvider === provider.name || !provider.show}
+							tooltip={!provider.show
+								? 'This provider is not available in this browser'
+								: undefined}
 						>
 							{#snippet icon()}
 								<provider.icon />
