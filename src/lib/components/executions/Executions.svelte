@@ -46,7 +46,7 @@
 							{execution.state}
 						</td>
 						<td class="capitalize">
-							{execution.source}
+							{execution.source?.replace('_', ' ')}
 						</td>
 						<td>
 							{execution.createdAt?.toLocaleString() ?? 'N/A'}
