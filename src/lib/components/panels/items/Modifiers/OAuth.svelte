@@ -41,7 +41,7 @@
 			label="Provider"
 			{onChange}
 		/>
-		{#if modifierData?.scopes}
+		{#if modifierData?.scopes.length}
 			<TagSelector
 				bind:tags={modifier.spec.scopes}
 				placeholder="List of requested scopes"

@@ -7,18 +7,7 @@
 import * as z from 'zod'
 import { metaModel, nodePathModel } from './common.js'
 
-// Auth models
-// TODO: add a custom provider that allows users to provide their own client id/secret
-export const authSpecModel = z.strictObject({
-	provider: z.enum([
-		'google',
-		'notion'
-		// 'github',
-		// 'dropbox',
-		// 'microsoft'
-		// 'shopify'
-	]),
-	scopes: z.array(z.string()).describe('scopes to request from the provider'),
+const baseAuthSpecModel = z.strictObject({
 	identifier: z
 		.string()
 		.nullish()
@@ -34,6 +23,50 @@ export const authSpecModel = z.strictObject({
 		.default(null)
 		.describe('encrypted refresh token, set on authorisation success')
 })
+
+export const providers = {
+	google: {
+		scopes: [
+			'https://www.googleapis.com/auth/userinfo.email',
+			'https://www.googleapis.com/auth/drive',
+			'https://www.googleapis.com/auth/drive.file',
+			'https://www.googleapis.com/auth/drive.readonly',
+			'https://www.googleapis.com/auth/drive.metadata.readonly',
+			'https://www.googleapis.com/auth/gmail.readonly',
+			'https://www.googleapis.com/auth/gmail.send',
+			'https://www.googleapis.com/auth/gmail.modify',
+			'https://www.googleapis.com/auth/gmail.compose',
+			'https://www.googleapis.com/auth/calendar',
+			'https://www.googleapis.com/auth/calendar.readonly',
+			'https://www.googleapis.com/auth/calendar.events',
+			'https://www.googleapis.com/auth/contacts',
+			'https://www.googleapis.com/auth/contacts.readonly',
+			'https://www.googleapis.com/auth/spreadsheets',
+			'https://www.googleapis.com/auth/spreadsheets.readonly',
+			'https://www.googleapis.com/auth/documents',
+			'https://www.googleapis.com/auth/documents.readonly',
+			'https://www.googleapis.com/auth/photoslibrary',
+			'https://www.googleapis.com/auth/photoslibrary.readonly'
+		]
+	},
+	notion: {
+		scopes: []
+	}
+} as const
+
+const google = baseAuthSpecModel.extend({
+	provider: z.literal('google'),
+	scopes: z.array(z.literal(providers.google.scopes))
+})
+
+const notion = baseAuthSpecModel.extend({
+	provider: z.literal('notion'),
+	scopes: z.array(z.string()) // TODO: set to never
+})
+
+// Auth models
+// TODO: add a custom provider that allows users to provide their own client id/secret
+export const authSpecModel = z.discriminatedUnion('provider', [google, notion])
 
 export const authModel = z.strictObject({
 	id: z.uuidv4().optional(),

@@ -1,7 +1,6 @@
 <script lang="ts">
 	import type { z } from 'zod'
 	import { modifierModel } from '$lib/schemas'
-	import type { Snippet } from 'svelte'
 	import Disclosure from '$lib/components/atoms/Disclosure.svelte'
 	import { modifierTypesDict, type ModifierType } from '$lib/constants/modifierTypes'
 	import OAuth from './OAuth.svelte'

@@ -1,5 +1,4 @@
-import { modifierModel } from '$lib/schemas'
-import type { z } from 'zod'
+import { providers } from '$lib/schemas'
 
 import IconGoogle from '~icons/bxl/google'
 import IconMicrosoft from '~icons/bxl/microsoft'
@@ -12,30 +11,7 @@ export const oauthProviders = [
 	{
 		id: 'google',
 		label: 'Google',
-		icon: IconGoogle,
-		scopes: [
-			'https://www.googleapis.com/auth/userinfo.email',
-			'https://www.googleapis.com/auth/userinfo.profile',
-			'https://www.googleapis.com/auth/drive',
-			'https://www.googleapis.com/auth/drive.file',
-			'https://www.googleapis.com/auth/drive.readonly',
-			'https://www.googleapis.com/auth/drive.metadata.readonly',
-			'https://www.googleapis.com/auth/gmail.readonly',
-			'https://www.googleapis.com/auth/gmail.send',
-			'https://www.googleapis.com/auth/gmail.modify',
-			'https://www.googleapis.com/auth/gmail.compose',
-			'https://www.googleapis.com/auth/calendar',
-			'https://www.googleapis.com/auth/calendar.readonly',
-			'https://www.googleapis.com/auth/calendar.events',
-			'https://www.googleapis.com/auth/contacts',
-			'https://www.googleapis.com/auth/contacts.readonly',
-			'https://www.googleapis.com/auth/spreadsheets',
-			'https://www.googleapis.com/auth/spreadsheets.readonly',
-			'https://www.googleapis.com/auth/documents',
-			'https://www.googleapis.com/auth/documents.readonly',
-			'https://www.googleapis.com/auth/photoslibrary',
-			'https://www.googleapis.com/auth/photoslibrary.readonly'
-		]
+		icon: IconGoogle
 	},
 	// {
 	// 	id: 'microsoft',
@@ -98,13 +74,9 @@ export const oauthProviders = [
 	{
 		id: 'notion',
 		label: 'Notion',
-		icon: IconNotion,
-		// notion sets the scopes in the dashboard, so it's not customisable
-		scopes: false
+		icon: IconNotion
 	}
-] as {
-	id: z.infer<typeof modifierModel>['spec']['provider']
-	label: string
-	icon: typeof IconGoogle,
-	scopes: false | string[]
-}[]
+].map(p => ({
+	...p,
+	scopes: p.id in providers ? providers[p.id as keyof typeof providers].scopes : []
+}))
