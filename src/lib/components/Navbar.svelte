@@ -14,13 +14,13 @@
 
 	const { children, extras }: Props = $props()
 
+	const isBuildActive = $derived(
+		page.url.pathname.startsWith('/dashboard') || page.url.pathname.startsWith('/project')
+	)
+
 	const activeBuildPath = $derived(getActiveBuildPath())
 	const onTabClick = (id: string) => {
-		if (id === 'build') {
-			// if we're going to the build tab (and we're currently in it), go to the dashboard
-			if (tabs.find(t => t.id === 'build')?.isActive) setActiveBuildPath('/dashboard')
-			return
-		}
+		if (id === 'build' || !isBuildActive) return
 		// if we're leaving the build tab, store the project we were in so we can return to it
 		setActiveBuildPath(page.url.pathname)
 	}
@@ -29,21 +29,20 @@
 		{
 			label: 'Build',
 			id: 'build',
-			href: activeBuildPath,
-			isActive:
-				page.url.pathname.startsWith('/dashboard') || page.url.pathname.startsWith('/project')
+			isActive: isBuildActive,
+			href: isBuildActive ? '/dashboard' : activeBuildPath
 		},
 		{
 			label: 'Chat',
 			id: 'chat',
 			href: '/chat',
 			isActive: page.url.pathname.startsWith('/chat')
+		},
+		{
+			label: 'Monitor',
+			href: '/monitor/executions',
+			isActive: page.url.pathname.startsWith('/monitor/executions')
 		}
-		// {
-		// 	label: 'Monitor',
-		// 	href: '/monitor/executions',
-		// 	isActive: page.url.pathname.startsWith('/monitor/executions')
-		// }
 	])
 </script>
 
@@ -64,13 +63,12 @@
 				<a
 					class={[
 						isActive
-							? 'text-main-300 hover:text-main-200 border-b-main-900 font-medium'
-							: 'text-main-500 hover:text-main-400',
-						'flex h-full items-center transition-all',
-						'bg-main-900 px-4',
+							? 'text-main-300 hover:text-main-200 border-b-main-900 bg-main-900/90 font-medium'
+							: 'text-main-400 hover:text-main-300',
+						'flex h-full items-center px-4 transition-all',
 						'border-main-800 box-content rounded-t border border-b',
 						'not-first:border-l-0',
-						'hover:pb-1 active:pb-0'
+						'hover:mb-0.5 hover:pb-0.5 active:mb-0 active:pb-0'
 					]}
 					href={tab.href}
 					onclick={() => onTabClick(tab.id)}
