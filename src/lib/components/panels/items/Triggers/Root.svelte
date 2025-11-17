@@ -14,7 +14,7 @@
 
 	const currentNodeId = $derived(nodeId === 'container' ? getCurrentNodePath().at(-1)! : nodeId)
 
-	const project = getProject()
+	const project = $derived(getProject())
 
 	const triggers = $derived(project?.spec.triggers)
 
