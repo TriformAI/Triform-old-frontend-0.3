@@ -27,7 +27,7 @@
 	}
 </script>
 
-<div class="bg-main-800/50 grid grid-rows-[auto_auto] rounded-lg px-3">
+<div class="bg-main-800/50 flex flex-col rounded-lg px-3">
 	{#if title || copyable}
 		<div class="mt-1 mb-4 flex items-end justify-between">
 			{#if title}
@@ -51,7 +51,11 @@
 		{wordWrap}
 		{language}
 		{value}
-		class={['text-sm', 'max-h-full overflow-y-auto', className]}
+		class={[
+			'text-sm',
+			'max-h-full overflow-y-auto',
+			Array.isArray(className) ? className.filter(Boolean).join(' ') : (className ?? '')
+		]}
 		id="code-viewer-editor"
 	/>
 </div>

@@ -26,8 +26,10 @@ export const executionModel = abstractResourceModel.extend({
 	})
 })
 
+const executionEventEnum = z.enum(['running', 'completed', 'failed'])
+
 export const executionEventModel = z.strictObject({
-	event: z.enum(['running', 'completed', 'failed']),
+	event: executionEventEnum,
 	path: z.array(z.string()),
 	payload: z.record(z.string(), z.unknown()),
 	output: z.record(z.string(), z.unknown()),
@@ -35,3 +37,74 @@ export const executionEventModel = z.strictObject({
 	stderr: z.string().optional(),
 	stacktrace: z.string().optional()
 })
+
+const stringifiedJSON = <T extends z.ZodType>(schema: T) =>
+	z.string().pipe(
+		z.preprocess((input, ctx) => {
+			try {
+				return JSON.parse(input) as z.infer<T>
+			} catch (_) {
+				ctx.issues.push({ code: 'custom', message: 'Invalid JSON', input })
+				return z.NEVER
+			}
+		}, schema)
+	)
+
+export const executionGlobalStreamEventModel = z.strictObject({
+	executionId: z.string(),
+	parentId: z.string().optional(),
+	event: executionEventEnum,
+	data: stringifiedJSON(
+		z.strictObject({
+			payload: z.record(z.string(), z.unknown()).optional(),
+			output: z.record(z.string(), z.unknown()).optional(),
+			stdout: z.string().optional(),
+			stderr: z.string().optional(),
+			stacktrace: z.string().optional()
+		})
+	),
+	author: z.string()
+})
+
+export const workerTokenPayloadModel = z.strictObject({
+	executionId: z.string(),
+	orgId: z.string()
+})
+
+export const executionStates = [
+	'pending',
+	'running',
+	'completed',
+	'failed'
+] as const
+export const executionSources = [
+	'scheduled_invocation',
+	'endpoint',
+	'chat',
+	'manual',
+	'builder'
+] as const
+export const executionStateEnum = z.enum(executionStates)
+export const executionSourceEnum = z.enum(executionSources)
+
+export const executionRecordModel = z.object({
+	id: z.uuidv4(),
+	state: executionStateEnum,
+	parentId: z.uuidv4().nullable(),
+	payload: z.record(z.string(), z.unknown()).nullable(),
+	output: z.record(z.string(), z.unknown()).nullable(),
+	stdout: z.string().nullable(),
+	stderr: z.string().nullable(),
+	stacktrace: z.string().nullable(),
+	createdAt: z.coerce.date().nullable(),
+	finishedAt: z.coerce.date().nullable(),
+	ownedBy: z.string(),
+	projectId: z.uuidv4().nullable(),
+	deployedProjectId: z.uuidv4().nullable(),
+	source: executionSourceEnum.nullable(),
+	get children() {
+		return z.array(executionRecordModel)
+	}
+})
+
+export const executionsResponseModel = z.array(executionRecordModel)

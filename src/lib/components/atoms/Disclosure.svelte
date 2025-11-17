@@ -11,7 +11,11 @@
 		class: classes,
 		triggerClass,
 		showChevron = false,
-		chevronClass
+		chevronClass,
+		contentClass,
+		disableAnimation = false,
+		// whether to set everything as contents so the layout is "transparent"
+		transparentLayout = false
 	}: {
 		open?: boolean
 		trigger?: Snippet
@@ -20,12 +24,27 @@
 		triggerClass?: string[]
 		showChevron?: boolean
 		chevronClass?: string
+		contentClass?: string
+		disableAnimation?: boolean
+		transparentLayout?: boolean
 	} = $props()
+
+	const conditionalTransition = (...args: Parameters<typeof slide>): TransitionConfig => {
+		if (disableAnimation) return
+		return slide(...args)
+	}
 </script>
 
-<Collapsible.Root bind:open>
-	<Collapsible.Trigger class={[...(triggerClass ?? []), 'group/trigger', open && 'open']}>
-		<div class="flex items-center gap-1.5">
+<Collapsible.Root bind:open class={[transparentLayout && 'contents']}>
+	<Collapsible.Trigger
+		class={[
+			...(triggerClass ?? []),
+			'group/trigger',
+			open && 'open',
+			transparentLayout && 'contents'
+		]}
+	>
+		<div class={['items-center gap-1.5', transparentLayout ? 'contents' : 'flex']}>
 			{@render trigger?.()}
 			{#if showChevron}
 				<IconChevronDown
@@ -38,10 +57,10 @@
 			{/if}
 		</div>
 	</Collapsible.Trigger>
-	<Collapsible.Content forceMount>
+	<Collapsible.Content forceMount class={[contentClass]}>
 		{#snippet child({ props, open })}
 			{#if open}
-				<div {...props} transition:slide={{ axis: 'y' }}>
+				<div {...props} transition:conditionalTransition={{ axis: 'y' }}>
 					{@render children?.()}
 				</div>
 			{/if}
