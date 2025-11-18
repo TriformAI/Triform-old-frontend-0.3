@@ -13,11 +13,11 @@ export const oauthProviders = [
 		label: 'Google',
 		icon: IconGoogle
 	},
-	// {
-	// 	id: 'microsoft',
-	// 	label: 'Microsoft',
-	// 	icon: IconMicrosoft,
-	// },
+	{
+		id: 'microsoft',
+		label: 'Microsoft',
+		icon: IconMicrosoft,
+	},
 	// {
 	// 	id: 'github',
 	// 	label: 'GitHub',

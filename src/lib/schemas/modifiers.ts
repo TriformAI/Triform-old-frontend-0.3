@@ -51,6 +51,22 @@ export const providers = {
 	},
 	notion: {
 		scopes: []
+	},
+	microsoft: {
+		scopes: [
+			'Calendars.Read',
+			'Calendars.ReadWrite',
+			'Contacts.Read',
+			'Contacts.ReadWrite',
+			'email',
+			'Files.Read',
+			'Files.ReadWrite',
+			'Mail.Read',
+			'Mail.Read.Shared',
+			'Mail.ReadWrite',
+			'Mail.ReadWrite.Shared',
+			'User.Read'
+		]
 	}
 } as const
 
@@ -64,9 +80,18 @@ const notion = baseAuthSpecModel.extend({
 	scopes: z.array(z.string()) // TODO: set to never
 })
 
+const microsoft = baseAuthSpecModel.extend({
+	provider: z.literal('microsoft'),
+	scopes: z.array(z.literal([...providers.microsoft.scopes, 'profile']))
+})
+
 // Auth models
 // TODO: add a custom provider that allows users to provide their own client id/secret
-export const authSpecModel = z.discriminatedUnion('provider', [google, notion])
+export const authSpecModel = z.discriminatedUnion('provider', [
+	google,
+	notion,
+	microsoft
+])
 
 export const authModel = z.strictObject({
 	id: z.uuidv4().optional(),
