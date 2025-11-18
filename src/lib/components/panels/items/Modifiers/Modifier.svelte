@@ -4,6 +4,7 @@
 	import Disclosure from '$lib/components/atoms/Disclosure.svelte'
 	import { modifierTypesDict, type ModifierType } from '$lib/constants/modifierTypes'
 	import OAuth from './OAuth.svelte'
+	import Storage from './Storage.svelte'
 	import type { Component } from 'svelte'
 	import Button from '$lib/components/atoms/Button.svelte'
 	import { confirmStore } from '$lib/stores/confirm.svelte'
@@ -27,7 +28,8 @@
 	} = $props()
 
 	const modifierMap = {
-		'oauth/v1': OAuth
+		'oauth/v1': OAuth,
+		'storage/v1': Storage
 	} as Record<ModifierType, Component>
 
 	const modifierData = $derived(modifierTypesDict[modifier.resource as ModifierType])

@@ -12,19 +12,19 @@ export const modifierTypes = [
 		available: true
 	},
 	{
+		name: 'Storage',
+		description: 'Store and retrieve files from object storage',
+		resource: 'storage/v1',
+		icon: IconStorage,
+		colour: 'var(--color-tertiary-300)',
+		available: true
+	},
+	{
 		name: 'SQL Database',
 		description: 'Store relational data and embedding vectors in a PostgreSQL database',
 		icon: IconDatabase,
 		resource: 'database/v1',
 		colour: 'var(--color-warning-300)',
-		available: false
-	},
-	{
-		name: 'Storage',
-		description: 'Store and retrieve files from S3-compatible object storage',
-		resource: 's3/v1',
-		icon: IconStorage,
-		colour: 'var(--color-tertiary-300)',
 		available: false
 	}
 ] as const

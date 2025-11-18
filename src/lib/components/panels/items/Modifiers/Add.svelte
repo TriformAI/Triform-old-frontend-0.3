@@ -51,10 +51,13 @@
 					name: `New ${data.name}`,
 					intention: ''
 				},
-				spec: {
-					provider: 'google',
-					scopes: []
-				}
+				spec:
+					type === 'oauth/v1'
+						? {
+								provider: 'google',
+								scopes: []
+							}
+						: {}
 			})
 			const created = await createModifier(newModifier)
 			if (!created.success || !created.data?.id)
@@ -76,6 +79,8 @@
 		step = 0
 		onAdd?.(modifier)
 	}
+
+	const hasExistingStorage = $derived(attachedModifiers.some(m => m.resource === 'storage/v1'))
 </script>
 
 <div
@@ -99,11 +104,16 @@
 				<p class="text-main-400 pb-2 text-center text-sm">Create new</p>
 				<div class="grid grid-cols-1 gap-2 @3xs:grid-cols-2 @md:grid-cols-3">
 					{#each modifierTypes as modifier}
+						{@const hasStorage = modifier.resource === 'storage/v1' && hasExistingStorage}
 						<Button
 							variation="item"
-							disabled={!modifier.available}
-							tooltip={!modifier.available ? 'Coming soon' : undefined}
-							tooltipPos="right"
+							disabled={!modifier.available || hasStorage}
+							tooltip={!modifier.available
+								? 'Coming soon'
+								: hasStorage
+									? 'You can only have one storage modifier per action'
+									: undefined}
+							tooltipPos="down"
 							onClick={async () => await selectType(modifier.resource)}
 							autoLoad="promise"
 						>
@@ -129,11 +139,15 @@
 				<div class="flex flex-col gap-2">
 					{#each filteredModifiers as modifier}
 						{@const modifierType = modifierTypesDict[modifier.resource as ModifierType]}
+						{@const hasStorage = modifier.resource === 'storage/v1' && hasExistingStorage}
 						<Button
 							variation="item"
 							contentClass="w-full"
 							onClick={async () => await selectModifier(modifier)}
 							autoLoad="promise"
+							disabled={hasStorage}
+							tooltip={hasStorage ? 'You can only have one storage modifier per action' : undefined}
+							tooltipPos="down"
 						>
 							{#snippet body()}
 								<div class="flex w-full flex-row flex-wrap items-center gap-2">

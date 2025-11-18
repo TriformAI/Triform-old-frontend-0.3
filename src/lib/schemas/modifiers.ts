@@ -7,7 +7,7 @@
 import * as z from 'zod'
 import { metaModel, nodePathModel } from './common.js'
 
-const baseAuthSpecModel = z.strictObject({
+const baseAuthSpecModel = z.object({
 	identifier: z
 		.string()
 		.nullish()
@@ -64,8 +64,7 @@ export const providers = {
 			'Mail.Read',
 			'Mail.Read.Shared',
 			'Mail.ReadWrite',
-			'Mail.ReadWrite.Shared',
-			'User.Read'
+			'Mail.ReadWrite.Shared'
 		]
 	}
 } as const
@@ -93,16 +92,30 @@ export const authSpecModel = z.discriminatedUnion('provider', [
 	microsoft
 ])
 
-export const authModel = z.strictObject({
+export const authModel = z.object({
 	id: z.uuidv4().optional(),
 	resource: z.literal('oauth/v1'),
 	meta: metaModel,
 	spec: authSpecModel
 })
 
+// Storage
+export const storageSpecModel = z.object({
+	// TODO: private/public access, lifecycle rules etc
+})
+export const storageModel = z.object({
+	id: z.uuidv4().optional(),
+	resource: z.literal('storage/v1'),
+	meta: metaModel,
+	spec: storageSpecModel
+})
+
 // Modifier union models
-export const modifierSpecModel = z.union([authSpecModel])
-export const modifierModel = z.discriminatedUnion('resource', [authModel])
+export const modifierSpecModel = z.union([authSpecModel, storageSpecModel])
+export const modifierModel = z.discriminatedUnion('resource', [
+	authModel,
+	storageModel
+])
 
 // Basic modifier mapping without async validation
 export const modifierMappingModel = z.record(
