@@ -150,6 +150,7 @@
 	data-balloon-pos={tooltip ? tooltipPos : undefined}
 	data-balloon-nofocus
 	data-balloon-instant={disabled}
+	data-balloon-length={(tooltip?.length ?? 0) > 20 ? 'medium' : undefined}
 >
 	<!-- If we have an icon, animate it for loading state -->
 	{#if !!icon}
