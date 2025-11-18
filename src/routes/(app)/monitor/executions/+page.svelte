@@ -5,7 +5,11 @@
 
 	const { data }: { data: PageData } = $props()
 
-	const executions = $derived(executionsResponseModel.parse(data.executions))
+	const executions = $derived.by(() => {
+		const { data: parsedData, success } = executionsResponseModel.safeParse(data.executions)
+		if (!success) return []
+		return parsedData
+	})
 </script>
 
 <div>
