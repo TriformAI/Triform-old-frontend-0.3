@@ -7,7 +7,7 @@
 	import PanelItem from '$lib/components/panels/PanelItem.svelte'
 	import type { z } from 'zod'
 	import type { resolvedComponentModel } from '$lib/schemas'
-	import { getVisibleComponent } from '$lib/stores/canvas.svelte'
+	import { getProject, getVisibleComponent } from '$lib/stores/canvas.svelte'
 	import { updateComponent, upsertRequirements, getRequirements } from '$lib/actions/components'
 	import { saveProject } from '$lib/actions/project'
 	import ListText from './ListText.svelte'
@@ -18,11 +18,14 @@
 	import { requirements, getDefaultRequirements } from '$lib/stores/requirements.svelte'
 	import { generateRequirements as generateComponentRequirements } from '$lib/actions/components'
 	import { generateRequirements as generateProjectRequirements } from '$lib/actions/project'
+	import { getActiveContext } from '$lib/stores/panel.svelte'
 
 	const { nodeId }: { nodeId: string } = $props()
 
 	let componentData = $derived(
-		getVisibleComponent(nodeId) as z.infer<typeof resolvedComponentModel>
+		getActiveContext() === 'project'
+			? getProject()
+			: (getVisibleComponent(nodeId) as z.infer<typeof resolvedComponentModel>)
 	)
 
 	const componentType = $derived(componentData?.resource.split('/')[0])
