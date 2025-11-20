@@ -75,7 +75,7 @@ export const chat = $state<{
 	isInitializing: false
 })
 
-const isNearBottom = (container: HTMLElement, threshold = 50): boolean => {
+const isNearBottom = (container: HTMLElement, threshold = 100): boolean => {
 	const { scrollTop, scrollHeight, clientHeight } = container
 	return scrollHeight - scrollTop - clientHeight < threshold
 }
