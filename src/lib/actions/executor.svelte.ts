@@ -1,10 +1,4 @@
-import { source } from 'sveltekit-sse'
-import { toast } from 'svelte-sonner'
-import { selected } from '$lib/stores/panel.svelte'
-import type { Execution } from '$lib/types/execution'
-import type { UUID as Uuid } from 'crypto'
-import { getCurrentContainer } from '$lib/stores/canvas.svelte'
-import type { executionModel, resolvedComponentModel, resolvedProjectModel } from '$lib/schemas'
+import type { executionModel, projectModel, resolvedComponentModel, resolvedProjectModel } from '$lib/schemas'
 import type * as z from 'zod'
 import { API } from '$lib/api'
 import { executionEventModel } from '$lib/schemas'
@@ -19,7 +13,7 @@ type ResolvedComponent = z.infer<typeof resolvedComponentModel>
 export const executeComponent = async (
 	payload: Record<string, unknown>,
 	component: ResolvedComponent,
-	modifiers: z.infer<typeof resolvedProjectModel>['spec']['modifiers'],
+	modifiers: z.infer<typeof projectModel>['spec']['modifiers'],
 	environment: z.infer<typeof resolvedProjectModel>['spec']['environment'],
 	state: {
 		isRunning: boolean

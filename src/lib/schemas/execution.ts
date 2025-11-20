@@ -7,7 +7,10 @@
 import * as z from 'zod'
 import { abstractResourceModel, metaModel } from './common.js'
 import { resolvedComponentModel } from './components.js'
-import { modifierMappingModel } from './modifiers.js'
+import {
+	modifierMappingModel,
+	unresolvedModifierMappingModel
+} from './modifiers.js'
 import { projectVariableModel } from './projects.js'
 
 // expects everything to be fully resolved
@@ -19,7 +22,9 @@ export const executionModel = abstractResourceModel.extend({
 	spec: z.strictObject({
 		component: resolvedComponentModel,
 		payload: z.record(z.string(), z.unknown()),
-		modifiers: modifierMappingModel.default({}),
+		modifiers: z
+			.union([modifierMappingModel, unresolvedModifierMappingModel])
+			.default({}),
 		environment: z.object({
 			variables: z.array(projectVariableModel)
 		})

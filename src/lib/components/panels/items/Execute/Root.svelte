@@ -26,6 +26,8 @@
 	import { objFilter } from '$lib/utils/objectFilter'
 	import { objKeyMap } from '$lib/utils/objKeyMap'
 	import { getDefaultPayload as getDefaultPayloadUtil } from '$lib/utils/getDefaultPayload'
+	import { objectMap } from '$lib/utils/objectMap'
+	import { pick } from '$lib/utils/pick'
 
 	const { nodeId }: { nodeId: string } = $props()
 
@@ -92,22 +94,28 @@
 			.join('/')
 		const isTopLevel = !getCurrentNodePath().length
 		const modifiers =
-			// keep only relevant modifiers
-			objKeyMap(
-				objFilter(getProjectModifiers(), (key, _value) =>
-					key.startsWith(nodePath + (nodeId === 'container' ? '/' : ''))
+			// unresolve the modifierss
+			objectMap(
+				// keep only relevant modifiers
+				objKeyMap(
+					objFilter(getProjectModifiers(), (key, _value) =>
+						key.startsWith(nodePath + (nodeId === 'container' ? '/' : ''))
+					),
+					// correct the path so it starts from the currently selected node, so remove everything before the current node
+					(key, _value) => {
+						// if we're on the top level, just drop the first node id
+						if (isTopLevel) return key.split('/').slice(1).join('/')
+						if (!currentNodeId) return key
+						const parts = key.split('/')
+						return parts
+							.slice(parts.indexOf(currentNodeId) + (nodeId === 'container' ? 1 : 0))
+							.join('/')
+					}
 				),
-				// correct the path so it starts from the currently selected node, so remove everything before the current node
-				(key, _value) => {
-					// if we're on the top level, just drop the first node id
-					if (isTopLevel) return key.split('/').slice(1).join('/')
-					if (!currentNodeId) return key
-					const parts = key.split('/')
-					return parts
-						.slice(parts.indexOf(currentNodeId) + (nodeId === 'container' ? 1 : 0))
-						.join('/')
-				}
+				value => value.map(v => pick(v, ['modifier_id']))
 			)
+
+		console.log('modifiers', modifiers)
 
 		executeComponent(
 			JSON.parse(payload),

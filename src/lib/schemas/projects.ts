@@ -126,12 +126,19 @@ export const deployedProjectDataModel = z.strictObject({
 })
 
 export const generatedProjectMetaModel = z.strictObject({
-	name: z.string().nonempty().describe('Human-friendly name of the project'),
+	name: z
+		.string()
+		.nonempty()
+		.describe(
+			'Human-friendly name of the project that contains flows or agents'
+		),
 	intention: z
 		.string()
 		.nonempty()
 		.describe('A very concise description of the project'),
 	readme: z
 		.string()
-		.describe('A concise markdown-formatted readme describing the project')
+		.describe(
+			'A concise markdown-formatted readme describing the project. Avoid technical details as they are not decided yet'
+		)
 })
