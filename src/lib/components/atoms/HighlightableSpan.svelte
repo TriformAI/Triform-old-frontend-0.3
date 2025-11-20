@@ -171,9 +171,6 @@
 
 	:global(.highlightable-span li) {
 		margin-left: 1rem;
-	}
-
-	:global(.highlightable-span li) {
 		margin-bottom: 0px;
 	}
 

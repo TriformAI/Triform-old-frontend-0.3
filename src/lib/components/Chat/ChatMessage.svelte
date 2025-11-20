@@ -90,10 +90,10 @@
 >
 	<div
 		class={[
-			'whitespace-pre-wrap', // preserve user newlines
+			// 'whitespace-pre-wrap', // preserve user newlines
 			'wrap-anywhere', // break long words/urls
 			'word-break-[break-word]', // fallback
-			'*:whitespace-pre-wrap', // For code blocks
+			// '*:whitespace-pre-wrap', // For code blocks
 			'relative inline-grid gap-2'
 		]}
 	>
