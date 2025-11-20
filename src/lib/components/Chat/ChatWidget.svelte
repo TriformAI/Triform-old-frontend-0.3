@@ -2,7 +2,6 @@
 	import type { WidgetData, WidgetCompleteCallback } from '$lib/stores/chat.svelte'
 	import { onMount, type Component } from 'svelte'
 	import { widgetsModel } from '$lib/schemas/chat'
-	import { getModifiers } from '$lib/stores/canvas.svelte'
 	import { capitalize } from '$lib/utils/capitalize'
 
 	const {
@@ -15,10 +14,12 @@
 
 	let variablesPrompt = $state()
 	let oAuthPrompt = $state()
+	let getModifiersFn = $state()
 
 	onMount(async () => {
 		variablesPrompt = (await import('./widgets/VariablesPrompt.svelte')).default
 		oAuthPrompt = (await import('./widgets/OAuthPrompt.svelte')).default
+		getModifiersFn = (await import('$lib/stores/canvas.svelte')).getModifiers
 	})
 
 	const widgetMap = $derived({
@@ -32,7 +33,7 @@
 		},
 		oauth_prompt: {
 			component: oAuthPrompt,
-			title: `${capitalize(getModifiers()[item.data.props.modifierId]?.spec.provider ?? 'unknown provider')} authorisation required`,
+			title: `${capitalize(getModifiersFn?.()?.[item.data.props.modifierId]?.spec.provider ?? 'unknown provider')} authorisation required`,
 			description: item.completed ? 'OAuth authorisation completed' : `Authorise to continue`
 		}
 	} satisfies Record<
