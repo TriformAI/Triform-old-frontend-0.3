@@ -1,3 +1,4 @@
+import * as Sentry from '@sentry/sveltekit'
 import { type Handle } from '@sveltejs/kit'
 import { sequence } from '@sveltejs/kit/hooks'
 import { API } from '$lib/api'
@@ -33,4 +34,5 @@ const authHandle: Handle = async ({ event, resolve }) => {
 	return resolve(event)
 }
 
-export const handle = sequence(authHandle)
+export const handle = sequence(Sentry.sentryHandle(), sequence(authHandle))
+export const handleError = Sentry.handleErrorWithSentry()
