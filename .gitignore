@@ -24,6 +24,3 @@ vite.config.ts.timestamp-*
 
 agent-worker/
 tricore-cluster-svckey.json
-
-# Sentry Config File
-.env.sentry-build-plugin

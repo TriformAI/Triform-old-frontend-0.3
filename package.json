@@ -64,7 +64,6 @@
 		"@iconify/svelte": "^5.1.0",
 		"@monaco-editor/loader": "^1.6.1",
 		"@neondatabase/serverless": "^1.0.1",
-		"@sentry/sveltekit": "^10",
 		"@sveltejs/adapter-node": "^5.4.0",
 		"@tailwindcss/vite": "^4.1.17",
 		"@tolgee/svelte": "^6.2.7",
