@@ -170,6 +170,7 @@ export const availableAgentModels = [
 	'gemini/gemini-2.5-pro',
 	'gemini/gemini-2.5-flash',
 	'gemini/gemini-2.5-flash-lite',
+	'gemini/gemini-3-pro-preview',
 	'gemma-3-27b-it',
 	'qwen3-235b-a22b-instruct-2507',
 	// groq does json output with a specific json tool, we need to add our own if we want both tool calling and structured output
