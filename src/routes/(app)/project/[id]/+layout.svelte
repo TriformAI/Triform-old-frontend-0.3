@@ -181,7 +181,7 @@
 				setSocketId(payload.data.id)
 			}
 		} catch (err) {
-			console.error('error parsing message', err)
+			console.error('error parsing message', err, data)
 		}
 	}
 
