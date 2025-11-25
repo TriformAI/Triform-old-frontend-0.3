@@ -45,8 +45,15 @@ const modifierUpdated = baseModel.extend({
 
 const componentRequirementsUpdated = baseModel.extend({
 	event: z.literal('component:requirements:updated'),
-	data: z.strictObject({
+	data: z.object({
 		component_id: z.string(),
+		requirements: requirementsModel
+	})
+})
+
+const projectRequirementsUpdated = baseModel.extend({
+	event: z.literal('project:requirements:updated'),
+	data: z.object({
 		requirements: requirementsModel
 	})
 })
@@ -71,6 +78,7 @@ export const socketEventModel = z.discriminatedUnion('event', [
 	ping,
 	modifierUpdated,
 	componentRequirementsUpdated,
+	projectRequirementsUpdated,
 	projectUpdated,
 	projectDeployed
 ])
