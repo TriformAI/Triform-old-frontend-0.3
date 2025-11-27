@@ -1,4 +1,4 @@
-import { ackMessageModel, errorMessageModel, runCompletedModel, stepCompletedModel, uiMessageModel, widgetStartedModel } from '$lib/schemas/chat'
+import { ackMessageModel, errorMessageModel, messageModel, runCompletedModel, stepCompletedModel, uiMessageModel, widgetStartedModel } from '$lib/schemas/chat'
 import { userMessageModel } from '$lib/schemas/chat'
 import { toast } from 'svelte-sonner'
 import { WebSocket } from 'partysocket'
@@ -92,12 +92,12 @@ export function scrollToBottom(chatMessagesContainer: HTMLElement, instant = fal
 export const messages = $state<any[]>([])
 
 const activeScrollContainers = new Set<HTMLElement>()
-const activeOnMessageCallbacks = new Set<() => void>()
+const activeOnMessageCallbacks = new Set<(msg: Record<string, unknown>) => void>()
 
 export const initWebsocket = (
 	resourceId: string | undefined,
 	chatMessagesContainer: HTMLElement,
-	onMessage: (() => void) | undefined,
+	onMessage: ((msg: Record<string, unknown>) => void) | undefined,
 	buildWsUrl: ChatUrlBuilder
 ): Promise<WebSocket> => new Promise((resolve) => {
 	const socket = new WebSocket(
@@ -118,7 +118,7 @@ export const initWebsocket = (
 
 			// Call all registered callbacks
 			for (const callback of activeOnMessageCallbacks) {
-				callback()
+				callback(message)
 			}
 
 			await tick()
@@ -149,7 +149,7 @@ export const initWebsocket = (
 export const initChat = async (
 	resourceId: string | undefined,
 	chatMessagesContainer: HTMLElement,
-	onMessage: (() => void) | undefined,
+	onMessage: ((msg: Record<string, unknown>) => void) | undefined,
 	getMessages: (id?: string) => Promise<any[]>,
 	buildWsUrl: ChatUrlBuilder
 ) => {
@@ -255,15 +255,21 @@ function findWidget(widgetId: string): WidgetData | undefined {
 }
 
 const parseId = (id: string) => parseInt(id.split('-')[0])
-export function handleMessage(msg: any) {
+export function handleMessage(rawMsg: any) {
 	// console.log('handleMessage', msg)
 
-	const { id, event, data, sourceId } = msg as any
-	const runId = 'runId' in msg ? (msg as any).runId : undefined
-	const stepId = 'stepId' in msg ? (msg as any).stepId : undefined
+	const { data: msg, success, error } = messageModel.safeParse(rawMsg)
+
+	if (!success) return console.error('Invalid message', rawMsg, error)
+
+	const { event, data } = msg
+	const id = 'id' in msg ? msg.id : '' // TODO: do something better here
+	const sourceId = 'sourceId' in msg ? msg.sourceId : undefined
+	const runId = 'runId' in msg ? msg.runId : undefined
+	const stepId = 'stepId' in msg ? msg.stepId : undefined
 
 	if (!chat.startId || parseInt(id?.split('-')[0] ?? '0') > parseInt(chat.startId?.split('-')[0])) {
-		chat.startId = id
+		chat.startId = id ?? '0'
 	}
 
 	switch (event) {

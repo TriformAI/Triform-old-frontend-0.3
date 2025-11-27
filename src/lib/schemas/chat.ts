@@ -15,7 +15,13 @@ const baseMessageModel = z.object({
 	// the current run you're in
 	runId: z.string(),
 	// when you're nesting into a step
-	stepId: z.string().optional()
+	stepId: z.string().optional(),
+	data: z.object({}).prefault({})
+})
+
+const baseActionModel = z.object({
+	event: z.string(),
+	data: z.object({})
 })
 
 // const contextModel = z.discriminatedUnion('type', [
@@ -64,8 +70,7 @@ export const userMessageModel = baseMessageModel.omit({ runId: true }).extend({
 
 // Text message schemas
 export const textMessageStartedModel = baseMessageModel.extend({
-	event: z.literal('text_message_start'),
-	data: z.object({})
+	event: z.literal('text_message_start')
 })
 
 export const textMessageContentModel = baseMessageModel.extend({
@@ -78,14 +83,12 @@ export const textMessageContentModel = baseMessageModel.extend({
 
 export const textMessageEndModel = baseMessageModel.extend({
 	event: z.literal('text_message_end'),
-	sourceId: z.string().nonoptional(),
-	data: z.object({})
+	sourceId: z.string().nonoptional()
 })
 
 // Run schemas
 export const runStartedModel = baseMessageModel.omit({ runId: true }).extend({
-	event: z.literal('run_start'),
-	data: z.object({})
+	event: z.literal('run_start')
 })
 
 const actionModels = z.discriminatedUnion('type', [
@@ -118,9 +121,11 @@ const actionModels = z.discriminatedUnion('type', [
 export const runCompletedModel = baseMessageModel.omit({ runId: true }).extend({
 	event: z.literal('run_complete'),
 	sourceId: z.string().nonoptional(),
-	data: z.object({
-		actions: z.array(actionModels).default([])
-	})
+	data: z
+		.object({
+			actions: z.array(actionModels).default([])
+		})
+		.default({ actions: [] })
 })
 
 // Step schemas
@@ -197,8 +202,7 @@ export const widgetCompletedModel = baseMessageModel
 	.omit({ runId: true })
 	.extend({
 		event: z.literal('widget_complete'),
-		sourceId: z.string().nonoptional(),
-		data: z.object({})
+		sourceId: z.string().nonoptional()
 	})
 
 // Meta message schemas
@@ -223,9 +227,19 @@ export const errorMessageModel = baseMessageModel
 export const pingMessageModel = baseMessageModel
 	.omit({ id: true, runId: true })
 	.extend({
-		event: z.literal('ping'),
-		data: z.object({}).default({})
+		event: z.literal('ping')
 	})
+
+export const viewNodeActionModel = baseActionModel.extend({
+	event: z.literal('view_node'),
+	data: z.object({
+		path: z
+			.array(z.string())
+			.describe('the path to the node, relative to the root of the project')
+	})
+})
+
+const actionMessages = [viewNodeActionModel] as const
 
 const uiMessages = [
 	userMessageModel,
@@ -244,6 +258,7 @@ const uiMessages = [
 export const uiMessageModel = z.discriminatedUnion('event', uiMessages)
 export const messageModel = z.discriminatedUnion('event', [
 	...uiMessages,
+	...actionMessages,
 	ackMessageModel,
 	errorMessageModel,
 	pingMessageModel

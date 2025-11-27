@@ -22,7 +22,7 @@
 	} from '$lib/stores/canvas.svelte'
 	import { nodeTypesDict, type NodeType } from '$lib/constants/nodeTypes'
 	import { arraysDiffer } from '$lib/utils/arraysDiffer'
-	import { newMessageModel, userMessageModel } from '$lib/schemas/chat'
+	import { messageModel, newMessageModel, userMessageModel } from '$lib/schemas/chat'
 	import type * as z from 'zod'
 	import { toast } from 'svelte-sonner'
 	import type { Item } from './ChatMention.svelte'
@@ -130,7 +130,22 @@
 				return
 			}
 
-			await initChat(id, chatMessagesContainer, onMessage, getMessages, buildWsUrl)
+			// we do this same parsing in the chat store, but in there we're not allowed to have any canvas dependencies
+			// so we need to do some actions here (that aren't pure; ie actions and not regular messages)
+			const msgHandler = (rawMsg: Record<string, unknown>) => {
+				onMessage?.(rawMsg)
+				const { data: msg, success, error } = messageModel.safeParse(rawMsg)
+				if (!success) return console.error('Invalid message', rawMsg, error)
+
+				switch (msg.event) {
+					case 'view_node': {
+						const { path } = msg.data
+						goto(`/project/${page.params.id}/${path.join('/')}`)
+					}
+				}
+			}
+
+			await initChat(id, chatMessagesContainer, msgHandler, getMessages, buildWsUrl)
 
 			if (page.state.initPrompt) {
 				message = page.state.initPrompt + ''
