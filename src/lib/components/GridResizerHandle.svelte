@@ -136,7 +136,7 @@
 		await transitionToSize(MINIFIED_SIZE)
 	}
 
-	async function transitionToSize(targetSize: number, saveAsCurrent = true) {
+	export async function transitionToSize(targetSize: number, saveAsCurrent = true) {
 		isTransitioning = true
 		// Add and then remove the transition class
 		// Can't have transitions enabled by default, it will mess with drag-resizing

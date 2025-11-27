@@ -104,7 +104,7 @@
 		return
 	})
 
-	const DEFAULT_PROPS_PANEL_WIDTH = 600
+	const DEFAULT_PROPS_PANEL_WIDTH = 6 // default to closed
 	const DEFAULT_CHAT_PANEL_WIDTH = 300
 	const DEFAULT_COMPONENT_PANEL_HEIGHT = 180
 	const GUTTER_SIZE = 8
@@ -112,6 +112,8 @@
 	let propsPanelWidth = $state(
 		Number(localStorage.getItem('propsPanelWidth') || DEFAULT_PROPS_PANEL_WIDTH)
 	)
+	let propsPanelDirty = $state(false)
+	let propsPanel = $state<ReturnType<typeof GridResizerHandle>>()
 
 	const defaultChatPanelWidth = Number(
 		localStorage.getItem('chatPanelWidth') || DEFAULT_CHAT_PANEL_WIDTH
@@ -191,6 +193,15 @@
 		ws.onmessage = async e => {
 			handleMessage(JSON.parse(e.data))
 		}
+
+		// open props panel when selecting a node
+		$effect(() => {
+			const selectedNode = selected.node
+			untrack(() => {
+				if (!selectedNode || propsPanelDirty || !propsPanel) return
+				propsPanel.transitionToSize(600)
+			})
+		})
 
 		return () => {
 			try {
@@ -312,6 +323,7 @@
 
 				{#if !isMobile}
 					<GridResizerHandle
+						bind:this={propsPanel}
 						name="propsPanel"
 						axis="x"
 						side="right"
@@ -323,6 +335,8 @@
 								maxZoom: 1,
 								duration: 500
 							})
+							// make sure the size doesn't change automatically after it's been changed manually
+							propsPanelDirty = true
 						}, 300)}
 					/>
 				{/if}
