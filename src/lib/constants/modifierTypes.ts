@@ -23,9 +23,9 @@ export const modifierTypes = [
 		name: 'SQL Database',
 		description: 'Store relational data and embedding vectors in a PostgreSQL database',
 		icon: IconDatabase,
-		resource: 'database/v1',
+		resource: 'sql/v1',
 		colour: 'var(--color-warning-300)',
-		available: false
+		available: true
 	}
 ] as const
 

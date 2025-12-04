@@ -2,11 +2,10 @@
 	import IconAdd from '~icons/mdi/plus-circle-outline'
 	import IconBack from '~icons/material-symbols/arrow-back-rounded'
 	import { slide, fade, fly } from 'svelte/transition'
-	import { page } from '$app/state'
 	import InputField from '$lib/components/atoms/InputField.svelte'
 	import Button from '$lib/components/atoms/Button.svelte'
 	import { modifierTypes, modifierTypesDict, type ModifierType } from '$lib/constants/modifierTypes'
-	import { modifierModel, nodePathModel } from '$lib/schemas'
+	import { modifierModel } from '$lib/schemas'
 	import type { z } from 'zod'
 	import { createModifier } from '$lib/actions/modifiers'
 	import { toast } from 'svelte-sonner'
@@ -126,7 +125,7 @@
 										{modifier.name}
 									</span>
 								</div>
-								<span class="text-main-400 text-sm">{modifier.description}</span>
+								<span class="text-main-400 mt-1 text-sm">{modifier.description}</span>
 							{/snippet}
 						</Button>
 					{/each}

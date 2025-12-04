@@ -110,11 +110,35 @@ export const storageModel = z.object({
 	spec: storageSpecModel
 })
 
+// databases
+export const sqlSpecModel = z.object({
+	uri: z
+		.object({
+			iv: z.string(),
+			tag: z.string(),
+			ciphertext: z.string()
+		})
+		.nullish() // empty on creation
+		.default(null)
+		.describe('encrypted uri used to access the db')
+})
+export const sqlModel = z.object({
+	id: z.uuidv4().optional(),
+	resource: z.literal('sql/v1'),
+	meta: metaModel,
+	spec: sqlSpecModel
+})
+
 // Modifier union models
-export const modifierSpecModel = z.union([authSpecModel, storageSpecModel])
+export const modifierSpecModel = z.union([
+	authSpecModel,
+	storageSpecModel,
+	sqlSpecModel
+])
 export const modifierModel = z.discriminatedUnion('resource', [
 	authModel,
-	storageModel
+	storageModel,
+	sqlModel
 ])
 
 // Basic modifier mapping without async validation

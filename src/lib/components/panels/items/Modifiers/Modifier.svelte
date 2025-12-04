@@ -14,6 +14,7 @@
 	import { updateModifier } from '$lib/actions/modifiers'
 	import { toast } from 'svelte-sonner'
 	import IconWarning from '~icons/material-symbols/warning-rounded'
+	import SQL from './SQL.svelte'
 
 	let {
 		nodeId,
@@ -29,7 +30,8 @@
 
 	const modifierMap = {
 		'oauth/v1': OAuth,
-		'storage/v1': Storage
+		'storage/v1': Storage,
+		'sql/v1': SQL
 	} as Record<ModifierType, Component>
 
 	const modifierData = $derived(modifierTypesDict[modifier.resource as ModifierType])
