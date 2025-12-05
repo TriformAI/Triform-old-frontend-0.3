@@ -675,6 +675,8 @@ export const addPort = async (
 		component.spec[`${variation}s`] = snapshot
 		throw new Error('Failed to add port')
 	}
+
+	await refreshFlow()
 }
 
 export const setLoop = async (nodeId: string, enabled: boolean) => {
