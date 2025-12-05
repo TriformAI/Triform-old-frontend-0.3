@@ -31,13 +31,19 @@ export const executionModel = abstractResourceModel.extend({
 	})
 })
 
-const executionEventEnum = z.enum(['running', 'completed', 'failed'])
+const executionEventEnum = z.enum(['running', 'completed', 'failed', 'data'])
 
 export const executionEventModel = z.strictObject({
 	event: executionEventEnum,
 	path: z.array(z.string()),
 	payload: z.record(z.string(), z.unknown()),
 	output: z.record(z.string(), z.unknown()),
+	delta: z
+		.string()
+		.optional()
+		.describe(
+			"only used with data and for top-level agents. will be a partial of a json object that'll need to be dirtily parsed by the consumer"
+		),
 	stdout: z.string().optional(),
 	stderr: z.string().optional(),
 	stacktrace: z.string().optional()
