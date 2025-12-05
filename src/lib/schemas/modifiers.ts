@@ -112,7 +112,7 @@ export const storageModel = z.object({
 
 // databases
 export const sqlSpecModel = z.object({
-	uri: z
+	password: z
 		.object({
 			iv: z.string(),
 			tag: z.string(),
@@ -120,7 +120,7 @@ export const sqlSpecModel = z.object({
 		})
 		.nullish() // empty on creation
 		.default(null)
-		.describe('encrypted uri used to access the db')
+		.describe('encrypted password used to access the db')
 })
 export const sqlModel = z.object({
 	id: z.uuidv4().optional(),
