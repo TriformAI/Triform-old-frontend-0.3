@@ -8,21 +8,34 @@
 	import Executions from './Executions.svelte'
 	import IconInput from '~icons/material-symbols/input-circle-rounded'
 	import IconOutput from '~icons/material-symbols/output-circle-rounded'
+	import { nodeTypesDict } from '$lib/constants/nodeTypes'
 
-	const { executions }: { executions: z.infer<typeof executionsResponseModel> } = $props()
+	const {
+		executions,
+		showHeaders
+	}: { executions: z.infer<typeof executionsResponseModel>; showHeaders?: boolean } = $props()
 </script>
 
 <table class="w-full max-w-full table-fixed">
 	<thead>
-		<tr>
-			<th>Status</th>
-			<th>Source</th>
-			<th>Created At</th>
-			<th>Finished At</th>
-		</tr>
+		{#if showHeaders}
+			<tr>
+				<th>Status</th>
+				<th>Component</th>
+				<th>Source</th>
+				<th>Created At</th>
+				<th>Finished At</th>
+			</tr>
+		{/if}
 	</thead>
 	<tbody>
 		{#each executions as execution}
+			{@const componentType = execution.meta.component?.resource
+				? nodeTypesDict[
+						execution.meta.component.resource?.split('/')[0] as keyof typeof nodeTypesDict
+					]
+				: undefined}
+			{@const ComponentIcon = componentType?.icon}
 			<Disclosure transparentLayout contentClass="contents" disableAnimation>
 				{#snippet trigger()}
 					<tr
@@ -46,6 +59,14 @@
 								]}
 							></div>
 							{execution.state}
+						</td>
+						<td>
+							{#if componentType}
+								<ComponentIcon
+									class={[componentType.iconClasses, 'mr-2 inline-block align-middle'].join(' ')}
+								/>
+							{/if}
+							{execution.meta.component?.name ?? 'Unknown'}
 						</td>
 						<td class="capitalize">
 							{execution.source?.replace('_', ' ')}
@@ -81,7 +102,7 @@
 							</Disclosure>
 
 							{#if execution.children?.length}
-								<div class="border-main-600 border-l pl-4">
+								<div class="border-main-800 border-l pl-4">
 									<Executions executions={execution.children} />
 								</div>
 							{/if}

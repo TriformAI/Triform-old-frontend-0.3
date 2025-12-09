@@ -6,7 +6,7 @@
 
 import * as z from 'zod'
 import { abstractResourceModel, metaModel } from './common.js'
-import { resolvedComponentModel } from './components.js'
+import { componentModel, resolvedComponentModel } from './components.js'
 import {
 	modifierMappingModel,
 	unresolvedModifierMappingModel
@@ -49,6 +49,18 @@ export const executionEventModel = z.strictObject({
 	stacktrace: z.string().optional()
 })
 
+export const executionRecordMetaModel = z.object({
+	component: z
+		.object({
+			resource: z
+				.enum(componentModel.options.map(o => o.shape.resource.value))
+				.optional(),
+			name: z.string().optional()
+		})
+		.optional()
+		.default({})
+})
+
 const stringifiedJSON = <T extends z.ZodType>(schema: T) =>
 	z.string().pipe(
 		z.preprocess((input, ctx) => {
@@ -71,7 +83,8 @@ export const executionGlobalStreamEventModel = z.strictObject({
 			output: z.record(z.string(), z.unknown()).optional(),
 			stdout: z.string().optional(),
 			stderr: z.string().optional(),
-			stacktrace: z.string().optional()
+			stacktrace: z.string().optional(),
+			component: executionRecordMetaModel.shape.component.optional()
 		})
 	),
 	author: z.string()
@@ -102,6 +115,7 @@ export const executionRecordModel = z.object({
 	id: z.uuidv4(),
 	state: executionStateEnum,
 	parentId: z.uuidv4().nullable(),
+	meta: executionRecordMetaModel,
 	payload: z.record(z.string(), z.unknown()).nullable(),
 	output: z.record(z.string(), z.unknown()).nullable(),
 	stdout: z.string().nullable(),

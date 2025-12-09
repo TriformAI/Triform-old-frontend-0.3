@@ -14,5 +14,5 @@
 
 <div>
 	<h1 class="text-xl font-bold">Latest executions</h1>
-	<Executions {executions} />
+	<Executions {executions} showHeaders />
 </div>
