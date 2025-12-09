@@ -25,3 +25,9 @@ export const deleteModifier = async (id: string) => {
 	const api = new API()
 	return await api.delete<{ data: z.infer<typeof modifierModel> }>(`modifiers/${id}`)
 }
+
+export const decryptModifier = async <T extends z.infer<typeof modifierModel>>(modifier: T) => {
+	type ReturnType = T extends { resource: 'sql/v1' } ? { uri: string } : Record<string, never>
+	const api = new API()
+	return await api.get<{data: ReturnType}>(`modifiers/${modifier.id}/decrypt`)
+}
