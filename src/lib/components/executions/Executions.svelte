@@ -6,11 +6,13 @@
 	import CodeViewer from '../common/CodeViewer.svelte'
 	import { slide } from 'svelte/transition'
 	import Executions from './Executions.svelte'
+	import IconInput from '~icons/material-symbols/input-circle-rounded'
+	import IconOutput from '~icons/material-symbols/output-circle-rounded'
 
 	const { executions }: { executions: z.infer<typeof executionsResponseModel> } = $props()
 </script>
 
-<table class="w-full table-fixed">
+<table class="w-full max-w-full table-fixed">
 	<thead>
 		<tr>
 			<th>Status</th>
@@ -61,11 +63,42 @@
 					<td colspan="4" class="p-0">
 						<!-- TODO: better scrolling... -->
 						<div
-							class="grid max-h-[85dvh] w-full grid-cols-[1fr_1fr] gap-4 overflow-y-auto"
+							class="ml-8 flex max-h-[85dvh] w-full flex-col gap-4 overflow-y-auto"
 							transition:slide={{ axis: 'y' }}
 						>
-							<CodeViewer value={JSON.stringify(execution.payload, null, 2)} title="Input" />
-							<CodeViewer value={JSON.stringify(execution.output, null, 2)} title="Output" />
+							<Disclosure showChevron>
+								{#snippet trigger()}
+									<span
+										class="text-main-400 group-hover/trigger:text-main-300 in-[.open]:text-main-300 transition"
+									>
+										<IconInput class="mr-1 inline size-4 shrink-0" />
+										Input
+									</span>
+								{/snippet}
+								{#snippet children()}
+									<CodeViewer value={JSON.stringify(execution.payload, null, 2)} title="Input" />
+								{/snippet}
+							</Disclosure>
+
+							{#if execution.children?.length}
+								<div class="border-main-600 border-l pl-4">
+									<Executions executions={execution.children} />
+								</div>
+							{/if}
+
+							<Disclosure showChevron>
+								{#snippet trigger()}
+									<span
+										class="text-main-400 group-hover/trigger:text-main-300 in-[.open]:text-main-300 transition"
+									>
+										<IconOutput class="mr-1 inline size-4 shrink-0" />
+										Output
+									</span>
+								{/snippet}
+								{#snippet children()}
+									<CodeViewer value={JSON.stringify(execution.output, null, 2)} title="Output" />
+								{/snippet}
+							</Disclosure>
 						</div>
 					</td>
 				</tr>
