@@ -15,7 +15,7 @@ import IconCopy from '~icons/material-symbols/content-copy-rounded'
 import IconPaste from '~icons/material-symbols/content-paste-rounded'
 import IconCreate from '~icons/material-symbols/add-box-rounded'
 import { confirmStore } from './confirm.svelte'
-import { addCreateNode, addNode, deleteNode as deleteNodeFn, getCurrentContainer, saveContainer, setLoop } from './canvas.svelte'
+import { addCreateNode, addNode, attachModifier, deleteNode as deleteNodeFn, getCurrentContainer, getCurrentNodePath, getModifiers, getProjectModifiers, saveContainer, setLoop } from './canvas.svelte'
 import { chat, getUserMessage } from './chat.svelte'
 import { clone } from '$lib/utils/clone'
 import { isAgent, isFlow, resolvedComponentModel } from '$lib/schemas'
@@ -23,6 +23,9 @@ import { copyPayloadModel } from '$lib/schemas/copy'
 import type z from 'zod'
 import { sessionStore } from './session.svelte'
 import { cloneComponent } from '$lib/actions/components'
+import { objFilter } from '$lib/utils/objectFilter'
+import { objectMap } from '$lib/utils/objectMap'
+import { objKeyMap } from '$lib/utils/objKeyMap'
 
 export type onClickFn = (node: CanvasNode) => Promise<Uuid | void> | void
 
@@ -134,11 +137,21 @@ const copyNode = {
 		if (!_node.data.trinode) return void toast.error('Cannot copy this node')
 		const node = _node as Node
 		if (!sessionStore.session?.activeOrganizationId) return void toast.error('No active organization')
+
+		// find all modifiers that concern this node and its children
+		const basePath = [...getCurrentNodePath(), node.id !== 'container' && node.id].filter(Boolean).join('/')
+		console.log('basePath', basePath)
+		const allModifiers = objFilter(getProjectModifiers(), key => key.startsWith(basePath))
+		// get rid of the base path to make them relative to the new node. if it's the root node just set it to 'root'
+		const remappedModifiers = objKeyMap(allModifiers, key => key.replace(new RegExp(`^${basePath}/?`), '') || 'root')
+		// unresolve all modifiers
+		const modifiers = objectMap(remappedModifiers, value => value.map(({ spec: _spec, ...value }) => value))
+
 		const payload = await copyPayloadModel.parseAsync({
 			schema: 'tf-component-copy/v1',
 			component_id: node.data.trinode.component_id,
 			organization_id: sessionStore.session?.activeOrganizationId,
-			modifiers: {} // TODO
+			modifiers
 		} satisfies z.infer<typeof copyPayloadModel>)
 		navigator.clipboard.writeText(JSON.stringify(payload))
 		toast.success('Copied node to clipboard')
@@ -188,7 +201,23 @@ const pasteNode = {
 
 		const clonedComponent = cloned.data as z.infer<typeof resolvedComponentModel>
 
-		await addNode(clonedComponent, position)
+		const newNode = await addNode(clonedComponent, position)
+
+		// attach modifiers if needed
+		if (!Object.keys(payload.modifiers ?? {}).length) return
+		const currentPath = getCurrentNodePath()
+		const allModifiers = getModifiers()
+		for (const [path, modifiers] of Object.entries(payload.modifiers)) {
+			const newPath = [...currentPath, newNode.id, ...path.split('/')]
+			for (const {modifier_id} of modifiers) {
+				const modifier = allModifiers[modifier_id]
+				if (!modifier) {
+					toast.error(`Modifier ${modifier_id} not found`)
+					continue
+				}
+				await attachModifier(newPath, modifier)
+			}
+		}
 	}
 } satisfies CanvasActionItem
 
