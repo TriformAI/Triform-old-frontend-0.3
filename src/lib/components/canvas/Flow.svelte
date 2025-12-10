@@ -45,6 +45,7 @@
 	import { createNodeImportMeta } from 'vite/module-runner'
 	import { onconnectstart } from './FlowEvents/connectStart.svelte'
 	import { setActiveContext } from '$lib/stores/panel.svelte'
+	import CanvasContextMenu from './CanvasContextMenu.svelte'
 
 	const useSvelteFlow = svelteFlowHook()
 	const { fitView, screenToFlowPosition } = useSvelteFlow
@@ -78,9 +79,7 @@
 
 	function handleDragOver(event: DragEvent) {
 		event.preventDefault()
-		if (event.dataTransfer) {
-			event.dataTransfer.dropEffect = 'copy'
-		}
+		if (event.dataTransfer) event.dataTransfer.dropEffect = 'copy'
 	}
 
 	async function handleDrop(event: DragEvent) {
@@ -106,20 +105,20 @@
 		await addNode(component.data, position, {})
 	}
 
+	let canvasContextMenu = $state({
+		isOpen: false,
+		x: 0,
+		y: 0
+	})
 	const handleCanvasContextMenu = async ({ event }: { event: MouseEvent }) => {
 		event.preventDefault()
-		// open create-node at click
-		const position = screenToFlowPosition(
-			{ x: event.clientX, y: event.clientY },
-			{ snapToGrid: true }
-		)
-		addCreateNode(position, true, true)
+		canvasContextMenu.isOpen = true
+		canvasContextMenu.x = event.clientX
+		canvasContextMenu.y = event.clientY
 	}
 
 	// switch from project view to node context when selecting a node
-	const handleNodeClick = (nodes: Node[]) => {
-		setActiveContext('node')
-	}
+	const handleNodeClick = (nodes: Node[]) => void setActiveContext('node')
 
 	onMount(async () => {
 		refreshFlow()
@@ -187,9 +186,7 @@
 		onpanecontextmenu={handleCanvasContextMenu}
 		onbeforeconnect={e => {
 			// Prevent edge from sticking when connecting to ghost ports
-			if (e.sourceHandle === 'ghost-source' || e.targetHandle === 'ghost-target') {
-				return false
-			}
+			if (e.sourceHandle === 'ghost-source' || e.targetHandle === 'ghost-target') return false
 		}}
 	>
 		<Background
@@ -200,6 +197,12 @@
 			variant={BackgroundVariant.Dots}
 		/>
 	</SvelteFlow>
+
+	<CanvasContextMenu
+		{...canvasContextMenu}
+		bind:isOpen={canvasContextMenu.isOpen}
+		{useSvelteFlow}
+	/>
 </div>
 
 <style>

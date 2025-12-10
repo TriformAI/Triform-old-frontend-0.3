@@ -45,8 +45,8 @@ export const createComponent = async (component: Omit<ResolvedComponent, 'id'>) 
 	return result
 }
 
-export const getComponent = async (id: string) => {
-	return await api.get<{ data: ResolvedComponent }>(`components/${id}`)
+export const getComponent = async (id: string, depth: number = 0) => {
+	return await api.get<{ data: ResolvedComponent }>(`components/${id}?depth=${depth}`)
 }
 
 export const buildComponent = async (id: string, headers?: Record<string, string>) => {
@@ -58,3 +58,7 @@ export const generateRequirements = async (id: string) => {
 }
 
 export const generateMockInputs = async (id: string) => await api.get<{ data: Record<string, unknown> }>(`components/${id}/mock/inputs`)
+
+export const cloneComponent = async (id: string, returnDepth: number = 0) => await api.post<{ data: z.infer<typeof componentModel> }>(`components/${id}/clone`, {
+	returnDepth
+})

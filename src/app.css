@@ -385,7 +385,7 @@
 	}
 
 	.list-btn {
-		@apply text-main-300 hover:bg-main-800 hover:text-main-200 flex w-full origin-center items-center gap-2 rounded px-3 py-2 whitespace-nowrap transition-all;
+		@apply text-main-300 not-disabled:hover:bg-main-800 not-disabled:hover:text-main-200 flex w-full origin-center items-center gap-2 rounded px-3 py-2 whitespace-nowrap transition-all disabled:cursor-not-allowed disabled:opacity-50;
 	}
 
 	.list-btn--danger {

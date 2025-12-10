@@ -295,6 +295,7 @@ const updateNodeLayout = () => {
 // Create edges
 export function parseNodes(root: NodeContainer) {
 	const parseNode = (node: TriNode, id: Uuid, i: number): Node => {
+		console.log('parsing node', id, node)
 		// if it's part of an ordered context (ie it's a top-level flow or inside of an agent) we
 		// need to lay it out according to the order instead of any x/y position
 		const ordered = 'order' in node

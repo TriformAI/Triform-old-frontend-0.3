@@ -2,7 +2,7 @@ import { dev } from '$app/environment'
 import { goto } from '$app/navigation'
 import { page } from '$app/state'
 import { type UUID as Uuid } from 'crypto'
-import { type CanvasNode, type MetaNodeType, type NodeType } from '$lib/types/canvas'
+import { type CanvasNode, type MetaNodeType, type NodeType, type Node } from '$lib/types/canvas'
 import type { Component } from 'svelte'
 import { toast } from 'svelte-sonner'
 import { SvelteMap } from 'svelte/reactivity'
@@ -11,12 +11,18 @@ import IconTrash from '~icons/material-symbols/delete-outline'
 import IconExpand from '~icons/mdi/circle-expand'
 import IconLoop from '~icons/material-symbols/sync-rounded'
 import IconBuild from '~icons/material-symbols/tools-wrench-outline-rounded'
+import IconCopy from '~icons/material-symbols/content-copy-rounded'
+import IconPaste from '~icons/material-symbols/content-paste-rounded'
+import IconCreate from '~icons/material-symbols/add-box-rounded'
 import { confirmStore } from './confirm.svelte'
-import { deleteNode as deleteNodeFn, getCurrentContainer, saveContainer, setLoop } from './canvas.svelte'
+import { addCreateNode, addNode, deleteNode as deleteNodeFn, getCurrentContainer, saveContainer, setLoop } from './canvas.svelte'
 import { chat, getUserMessage } from './chat.svelte'
-import { type Node } from '$lib/types/canvas'
 import { clone } from '$lib/utils/clone'
-import { isAgent, isFlow } from '$lib/schemas'
+import { isAgent, isFlow, resolvedComponentModel } from '$lib/schemas'
+import { copyPayloadModel } from '$lib/schemas/copy'
+import type z from 'zod'
+import { sessionStore } from './session.svelte'
+import { cloneComponent } from '$lib/actions/components'
 
 export type onClickFn = (node: CanvasNode) => Promise<Uuid | void> | void
 
@@ -25,9 +31,17 @@ interface ActionItem {
 	id?: string
 	label: string
 	hide?: () => boolean
-	icon: Component
+	icon: typeof IconBug
 	isDangerous: boolean
 	onClick: onClickFn
+}
+
+export interface CanvasActionItem {
+	label: string
+	icon: typeof IconCreate
+	isDangerous: boolean
+	disabled?: () => Promise<boolean> | boolean
+	onClick: (position: { x: number; y: number }) => Promise<void> | void
 }
 
 const actionsMapStore = $state(new SvelteMap<NodeType | MetaNodeType, ActionItem[]>())
@@ -112,7 +126,75 @@ const loopNode = {
 	onClick: async (node: CanvasNode) => await setLoop(node.id, !node.data.trinode?.loop?.enabled)
 }
 
+const copyNode = {
+	label: 'Copy',
+	icon: IconCopy,
+	isDangerous: false,
+	onClick: async (_node: CanvasNode) => {
+		if (!_node.data.trinode) return void toast.error('Cannot copy this node')
+		const node = _node as Node
+		if (!sessionStore.session?.activeOrganizationId) return void toast.error('No active organization')
+		const payload = await copyPayloadModel.parseAsync({
+			schema: 'tf-component-copy/v1',
+			component_id: node.data.trinode.component_id,
+			organization_id: sessionStore.session?.activeOrganizationId,
+			modifiers: {} // TODO
+		} satisfies z.infer<typeof copyPayloadModel>)
+		navigator.clipboard.writeText(JSON.stringify(payload))
+		toast.success('Copied node to clipboard')
+	}
+}
+
 // Populate map
-actionsMapStore.set('action-node', [getDebugData, loopNode, buildNode, deleteNode])
-actionsMapStore.set('flow-node', [expandNode, loopNode, getDebugData, buildNode, deleteNode])
-actionsMapStore.set('agent-node', [expandNode, loopNode, getDebugData, buildNode, deleteNode])
+actionsMapStore.set('action-node', [getDebugData, copyNode, loopNode, buildNode, deleteNode])
+actionsMapStore.set('flow-node', [expandNode, getDebugData, copyNode, loopNode, buildNode, deleteNode])
+actionsMapStore.set('agent-node', [expandNode, getDebugData, copyNode, loopNode, buildNode, deleteNode])
+
+
+// generic canvas context menu (when you click on the canvas itself)
+const createNode = {
+	label: 'New Node',
+	icon: IconCreate,
+	isDangerous: false,
+	onClick: async (position: { x: number; y: number }) => {
+		addCreateNode(position, true, true)
+	}
+} satisfies CanvasActionItem
+
+const parseClipboard = async () => {
+	try {
+		const clipboard = await navigator.clipboard.readText()
+		// if it isn't even close to json, just exit immediately
+		if (!clipboard.trim().startsWith('{') || !clipboard.trim().endsWith('}') || !clipboard.trim().includes(':')) return undefined
+		return await copyPayloadModel.parseAsync(JSON.parse(clipboard))
+	} catch (e) {
+		console.error(e)
+		return undefined
+	}
+}
+
+const pasteNode = {
+	label: 'Paste',
+	icon: IconPaste,
+	isDangerous: false,
+	disabled: async () => await parseClipboard() === undefined,
+	onClick: async (position) => {
+		const payload = await parseClipboard()
+		if (!payload) return void toast.error('Failed to paste node')
+
+		const cloned = await cloneComponent(payload.component_id, 999)
+
+		if (!cloned.success) return void toast.error('Failed to clone component')
+
+		const clonedComponent = cloned.data as z.infer<typeof resolvedComponentModel>
+
+		await addNode(clonedComponent, position)
+	}
+} satisfies CanvasActionItem
+
+const canvasActionsStore = $derived([
+	createNode,
+	pasteNode
+])
+
+export const canvasActions = () => canvasActionsStore
