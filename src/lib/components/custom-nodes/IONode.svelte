@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { getCurrentContainer } from '$lib/stores/canvas.svelte'
+	import { agentHasHardBoundInputs, getCurrentContainer } from '$lib/stores/canvas.svelte'
 	import type { MetaNodeType } from '$lib/types/canvas'
 	import NodeContainer from './NodeContainer.svelte'
 	import { isAgent, isFlow } from '$lib/schemas'
@@ -23,6 +23,11 @@
 	})
 
 	const ioType = $derived(type.split('-')[0]) as 'input' | 'output'
+
+	const ioName = $derived.by(() => {
+		if (agentHasHardBoundInputs() && ioType === 'input') return 'Pre-defined tool inputs'
+		return ioType
+	})
 
 	const sourceHandles = $derived(
 		'inputs' in container.spec && ioType === 'input' ? Object.keys(container.spec.inputs) : []
@@ -55,7 +60,7 @@
 						]}
 						style={`color: ${visualData.color}`}
 					/>
-					<span class="text-main-300 truncate capitalize">{ioType}</span>
+					<span class="text-main-300 truncate capitalize">{ioName}</span>
 				</span>
 			</div>
 		{/snippet}

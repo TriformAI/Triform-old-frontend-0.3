@@ -32,6 +32,7 @@ import type { requirementsModel } from '$lib/schemas/requirements'
 import { hashStr } from '$lib/utils/hashStr'
 import stringify from 'json-stringify-deterministic'
 import { objectMap } from '$lib/utils/objectMap'
+import { average } from '$lib/utils/average'
 
 let nodesStore = $state<CanvasNode[]>([])
 let edgesStore = $state<Edge[]>([])
@@ -115,6 +116,20 @@ export const getCurrentContainer = (): NodeContainer => {
 	return newContainer as NodeContainer
 }
 
+let _agentHasHardBoundInputs = $derived.by(() => {
+	const container = getCurrentContainer()
+	if (!container || !isAgent(container)) return false
+
+	// if any of the tools point to the parent, they're hard bound
+	return Object.values(container.spec.nodes).some(n => Object.values(n.inputs).some(i => i.source === 'parent'))
+})
+export const agentHasHardBoundInputs = () => _agentHasHardBoundInputs
+// so we can temporarily set it to true before any edges have been added (used by the btn in the io panel)
+export const overwriteAgentHasHardBoundInputs = (hasHardBoundInputs: boolean) => {
+	_agentHasHardBoundInputs = hasHardBoundInputs
+	refreshFlow()
+}
+
 let modifiers = $state<Record<string, z.infer<typeof modifierModel>>>({})
 export const getModifiers = () => modifiers
 export const setModifiers = (newModifiers: Record<string, z.infer<typeof modifierModel>>) => {
@@ -151,34 +166,6 @@ export const refreshFlow = async () => {
 	// parse in all the nodes into the nodesStore
 	const { nodes, edges } = parseNodes(container)
 
-	// add meta nodes
-	if (isFlow(container)) {
-		nodes.push({
-			id: `${container.id as Uuid}:input`,
-			type: 'input-node',
-			draggable: isFlow(container),
-			position: isFlow(container)
-				? container.spec.io_nodes.input
-				: {
-						x: 0,
-						y: 0
-					},
-			data: {
-				props: { ...defaultProps }
-			}
-		})
-		if ('io_nodes' in container.spec && 'output' in container.spec.io_nodes)
-			nodes.push({
-				id: `${container.id as Uuid}:output`,
-				type: 'output-node',
-				draggable: true,
-				position: container.spec.io_nodes.output,
-				data: {
-					props: { ...defaultProps }
-				}
-			})
-	}
-
 	if (isProject(container) || isAgent(container)) {
 		// find where to place the create node for agents and flow
 		// should be the last node, so added one step after the last node
@@ -210,6 +197,47 @@ export const refreshFlow = async () => {
 
 		const createNode = addCreateNode({ x, y }, false, false, isProject(container) && !nodes.length)
 		nodes.push(createNode)
+	}
+
+	// add meta nodes
+	if (isFlow(container)) {
+		nodes.push({
+			id: `${container.id as Uuid}:input`,
+			type: 'input-node',
+			draggable: isFlow(container),
+			position: isFlow(container)
+				? container.spec.io_nodes.input
+				: {
+						x: 0,
+						y: 0
+					},
+			data: {
+				props: { ...defaultProps }
+			}
+		})
+		if ('io_nodes' in container.spec && 'output' in container.spec.io_nodes)
+			nodes.push({
+				id: `${container.id as Uuid}:output`,
+				type: 'output-node',
+				draggable: true,
+				position: container.spec.io_nodes.output,
+				data: {
+					props: { ...defaultProps }
+				}
+			})
+	} else if (isAgent(container) && agentHasHardBoundInputs()) {
+		nodes.push({
+			id: `${container.id as Uuid}:input`,
+			type: 'input-node',
+			draggable: false,
+			position: {
+				x: average(nodes.map(n => n.position.x ?? 0)) - (nodeSize.x / 2),
+				y: Math.min(...nodes.map(n => n.position.y ?? 0)) - nodeSize.y - gap
+			},
+			data: {
+				props: { ...defaultProps }
+			}
+		})
 	}
 
 	setNodes(nodes)
@@ -255,11 +283,11 @@ const updateNodeLayout = () => {
 	// ensure that the current container is ordered
 	const container = getCurrentContainer()
 	if (!isProject(container) && !isAgent(container)) return
-
 	
 	const nodes = getNodes()
 	console.log('updating node layout', $state.snapshot(nodes))
 	const orderedNodes = nodes
+		.filter(node => node.type !== 'input-node' && node.type !== 'output-node')
 		.sort((a, b) => (a.data?.trinode?.order ?? Infinity) - (b.data?.trinode?.order ?? Infinity))
 
 	// Greedy row wrap: place nodes left-to-right; wrap before exceeding maxWidth

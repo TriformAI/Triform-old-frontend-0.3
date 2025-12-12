@@ -5,6 +5,7 @@
 	import { Position } from '@xyflow/svelte'
 	import type { MetaNodeData, NodeData } from '$lib/types/canvas'
 	import {
+	agentHasHardBoundInputs,
 		canvasState,
 		getCurrentContainer,
 		getNodes,
@@ -34,7 +35,7 @@
 
 	const node = $derived(getNodes().find(node => node.id === nodeId))
 
-	const hideHandles = $derived(isProject(getCurrentContainer()) || isAgent(getCurrentContainer()))
+	const hideHandles = $derived(isProject(getCurrentContainer()) || (isAgent(getCurrentContainer()) && !agentHasHardBoundInputs()))
 
 	const isLooping = $derived(node?.data?.trinode?.loop?.enabled)
 
@@ -103,7 +104,7 @@
 		</div>
 	</div>
 
-	{#if node?.type !== 'output-node'}
+	{#if (node?.type !== 'output-node' && !agentHasHardBoundInputs()) || (node?.type === 'input-node' && agentHasHardBoundInputs())}
 		<div class={[hideHandles && 'hidden']}>
 			<div class="flex w-full items-center justify-around gap-0">
 				{#each sourceHandles as name}

@@ -136,7 +136,7 @@
     flex-row items-center justify-center gap-x-2
     rounded-md p-3 font-medium transition-all
     duration-300 active:enabled:scale-95
-		disabled:cursor-not-allowed disabled:opacity-75`,
+		disabled:cursor-not-allowed disabled:opacity-85`,
 		variation === 'item' && 'cursor-pointer disabled:cursor-not-allowed',
 		'group/button',
 		classProp
