@@ -224,6 +224,7 @@ const legacyModels = new Set([
 	'openai/gpt-5',
 	'openai/gpt-5-mini',
 	'openai/gpt-5-nano',
+	'openai/o4-mini',
 	'openai/o3-mini',
 	'openai/gpt-4o',
 	'mistral-medium-2508',
