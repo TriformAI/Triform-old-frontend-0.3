@@ -5,7 +5,7 @@
 	import { updateComponent } from '$lib/actions/components'
 	import { toast } from 'svelte-sonner'
 	import type { z } from 'zod'
-	import { agentMessagesModel, agentModel, availableAgentModels } from '$lib/schemas'
+	import { agentMessagesModel, agentModel, visibleAgentModels } from '$lib/schemas'
 	import PromptElement from './PromptElement.svelte'
 	import AdvancedSetting from './AdvancedSetting.svelte'
 	import type { FormEventHandler } from 'svelte/elements'
@@ -23,7 +23,7 @@
 
 	let hasJsonErrors = $state(false)
 
-	const agentModels = availableAgentModels
+	const agentModels = visibleAgentModels
 	let messagesEnabled = $derived('messages' in componentData.spec.inputs)
 
 	// Advanced settings state
