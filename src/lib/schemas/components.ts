@@ -164,8 +164,8 @@ const agentIOModel = z
 export const availableAgentModels = [
 	'mistral-medium-latest',
 	'mistral-medium-2508',
-	'magistral-medium-2507',
-	'codestral-2508',
+	'magistral-medium-latest',
+	'codestral-latest',
 	// gemini doesn't support tool calling & structured output simultaneously
 	'gemini/gemini-2.5-pro',
 	'gemini/gemini-2.5-flash',
@@ -174,27 +174,41 @@ export const availableAgentModels = [
 	'gemma-3-27b-it',
 	'qwen3-235b-a22b-instruct-2507',
 	'anthropic/claude-haiku-4-5',
-	'anthropic/claude-sonnet-4-5',
+	'anthropic/claude-sonnet-4-6',
+	'anthropic/claude-opus-4-6',
 	// groq does json output with a specific json tool, we need to add our own if we want both tool calling and structured output
 	'qwen/qwen3-32b',
 	'qwen3-coder-30b-a3b-instruct',
 	'moonshotai/kimi-k2-instruct-0905',
 	'llama-3.1-8b-instruct',
 	'llama-3.3-70b-versatile',
-	'meta-llama/llama-4-maverick-17b-128e-instruct',
 	'meta-llama/llama-4-scout-17b-16e-instruct',
 	'openai/gpt-oss-120b',
 	'openai/gpt-oss-20b',
+	'openai/gpt-5.4',
+	'openai/gpt-5.4-mini',
+	'openai/gpt-5.4-nano',
 	'openai/gpt-5',
 	'openai/gpt-5-mini',
 	'openai/gpt-5-nano',
-	'openai/gpt-5-chat',
+	'openai/o4-mini',
+	// legacy — routed to new models by the gateway
+	'anthropic/claude-sonnet-4-5',
 	'openai/gpt-4.1',
 	'openai/gpt-4.1-mini',
 	'openai/gpt-4.1-nano',
-	'openai/o4-mini',
+	'openai/gpt-5.1',
 	'openai/o3-mini',
-	'openai/gpt-4o'
+	'openai/gpt-4o',
+	// MiniMax via Anthropic-compatible API
+	'minimax/MiniMax-M2.7',
+	'minimax/MiniMax-M2.7-highspeed',
+	// Scaleway additions
+	'qwen3.5-397b-a17b',
+	'mistral-small-3.2-24b-instruct-2506',
+	'devstral-2-123b-instruct-2512',
+	'holo2-30b-a3b',
+	'llama-3.3-70b-instruct'
 ] as const
 
 const agentSpecModel = z.strictObject({
