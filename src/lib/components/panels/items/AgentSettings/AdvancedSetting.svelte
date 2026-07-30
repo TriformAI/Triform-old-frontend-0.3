@@ -3,7 +3,9 @@
 		label: string
 		description: string
 		enabled: boolean
-		value: number | undefined
+		/** false when the selected model rejects this param — shown but not toggleable */
+		supported?: boolean
+		value: number | undefined | null
 		defaultValue: number
 		min: number
 		max?: number
@@ -16,6 +18,7 @@
 		label,
 		description,
 		enabled,
+		supported = true,
 		value = $bindable(),
 		defaultValue,
 		min,
@@ -34,7 +37,7 @@
 >
 	<div class="flex flex-1 flex-col gap-2">
 		<span class="text-main-400 text-sm font-medium">{label}</span>
-		{#if enabled}
+		{#if enabled && supported}
 			<input
 				{min}
 				{max}
@@ -51,6 +54,7 @@
 	<input
 		type="checkbox"
 		class="checkbox mt-1 size-[1.3rem]"
+		disabled={!supported}
 		bind:checked={enabled}
 		oninput={onToggle}
 	/>

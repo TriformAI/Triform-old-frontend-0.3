@@ -29,8 +29,11 @@ export const getAgentModel = (inputs: z.infer<typeof ioModel>, name = '') =>
 				]
 			},
 			settings: {
-				temperature: 0.2,
-				topP: 0.95,
+				// leave sampling params unset so each model uses its own default —
+				// opt in per agent under Advanced settings. Setting both temperature and
+				// topP here is rejected outright by some models (eg Bedrock Claude).
+				temperature: null,
+				topP: null,
 				maxTokens: 32768
 			},
 			nodes: {},

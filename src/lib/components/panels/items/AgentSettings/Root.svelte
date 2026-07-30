@@ -5,7 +5,12 @@
 	import { updateComponent } from '$lib/actions/components'
 	import { toast } from 'svelte-sonner'
 	import type { z } from 'zod'
-	import { agentMessagesModel, agentModel, visibleAgentModels } from '$lib/schemas'
+	import {
+		agentMessagesModel,
+		agentModel,
+		modelSamplingSupport,
+		visibleAgentModels
+	} from '$lib/schemas'
 	import PromptElement from './PromptElement.svelte'
 	import AdvancedSetting from './AdvancedSetting.svelte'
 	import type { FormEventHandler } from 'svelte/elements'
@@ -26,10 +31,21 @@
 	const agentModels = visibleAgentModels
 	let messagesEnabled = $derived('messages' in componentData.spec.inputs)
 
+	// Not every model accepts every sampling param — Bedrock Claude rejects
+	// temperature+topP together, and the newest generation rejects temperature
+	// outright. Anything absent from the table accepts all of them.
+	const sampling = $derived(
+		modelSamplingSupport[componentData.spec.model as keyof typeof modelSamplingSupport]
+	)
+	let temperatureSupported = $derived(sampling?.temperature !== false)
+	let topPSupported = $derived(sampling?.topP !== false)
+
 	// Advanced settings state
-	let temperatureEnabled = $derived(componentData.spec.settings.temperature !== undefined)
-	let topPEnabled = $derived(componentData.spec.settings.topP !== undefined)
-	let maxTokensEnabled = $derived(componentData.spec.settings.maxTokens !== undefined)
+	let temperatureEnabled = $derived(
+		temperatureSupported && componentData.spec.settings.temperature != null
+	)
+	let topPEnabled = $derived(topPSupported && componentData.spec.settings.topP != null)
+	let maxTokensEnabled = $derived(componentData.spec.settings.maxTokens != null)
 
 	const toggleMessages = async () => {
 		await tick()
@@ -54,6 +70,15 @@
 		}
 	}
 
+	// Switching to a stricter model leaves values behind that it would reject. The
+	// worker strips them defensively, but clear them here so the saved spec matches
+	// what the model actually runs with.
+	const onModelChange = () => {
+		if (!temperatureSupported) componentData.spec.settings.temperature = null
+		if (!topPSupported) componentData.spec.settings.topP = null
+		debouncedSave()
+	}
+
 	const toggleTemperature = async () => {
 		await tick()
 		componentData.spec.settings.temperature = temperatureEnabled ? null : 0.7
@@ -76,7 +101,7 @@
 <div class="grid max-w-full gap-6 p-5 pt-4">
 	<label class="grid gap-2">
 		<span class="eyebrow">Model</span>
-		<select class="input-text" bind:value={componentData.spec.model} oninput={debouncedSave}>
+		<select class="input-text" bind:value={componentData.spec.model} onchange={onModelChange}>
 			{#each agentModels as model}
 				<option value={model}>{model}</option>
 			{/each}
@@ -130,7 +155,10 @@
 		<div class="flex flex-col gap-3">
 			<AdvancedSetting
 				label="Temperature"
-				description="Controls randomness in responses"
+				description={temperatureSupported
+					? 'Controls randomness in responses'
+					: `Not supported by ${componentData.spec.model}`}
+				supported={temperatureSupported}
 				enabled={temperatureEnabled}
 				bind:value={componentData.spec.settings.temperature}
 				defaultValue={0.7}
@@ -143,7 +171,10 @@
 
 			<AdvancedSetting
 				label="Top P"
-				description="Controls diversity via nucleus sampling"
+				description={topPSupported
+					? 'Controls diversity via nucleus sampling'
+					: `Not supported by ${componentData.spec.model}`}
+				supported={topPSupported}
 				enabled={topPEnabled}
 				bind:value={componentData.spec.settings.topP}
 				defaultValue={0.95}

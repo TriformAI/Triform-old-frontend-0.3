@@ -162,49 +162,41 @@ const agentIOModel = z
 	.and(ioModel)
 
 export const availableAgentModels = [
-	// OpenAI
+	'mistral-medium-latest',
+	'mistral-medium-2508',
+	'magistral-medium-latest',
+	'codestral-latest',
+	// gemini doesn't support tool calling & structured output simultaneously
+	'gemini/gemini-2.5-pro',
+	'gemini/gemini-2.5-flash',
+	'gemini/gemini-2.5-flash-lite',
+	'gemini/gemini-3.1-pro-preview',
+	'gemma-3-27b-it',
+	'gemma-4-26b-a4b-it',
+	'qwen3-235b-a22b-instruct-2507',
+	'qwen3.6-35b-a3b',
+	'anthropic/claude-opus-5',
+	'anthropic/claude-sonnet-5',
+	'anthropic/claude-opus-4-8',
+	'anthropic/claude-haiku-4-5',
+	'anthropic/claude-sonnet-4-6',
+	'anthropic/claude-opus-4-6',
+	// groq does json output with a specific json tool, we need to add our own if we want both tool calling and structured output
+	'qwen/qwen3.6-27b',
+	'qwen3-coder-30b-a3b-instruct',
+	'llama-3.1-8b-instruct',
+	'llama-3.1-8b-instant',
+	'llama-3.3-70b-versatile',
+	'openai/gpt-oss-120b',
+	'openai/gpt-oss-20b',
 	'openai/gpt-5.4',
 	'openai/gpt-5.4-mini',
 	'openai/gpt-5.4-nano',
 	'openai/gpt-5',
 	'openai/gpt-5-mini',
 	'openai/gpt-5-nano',
-	'openai/gpt-oss-120b',
-	'openai/gpt-oss-20b',
 	'openai/o4-mini',
-	// Anthropic (Bedrock)
-	'anthropic/claude-sonnet-4-6',
-	'anthropic/claude-opus-4-6',
-	'anthropic/claude-haiku-4-5',
-	// MiniMax
-	'minimax/MiniMax-M2.7',
-	'minimax/MiniMax-M2.7-highspeed',
-	// Mistral
-	'mistral-medium-latest',
-	'magistral-medium-latest',
-	'codestral-latest',
-	// Gemini
-	'gemini/gemini-2.5-pro',
-	'gemini/gemini-2.5-flash',
-	'gemini/gemini-2.5-flash-lite',
-	'gemini/gemini-3-pro-preview',
-	// Scaleway
-	'qwen3.5-397b-a17b',
-	'qwen3-235b-a22b-instruct-2507',
-	'qwen3-coder-30b-a3b-instruct',
-	'mistral-small-3.2-24b-instruct-2506',
-	'devstral-2-123b-instruct-2512',
-	'holo2-30b-a3b',
-	'llama-3.3-70b-instruct',
-	'llama-3.1-8b-instruct',
-	'gemma-3-27b-it',
-	// Groq
-	'qwen/qwen3-32b',
-	'moonshotai/kimi-k2-instruct-0905',
-	'llama-3.3-70b-versatile',
-	'meta-llama/llama-4-scout-17b-16e-instruct',
-	// legacy — hidden from UI but kept for backward compat with saved agents
-	// (gateway routes these to new models)
+	// legacy — routed to new models by the gateway
 	'anthropic/claude-sonnet-4-5',
 	'openai/gpt-4.1',
 	'openai/gpt-4.1-mini',
@@ -212,10 +204,34 @@ export const availableAgentModels = [
 	'openai/gpt-5.1',
 	'openai/o3-mini',
 	'openai/gpt-4o',
-	'mistral-medium-2508',
+	// retired upstream — kept so saved agents keep resolving, aliased by the gateway
+	// to a live model. Hidden from the picker via legacyModels below.
+	'qwen/qwen3-32b',
+	'moonshotai/kimi-k2-instruct-0905',
+	'meta-llama/llama-4-scout-17b-16e-instruct',
+	'meta-llama/llama-4-maverick-17b-128e-instruct',
+	'gemini/gemini-3-pro-preview',
+	// MiniMax via Anthropic-compatible API
+	'minimax/MiniMax-M2.7',
+	'minimax/MiniMax-M2.7-highspeed',
+	// Scaleway additions
+	'qwen3.5-397b-a17b',
+	'mistral-small-3.2-24b-instruct-2506',
+	'mistral-medium-3.5-128b',
+	'devstral-2-123b-instruct-2512',
+	'holo2-30b-a3b',
+	'llama-3.3-70b-instruct',
+	// z.ai GLM family
+	'glm-5.2',
+	'glm-5.1',
+	'glm-4.7',
+	'mistral-large-latest'
 ] as const
 
-const legacyModels = new Set([
+// Models kept in the enum so saved agent specs keep resolving, but hidden from the
+// model picker: either superseded by a newer equivalent or retired upstream. The
+// gateway aliases each of these to a live model — see ai-gateway/src/index.ts.
+export const legacyModels: ReadonlySet<string> = new Set([
 	'anthropic/claude-sonnet-4-5',
 	'openai/gpt-4.1',
 	'openai/gpt-4.1-mini',
@@ -228,11 +244,39 @@ const legacyModels = new Set([
 	'openai/o3-mini',
 	'openai/gpt-4o',
 	'mistral-medium-2508',
+	'gemma-3-27b-it',
+	// retired upstream
+	'qwen/qwen3-32b',
+	'moonshotai/kimi-k2-instruct-0905',
+	'meta-llama/llama-4-scout-17b-16e-instruct',
+	'meta-llama/llama-4-maverick-17b-128e-instruct',
+	'gemini/gemini-3-pro-preview'
 ])
 
+/** The models offered in the picker — everything that isn't legacy. */
 export const visibleAgentModels = availableAgentModels.filter(
 	m => !legacyModels.has(m)
 )
+
+/**
+ * Sampling params each model accepts. Anything not listed accepts all of them.
+ * Bedrock Claude rejects `temperature` + `top_p` together, and the 4.8/5 generation
+ * rejects `temperature` outright. Verified against Bedrock 2026-07-30.
+ */
+export const modelSamplingSupport: Partial<
+	Record<
+		(typeof availableAgentModels)[number],
+		{ temperature: boolean; topP: boolean }
+	>
+> = {
+	'anthropic/claude-opus-5': { temperature: false, topP: false },
+	'anthropic/claude-sonnet-5': { temperature: false, topP: false },
+	'anthropic/claude-opus-4-8': { temperature: false, topP: false },
+	'anthropic/claude-opus-4-6': { temperature: true, topP: false },
+	'anthropic/claude-sonnet-4-6': { temperature: true, topP: false },
+	'anthropic/claude-sonnet-4-5': { temperature: true, topP: false },
+	'anthropic/claude-haiku-4-5': { temperature: true, topP: false }
+}
 
 const agentSpecModel = z.strictObject({
 	// backwards compatibility: coerce old models to gemma-3-27b-it
