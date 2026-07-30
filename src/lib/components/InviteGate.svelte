@@ -13,6 +13,9 @@
 	import { Confetti } from 'svelte-confetti'
 
 	let inviteCode = $state('')
+	// access is invite-only while the new platform is being finished, so the code
+	// field is secondary — most people here are just waiting for launch
+	let codeShown = $state(false)
 	let tipShown = $state(false)
 	onMount(() => setTimeout(() => (tipShown = true), 1000))
 
@@ -57,34 +60,52 @@
 			transition:blur={blurSettings}
 		>
 			<img src={logo} alt="Triform logo" class="size-12" />
-			<p>Enter your invite code to get access to Triform</p>
-			<form class="my-2 flex w-full flex-row gap-x-2" onsubmit={handleSubmit}>
-				<InputField
-					placeholder="Invite code"
-					containerClass="w-full"
-					class="font-mono"
-					bind:value={inviteCode}
-					use={el => el.focus()}
-					required
-				/>
-				<Button type="submit" variation="link" class="text-main-400 py-1" {isLoading}>
-					{#snippet body()}
-						<IconSend />
-					{/snippet}
-				</Button>
-			</form>
-			<p
-				class={[
-					'text-main-500 text-sm',
-					'opacity-0 transition-opacity duration-500',
-					tipShown && 'opacity-100'
-				]}
-			>
-				Don't have a code? See if you can find someone with one in our
-				<a href="https://discord.gg/triform" class="text-main-400 hover:underline" target="_blank">
-					Discord
-				</a>
+			<p class="text-main-200 text-lg font-semibold">You're on the list</p>
+			<p>
+				Thanks for signing up! We're putting the finishing touches on the new Triform platform.
+				We'll email you at
+				{#if sessionStore.user?.email}
+					<span class="text-main-300">{sessionStore.user.email}</span>
+				{:else}
+					this address
+				{/if}
+				as soon as it launches.
 			</p>
+
+			{#if codeShown}
+				<form class="my-2 flex w-full flex-row gap-x-2" onsubmit={handleSubmit}>
+					<InputField
+						placeholder="Invite code"
+						containerClass="w-full"
+						class="font-mono"
+						bind:value={inviteCode}
+						use={el => el.focus()}
+						required
+					/>
+					<Button type="submit" variation="link" class="text-main-400 py-1" {isLoading}>
+						{#snippet body()}
+							<IconSend />
+						{/snippet}
+					</Button>
+				</form>
+			{:else}
+				<p
+					class={[
+						'text-main-500 text-sm',
+						'opacity-0 transition-opacity duration-500',
+						tipShown && 'opacity-100'
+					]}
+				>
+					Got an invite code?
+					<button
+						type="button"
+						onclick={() => (codeShown = true)}
+						class="text-main-400 inline hover:underline"
+					>
+						Enter it here
+					</button>
+				</p>
+			{/if}
 			<p
 				class={[
 					'text-main-600 text-center text-sm',
