@@ -253,6 +253,18 @@ export const legacyModels: ReadonlySet<string> = new Set([
 	'gemini/gemini-3-pro-preview'
 ])
 
+/**
+ * What an unrecognised model in a saved agent spec coerces to.
+ *
+ * Exported so the model-registry test can assert it stays visible, served and
+ * multi-supplier: this is the landing spot for every spec referencing a model
+ * we've since removed, so if it dies, the coercion that exists to keep old
+ * agents working breaks them instead. It was gemma-3-27b-it, which was both
+ * hidden from the picker AND removed from its supplier's catalogue — so an
+ * unrecognised model silently coerced to something that 400s on every call.
+ */
+export const agentSpecFallbackModel = 'openai/gpt-oss-120b' as const
+
 /** The models offered in the picker — everything that isn't legacy. */
 export const visibleAgentModels = availableAgentModels.filter(
 	m => !legacyModels.has(m)
@@ -279,8 +291,8 @@ export const modelSamplingSupport: Partial<
 }
 
 const agentSpecModel = z.strictObject({
-	// backwards compatibility: coerce old models to gemma-3-27b-it
-	model: z.enum(availableAgentModels).catch('gemma-3-27b-it'),
+	// backwards compatibility: coerce unknown models to a live default
+	model: z.enum(availableAgentModels).catch(agentSpecFallbackModel),
 	readme: z.string().optional().default(''),
 	prompts: z.strictObject({
 		system: agentPromptModel,

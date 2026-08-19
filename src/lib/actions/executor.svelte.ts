@@ -62,7 +62,6 @@ export const executeComponent = async (
 				state.isRunning = false
 				return
 			}
-			console.log(event)
 			if (!state.id) {
 				state.id = event.data.path[0]
 				setActiveExecutionId(state.id)

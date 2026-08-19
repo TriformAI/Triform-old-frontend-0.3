@@ -28,7 +28,16 @@
 
 	let hasJsonErrors = $state(false)
 
-	const agentModels = visibleAgentModels
+	// The picker only lists non-legacy models, but a saved agent may still be on a
+	// retired one — and an option that isn't rendered means `bind:value` finds no
+	// match, so the select shows blank and the next interaction silently rewrites
+	// the spec to a different model. Keep the current value in the list so it's
+	// visible and only changes when someone actually chooses another.
+	const agentModels = $derived(
+		visibleAgentModels.includes(componentData.spec.model)
+			? visibleAgentModels
+			: [componentData.spec.model, ...visibleAgentModels]
+	)
 	let messagesEnabled = $derived('messages' in componentData.spec.inputs)
 
 	// Not every model accepts every sampling param — Bedrock Claude rejects
@@ -103,7 +112,9 @@
 		<span class="eyebrow">Model</span>
 		<select class="input-text" bind:value={componentData.spec.model} onchange={onModelChange}>
 			{#each agentModels as model}
-				<option value={model}>{model}</option>
+				<option value={model}>
+					{model}{visibleAgentModels.includes(model) ? '' : ' (retired)'}
+				</option>
 			{/each}
 		</select>
 	</label>
