@@ -357,6 +357,23 @@ const agentSpecModel = z.strictObject({
 		user: agentPromptModel
 	}),
 	settings: z.strictObject({
+		schemaMode: z.enum(['legacy', 'contract']).optional(),
+		validationProfile: z
+			.enum([
+				'crop',
+				'customer-care',
+				'policy-support',
+				'trixie-support',
+				'trixie-policy',
+				'device-support',
+				'claims',
+				'invoice'
+			])
+			.optional(),
+		documentInput: z.string().min(1).optional(),
+		documentVisionModel: z
+			.enum(['qwen3.5-397b-a17b', 'mistral-medium-3.5-128b'])
+			.optional(),
 		reasoningEffort: z
 			.enum(['none', 'low', 'medium', 'high', 'xhigh', 'max'])
 			.nullish(),
