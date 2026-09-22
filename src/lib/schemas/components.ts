@@ -175,6 +175,8 @@ export const availableAgentModels = [
 	'gemma-4-26b-a4b-it',
 	'qwen3-235b-a22b-instruct-2507',
 	'qwen3.6-35b-a3b',
+	'qwen3.8-27b',
+	'deepseek-v4-flash-0731',
 	'anthropic/claude-opus-5',
 	'anthropic/claude-sonnet-5',
 	'anthropic/claude-opus-4-8',
@@ -245,6 +247,9 @@ export const legacyModels: ReadonlySet<string> = new Set([
 	'openai/gpt-4o',
 	'mistral-medium-2508',
 	'gemma-3-27b-it',
+	'llama-3.1-8b-instruct',
+	'llama-3.1-8b-instant',
+	'llama-3.3-70b-versatile',
 	// retired upstream
 	'qwen/qwen3-32b',
 	'moonshotai/kimi-k2-instruct-0905',
@@ -278,15 +283,83 @@ export const modelSamplingSupport: Partial<
 	'anthropic/claude-haiku-4-5': { temperature: true, topP: false }
 }
 
+/** Verified Scaleway capabilities. Limits include reasoning tokens. */
+export type ModelCapability = {
+	maxOutputTokens: number
+	reasoningEfforts?: readonly string[]
+	defaultReasoning?: string
+}
+export const scalewayModelCapabilities: Record<
+	string,
+	ModelCapability | undefined
+> = {
+	'mistral-medium-3.5-128b': {
+		maxOutputTokens: 16384,
+		reasoningEfforts: ['none', 'high'],
+		defaultReasoning: 'none'
+	},
+	'glm-5.2': {
+		maxOutputTokens: 16384,
+		reasoningEfforts: ['none', 'high', 'max'],
+		defaultReasoning: 'none'
+	},
+	'qwen3.5-397b-a17b': {
+		maxOutputTokens: 16384,
+		reasoningEfforts: ['none', 'low', 'medium', 'high'],
+		defaultReasoning: 'none'
+	},
+	'qwen3.8-27b': {
+		maxOutputTokens: 32768,
+		reasoningEfforts: ['none', 'low', 'medium', 'xhigh'],
+		defaultReasoning: 'none'
+	},
+	'qwen3-235b-a22b-instruct-2507': { maxOutputTokens: 16384 },
+	'llama-3.3-70b-instruct': { maxOutputTokens: 16384 },
+	'qwen3.6-35b-a3b': {
+		maxOutputTokens: 32768,
+		reasoningEfforts: ['none', 'low', 'medium', 'high'],
+		defaultReasoning: 'none'
+	},
+	'deepseek-v4-flash-0731': {
+		maxOutputTokens: 32768,
+		reasoningEfforts: ['none', 'low', 'high', 'max'],
+		defaultReasoning: 'none'
+	},
+	'qwen3-coder-30b-a3b-instruct': { maxOutputTokens: 32768 },
+	'gemma-4-26b-a4b-it': {
+		maxOutputTokens: 32768,
+		reasoningEfforts: ['none', 'low', 'medium', 'high'],
+		defaultReasoning: 'none'
+	},
+	'openai/gpt-oss-120b': {
+		maxOutputTokens: 32768,
+		reasoningEfforts: ['low', 'medium', 'high'],
+		defaultReasoning: 'low'
+	},
+	'mistral-small-3.2-24b-instruct-2506': { maxOutputTokens: 32768 }
+}
+export const modelDeprecations: Record<
+	string,
+	{ replacement: string; endOfLife: string } | undefined
+> = {
+	'qwen3-coder-30b-a3b-instruct': {
+		replacement: 'qwen3.6-35b-a3b',
+		endOfLife: '2026-10-01'
+	}
+}
+
 const agentSpecModel = z.strictObject({
-	// backwards compatibility: coerce old models to gemma-3-27b-it
-	model: z.enum(availableAgentModels).catch('gemma-3-27b-it'),
+	// Preserve saved selections; unavailable models fail explicitly at execution.
+	model: z.string().min(1),
 	readme: z.string().optional().default(''),
 	prompts: z.strictObject({
 		system: agentPromptModel,
 		user: agentPromptModel
 	}),
 	settings: z.strictObject({
+		reasoningEffort: z
+			.enum(['none', 'low', 'medium', 'high', 'xhigh', 'max'])
+			.nullish(),
 		temperature: z.number().min(0).max(1).nullish(),
 		topP: z.number().min(0).max(1).nullish(),
 		maxTokens: z
