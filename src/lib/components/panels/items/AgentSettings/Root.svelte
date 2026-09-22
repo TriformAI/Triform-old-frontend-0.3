@@ -1,5 +1,4 @@
 <script lang="ts">
-	import LightEditor from '$lib/components/atoms/LightEditor.svelte'
 	import { debounce } from '$lib/utils/debounce'
 	import { addPort, getVisibleComponent, refreshFlow } from '$lib/stores/canvas.svelte'
 	import { updateComponent } from '$lib/actions/components'
@@ -15,9 +14,7 @@
 	} from '$lib/schemas'
 	import PromptElement from './PromptElement.svelte'
 	import AdvancedSetting from './AdvancedSetting.svelte'
-	import type { FormEventHandler } from 'svelte/elements'
 	import { tick } from 'svelte'
-	import { clone } from '$lib/utils/clone'
 
 	const { nodeId }: { nodeId: string } = $props()
 
@@ -27,8 +24,6 @@
 		const res = await updateComponent(componentData, false)
 		if (!res.success) toast.error(`Failed saving ${componentData.meta.name}`)
 	}, 500)
-
-	let hasJsonErrors = $state(false)
 
 	// The picker only lists non-legacy models, but a saved agent may still be on a
 	// retired one — and an option that isn't rendered means `bind:value` finds no
@@ -123,7 +118,7 @@
 	<label class="grid gap-2">
 		<span class="eyebrow">Model</span>
 		<select class="input-text" bind:value={componentData.spec.model} onchange={onModelChange}>
-			{#each agentModels as model}
+			{#each agentModels as model (model)}
 				<option
 					value={model}
 					disabled={!visibleAgentModels.some(value => value === model) ||
@@ -154,7 +149,9 @@
 				onchange={debouncedSave}
 			>
 				<option value={null}>Default ({capability.defaultReasoning})</option>
-				{#each capability.reasoningEfforts as effort}<option value={effort}>{effort}</option>{/each}
+				{#each capability.reasoningEfforts as effort (effort)}<option value={effort}
+						>{effort}</option
+					>{/each}
 			</select>
 		</label>
 	{/if}
