@@ -29,10 +29,7 @@ const flowOutputModel = z.record(
 		source: z.string().nullable().meta({
 			description: 'The ID of the node that is being fed into this node'
 		}),
-		target: z
-			.string()
-			.nullable()
-			.meta({ description: 'The output of the source node' })
+		target: z.string().nullable().meta({ description: 'The output of the source node' })
 	})
 )
 
@@ -259,9 +256,7 @@ export const legacyModels: ReadonlySet<string> = new Set([
 ])
 
 /** The models offered in the picker — everything that isn't legacy. */
-export const visibleAgentModels = availableAgentModels.filter(
-	m => !legacyModels.has(m)
-)
+export const visibleAgentModels = availableAgentModels.filter(m => !legacyModels.has(m))
 
 /**
  * Sampling params each model accepts. Anything not listed accepts all of them.
@@ -269,10 +264,7 @@ export const visibleAgentModels = availableAgentModels.filter(
  * rejects `temperature` outright. Verified against Bedrock 2026-07-30.
  */
 export const modelSamplingSupport: Partial<
-	Record<
-		(typeof availableAgentModels)[number],
-		{ temperature: boolean; topP: boolean }
-	>
+	Record<(typeof availableAgentModels)[number], { temperature: boolean; topP: boolean }>
 > = {
 	'anthropic/claude-opus-5': { temperature: false, topP: false },
 	'anthropic/claude-sonnet-5': { temperature: false, topP: false },
@@ -289,10 +281,7 @@ export type ModelCapability = {
 	reasoningEfforts?: readonly string[]
 	defaultReasoning?: string
 }
-export const scalewayModelCapabilities: Record<
-	string,
-	ModelCapability | undefined
-> = {
+export const scalewayModelCapabilities: Record<string, ModelCapability | undefined> = {
 	'mistral-medium-3.5-128b': {
 		maxOutputTokens: 16384,
 		reasoningEfforts: ['none', 'high'],
@@ -357,9 +346,22 @@ const agentSpecModel = z.strictObject({
 		user: agentPromptModel
 	}),
 	settings: z.strictObject({
-		reasoningEffort: z
-			.enum(['none', 'low', 'medium', 'high', 'xhigh', 'max'])
-			.nullish(),
+		schemaMode: z.enum(['legacy', 'contract']).optional(),
+		validationProfile: z
+			.enum([
+				'crop',
+				'customer-care',
+				'policy-support',
+				'trixie-support',
+				'trixie-policy',
+				'device-support',
+				'claims',
+				'invoice'
+			])
+			.optional(),
+		documentInput: z.string().min(1).optional(),
+		documentVisionModel: z.enum(['qwen3.5-397b-a17b', 'mistral-medium-3.5-128b']).optional(),
+		reasoningEffort: z.enum(['none', 'low', 'medium', 'high', 'xhigh', 'max']).nullish(),
 		temperature: z.number().min(0).max(1).nullish(),
 		topP: z.number().min(0).max(1).nullish(),
 		maxTokens: z
@@ -409,17 +411,9 @@ export const resolvedAgentModel = agentModel.extend({
 })
 
 // Union models
-export const componentSpecModel = z.union([
-	flowSpecModel,
-	actionSpecModel,
-	agentSpecModel
-])
+export const componentSpecModel = z.union([flowSpecModel, actionSpecModel, agentSpecModel])
 
-export const componentModel = z.discriminatedUnion('resource', [
-	flowModel,
-	actionModel,
-	agentModel
-])
+export const componentModel = z.discriminatedUnion('resource', [flowModel, actionModel, agentModel])
 
 export const createComponentModel = z.discriminatedUnion('resource', [
 	flowModel.omit({ id: true }),
