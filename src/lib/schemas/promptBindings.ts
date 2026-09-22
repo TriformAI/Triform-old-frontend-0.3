@@ -5,26 +5,34 @@
  */
 
 /** Pure binding checks shared by API, worker and generated clients. */
-export function promptBindingProblems(spec: any): string[] {
+type BindingSchema = {
+	type?: unknown
+	properties?: Record<string, BindingSchema>
+	additionalProperties?: unknown
+}
+type BindingSpec = {
+	inputs?: Record<string, { schema: unknown }>
+	settings?: { documentInput?: string }
+	prompts?: {
+		system?: Array<{ enabled?: boolean; type: string; value: string }>
+		user?: Array<{ enabled?: boolean; type: string; value: string }>
+	}
+}
+export function promptBindingProblems(spec: BindingSpec): string[] {
 	const problems: string[] = []
-	for (const role of ['system', 'user'])
+	for (const role of ['system', 'user'] as const)
 		for (const p of spec.prompts?.[role] ?? []) {
 			if (!p.enabled || p.type !== 'template') continue
 			for (const match of p.value.matchAll(/inputs\.([\w]+)((?:\.[\w]+)*)/g)) {
-				if (match[1] === 'document_text' && spec.settings?.documentInput)
-					continue
-				const input = spec.inputs?.[match[1]]
+				if (match[1] === 'document_text' && spec.settings?.documentInput) continue
+				const input = spec.inputs?.[match[1]!]
 				if (!input) {
 					problems.push(`${role}: undeclared input ${match[1]}`)
 					continue
 				}
-				let schema = input.schema
-				for (const part of match[2].split('.').filter(Boolean)) {
-					if (
-						schema?.type &&
-						schema.type !== 'object' &&
-						schema.type !== 'array'
-					) {
+				let schema = input.schema as BindingSchema | undefined
+				for (const part of match[2]!.split('.').filter(Boolean)) {
+					if (schema?.type && schema.type !== 'object' && schema.type !== 'array') {
 						problems.push(`${role}: field access on primitive ${match[0]}`)
 						break
 					}
